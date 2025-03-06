@@ -23,7 +23,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@pinia/nuxt',
     'nuxt-security',
-    '@nuxtjs/i18n'
+    '@nuxtjs/i18n',
+    '@nuxt/icon'
   ],
 
   i18n: {

@@ -1,6 +1,7 @@
 {
-  "name": "nuxt-app",
+  "name": "INOSU-Frontend",
   "private": true,
+  "author": "Astronawta",
   "type": "module",
   "scripts": {
     "build": "nuxt build",
@@ -11,6 +12,7 @@
   },
   "dependencies": {
     "@nuxt/eslint": "1.1.0",
+    "@nuxt/icon": "1.10.3",
     "@nuxtjs/i18n": "9.2.1",
     "@pinia/nuxt": "0.10.1",
     "nuxt": "^3.15.4",
@@ -23,5 +25,11 @@
     "sass": "^1.85.1",
     "typescript": "^5.8.2",
     "vue-tsc": "^2.2.8"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@parcel/watcher",
+      "esbuild"
+    ]
   }
 }
