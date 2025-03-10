@@ -3,86 +3,68 @@ import Loading from "~/components/basics/Loading.vue";
 import { ref } from "vue";
 
 useHead({
-  title: "Panel | Přihlášení",
+  title: "Panel | Zapomenuté heslo",
   meta: [
-    { name: "Panel Login Page", content: "Panel Login Page" }
+    { name: "description", content: "Zapomenuté heslo" }
   ]
 });
 
-const loginData = ref<{ login: string, password: string, stayLogged: boolean }>({ login: "", password: "", stayLogged: false });
-const errors = ref<{ login: string, password: string, req: string }>({ login: "", password: "", req: "" });
+const messages = ref<{ email: string, form: { message: string, type: string } }>({ email: "", form: { message: "", type: "" }});
+const email = ref<string>("");
 const loading = ref<boolean>(false);
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-// Check user inputs
-const validateLogin = (): void => {
-  if (!loginData.value.login) errors.value.login = "Zadejte váš e-mail nebo zkratku";
-  if (!loginData.value.password) errors.value.password = "Zadejte vaše heslo";
+//check user inputs
+const validateForm = (): void => {
+  if (!emailRegex.test(email.value)) messages.value.email = "Špatný formát e-mailu";
+  if (!email.value) messages.value.email = "Zadejte váš e-mail";
 };
 
-// Check user inputs and send request to backend
-const submitLoginForm = async (): Promise<void> => {
-  validateLogin();
+//reset messages when user start typing
+const resetMessages = (): void => {
+  messages.value = { email: "", form: { message: "", type: "" }};
+};
 
-  if (!errors.value.login && !errors.value.password) {
-    loading.value = true;
-    console.log("Login data: ", loginData.value);
-  }
-}
-
-const resetErrors = (): void => {
-  errors.value = {
-    login: "",
-    password: "",
-    req: ""
-  };
+//check user inputs and send request to API
+const submitForm = async (): Promise<void> => {
+  validateForm();
 };
 </script>
 
 <template>
-  <div id="login-form">
+  <div id="forgetPassword-new">
     <div class="container">
       <div class="head">
-        <h2>INOSU panel</h2>
-        <p>Lorem Ipsum is simply dummy text of the printing and </p>
+        <h2>Zapomenuté heslo</h2>
+        <p>Zadejte e-mail pro zaslání odkazu pro resetování.</p>
       </div>
 
-      <form @submit.prevent="submitLoginForm" @input="resetErrors">
+      <form @submit.prevent="submitForm" @input="resetMessages">
         <div class="item">
-          <label for="login">E-mail / Zkratka</label>
-          <input id="login" v-model="loginData.login" type="text" name="login" placeholder="test@test.com / JUDE">
-          <p v-if="errors.login.length" class="error">{{ errors.login }}</p>
-        </div>
-
-        <div class="item">
-          <label for="password">Heslo</label>
-          <input id="password" v-model="loginData.password" type="password" name="password" placeholder="*****">
-          <p v-if="errors.password.length" class="error">{{ errors.password }}</p>
-        </div>
-
-        <div class="custom-item">
-          <input id="stayLogged" type="checkbox" name="stayLogged" @change="() => loginData.stayLogged = !loginData.stayLogged">
-          <label for="stayLogged">Zůstat přihlášen</label>
+          <label for="email">E-mail</label>
+          <input type="text" id="email" name="email" placeholder="test@test.com" v-model="email">
+          <p v-if="messages.email.length" class="error">{{ messages.email }}</p>
         </div>
 
         <div class="footer">
-          <button type="submit">Přihlásit se</button>
-          <p v-if="errors.req.length" class="error">{{ errors.req }}</p>
+          <button type="submit">Zaslat e-mail</button>
+          <p v-if="messages.form.message.length" :class="{ 'error': messages.form.type === 'error', 'success': messages.form.type === 'success' }">{{ messages.form.message }}</p>
         </div>
 
         <div v-if="loading" class="loading">
-          <Loading color="var(--description-color)" size="6px" />
+          <Loading color="#9ca3af" size="6px" />
         </div>
 
-        <a href="/password/forget/new">Zapomněli jste heslo?</a>
+        <a href="/">Vzpomněli jste si?</a>
       </form>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-#login-form {
+#forgetPassword-new {
   width: 100%;
-  min-height: 800px;
+  min-height: 400px;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -121,8 +103,8 @@ const resetErrors = (): void => {
       display: flex;
       flex-direction: column;
       gap: 30px;
-      border-radius: var(--medium-border-radius);
       border: var(--border-width) solid rgba(var(--border-color), 0.5);
+      border-radius: var(--medium-border-radius);
       padding: 30px;
 
       label {
@@ -140,6 +122,11 @@ const resetErrors = (): void => {
       .error {
         font-size: 16px;
         color: var(--error-color);
+      }
+
+      .success {
+        font-size: 16px;
+        color: var(--success-color);
       }
 
       .item {
@@ -195,6 +182,10 @@ const resetErrors = (): void => {
           font-weight: var(--btn-1-font-weight);
           font-size: 16px;
           width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 15px;
 
           &:hover {
             background: var(--btn-1-hover-background);
