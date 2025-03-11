@@ -11,6 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@iconify-json/material-symbols": "^1.2.15",
     "@nuxt/eslint": "1.1.0",
     "@nuxt/icon": "1.10.3",
     "@nuxtjs/i18n": "9.2.1",

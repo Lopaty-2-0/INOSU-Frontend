@@ -12,7 +12,10 @@ export default defineNuxtConfig({
         lang: "cs",
       },
       charset: "utf-8",
-      viewport: "width=device-width, initial-scale=1"
+      viewport: "width=device-width, initial-scale=1",
+      noscript: [
+        { children: "JavaScript is required" }
+      ]
     }
   },
 
@@ -60,5 +63,27 @@ export default defineNuxtConfig({
         { code: "cz", iso: "cs-CZ", file: "cz.json" }
     ],
     defaultLocale: "cz",
+  },
+
+  security: {
+    hidePoweredBy: true,
+    corsHandler: {
+      origin: process.env.API_ORIGIN,
+      methods: ["GET", "POST", "PUT", "DELETE"],
+    },
+    xssValidator: false,
+    headers: {
+      crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
+      referrerPolicy: "origin",
+      contentSecurityPolicy: {
+        "img-src": ["self", "https:", "data:", "blob:", "http:"],
+      }
+    }
+  },
+
+  routeRules: {
+    "/": {
+      redirect: "/login"
+    }
   }
 })
