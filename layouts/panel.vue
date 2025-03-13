@@ -3,9 +3,9 @@ import Sidebar from "~/components/Sidebar.vue";
 import Loading from "~/components/basics/Loading.vue";
 import { ref, onMounted } from "vue";
 
-const loading = ref(true);
+const loading = ref<boolean>(true);
 
-onMounted(() => {
+onMounted((): void => {
   loading.value = false;
 });
 </script>
@@ -41,7 +41,7 @@ onMounted(() => {
   background: var(--main-background);
   position: relative;
   height: 100%;
-  min-height: calc(100vh - 5rem);
+  min-height: calc(100vh - 80px);
 
   .loading {
     display: flex;

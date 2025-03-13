@@ -76,7 +76,7 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
       referrerPolicy: "origin",
       contentSecurityPolicy: {
-        "img-src": ["self", "https:", "data:", "blob:", "http:"],
+        "img-src": ["self", "https:", "data:", "blob:", "http://89.203.248.163"],
       }
     }
   },

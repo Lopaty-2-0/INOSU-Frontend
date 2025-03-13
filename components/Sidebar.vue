@@ -106,8 +106,8 @@ onMounted(() => {
   <div id="sidebar" :class="{ 'active-sidebar': isHamburgerClicked }">
     <div class="header">
       <div class="sidebar-logo">
+        <h2>INOSU</h2>
         <p>Název webových stránek</p>
-        <h2>Admin Panel</h2>
       </div>
 
       <div class="items">
@@ -164,7 +164,7 @@ onMounted(() => {
   position: fixed;
   background: var(--menu-background);
   width: 250px;
-  border-right: 1px solid var(--border-color);
+  border-right: var(--border-width) solid rgba(var(--border-color), 0.5);
   margin-left: 0;
   top: 0;
   left: 0;
@@ -190,16 +190,15 @@ onMounted(() => {
     flex-direction: column;
     margin-bottom: 2rem;
 
-    p {
-      font-size: 0.875rem;
-      color: var(--mini-title-color);
-      opacity: 0.8;
+    h2 {
+      font-weight: 900;
+      font-size: 36px;
+      color: rgba(var(--main-color), 1);
     }
 
-    h2 {
-      font-size: 1.25rem;
-      color: var(--main-color);
-      font-weight: 600;
+    p {
+      color: var(--description-color);
+      font-size: 16px;
     }
   }
 
@@ -236,14 +235,14 @@ onMounted(() => {
         color: var(--description-color);
         text-decoration: none;
         padding: 0.625rem;
-        font-size: 0.875rem;
+        font-size: 16px;
         transition: 0.2s;
         overflow: hidden;
         white-space: nowrap;
 
         &:hover,
         &.active {
-          color: var(--main-color);
+          color: rgba(var(--main-color), 1);
         }
 
         .icon {
@@ -255,7 +254,7 @@ onMounted(() => {
       .name {
         padding-bottom: 5px;
         text-transform: uppercase;
-        color: var(--main-color);
+        color: rgba(var(--main-color), 1);
         opacity: 0.8;
         font-size: 0.75rem;
         font-weight: 500;
@@ -267,7 +266,7 @@ onMounted(() => {
         position: relative;
         height: 0.1px;
         width: 85%;
-        background: var(--border-color);
+        background: rgba(var(--border-color), 0.5);
         margin-top: 1.563rem;
         margin-bottom: 1.563rem;
       }
@@ -283,7 +282,7 @@ onMounted(() => {
 
     button {
       color: var(--description-color);
-      font-size: 0.875rem;
+      font-size: 16px;
       transition: 0.2s;
       display: flex;
       flex-direction: row;

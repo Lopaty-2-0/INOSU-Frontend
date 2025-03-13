@@ -87,7 +87,7 @@ onMounted(() => {
   height: 5rem;
   transition: 0.2s;
   padding: 0.938rem 1.875rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: var(--border-width) solid rgba(var(--border-color), 0.5);
   z-index: 50;
   gap: 15px;
 
@@ -118,7 +118,7 @@ onMounted(() => {
         gap: 0.5rem;
 
         span {
-          color: var(--main-color);
+          color: rgba(var(--main-color), 1);
           text-transform: uppercase;
         }
 
@@ -140,7 +140,7 @@ onMounted(() => {
       transition: 0.2s;
 
       .welcome {
-        color: var(--main-color);
+        color: rgba(var(--main-color), 1);
         opacity: 0.8;
         text-transform: uppercase;
         font-size: 0.75rem;
@@ -148,7 +148,7 @@ onMounted(() => {
 
       .account-name {
         color: var(--mini-title-color);
-        font-size: 0.875rem;
+        font-size: 16px;
         padding-top: 2px;
         font-weight: 600;
 
