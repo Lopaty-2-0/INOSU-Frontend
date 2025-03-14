@@ -22,6 +22,8 @@ jobs:
             export NODE_OPTIONS="--max-old-space-size=1536"
             cd /home/INOSU-Frontend
             git pull origin main
+            rm -r .output/
+            rm -r .nuxt/
             pnpm install
             pnpm run build
             pm2 start node .output/server/index.mjs --name inosu_frontend
