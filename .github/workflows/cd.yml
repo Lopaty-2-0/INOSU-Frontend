@@ -19,7 +19,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            export NODE_OPTIONS="--max-old-space-size=1536"
+            export NODE_OPTIONS="--max-old-space-size=1024"
             cd /home/INOSU-Frontend
             git pull origin main
             rm -r .output/
