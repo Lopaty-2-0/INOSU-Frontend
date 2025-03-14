@@ -24,4 +24,4 @@ jobs:
             git pull origin main
             pnpm install
             pnpm run build
-            systemctl restart inosu_frontend
+            /root/.local/share/pnpm/pm2 start /home/INOSU-Frontend/.output/server/index.mjs --name inosu_frontend
