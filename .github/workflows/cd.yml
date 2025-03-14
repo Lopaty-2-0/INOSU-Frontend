@@ -26,3 +26,4 @@ jobs:
             rm -r .nuxt/
             pnpm install
             pnpm run build
+            export NODE_OPTIONS="--max-old-space-size=600"
