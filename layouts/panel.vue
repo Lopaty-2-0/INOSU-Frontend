@@ -22,7 +22,7 @@ onMounted((): void => {
       </template>
 
       <div class="loading" v-else>
-        <Loading color="var(--title-color)" />
+        <Loading color="rgba(var(--description-color), 1)" />
       </div>
     </div>
   </div>
@@ -30,13 +30,13 @@ onMounted((): void => {
 
 <style scoped lang="scss">
 .page {
-  margin-top: 5rem;
-  margin-left: 15.625rem;
-  padding: 1.875rem;
+  margin-top: 80px;
+  margin-left: 250px;
+  padding: 30px;
   transition: 0.2s;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 60px;
   width: auto;
   background: var(--main-background);
   position: relative;

@@ -98,7 +98,7 @@ onMounted(async () => {
         </div>
 
         <div v-if="loading" class="loading">
-          <Loading color="#9ca3af" />
+          <Loading color="rgba(var(--description-color), 1)" />
         </div>
 
         <a href="/">Máte změněno?</a>
@@ -130,7 +130,7 @@ onMounted(async () => {
     padding: 30px;
 
     .head h2 {
-      color: var(--error-color);
+      color: rgba(var(--error-color), 1);
       font-weight: 700;
       font-size: 28px;
     }
@@ -138,7 +138,7 @@ onMounted(async () => {
     .footer button {
       padding: 15px;
       border-radius: var(--normal-border-radius);
-      background: var(--error-color);
+      background: rgba(var(--error-color), 1);
       color: var(--btn-1-color);
       transition: 0.2s;
       font-weight: var(--btn-1-font-weight);
@@ -179,7 +179,7 @@ onMounted(async () => {
     }
 
     p {
-      color: var(--description-color);
+      color: rgba(var(--description-color), 1);
       font-size: 16px;
     }
   }
@@ -234,12 +234,12 @@ onMounted(async () => {
 
       .error {
         font-size: 16px;
-        color: var(--error-color);
+        color: rgba(var(--error-color), 1);
       }
 
       .success {
         font-size: 16px;
-        color: var(--success-color);
+        color: rgba(var(--success-color), 1);
       }
 
       .item {
@@ -307,7 +307,7 @@ onMounted(async () => {
       }
 
       a {
-        color: var(--description-color);
+        color: rgba(var(--description-color), 1);
         font-size: 16px;
         transition: 0.2s;
         width: fit-content;

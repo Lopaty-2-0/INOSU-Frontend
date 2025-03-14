@@ -26,6 +26,27 @@ const submitLoginForm = async (): Promise<void> => {
   if (!errors.value.login && !errors.value.password) {
     loading.value = true;
     console.log("Login data: ", loginData.value);
+
+    try {
+      const data = await $fetch("http://89.203.248.163/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: {
+          email: loginData.value.login,
+          password: loginData.value.password,
+          stayLogged: loginData.value.stayLogged
+        }
+      });
+
+      console.log("Response data: ", data);
+    } catch (error) {
+      console.error("Error during login request: ", error);
+      errors.value.req = "An error occurred during login. Please try again.";
+    } finally {
+      loading.value = false;
+    }
   }
 }
 
@@ -70,7 +91,7 @@ const resetErrors = (): void => {
         </div>
 
         <div v-if="loading" class="loading">
-          <Loading color="var(--description-color)" size="6px" />
+          <Loading color="rgba(var(--description-color), 1)" size="6px" />
         </div>
 
         <a href="/password/forget/new">Zapomněli jste heslo?</a>
@@ -112,7 +133,7 @@ const resetErrors = (): void => {
       }
 
       p {
-        color: var(--description-color);
+        color: rgba(var(--description-color), 1);
         font-size: 16px;
       }
     }
@@ -139,7 +160,7 @@ const resetErrors = (): void => {
 
       .error {
         font-size: 16px;
-        color: var(--error-color);
+        color: rgba(var(--error-color), 1);
       }
 
       .item {
@@ -203,7 +224,7 @@ const resetErrors = (): void => {
       }
 
       a {
-        color: var(--description-color);
+        color: rgba(var(--description-color), 1);
         font-size: 16px;
         transition: 0.2s;
         width: fit-content;

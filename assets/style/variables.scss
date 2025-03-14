@@ -6,64 +6,35 @@
 
 [data-theme="light"] {
   --main-background: #E8EEF2;
-  --main-color: 117, 43, 223;
+  --main-color: 21, 23, 162;
   --default-line-height: 1.2;
   --title-color: #000000;
-  --error-color: #ef4444;
-  --success-color: #5cb85c;
   --mini-title-color: #000000;
-  --description-color: #79788A;
-  --background-body: #ffffff;
+  --description-color: 107, 107, 111;
   --scrollbar-thumb-background: #e6e6e6;
   --scrollbar-track-background: #f9fafb;
   --scrollbar-track-hover-background: #e6e6e6;
 
   //Menu
-  --menu-background: #ffffff;
-  --navbar-square-icon-color: rgba(127, 99, 244, 0.15);
-  --sidebar-log-out-background: #f3f3f3;
-  --sidebar-log-out-hover-background: #e6e6e6;
-  --sidebar-notification-background: #ef4444;
-  --sidebar-notification-color: #ffffff;
+  --menu-background: #E8EEF2;
+  --navbar-square-icon-color: rgba(var(--main-color), 0.15);
 
-  //Statistics
-  --stats-trend-up-background: rgba(92, 184, 92, 0.15);
-  --stats-trend-up-color: #5cb85c;
-  --stats-trend-down-background: rgba(239, 68, 68, 0.15);
-  --stats-trend-down-color: #ef4444;
-  --stats-trend-neutral-background: rgba(117, 43, 223, 0.15);
-  --stats-trend-neutral-color: #752bdf;
+  //Sidebar
+  --sidebar-background: #E8EEF2;
+  --sidebar-log-out-background: #DDE2E5;
+  --sidebar-log-out-hover-background: #d1d5d9;
+  --sidebar-notification-background: rgba(var(--warning-color), 1);
+  --sidebar-notification-color: #000000;
 
-  //Graphs
-  --graph-background: rgba(117, 43, 223, 0.5);
-  --graph-line-color: rgba(117, 43, 223, 1);
-
-  //Action bar
-  --actionBar-background: #f9fafb;
-  --actionBar-actions-add-color: #5cb85c;
-  --actionBar-actions-add-border: #5cb85c;
-  --actionBar-actions-add-background: rgba(92, 184, 92, 0.15);
-  --actionBar-actions-remove-color: #ef4444;
-  --actionBar-actions-remove-border: #ef4444;
-  --actionBar-actions-remove-background: rgba(239, 68, 68, 0.15);
-  --actionBar-actions-edit-color: #752bdf;
-  --actionBar-actions-edit-border: #752bdf;
-  --actionBar-actions-edit-background: rgba(117, 43, 223, 0.15);
-
-  //Alerts
-  --alert-description-color: #000000;
-  --alert-success-background: #E2F0E4;
-  --alert-success-color: #5CB85C;
-  --alert-error-background: #F8DFE0;
-  --alert-error-color: #ef4444;
-  --alert-warning-background: #F3E6D1;
-  --alert-warning-color: #f39c12;
-  --alert-info-background: #E5DBF7;
-  --alert-info-color: #752bdf;
+  // Status colors
+  --error-color: 255, 34, 12;
+  --success-color: 77, 139, 49;
+  --warning-color: 247, 92, 3;
+  --info-color: 21, 23, 162;
 
   //Cards
-  --card-1-background: #f3f3f3;
-  --card-1-hover-background: #e6e6e6;
+  --card-1-background: transparent;
+  --card-1-hover-background: #DDE2E5;
 
   //Borders
   --border-color: 193, 193, 193;
@@ -75,115 +46,17 @@
   --mini-border-radius: 2px;
 
   //Buttons
-  --btn-1-background: #8a4de3;
+  --btn-1-background: rgba(var(--main-color), 1);
   --btn-1-color: #ffffff;
   --btn-1-font-weight: 700;
-  --btn-1-hover-background: #752bdf;
-  --btn-2-background: #ffffff;
-  --btn-2-color: #79788a;
-  --btn-2-font-weight: 500;
-  --btn-2-hover-background: #f0f0f0;
-  --btn-3-background: #ffffff;
-  --btn-3-color: #79788a;
-  --btn-3-font-weight: 500;
-  --btn-4-background: #E5DBF7;
-  --btn-4-hover-background: #d4c4ee;
-  --btn-4-color: #752bdf;
-  --btn-4-font-weight: 500;
-
-  //Switch
-  --switch-background: rgba(212, 196, 238, 0.5);
-  --switch-background-dot: #d4c4ee;
-  --switch-background-dot-checked: #752bdf;
+  --btn-1-hover-background: rgba(var(--main-color), 0.8);
 
   //Inputs
   --input-background: #EDF2F4;
-  --input-placeholder-color: #ADADAD;
-  --input-color: #79788a;
+  --input-placeholder-color: rgba(var(--description-color), 0.8);
+  --input-color: rgba(var(--description-color), 1);
 }
 
 [data-theme="dark"] {
-  --main-background: #121212;
-  --main-color: #BB86FC;
-  --title-color: #ffffff;
-  --error-color: #ef4444;
-  --success-color: #5cb85c;
-  --mini-title-color: #c9cbe1;
-  --description-color: #b2b2b6;
-  --background-body: #121212;
-  --scrollbar-thumb-background: #383838;
-  --scrollbar-track-background: #1F1F1F;
-  --scrollbar-track-hover-background: #383838;
 
-  //Menu
-  --menu-background: #121212;
-  --navbar-square-icon-color: rgba(187, 134, 252, 0.15);
-  --sidebar-log-out-background: #1F1F1F;
-  --sidebar-log-out-hover-background: #383838;
-  --sidebar-notification-background: #FFFF8F;
-  --sidebar-notification-color: #000000;
-
-  //Statistics
-  --stats-trend-up-background: rgba(92, 184, 92, 0.30);
-  --stats-trend-up-color: rgba(92, 184, 92, 1);
-  --stats-trend-down-background: rgba(239, 68, 68, 0.30);
-  --stats-trend-down-color: rgba(239, 68, 68, 1);
-  --stats-trend-neutral-background: rgba(187, 134, 252, 0.3);
-  --stats-trend-neutral-color: #BB86FC;
-
-  //Graphs
-  --graph-background: rgba(187, 134, 252, 0.5);
-  --graph-line-color: #BB86FC;
-
-  //Action bar
-  --actionBar-background: #1F1F1F;
-  --actionBar-actions-add-color: #ffffff;
-  --actionBar-actions-add-border: rgba(92, 184, 92, 1);
-  --actionBar-actions-add-background: rgba(92, 184, 92, 0.30);
-  --actionBar-actions-remove-color: #ffffff;
-  --actionBar-actions-remove-border: rgba(239, 68, 68, 1);
-  --actionBar-actions-remove-background: rgba(239, 68, 68, 0.30);
-  --actionBar-actions-edit-color: #ffffff;
-  --actionBar-actions-edit-border: #BB86FC;
-  --actionBar-actions-edit-background: rgba(187, 134, 252, 0.3);
-
-  //Alerts
-  --alert-description-color: #ffffff;
-  --alert-success-background: #294529;
-  --alert-success-color: rgba(92, 184, 92, 1);
-  --alert-error-background: #552222;
-  --alert-error-color: rgba(239, 68, 68, 1);
-  --alert-warning-background: #563C12;
-  --alert-warning-color: #f39c12;
-  --alert-info-background: #453559;
-  --alert-info-color: #BB86FC;
-
-  //Cards
-  --card-1-background: #1F1F1F;
-  --card-1-hover-background: #383838;
-
-  //Borders
-  --border-color: rgba(229, 231, 235, 0.1);
-
-  //Buttons
-  --btn-1-background: #BB86FC;
-  --btn-1-color: #000000;
-  --btn-1-hover-background: #9b67ea;
-  --btn-2-background: #1F1F1F;
-  --btn-2-color: #c9cbe1;
-  --btn-2-hover-background: #383838;
-  --btn-3-background: #1F1F1F;
-  --btn-3-color: #b2b2b6;
-  --btn-4-background: #E5DBF7;
-  --btn-4-hover-background: #dfb7fd;
-  --btn-4-color: #BB86FC;
-
-  //Switch
-  --switch-background: rgba(187, 134, 252, 0.3);
-  --switch-background-dot: #8f79b4;
-  --switch-background-dot-checked: #BB86FC;
-
-  //Inputs
-  --input-background: transparent;
-  --input-color: #b2b2b6;
 }

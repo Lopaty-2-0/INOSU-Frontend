@@ -84,7 +84,7 @@ const sidebarLinks = ref<{
 ]);
 
 const checkIfLinkIsActive = (link: string | string[]): boolean => {
-  const activePath = route.path;
+  const activePath: string = route.path;
 
   if (Array.isArray(link)) return link.includes(activePath) || link.some((href) => activePath.includes(href));
 
@@ -93,11 +93,13 @@ const checkIfLinkIsActive = (link: string | string[]): boolean => {
 
 const isHamburgerClicked = useState("isHamburgerClicked");
 
-const logOut = () => {
+const logOut = async (): Promise<void> => {
   console.log("Log out");
+
+  await navigateTo("/login");
 };
 
-onMounted(() => {
+onMounted((): void => {
   loading.value = false;
 });
 </script>
@@ -107,7 +109,7 @@ onMounted(() => {
     <div class="header">
       <div class="sidebar-logo">
         <h2>INOSU</h2>
-        <p>Název webových stránek</p>
+        <p>INformační a Organizační Systém Úloh</p>
       </div>
 
       <div class="items">
@@ -119,14 +121,14 @@ onMounted(() => {
                 active: checkIfLinkIsActive(link.activeHrefs ? link.activeHrefs : link.href),
                 link: true,
               }">
-                <Icon size="1rem" class="icon" :name="link.iconClass"></Icon>{{ link.text }}</a>
+                <Icon size="16px" class="icon" :name="link.iconClass"></Icon>{{ link.text }}</a>
 
               <a v-else :href="link.href" :class="{
                 active: checkIfLinkIsActive(link.activeHrefs ? link.activeHrefs : link.href),
                 link: true,
                 notify: true,
               }">
-                <Icon size="1rem" class="icon" :name="link.iconClass"></Icon>{{ link.text }}
+                <Icon size="16px" class="icon" :name="link.iconClass"></Icon>{{ link.text }}
                 <div class="number">{{ link.notify }}</div>
               </a>
             </li>
@@ -137,7 +139,7 @@ onMounted(() => {
           <ul class="links">
             <li v-for="(link, linkIndex) in accountData.links" :key="linkIndex" >
               <a :href="link.href" class="link" target="_blank">
-                <Icon size="1rem" class="icon" name="material-symbols:link-rounded"></Icon> {{ link.text }}
+                <Icon size="16px" class="icon" name="material-symbols:link-rounded"></Icon> {{ link.text }}
               </a>
             </li>
           </ul>
@@ -150,7 +152,7 @@ onMounted(() => {
       <ul>
         <li class="log-out" @click="logOut">
           <button>
-            <Icon size="1rem" class="icon" name="material-symbols:logout-rounded"></Icon>Odhlásit se
+            <Icon size="16px" class="icon" name="material-symbols:logout-rounded"></Icon>Odhlásit se
           </button>
         </li>
       </ul>
@@ -162,7 +164,7 @@ onMounted(() => {
 #sidebar {
   height: 100svh;
   position: fixed;
-  background: var(--menu-background);
+  background: var(--sidebar-background);
   width: 250px;
   border-right: var(--border-width) solid rgba(var(--border-color), 0.5);
   margin-left: 0;
@@ -171,7 +173,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 30px;
   z-index: 100;
   overflow-y: visible;
   overflow-x: hidden;
@@ -181,60 +183,61 @@ onMounted(() => {
   }
 
   .sidebar-logo {
-    margin-left: 2.188rem;
+    margin-left: 30px;
     position: relative;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    padding: 1rem 0;
+    padding: 20px 0;
     flex-direction: column;
-    margin-bottom: 2rem;
+    margin-bottom: 30px;
+    gap: 5px;
 
     h2 {
       font-weight: 900;
-      font-size: 36px;
+      font-size: 32px;
       color: rgba(var(--main-color), 1);
     }
 
     p {
-      color: var(--description-color);
+      color: rgba(var(--description-color), 1);
       font-size: 16px;
     }
   }
 
   .items {
-    margin-left: 2.188rem;
+    margin-left: 30px;
 
     .links .link {
-      margin-left: -0.563rem;
+      margin-left: -10px;
       display: flex;
       align-items: center;
     }
 
     .notify .number {
-      width: 2.5rem;
-      height: 1.2rem;
-      padding-top: 0.2rem;
+      width: 40px;
+      height: 20px;
+      padding-top: 3px;
       text-align: center;
       background: var(--sidebar-notification-background);
       opacity: 0.8;
       position: relative;
-      margin-left: 0.625rem;
-      border-radius: 0.375rem;
-      font-size: 0.65rem;
+      margin-left: 10px;
+      border-radius: 5px;
+      font-size: 12px;
       color: var(--sidebar-notification-color);
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .item {
       li {
-        padding-right: 0.625rem;
+        padding-right: 10px;
       }
 
       a {
-        color: var(--description-color);
+        color: rgba(var(--description-color), 1);
         text-decoration: none;
-        padding: 0.625rem;
+        padding: 10px 0 10px 10px;
         font-size: 16px;
         transition: 0.2s;
         overflow: hidden;
@@ -246,8 +249,7 @@ onMounted(() => {
         }
 
         .icon {
-          margin-right: 0.375rem;
-          font-size: 1rem;
+          margin-right: 10px;
         }
       }
 
@@ -255,9 +257,7 @@ onMounted(() => {
         padding-bottom: 5px;
         text-transform: uppercase;
         color: rgba(var(--main-color), 1);
-        opacity: 0.8;
-        font-size: 0.75rem;
-        font-weight: 500;
+        font-size: 12px;
       }
 
       &:not(:last-child)::after {
@@ -267,27 +267,27 @@ onMounted(() => {
         height: 0.1px;
         width: 85%;
         background: rgba(var(--border-color), 0.5);
-        margin-top: 1.563rem;
-        margin-bottom: 1.563rem;
+        margin-top: 20px;
+        margin-bottom: 20px;
       }
     }
   }
 
   .log-out {
     width: 100%;
-    padding: 0.938rem 0.938rem 0.938rem 2.5rem;
+    padding: 20px 10px 20px 30px;
     background: var(--sidebar-log-out-background);
     cursor: pointer;
     transition: 0.2s;
 
     button {
-      color: var(--description-color);
+      color: rgba(var(--description-color), 1);
       font-size: 16px;
       transition: 0.2s;
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: 0.625rem;
+      gap: 10px;
     }
 
     &:hover {

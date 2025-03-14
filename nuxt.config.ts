@@ -43,10 +43,10 @@ export default defineNuxtConfig({
   modules: [
     "@nuxt/eslint",
     "@pinia/nuxt",
-    "nuxt-security",
     "@nuxtjs/i18n",
     "@nuxt/icon",
-    "@nuxtjs/tailwindcss"
+    "@nuxtjs/tailwindcss",
+    // "nuxt-security"
   ],
 
   icon: {
@@ -64,12 +64,13 @@ export default defineNuxtConfig({
     ],
     defaultLocale: "cz",
   },
-
+/*
   security: {
     hidePoweredBy: true,
     corsHandler: {
       origin: process.env.API_ORIGIN,
       methods: ["GET", "POST", "PUT", "DELETE"],
+      credentials: false,
     },
     xssValidator: false,
     headers: {
@@ -79,7 +80,7 @@ export default defineNuxtConfig({
         "img-src": ["self", "https:", "data:", "blob:", "http://89.203.248.163"],
       }
     }
-  },
+  },*/
 
   routeRules: {
     "/": {

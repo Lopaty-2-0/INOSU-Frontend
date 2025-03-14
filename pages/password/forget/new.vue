@@ -52,7 +52,7 @@ const submitForm = async (): Promise<void> => {
         </div>
 
         <div v-if="loading" class="loading">
-          <Loading color="#9ca3af" size="6px" />
+          <Loading color="rgba(var(--description-color), 1)" size="6px" />
         </div>
 
         <a href="/">Vzpomněli jste si?</a>
@@ -94,7 +94,7 @@ const submitForm = async (): Promise<void> => {
       }
 
       p {
-        color: var(--description-color);
+        color: rgba(var(--description-color), 1);
         font-size: 16px;
       }
     }
@@ -121,12 +121,12 @@ const submitForm = async (): Promise<void> => {
 
       .error {
         font-size: 16px;
-        color: var(--error-color);
+        color: rgba(var(--error-color), 1);
       }
 
       .success {
         font-size: 16px;
-        color: var(--success-color);
+        color: rgba(var(--success-color), 1);
       }
 
       .item {
@@ -194,7 +194,7 @@ const submitForm = async (): Promise<void> => {
       }
 
       a {
-        color: var(--description-color);
+        color: rgba(var(--description-color), 1);
         font-size: 16px;
         transition: 0.2s;
         width: fit-content;
