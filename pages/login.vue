@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Loading from "~/components/basics/Loading.vue";
 import { ref } from "vue";
+import apiFetch from "../utils/apiFetch";
 
 useHead({
   title: "Panel | Přihlášení",
@@ -15,6 +16,8 @@ const loading = ref<boolean>(false);
 
 // Check user inputs
 const validateLogin = (): void => {
+  resetErrors();
+
   if (!loginData.value.login) errors.value.login = "Zadejte váš e-mail nebo zkratku";
   if (!loginData.value.password) errors.value.password = "Zadejte vaše heslo";
 };
@@ -27,26 +30,45 @@ const submitLoginForm = async (): Promise<void> => {
     loading.value = true;
     console.log("Login data: ", loginData.value);
 
-    try {
-      const data = await $fetch("http://89.203.248.163/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: {
-          email: loginData.value.login,
-          password: loginData.value.password,
-          stayLogged: loginData.value.stayLogged
-        }
-      });
+    apiFetch("auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        login: loginData.value.login,
+        password: loginData.value.password,
+        stayLogged: loginData.value.stayLogged
+      },
+      async onResponse({ response }) {
+        const resCode: string = response._data.resCode.toString();
 
-      console.log("Response data: ", data);
-    } catch (error) {
-      console.error("Error during login request: ", error);
-      errors.value.req = "An error occurred during login. Please try again.";
-    } finally {
+        switch (resCode) {
+          case "6031":
+            //TODO: redirect user to /panel and save user data in cookies
+            errors.value.req = "Byl jsi přihlášen";
+        }
+      },
+      async onRequestError() {
+        errors.value.req = "Nastala neznámá chyba.";
+      },
+      async onResponseError({ response, error }) {
+        const errorResCode: string = response._data.resCode.toString();
+
+        errors.value.req = response._data.data.message;
+
+        switch (errorResCode) {
+          case "6010":
+            errors.value.req = "Login nebo heslo nebylo zadáno";
+            break;
+          case "6020":
+            errors.value.req = "Špatný login nebo heslo";
+            break;
+        }
+      },
+    }).finally(() => {
       loading.value = false;
-    }
+    });
   }
 }
 
