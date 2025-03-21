@@ -83,6 +83,9 @@ export default defineNuxtConfig({
   },*/
 
   routeRules: {
+    "/**": {
+      cors: true
+    },
     "/": {
       redirect: "/login"
     }

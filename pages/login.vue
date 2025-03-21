@@ -50,7 +50,7 @@ const submitLoginForm = async (): Promise<void> => {
         }
       },
       async onRequestError() {
-        errors.value.req = "Nastala neznámá chyba.";
+        errors.value.req = "Nastala neznámá chyba";
       },
       async onResponseError({ response, error }) {
         const errorResCode: string = response._data.resCode.toString();

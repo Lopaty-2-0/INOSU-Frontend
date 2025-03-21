@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Loading from "~/components/basics/Loading.vue";
+import apiFetch from "../../../utils/apiFetch";
 import { ref } from "vue";
 
 useHead({
@@ -9,25 +10,72 @@ useHead({
   ]
 });
 
-const messages = ref<{ email: string, form: { message: string, type: string } }>({ email: "", form: { message: "", type: "" }});
+const messages = ref<{ email: string, form: { message: string, type: "error" | "success" | null } }>({ email: "", form: { message: "", type: null }});
 const email = ref<string>("");
 const loading = ref<boolean>(false);
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 //check user inputs
 const validateForm = (): void => {
+  resetMessages();
+
   if (!emailRegex.test(email.value)) messages.value.email = "Špatný formát e-mailu";
   if (!email.value) messages.value.email = "Zadejte váš e-mail";
 };
 
 //reset messages when user start typing
 const resetMessages = (): void => {
-  messages.value = { email: "", form: { message: "", type: "" }};
+  messages.value = { email: "", form: { message: "", type: null }};
 };
 
 //check user inputs and send request to API
 const submitForm = async (): Promise<void> => {
   validateForm();
+
+  if (!messages.value.email) {
+    loading.value = true;
+
+    await apiFetch("user/password/new", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        email: email.value
+      },
+      async onResponse({response}) {
+        const resCode: string = response._data.resCode.toString();
+
+        switch (resCode) {
+          case "12041":
+            messages.value.form = { message: "E-mail byl odeslán", type: "success" };
+            break;
+        }
+      },
+      async onRequestError() {
+        messages.value.form = { message: "Nastala neznámá chyba", type: "error" };
+      },
+      async onResponseError({response, error}) {
+        const errorResCode: string = response._data.resCode.toString();
+
+        messages.value.form = { type: "error", message: response._data.data.message };
+
+        switch (errorResCode) {
+          case "12010":
+            messages.value.form = { type: "error", message: "E-mail nebyl zadán" };
+            break;
+          case "12020":
+            messages.value.form = { type: "error", message: "Špatný formát e-mailu" };
+            break;
+          case "12030":
+            messages.value.form = { type: "error", message: "Tento e-mail nebyl nalezen" };
+            break;
+        }
+      },
+    }).finally(() => {
+      loading.value = false;
+    });
+  }
 };
 </script>
 
