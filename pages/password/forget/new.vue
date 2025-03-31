@@ -44,22 +44,11 @@ const submitForm = async (): Promise<void> => {
     body: {
       email: email.value
     },
+    ignoreResponseError: true,
     async onResponse({response}) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "12041":
-          messages.value.form = { message: "E-mail byl odeslán", type: "success" };
-          break;
-      }
-    },
-    async onRequestError() {
-      messages.value.form = { message: "Nastala neznámá chyba", type: "error" };
-    },
-    async onResponseError({response, error}) {
-      const errorResCode: string = response._data.resCode.toString();
-
-      switch (errorResCode) {
         case "12010":
           messages.value.form = { type: "error", message: "E-mail nebyl zadán" };
           break;
@@ -69,14 +58,20 @@ const submitForm = async (): Promise<void> => {
         case "12030":
           messages.value.form = { type: "error", message: "Tento e-mail nebyl nalezen" };
           break;
+        case "12041":
+          messages.value.form = { message: "E-mail byl odeslán", type: "success" };
+          break;
         default:
           messages.value.form = { type: "error", message: "Nastala neznámá chyba" };
           break;
       }
     },
-  }).finally(() => {
-    loading.value = false;
-  });
+    async onRequestError() {
+      messages.value.form = { message: "Nastala neznámá chyba", type: "error" };
+    },
+  })
+
+  loading.value = false;
 };
 </script>
 

@@ -32,91 +32,95 @@ const resetMessages = (): void => {
 
 //check user inputs and send request to API
 const submitForm = async (): Promise<void> => {
-  try {
-    validateForm();
+  validateForm();
 
-    if (messages.value.password || messages.value.passwordAgain || messages.value.form.type === "error") return;
+  if (messages.value.password || messages.value.passwordAgain || messages.value.form.type === "error") return;
 
-    loading.value = true;
+  loading.value = true;
 
-    await apiFetch("/user/password/reset", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: {
-        email: tokenEmail.value,
-        newPassword: formData.value.password,
-      },
-      async onResponse({response}) {
-        const resCode: string = response._data.resCode.toString();
+  await apiFetch("/user/password/reset", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: {
+      email: tokenEmail.value,
+      newPassword: formData.value.password,
+    },
+    async onResponse({response}) {
+      const resCode: string = response._data.resCode.toString();
+      
+      switch (resCode) {
+        case "14010":
+          messages.value.form = {
+            message: "Účet nebyl nalezen",
+            type: "error"
+          };
+          break;
+        case "14020":
+          messages.value.form = {
+            message: "Nové heslo musí mít nejméně 5 znaků",
+            type: "error"
+          };
+          break;
+        case "14031":
+          messages.value.form = {
+            message: "Heslo bylo úspěšně změněno",
+            type: "success"
+          };
+          break;
+        default:
+          messages.value.form = {
+            message: "Nastala neznámá chyba",
+            type: "error"
+          };
+          break;
+      }
+    },
+    async onRequestError() {
+      messages.value.form = {
+        message: "Nastala neznámá chyba",
+        type: "error"
+      }
+    },
+  });
 
-        switch (resCode) {
-          case "14021":
-            messages.value.form = {
-              message: "Heslo k účtu bylo úspěšně změněno",
-              type: "success"
-            }
-            break;
-        }
-      },
-      async onRequestError() {
-        messages.value.form = {
-          message: "Nastala neznámá chyba",
-          type: "error"
-        }
-      },
-      async onResponseError({response}) {
-        const resCode: string = response._data.resCode.toString();
-
-        switch (resCode) {
-          case "14010":
-            messages.value.form = {
-              message: "Účet nebyl nalezen",
-              type: "error"
-            }
-            break;
-        }
-      },
-    });
-  } finally {
-    loading.value = false;
-  }
+  loading.value = false;
 };
 
 //start checkToken on page load and set email from response to tokenEmail
 onMounted(async (): Promise<void> => {
-  try {
-    const token: LocationQueryValue | LocationQueryValue[]  = useRoute().query.token;
+  const token: LocationQueryValue | LocationQueryValue[]  = useRoute().query.token;
 
-    if (!token) tokenEmail.value = null;
+  if (!token) tokenEmail.value = null;
 
-    await apiFetch("/user/password/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: {
-        token: token
-      },
-      async onResponse({ response }) {
-        const resCode: string = response._data.resCode.toString();
+  await apiFetch("/user/password/verify", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: {
+      token: token
+    },
+    ignoreResponseError: true,
+    async onResponse({ response }) {
+      const resCode: string = response._data.resCode.toString();
 
-        switch (resCode) {
-          case "13021":
-            tokenEmail.value = response._data.data.email;
-            break;
-        }
-      },
-      async onResponseError() {
-        tokenEmail.value = null;
-      },
-    });
-  } catch {
-    tokenEmail.value = null;
-  } finally {
-    loading.value = false;
-  }
+      switch (resCode) {
+        case "13021":
+          tokenEmail.value = response._data.data.email;
+          break;
+        default:
+          tokenEmail.value = null;
+          break;
+      }
+    },
+    async onResponseError() {
+      tokenEmail.value = null;
+    },
+  });
+
+  loading.value = false;
 });
 </script>
 

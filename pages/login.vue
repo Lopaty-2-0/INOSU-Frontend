@@ -40,36 +40,33 @@ const submitLoginForm = async (): Promise<void> => {
       password: loginData.value.password,
       stayLogged: loginData.value.stayLogged
     },
+    ignoreResponseError: true,
     async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "6031":
-          //TODO: redirect user to /panel and save user data in cookies
-          errors.value.req = "Byl jsi přihlášen";
-      }
-    },
-    async onRequestError() {
-      errors.value.req = "Nastala neznámá chyba";
-    },
-    async onResponseError({ response }) {
-      const errorResCode: string = response._data.resCode.toString();
-
-      errors.value.req = response._data.data.message;
-
-      switch (errorResCode) {
         case "6010":
           errors.value.req = "Login nebo heslo nebylo zadáno";
           break;
         case "6020":
           errors.value.req = "Špatný login nebo heslo";
           break;
+        case "6031":
+          //TODO: redirect user to /panel and save user data in cookies
+          errors.value.req = "Byl jsi přihlášen";
+          break;
+        default:
+          errors.value.req = "Nastala neznámá chyba";
+          break;
       }
     },
-  }).finally(() => {
-    loading.value = false;
-  });
-}
+    async onRequestError() {
+      errors.value.req = "Nastala neznámá chyba";
+    },
+  })
+
+  loading.value = false;
+};
 
 const resetErrors = (): void => {
   errors.value = {
