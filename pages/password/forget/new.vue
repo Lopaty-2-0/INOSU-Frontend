@@ -10,7 +10,7 @@ useHead({
   ]
 });
 
-const messages = ref<{ email: string, form: { message: string, type: "error" | "success" | null } }>({ email: "", form: { message: "", type: null }});
+const messages = ref<{ email: string | null, form: { message: string | null, type: "error" | "success" | null } }>({ email: null, form: { message: null, type: null }});
 const email = ref<string>("");
 const loading = ref<boolean>(false);
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -25,57 +25,58 @@ const validateForm = (): void => {
 
 //reset messages when user start typing
 const resetMessages = (): void => {
-  messages.value = { email: "", form: { message: "", type: null }};
+  messages.value = { email: null, form: { message: null, type: null }};
 };
 
 //check user inputs and send request to API
 const submitForm = async (): Promise<void> => {
   validateForm();
 
-  if (!messages.value.email) {
-    loading.value = true;
+  if (messages.value.email) return;
 
-    await apiFetch("user/password/new", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: {
-        email: email.value
-      },
-      async onResponse({response}) {
-        const resCode: string = response._data.resCode.toString();
+  loading.value = true;
 
-        switch (resCode) {
-          case "12041":
-            messages.value.form = { message: "E-mail byl odeslán", type: "success" };
-            break;
-        }
-      },
-      async onRequestError() {
-        messages.value.form = { message: "Nastala neznámá chyba", type: "error" };
-      },
-      async onResponseError({response, error}) {
-        const errorResCode: string = response._data.resCode.toString();
+  await apiFetch("/user/password/new", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: {
+      email: email.value
+    },
+    async onResponse({response}) {
+      const resCode: string = response._data.resCode.toString();
 
-        messages.value.form = { type: "error", message: response._data.data.message };
+      switch (resCode) {
+        case "12041":
+          messages.value.form = { message: "E-mail byl odeslán", type: "success" };
+          break;
+      }
+    },
+    async onRequestError() {
+      messages.value.form = { message: "Nastala neznámá chyba", type: "error" };
+    },
+    async onResponseError({response, error}) {
+      const errorResCode: string = response._data.resCode.toString();
 
-        switch (errorResCode) {
-          case "12010":
-            messages.value.form = { type: "error", message: "E-mail nebyl zadán" };
-            break;
-          case "12020":
-            messages.value.form = { type: "error", message: "Špatný formát e-mailu" };
-            break;
-          case "12030":
-            messages.value.form = { type: "error", message: "Tento e-mail nebyl nalezen" };
-            break;
-        }
-      },
-    }).finally(() => {
-      loading.value = false;
-    });
-  }
+      switch (errorResCode) {
+        case "12010":
+          messages.value.form = { type: "error", message: "E-mail nebyl zadán" };
+          break;
+        case "12020":
+          messages.value.form = { type: "error", message: "Špatný formát e-mailu" };
+          break;
+        case "12030":
+          messages.value.form = { type: "error", message: "Tento e-mail nebyl nalezen" };
+          break;
+        default:
+          messages.value.form = { type: "error", message: "Nastala neznámá chyba" };
+          break;
+      }
+    },
+  }).finally(() => {
+    loading.value = false;
+  });
 };
 </script>
 
@@ -91,12 +92,12 @@ const submitForm = async (): Promise<void> => {
         <div class="item">
           <label for="email">E-mail</label>
           <input type="text" id="email" name="email" placeholder="test@test.com" v-model="email">
-          <p v-if="messages.email.length" class="error">{{ messages.email }}</p>
+          <p v-if="messages.email" class="error">{{ messages.email }}</p>
         </div>
 
         <div class="footer">
           <button type="submit">Zaslat e-mail</button>
-          <p v-if="messages.form.message.length" :class="{ 'error': messages.form.type === 'error', 'success': messages.form.type === 'success' }">{{ messages.form.message }}</p>
+          <p v-if="messages.form.message" :class="{ 'error': messages.form.type === 'error', 'success': messages.form.type === 'success' }">{{ messages.form.message }}</p>
         </div>
 
         <div v-if="loading" class="loading">

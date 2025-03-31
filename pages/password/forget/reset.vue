@@ -3,6 +3,7 @@ import Loading from "~/components/basics/Loading.vue";
 import { ref, onMounted } from "vue";
 import {useRoute} from "#imports";
 import type {LocationQueryValue} from "vue-router";
+import apiFetch from "../../../utils/apiFetch";
 
 useHead({
   title: "Panel | Resetování hesla",
@@ -11,53 +12,118 @@ useHead({
   ]
 });
 
-const messages = ref<{ password: string, passwordAgain: string, form: { message: string, type: string }}>({ password: "", passwordAgain: "", form: { message: "", type: "" }});
+const messages = ref<{ password: string | null, passwordAgain: string | null, form: { message: string | null, type: "error" | "success" | null }}>({ password: null, passwordAgain: null, form: { message: null, type: null }});
 const loading = ref<boolean>(true);
-const tokenEmail = ref<string>("");
+const tokenEmail = ref<string | null>(null);
 const formData = ref<{ password: string, passwordAgain: string }>({password: "", passwordAgain: ""});
-
-//check token from url and return email
-const checkToken = async (): Promise<string> => {
-  try {
-    const token: LocationQueryValue | LocationQueryValue[]  = useRoute().query.token;
-    if (!token) return "";
-
-    return "test@test.cz"
-  } catch (error: any) {
-    return "";
-  } finally {
-    loading.value = false;
-  }
-};
 
 //check user inputs
 const validateForm = () => {
-  if (formData.value.password.length <= 5) messages.value.password = "Nové heslo musí být delší jak 5 znaků";
+  if (formData.value.password.length < 5) messages.value.password = "Nové heslo musí mít nejméně 5 znaků";
   if (!formData.value.password) messages.value.password = "Zadejte nové heslo";
   if (!formData.value.passwordAgain) messages.value.passwordAgain = "Zadejte heslo znovu";
   else if (formData.value.passwordAgain !== formData.value.password) messages.value.passwordAgain = "Hesla se neshodují";
 };
 
 //reset messages when user start typing
-const resetMessages = () => {
-  messages.value = { password: "", passwordAgain: "", form: { message: "", type: "" }};
+const resetMessages = (): void => {
+  messages.value = { password: null, passwordAgain: null, form: { message: null, type: null }};
 };
 
 //check user inputs and send request to API
-const submitForm = async () => {
-  validateForm();
+const submitForm = async (): Promise<void> => {
+  try {
+    validateForm();
+
+    if (messages.value.password || messages.value.passwordAgain || messages.value.form.type === "error") return;
+
+    loading.value = true;
+
+    await apiFetch("/user/password/reset", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        email: tokenEmail.value,
+        newPassword: formData.value.password,
+      },
+      async onResponse({response}) {
+        const resCode: string = response._data.resCode.toString();
+
+        switch (resCode) {
+          case "14021":
+            messages.value.form = {
+              message: "Heslo k účtu bylo úspěšně změněno",
+              type: "success"
+            }
+            break;
+        }
+      },
+      async onRequestError() {
+        messages.value.form = {
+          message: "Nastala neznámá chyba",
+          type: "error"
+        }
+      },
+      async onResponseError({response}) {
+        const resCode: string = response._data.resCode.toString();
+
+        switch (resCode) {
+          case "14010":
+            messages.value.form = {
+              message: "Účet nebyl nalezen",
+              type: "error"
+            }
+            break;
+        }
+      },
+    });
+  } finally {
+    loading.value = false;
+  }
 };
 
 //start checkToken on page load and set email from response to tokenEmail
-onMounted(async () => {
-  tokenEmail.value = await checkToken();
+onMounted(async (): Promise<void> => {
+  try {
+    const token: LocationQueryValue | LocationQueryValue[]  = useRoute().query.token;
+
+    if (!token) tokenEmail.value = null;
+
+    await apiFetch("/user/password/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        token: token
+      },
+      async onResponse({ response }) {
+        const resCode: string = response._data.resCode.toString();
+
+        switch (resCode) {
+          case "13021":
+            tokenEmail.value = response._data.data.email;
+            break;
+        }
+      },
+      async onResponseError() {
+        tokenEmail.value = null;
+      },
+    });
+  } catch {
+    tokenEmail.value = null;
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
 
 <template>
-  <div id="forgetPassword-reset-error" v-if="!tokenEmail.length">
+  <div id="forgetPassword-reset-error" v-if="!tokenEmail">
     <div v-if="loading" class="loading-big">
-      <Loading color="var(--description-color)" size="24px" />
+      <Loading color="rgba(var(--description-color), 1)" size="24px" />
     </div>
 
     <div class="container card" v-if="!loading">
@@ -72,7 +138,7 @@ onMounted(async () => {
     </div>
   </div>
 
-  <div id="forgetPassword-reset" v-if="tokenEmail.length">
+  <div id="forgetPassword-reset" v-if="tokenEmail">
     <div class="container">
       <div class="head">
         <h2>Změna hesla</h2>
@@ -83,22 +149,22 @@ onMounted(async () => {
         <div class="item">
           <label for="password">Nové heslo</label>
           <input type="password" id="password" name="password" placeholder="*****" v-model="formData.password">
-          <p v-if="messages.password.length" class="error">{{ messages.password }}</p>
+          <p v-if="messages.password" class="error">{{ messages.password }}</p>
         </div>
 
         <div class="item">
           <label for="passwordAgain">Heslo znovu</label>
           <input type="password" id="passwordAgain" name="passwordAgain" placeholder="*****" v-model="formData.passwordAgain">
-          <p v-if="messages.passwordAgain.length" class="error">{{ messages.passwordAgain }}</p>
+          <p v-if="messages.passwordAgain" class="error">{{ messages.passwordAgain }}</p>
         </div>
 
         <div class="footer">
           <button type="submit">Změnit heslo</button>
-          <p v-if="messages.form.message.length" :class="{ 'error': messages.form.type === 'error', 'success': messages.form.type === 'success' }">{{ messages.form.message }}</p>
+          <p v-if="messages.form.message" :class="{ 'error': messages.form.type === 'error', 'success': messages.form.type === 'success' }">{{ messages.form.message }}</p>
         </div>
 
         <div v-if="loading" class="loading">
-          <Loading color="rgba(var(--description-color), 1)" />
+          <Loading color="rgba(var(--description-color), 1)" size="6px" />
         </div>
 
         <a href="/">Máte změněno?</a>

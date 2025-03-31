@@ -1,8 +1,11 @@
 import type { NitroFetchOptions } from "nitropack";
 import type {$Fetch} from "ohmyfetch";
+import type {RuntimeConfig} from "nuxt/schema";
 
 const customFetch = async (endpoint: string, options: NitroFetchOptions<string>): Promise<$Fetch> => {
-    const url: string = `http://89.203.248.163/api/${endpoint}`;
+    const appConfig: RuntimeConfig = useRuntimeConfig()
+
+    const url: string = appConfig.public.apiUrl + endpoint;
 
     return $fetch(url, options);
 };

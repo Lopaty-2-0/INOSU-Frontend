@@ -10,8 +10,8 @@ useHead({
   ]
 });
 
-const loginData = ref<{ login: string, password: string, stayLogged: boolean }>({ login: "", password: "", stayLogged: false });
-const errors = ref<{ login: string, password: string, req: string }>({ login: "", password: "", req: "" });
+const loginData = ref<{ login: string | null, password: string | null, stayLogged: boolean }>({ login: null, password: null, stayLogged: false });
+const errors = ref<{ login: string | null, password: string | null, req: string | null }>({ login: null, password: null, req: null });
 const loading = ref<boolean>(false);
 
 // Check user inputs
@@ -26,57 +26,56 @@ const validateLogin = (): void => {
 const submitLoginForm = async (): Promise<void> => {
   validateLogin();
 
-  if (!errors.value.login && !errors.value.password) {
-    loading.value = true;
-    console.log("Login data: ", loginData.value);
+  if (errors.value.login || errors.value.password) return;
 
-    apiFetch("auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: {
-        login: loginData.value.login,
-        password: loginData.value.password,
-        stayLogged: loginData.value.stayLogged
-      },
-      async onResponse({ response }) {
-        const resCode: string = response._data.resCode.toString();
+  loading.value = true;
 
-        switch (resCode) {
-          case "6031":
-            //TODO: redirect user to /panel and save user data in cookies
-            errors.value.req = "Byl jsi přihlášen";
-        }
-      },
-      async onRequestError() {
-        errors.value.req = "Nastala neznámá chyba";
-      },
-      async onResponseError({ response, error }) {
-        const errorResCode: string = response._data.resCode.toString();
+  await apiFetch("/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: {
+      login: loginData.value.login,
+      password: loginData.value.password,
+      stayLogged: loginData.value.stayLogged
+    },
+    async onResponse({ response }) {
+      const resCode: string = response._data.resCode.toString();
 
-        errors.value.req = response._data.data.message;
+      switch (resCode) {
+        case "6031":
+          //TODO: redirect user to /panel and save user data in cookies
+          errors.value.req = "Byl jsi přihlášen";
+      }
+    },
+    async onRequestError() {
+      errors.value.req = "Nastala neznámá chyba";
+    },
+    async onResponseError({ response }) {
+      const errorResCode: string = response._data.resCode.toString();
 
-        switch (errorResCode) {
-          case "6010":
-            errors.value.req = "Login nebo heslo nebylo zadáno";
-            break;
-          case "6020":
-            errors.value.req = "Špatný login nebo heslo";
-            break;
-        }
-      },
-    }).finally(() => {
-      loading.value = false;
-    });
-  }
+      errors.value.req = response._data.data.message;
+
+      switch (errorResCode) {
+        case "6010":
+          errors.value.req = "Login nebo heslo nebylo zadáno";
+          break;
+        case "6020":
+          errors.value.req = "Špatný login nebo heslo";
+          break;
+      }
+    },
+  }).finally(() => {
+    loading.value = false;
+  });
 }
 
 const resetErrors = (): void => {
   errors.value = {
-    login: "",
-    password: "",
-    req: ""
+    login: null,
+    password: null,
+    req: null
   };
 };
 </script>
@@ -93,13 +92,13 @@ const resetErrors = (): void => {
         <div class="item">
           <label for="login">E-mail / Zkratka</label>
           <input id="login" v-model="loginData.login" type="text" name="login" placeholder="test@test.com / JUDE">
-          <p v-if="errors.login.length" class="error">{{ errors.login }}</p>
+          <p v-if="errors.login" class="error">{{ errors.login }}</p>
         </div>
 
         <div class="item">
           <label for="password">Heslo</label>
           <input id="password" v-model="loginData.password" type="password" name="password" placeholder="*****">
-          <p v-if="errors.password.length" class="error">{{ errors.password }}</p>
+          <p v-if="errors.password" class="error">{{ errors.password }}</p>
         </div>
 
         <div class="custom-item">
@@ -109,7 +108,7 @@ const resetErrors = (): void => {
 
         <div class="footer">
           <button type="submit">Přihlásit se</button>
-          <p v-if="errors.req.length" class="error">{{ errors.req }}</p>
+          <p v-if="errors.req" class="error">{{ errors.req }}</p>
         </div>
 
         <div v-if="loading" class="loading">
