@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import { ref } from "vue";
-import {useRoute, useState} from "#imports";
+import { ref, onMounted } from "vue";
+import {useRoute, useState} from "nuxt/app";
+import {storeToRefs} from "pinia";
+import {useAccountStore} from "../stores/account";
 
 const route = useRoute();
+const { getLinks: accountLinks } = storeToRefs(useAccountStore());
 
 const getStyledNumber = (number: number): string => {
   if (number >= 1000) return "1K+";
@@ -134,17 +137,15 @@ onMounted((): void => {
             </li>
           </ul>
         </div>
-        <!--
         <div class="item custom-links" v-if="!loading">
           <ul class="links">
-            <li v-for="(link, linkIndex) in accountData.links" :key="linkIndex" >
+            <li v-for="(link, linkIndex) in accountLinks" :key="linkIndex" >
               <a :href="link.href" class="link" target="_blank">
                 <Icon size="16px" class="icon" name="material-symbols:link-rounded"></Icon> {{ link.text }}
               </a>
             </li>
           </ul>
         </div>
-        -->
       </div>
     </div>
 

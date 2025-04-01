@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { definePageMeta, useHead, defineAsyncComponent } from "#imports";
 import Navbar from "~/components/Navbar.vue";
 import { ref } from "vue";
+import {storeToRefs} from "pinia";
+import {useAccountStore} from "../../stores/account";
 
 useHead({
   title: "Panel | Domů",
@@ -9,6 +10,12 @@ useHead({
     { name: "description", content: "Panel Homepage" }
   ],
 });
+
+definePageMeta({
+  middleware: ["auth"]
+});
+
+const { getAccountData: userData } = storeToRefs(useAccountStore());
 
 const infoCards = ref<{
   title: string;
@@ -64,6 +71,8 @@ const infoCards = ref<{
               </div>
             </li>
           </ul>
+
+          {{ userData }}
         </div>
       </div>
     </template>

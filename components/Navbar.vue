@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import Loading from "~/components/basics/Loading.vue";
 import {ref, onMounted} from "vue";
-import {useState} from "#imports";
+import {useState} from "nuxt/app";
+import {storeToRefs} from "pinia";
+import {useAccountStore} from "../stores/account";
 
 const props = defineProps({
   links: {
@@ -13,6 +15,8 @@ const props = defineProps({
   },
 });
 
+const { getAccountData: accountData } = storeToRefs(useAccountStore());
+
 // global state for hamburger click event
 const isHamburgerClicked = useState("isHamburgerClicked", () => false);
 const loading = ref<boolean>(true);
@@ -21,10 +25,10 @@ const clickHamburger = () => {
   isHamburgerClicked.value = !isHamburgerClicked.value;
 };
 
-const profileData = ref<{ firstName: string, secondName: string, profilePhoto: string }>({
-  firstName: "Roman",
-  secondName: "Svoboda",
-  profilePhoto: "http://89.203.248.163/uploads/profilePictures/default.jpg"
+const profileData = ref<{ name: string, surname: string, profilePhoto: string }>({
+  name: accountData.value.name,
+  surname: accountData.value.surname,
+  profilePhoto: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture
 });
 
 onMounted((): void => {
@@ -65,7 +69,7 @@ onMounted((): void => {
             Načítání
           </p>
           <p class="account-name" v-else>
-            {{ profileData.firstName + " " + profileData.secondName }}
+            {{ profileData.name + " " + profileData.surname }}
           </p>
         </div>
       </div>
