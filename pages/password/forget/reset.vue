@@ -3,7 +3,7 @@ import Loading from "~/components/basics/Loading.vue";
 import { ref, onMounted } from "vue";
 import {useRoute} from "#imports";
 import type {LocationQueryValue} from "vue-router";
-import apiFetch from "../../../utils/apiFetch";
+import apiFetch from "../../../componsables/apiFetch";
 
 useHead({
   title: "Panel | Resetování hesla",
@@ -47,9 +47,11 @@ const submitForm = async (): Promise<void> => {
       email: tokenEmail.value,
       newPassword: formData.value.password,
     },
+    credentials: "include",
+    ignoreResponseError: true,
     async onResponse({response}) {
       const resCode: string = response._data.resCode.toString();
-      
+
       switch (resCode) {
         case "14010":
           messages.value.form = {

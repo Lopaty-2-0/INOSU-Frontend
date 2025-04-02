@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Loading from "~/components/basics/Loading.vue";
 import { ref } from "vue";
-import apiFetch from "../utils/apiFetch";
+import apiFetch from "../componsables/apiFetch";
 
 useHead({
   title: "Panel | Přihlášení",
@@ -40,9 +40,11 @@ const submitLoginForm = async (): Promise<void> => {
       password: loginData.value.password,
       stayLogged: loginData.value.stayLogged
     },
+    credentials: "include",
     ignoreResponseError: true,
     async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
+      console.log(response._data)
 
       switch (resCode) {
         case "6010":
@@ -63,9 +65,9 @@ const submitLoginForm = async (): Promise<void> => {
     async onRequestError() {
       errors.value.req = "Nastala neznámá chyba";
     },
+  }).finally(() => {
+    loading.value = false;
   })
-
-  loading.value = false;
 };
 
 const resetErrors = (): void => {

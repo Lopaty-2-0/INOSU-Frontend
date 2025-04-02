@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Loading from "~/components/basics/Loading.vue";
-import apiFetch from "../../../utils/apiFetch";
+import apiFetch from "../../../componsables/apiFetch";
 import { ref } from "vue";
 
 useHead({
@@ -45,6 +45,7 @@ const submitForm = async (): Promise<void> => {
       email: email.value
     },
     ignoreResponseError: true,
+    credentials: "include",
     async onResponse({response}) {
       const resCode: string = response._data.resCode.toString();
 

@@ -18,10 +18,10 @@ const props = defineProps({
 const { getAccountData: accountData } = storeToRefs(useAccountStore());
 
 // global state for hamburger click event
-const isHamburgerClicked = useState("isHamburgerClicked", () => false);
+const isHamburgerClicked = useState<boolean>("isHamburgerClicked", () => false);
 const loading = ref<boolean>(true);
 
-const clickHamburger = () => {
+const clickHamburger = (): void => {
   isHamburgerClicked.value = !isHamburgerClicked.value;
 };
 

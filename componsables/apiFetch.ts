@@ -3,8 +3,7 @@ import type {$Fetch} from "ohmyfetch";
 import type {RuntimeConfig} from "nuxt/schema";
 
 const apiFetch = async (endpoint: string, options: NitroFetchOptions<string>): Promise<$Fetch> => {
-    const appConfig: RuntimeConfig = useRuntimeConfig()
-
+    const appConfig: RuntimeConfig = useRuntimeConfig();
     const url: string = appConfig.public.apiUrl + endpoint;
 
     return $fetch(url, options);

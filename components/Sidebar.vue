@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import {useRoute, useState} from "nuxt/app";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "../stores/account";
+import apiFetch from "../componsables/apiFetch";
 
 const route = useRoute();
 const { getLinks: accountLinks } = storeToRefs(useAccountStore());
@@ -94,12 +95,25 @@ const checkIfLinkIsActive = (link: string | string[]): boolean => {
   return activePath === link;
 };
 
-const isHamburgerClicked = useState("isHamburgerClicked");
+const isHamburgerClicked = useState<string>("isHamburgerClicked");
 
 const logOut = async (): Promise<void> => {
-  console.log("Log out");
+  await apiFetch("/auth/logout", {
+    method: "delete",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    ignoreResponseError: true,
+    credentials: "include",
+    async onResponse({ response }) {
+      console.log(response)
+      const resCode: string = response._data.resCode.toString();
 
-  await navigateTo("/login");
+      if (resCode === "7011") await navigateTo("/login");
+    },
+  }).catch(() => {
+    console.log("error");
+  })
 };
 
 onMounted((): void => {
