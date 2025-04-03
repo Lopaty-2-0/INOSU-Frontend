@@ -2,7 +2,7 @@ interface AccountData {
     id: string;
     name: string;
     surname: string;
-    abbreviation: string;
+    abbreviation: string | null;
     email: string;
     role: string;
     profilePicture: string;

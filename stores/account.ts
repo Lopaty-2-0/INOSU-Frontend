@@ -6,7 +6,7 @@ export const useAccountStore = defineStore("account", {
         id: "",
         name: "",
         surname: "",
-        abbreviation: "",
+        abbreviation: null as string | null,
         email: "",
         role: "",
         profilePicture: "default.jpg",

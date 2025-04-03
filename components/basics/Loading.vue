@@ -6,7 +6,7 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: "1rem"
+    default: "20px"
   }
 });
 </script>

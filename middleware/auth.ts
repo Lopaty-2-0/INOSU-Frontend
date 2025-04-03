@@ -44,7 +44,7 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
             id: "",
             name: "Test",
             surname: "Account",
-            abbreviation: "TEAC",
+            abbreviation: null,
             profilePicture: "default.jpg",
             role: "admin",
             email: "test@test.cz",
