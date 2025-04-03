@@ -6,17 +6,21 @@ import {apiUseFetch} from "../componsables/apiUseFetch";
 export default defineNuxtRouteMiddleware(async (from, to) => {
     if (process.server) return;
 
-    await apiUseFetch("/auth/verify", {
-        method: "get",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        credentials: "include",
-    }).then(({data}) => {
+    try {
+        const { data } = await apiUseFetch("/auth/verify", {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+        });
+
         const resCode: string = data.value.resCode.toString();
         const isLogged: boolean = data.value.data.logged;
 
-        if (resCode !== "17011" || !isLogged) return location.pathname = "/login";
+        if (resCode !== "17011" || !isLogged) {
+            return location.pathname = "/login";
+        }
 
         const accountStore = useAccountStore();
 
@@ -35,6 +39,7 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         useState("theme", () => storedTheme);
 
         //Set account data
+        accountStore.setLoading(false);
         accountStore.setAccountData({
             id: "",
             name: "Test",
@@ -47,7 +52,7 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
             idClass: null,
         });
         accountStore.setLinks([{ text: "YouTube", href: "https://youtube.com" }, { text: "Google", href: "https://google.com" }]);
-    }).catch(() => {
+    } catch {
         return location.pathname = "/login";
-    });
+    }
 });

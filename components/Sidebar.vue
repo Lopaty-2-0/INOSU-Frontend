@@ -4,6 +4,7 @@ import {useRoute, useState} from "nuxt/app";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "../stores/account";
 import apiFetch from "../componsables/apiFetch";
+import Loading from "./basics/Loading.vue";
 
 const route = useRoute();
 const { getLinks: accountLinks } = storeToRefs(useAccountStore());
@@ -15,6 +16,7 @@ const getStyledNumber = (number: number): string => {
 };
 
 const loading = ref<boolean>(true);
+const logoutLoading = ref<boolean>(false);
 const numberOfUnreadRequests = ref<number>(1000);
 const sidebarLinks = ref<{
   name: string;
@@ -98,6 +100,8 @@ const checkIfLinkIsActive = (link: string | string[]): boolean => {
 const isHamburgerClicked = useState<string>("isHamburgerClicked");
 
 const logOut = async (): Promise<void> => {
+  logoutLoading.value = true;
+
   await apiFetch("/auth/logout", {
     method: "delete",
     headers: {
@@ -106,14 +110,13 @@ const logOut = async (): Promise<void> => {
     ignoreResponseError: true,
     credentials: "include",
     async onResponse({ response }) {
-      console.log(response)
       const resCode: string = response._data.resCode.toString();
 
       if (resCode === "7011") await navigateTo("/login");
-    },
-  }).catch(() => {
-    console.log("error");
-  })
+    }
+  }).finally((): void => {
+    logoutLoading.value = false;
+  });
 };
 
 onMounted((): void => {
@@ -166,8 +169,13 @@ onMounted((): void => {
     <div class="footer">
       <ul>
         <li class="log-out" @click="logOut">
-          <button>
-            <Icon size="16px" class="icon" name="material-symbols:logout-rounded"></Icon>Odhlásit se
+          <button v-if="!logoutLoading">
+            <Icon size="16px" class="icon" name="material-symbols:logout-rounded"></Icon>
+            Odhlásit se
+          </button>
+
+          <button class="loading" v-else>
+            <Loading color="rgba(var(--description-color), 1)" size="6px" />
           </button>
         </li>
       </ul>
@@ -290,7 +298,7 @@ onMounted((): void => {
 
   .log-out {
     width: 100%;
-    padding: 20px 10px 20px 30px;
+    height: 50px;
     background: var(--sidebar-log-out-background);
     cursor: pointer;
     transition: 0.2s;
@@ -301,8 +309,16 @@ onMounted((): void => {
       transition: 0.2s;
       display: flex;
       flex-direction: row;
+      justify-content: center;
       align-items: center;
       gap: 10px;
+      width: 100%;
+      height: 100%;
+
+      &:not(.loading) {
+        justify-content: flex-start;
+        margin-left: 30px;
+      }
     }
 
     &:hover {

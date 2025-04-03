@@ -2,6 +2,7 @@
 import Loading from "~/components/basics/Loading.vue";
 import { ref } from "vue";
 import apiFetch from "../componsables/apiFetch";
+import {navigateTo} from "nuxt/app";
 
 useHead({
   title: "Panel | Přihlášení",
@@ -44,7 +45,6 @@ const submitLoginForm = async (): Promise<void> => {
     ignoreResponseError: true,
     async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
-      console.log(response._data)
 
       switch (resCode) {
         case "6010":
@@ -54,8 +54,7 @@ const submitLoginForm = async (): Promise<void> => {
           errors.value.req = "Špatný login nebo heslo";
           break;
         case "6031":
-          //TODO: redirect user to /panel and save user data in cookies
-          errors.value.req = "Byl jsi přihlášen";
+          navigateTo("/panel");
           break;
         default:
           errors.value.req = "Nastala neznámá chyba";
@@ -65,7 +64,7 @@ const submitLoginForm = async (): Promise<void> => {
     async onRequestError() {
       errors.value.req = "Nastala neznámá chyba";
     },
-  }).finally(() => {
+  }).finally((): void => {
     loading.value = false;
   })
 };

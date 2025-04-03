@@ -13,7 +13,8 @@ export const useAccountStore = defineStore("account", {
         idClass: null as number | null,
         createdAt: new Date() as Date,
         links: [] as AccountLink[],
-        theme: "" as AccountTheme
+        theme: "" as AccountTheme,
+        loading: true
     }),
     getters: {
         getAccountData(): AccountData {
@@ -34,6 +35,9 @@ export const useAccountStore = defineStore("account", {
         },
         getLinks(): AccountLink[] {
             return this.links;
+        },
+        getLoading(): boolean {
+            return this.loading;
         }
     },
     actions: {
@@ -53,6 +57,9 @@ export const useAccountStore = defineStore("account", {
         },
         setLinks(links: AccountLink[]): void {
             this.links = links;
+        },
+        setLoading(value: boolean): void {
+            this.loading = value;
         }
     }
 });

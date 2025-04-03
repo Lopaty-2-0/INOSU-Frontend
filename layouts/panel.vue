@@ -3,6 +3,10 @@ import Sidebar from "~/components/Sidebar.vue";
 import Loading from "~/components/basics/Loading.vue";
 import { ref, onMounted } from "vue";
 import {useState} from "nuxt/app";
+import {storeToRefs} from "pinia";
+import {useAccountStore} from "../stores/account";
+
+const { getLoading: accountLoading } = storeToRefs(useAccountStore());
 
 const loading = ref<boolean>(true);
 const theme = useState<string>("theme");
@@ -17,7 +21,7 @@ onMounted((): void => {
 </script>
 
 <template>
-  <div class="loading" v-if="loading">
+  <div class="loading" v-if="loading || accountLoading">
     <Loading color="rgba(var(--description-color), 1)" />
   </div>
   <div v-else>
