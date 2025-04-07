@@ -45,7 +45,7 @@ const submitLoginForm = async (): Promise<void> => {
     ignoreResponseError: true,
     async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
-
+      
       switch (resCode) {
         case "6010":
           errors.value.req = "Login nebo heslo nebylo zadáno";
