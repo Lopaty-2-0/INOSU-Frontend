@@ -1,0 +1,249 @@
+<script lang="ts" setup>
+import EditProfilePicture from "~/components/users/manage/ProfilePicture.vue";
+import EditPassword from "~/components/users/manage/Password.vue";
+import EditFormFooter from "~/components/users/manage/Footer.vue";
+import Navigation from "~/components/basics/Navigation.vue";
+import {definePageMeta, useAccountStore, useHead} from "#imports";
+import Navbar from "~/components/Navbar.vue";
+import { ref } from "vue";
+import {storeToRefs} from "pinia";
+
+const { getAccountData: accountData } = storeToRefs(useAccountStore());
+
+definePageMeta({
+  middleware: ["auth"]
+});
+
+useHead({
+  title: "Panel | Nastavení - Profil",
+  meta: [
+    { name: "description", content: "Panel Settings User Information" }
+  ],
+});
+
+const submitLoading = ref<boolean>(false);
+const triggerReset = ref<boolean>(false);
+
+const passwordRulesCheck = ref<boolean[]>([false, false, false, false]);
+
+const oldUserData = ref<{ profilePicture: string}>({
+  profilePicture: accountData.value.profilePicture,
+});
+
+const newUserData = ref<{ profilePicture: File | undefined, passwords: { old: string, new: string } }>({
+  profilePicture: undefined,
+  passwords: {
+    old: "",
+    new: ""
+  }
+});
+
+const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefined }): void => {
+  newUserData.value.profilePicture = updatedUserData.profilePicture;
+};
+
+const checkPasswordRules = () => {
+  passwordRulesCheck.value[0] = newUserData.value.passwords.new.length >= 5; // Check if password length is at least 5 characters
+
+  if (!passwordRulesCheck.value[0]) return passwordRulesCheck.value = [false, false, false, false]; // Reset password rules check if password length is less than 6 characters
+
+  passwordRulesCheck.value[1] = !!(newUserData.value.passwords.new.match(/[A-Z]/g) && newUserData.value.passwords.new.match(/[a-z]/g) && newUserData.value.passwords.new.match(/[0-9]/g)); // Check if password contains 2-3 characters: uppercase, lowercase, numbers
+  passwordRulesCheck.value[2] = !newUserData.value.passwords.new.match(/[@#$%&*+=]/g); // Check if password contains at least 1 special character: @, #, $, %, &, *, +, =
+  passwordRulesCheck.value[3] = !newUserData.value.passwords.new.match(/\s/g); // Check if password doesn't contain any spaces
+};
+
+const onPasswordsUpdate = (passwordsInputs: { old: string, new: string }) => {
+  newUserData.value.passwords = passwordsInputs;
+
+  checkPasswordRules();
+};
+
+const resetUserData = (): void => {
+  newUserData.value = {
+    profilePicture: undefined,
+    passwords: {
+      old: "",
+      new: ""
+    }
+  };
+
+  triggerReset.value = true;
+
+  setTimeout(() => {
+    triggerReset.value = false;
+  }, 100);
+};
+
+const updateUserData = (): void => {
+  submitLoading.value = true;
+
+  setTimeout(() => {
+    console.log(newUserData.value);
+
+    submitLoading.value = false;
+  }, 2000);
+};
+</script>
+
+<template>
+  <NuxtLayout name="panel">
+    <template #header>
+      <Navbar :links="[
+        { name: 'Nastavení', path: '/panel/settings' },
+        { name: 'Profil', path: '/panel/settings' },
+      ]" />
+    </template>
+
+    <template #content>
+      <div id="settings">
+        <Navigation class="navigation" title="Nastavení účtu" :active-link-id="0" :links="[
+          { name: 'Profil', path: '/panel/settings' },
+          { name: 'Přizpůsobení', path: '/panel/settings/customization' },
+        ]" />
+
+        <div class="content">
+          <EditProfilePicture class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate" :reset="triggerReset">
+            <div class="section-head">
+              <h3>
+                Profilová fotka
+                <span class="update" v-show="newUserData.profilePicture">(aktualizováno)</span>
+              </h3>
+              <p>Změňte svůj profilový obrázek</p>
+            </div>
+          </EditProfilePicture>
+
+          <EditPassword class="page-section" @update="onPasswordsUpdate" :reset="triggerReset">
+            <div class="section-head">
+              <div class="info">
+                <h3>Resetování hesla <span class="update" v-if="newUserData.passwords.new !== newUserData.passwords.old && passwordRulesCheck[0] && newUserData.passwords.old !== ''">(aktualizováno)</span></h3>
+                <p>Jednoduše změňte své heslo na jiné</p>
+              </div>
+
+              <div class="password-rules">
+                <h4>Doporučená pravidla hesla</h4>
+                <ul>
+                  <li><Icon class="icon" size="1rem" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje minimálně 5 znaků <Icon size="1rem" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[0]"></Icon></p></li>
+                  <li><Icon class="icon" size="1rem" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje 2 až 3 znaky: velké, malé, čísla <Icon size="1rem" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[1]"></Icon></p></li>
+                  <li><Icon class="icon" size="1rem" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje aspoň 1 speciální znak: @, #, $, %, &, *, +, = <Icon size="1rem" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[2]"></Icon></p></li>
+                  <li><Icon class="icon" size="1rem" name="material-symbols:play-arrow-rounded"></Icon> <p>Neobsahuje žádné mezery <Icon size="1rem" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[3]"></Icon></p></li>
+                  <li><Icon class="icon" size="1rem" name="material-symbols:play-arrow-rounded"></Icon> <p>Neobsahuje žádné osobní informace</p></li>
+                </ul>
+              </div>
+            </div>
+          </EditPassword>
+
+          <EditFormFooter :submit-function="updateUserData" :reset-function="resetUserData" :is-loading="submitLoading" />
+        </div>
+      </div>
+    </template>
+  </NuxtLayout>
+</template>
+
+<style scoped lang="scss">
+#settings {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  position: relative;
+
+  .navigation {
+    height: fit-content;
+    position: sticky;
+    top: 110px;
+    width: 300px;
+  }
+
+  .content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    position: relative;
+
+    .page-section {
+      border-bottom: 1px solid rgba(var(--border-color), 1);
+      padding-bottom: 3rem;
+    }
+
+    .section-head {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      h3 {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--title-color);
+      }
+
+      p {
+        color: rgba(var(--description-color), 1);
+        font-size: 0.875rem;
+      }
+
+      .update {
+        color: rgba(var(--error-color), 1);
+      }
+    }
+
+    .password-rules {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      h4 {
+        font-weight: 600;
+        font-size: 0.825rem;
+        color: var(--title-color);
+        margin-top: 1rem;
+      }
+
+      ul {
+        list-style: none;
+
+        li {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.875rem;
+          color: rgba(var(--description-color), 1);
+          margin-bottom: 0.5rem;
+
+          .icon {
+            color: rgba(var(--main-color), 1);
+            line-height: 0;
+          }
+        }
+
+        p {
+          .icon {
+            padding-left: 5px;
+            color: rgba(var(--success-color), 1);
+          }
+        }
+      }
+    }
+
+    ::v-deep(.reset-password) {
+      flex-direction: column;
+    }
+
+    ::v-deep(.item) {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 1055px) {
+  #settings {
+    flex-direction: column;
+    gap: 3rem;
+
+    .navigation {
+      width: 100%;
+      position: relative;
+      top: 0;
+    }
+  }
+}
+</style>

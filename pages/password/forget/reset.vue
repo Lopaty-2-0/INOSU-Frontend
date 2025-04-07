@@ -59,13 +59,13 @@ const submitForm = async (): Promise<void> => {
             type: "error"
           };
           break;
-        case "14020":
+        case "14030":
           messages.value.form = {
             message: "Nové heslo musí mít nejméně 5 znaků",
             type: "error"
           };
           break;
-        case "14031":
+        case "14041":
           messages.value.form = {
             message: "Heslo bylo úspěšně změněno",
             type: "success"
