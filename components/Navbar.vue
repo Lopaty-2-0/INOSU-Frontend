@@ -61,7 +61,7 @@ onMounted((): void => {
     <div class="left">
       <div class="account">
         <Loading v-if="loading" color="rgba(var(--description-color), 1)" size="8px" />
-        <img v-else crossorigin="anonymous" :src="profileData.profilePhoto" alt="profile-photo" draggable="false" loading="lazy" />
+        <img v-else :src="profileData.profilePhoto" alt="profile-photo" draggable="false" loading="lazy" />
 
         <div class="name">
           <p class="welcome">Přihlášen jako</p>

@@ -70,8 +70,8 @@ watch(() => props.reset, (reset: boolean) => {
           <label for="oldPassword">{{ props.type === "addUser" ? "Heslo" : "Staré heslo" }}</label>
           <div class="line">
             <input :type="isPasswordVisible ? 'text' : 'password'" id="oldPassword" :class="{ error: passwords.old.error }" name="oldPassword" placeholder="******" v-model="passwords.old.input" @input="onInput">
-            <div class="icon-div" v-if="!isPasswordVisible"  @click="showPassword()"><Icon name="material-symbols:visibility-rounded" class="icon" size="1rem"></Icon></div>
-            <div class="icon-div" v-else  @click="showPassword()"><Icon name="material-symbols:visibility-off-rounded" class="icon" size="1rem"></Icon></div>
+            <div class="icon-div" v-if="!isPasswordVisible"  @click="showPassword()"><Icon name="material-symbols:visibility-rounded" class="icon" size="16px"></Icon></div>
+            <div class="icon-div" v-else  @click="showPassword()"><Icon name="material-symbols:visibility-off-rounded" class="icon" size="16px"></Icon></div>
           </div>
           <p v-if="passwords.old.error" class="input-error">{{ passwords.old.error }}</p>
         </div>
@@ -127,7 +127,7 @@ watch(() => props.reset, (reset: boolean) => {
       &.old-password {
         .icon-div {
           padding: 0.825rem 1rem;
-          border: 1px solid rgba(var(--border-color), 1);
+          border: var(--border-width) solid rgba(var(--border-color), 0.5);
           color: var(--btn-2-color);
           background: var(--btn-2-background);
           border-radius: 0.375rem;
@@ -180,7 +180,7 @@ watch(() => props.reset, (reset: boolean) => {
           outline: none;
           padding: 0.825rem 1rem;
           min-width: 5rem;
-          border: 1px solid rgba(var(--border-color), 1);
+          border: var(--border-width) solid rgba(var(--border-color), 0.5);
           background: var(--input-background);
           color: var(--input-color);
 

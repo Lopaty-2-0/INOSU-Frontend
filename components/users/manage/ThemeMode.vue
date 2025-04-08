@@ -36,21 +36,21 @@ watch(() => props.reset, (reset: boolean): void => {
           <h4>Světlý</h4>
           <p>Váš panel bude mít světlý motiv</p>
         </div>
-        <img src="~/assets/images/theme-light.svg" alt="Světlý režim">
+        <img src="../../../assets/images/theme-light.svg" alt="Světlý režim">
       </li>
       <li :class="{ 'active': activeThemeIndex === 1 }" @click="setTheme(1)">
         <div class="info">
           <h4>Tmavý</h4>
           <p>Váš panel bude mít tmavý motiv</p>
         </div>
-        <img src="~/assets/images/theme-dark.svg" alt="Tmavý režim">
+        <img src="../../../assets/images/theme-dark.svg" alt="Tmavý režim">
       </li>
       <li :class="{ 'active': activeThemeIndex === 2 }" @click="setTheme(2)">
         <div class="info">
           <h4>Systém</h4>
           <p>Váš panel bude mít motiv podle systému vašeho zařízení</p>
         </div>
-        <img src="~/assets/images/theme-system.svg" alt="Systémový režim">
+        <img src="../../../assets/images/theme-system.svg" alt="Systémový režim">
       </li>
     </ul>
   </div>
@@ -76,7 +76,7 @@ watch(() => props.reset, (reset: boolean): void => {
       gap: 1rem;
       padding: 1.5rem;
       border-radius: 0.5rem;
-      border: 1px solid rgba(var(--border-color), 1);
+      border: var(--border-width) solid rgba(var(--border-color), 0.5);
       flex-wrap: wrap;
       transition: 0.2s;
       cursor: pointer;

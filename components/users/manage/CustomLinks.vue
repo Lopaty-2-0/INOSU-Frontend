@@ -117,10 +117,10 @@ watch(() => props.reset, (value: boolean) => {
 
           <div class="actions">
             <div class="icon-div edit" @click="setEditLinkId(index)">
-              <Icon class="icon" name="material-symbols:edit-rounded" size="1rem"></Icon>
+              <Icon class="icon" name="material-symbols:edit-rounded" size="16px"></Icon>
             </div>
             <div class="icon-div remove" @click="removeCustomLink(index)">
-              <Icon class="icon" name="material-symbols:delete-rounded" size="1rem"></Icon>
+              <Icon class="icon" name="material-symbols:delete-rounded" size="16px"></Icon>
             </div>
           </div>
         </li>
@@ -163,7 +163,7 @@ watch(() => props.reset, (value: boolean) => {
         font-size: 15px;
         background: var(--actionBar-actions-add-background);
         color: var(--actionBar-actions-add-color);
-        border: 1px solid transparent;
+        border: var(--border-width) solid transparent;
         cursor: pointer;
         line-height: 0;
 
@@ -209,7 +209,7 @@ watch(() => props.reset, (value: boolean) => {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
-        border: 1px solid rgba(var(--border-color), 1);
+        border: var(--border-width) solid rgba(var(--border-color), 0.5);
         border-radius: 0.5rem;
         width: 100%;
         padding: 1.5rem;
@@ -245,7 +245,7 @@ watch(() => props.reset, (value: boolean) => {
 
         hr {
           display: none;
-          border-color: rgba(var(--border-color), 1);
+          border-color: rgba(var(--border-color), 0.5);
         }
 
         .body {
@@ -273,7 +273,7 @@ watch(() => props.reset, (value: boolean) => {
               outline: none;
               padding: 0.825rem 1rem;
               min-width: 5rem;
-              border: 1px solid rgba(var(--border-color), 1);
+              border: var(--border-width) solid rgba(var(--border-color), 0.5);
               background: var(--input-background);
               color: var(--input-color);
 
@@ -312,7 +312,7 @@ watch(() => props.reset, (value: boolean) => {
           font-size: 15px;
           background: var(--btn-2-background);
           color: var(--btn-2-color);
-          border: 1px solid rgba(var(--border-color), 1);
+          border: var(--border-width) solid rgba(var(--border-color), 0.5);
           cursor: pointer;
           line-height: 0;
 

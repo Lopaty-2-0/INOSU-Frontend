@@ -26,6 +26,18 @@
   --sidebar-notification-background: rgba(var(--warning-color), 1);
   --sidebar-notification-color: #000000;
 
+  //Action bar
+  --actionBar-background: #ffffff;
+  --actionBar-actions-add-color: #ffffff;
+  --actionBar-actions-add-border: 77, 139, 49;
+  --actionBar-actions-add-background: 77, 139, 49;
+  --actionBar-actions-remove-color: #ffffff;
+  --actionBar-actions-remove-border: 255, 34, 12;
+  --actionBar-actions-remove-background: 255, 34, 12;
+  --actionBar-actions-edit-color: #ffffff;
+  --actionBar-actions-edit-border: 21, 23, 162;
+  --actionBar-actions-edit-background: 21, 23, 162;
+
   // Status colors
   --error-color: 255, 34, 12;
   --success-color: 77, 139, 49;
@@ -50,6 +62,10 @@
   --btn-1-color: #ffffff;
   --btn-1-font-weight: 700;
   --btn-1-hover-background: rgba(var(--main-color), 0.8);
+
+  --btn-2-background: #EDF2F4;
+  --btn-2-color: rgba(var(--description-color), 1);
+  --btn-2-hover-background: #e7eaee;
 
   //Inputs
   --input-background: #EDF2F4;

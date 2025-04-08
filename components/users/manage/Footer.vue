@@ -92,7 +92,7 @@ const props = defineProps({
     &[type="reset"] {
       background: var(--btn-2-background);
       color: var(--btn-2-color);
-      border: 1px solid var(--border-color);
+      border: var(--border-width) solid rgba(var(--border-color), 0.5);
 
       &:hover {
         background: var(--btn-2-hover-background);

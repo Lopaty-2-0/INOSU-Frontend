@@ -145,7 +145,7 @@ watch(() => props.reset, (reset: boolean): void => {
           <img loading="lazy" :src="profilePictureUrlImage" alt="Profile photo" />
           <div class="content upload-file" @click="selectFile" :class="{ error: errors.file }">
             <p v-if="errors.file">
-              <Icon class="icon" size="5rem" name="material-symbols:error-rounded" />
+              <Icon class="icon" size="60px" name="material-symbols:error-rounded" />
               {{ errors.file }}
             </p>
             <p v-else>
@@ -171,7 +171,7 @@ watch(() => props.reset, (reset: boolean): void => {
                 @change="onUrlInput"
             />
             <div class="icon-div" @click="pasteUrl">
-              <Icon class="icon" name="material-symbols:content-paste" />
+              <Icon class="icon" size="16px" name="material-symbols:content-paste" />
             </div>
           </div>
           <p v-if="errors.url" class="input-error">{{ errors.url }}</p>
@@ -185,7 +185,7 @@ watch(() => props.reset, (reset: boolean): void => {
 .section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 30px;
   width: 100%;
 
   .update {
@@ -196,7 +196,7 @@ watch(() => props.reset, (reset: boolean): void => {
     width: 100%;
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 20px;
     flex-wrap: wrap;
 
     input {
@@ -207,22 +207,22 @@ watch(() => props.reset, (reset: boolean): void => {
   .items {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 30px;
     width: 100%;
 
     .item {
       display: flex;
       flex-direction: row;
-      gap: 0.5rem;
+      gap: 20px;
       flex: 1;
       align-items: flex-end;
 
       &.url .icon-div {
-        padding: 0.825rem 1rem;
-        border: 1px solid var(--border-color);
+        padding: 10px 15px;
+        border: var(--border-width) solid rgba(var(--border-color), 0.5);
         color: var(--btn-2-color);
         background: var(--btn-2-background);
-        border-radius: 0.375rem;
+        border-radius: var(--normal-border-radius);
         cursor: pointer;
         transition: 0.2s;
         line-height: 0;
@@ -231,7 +231,7 @@ watch(() => props.reset, (reset: boolean): void => {
         align-items: center;
 
         .icon {
-          font-size: 1rem;
+          font-size: 16px;
         }
 
         &:hover {
@@ -248,13 +248,13 @@ watch(() => props.reset, (reset: boolean): void => {
         &.image {
           display: flex;
           flex-direction: row;
-          gap: 2rem;
+          gap: 30px;
 
           img {
             width: 300px;
             height: 300px;
             object-fit: cover;
-            border-radius: 0.375rem;
+            border-radius: var(--normal-border-radius);
           }
 
           .upload-file {
@@ -263,11 +263,11 @@ watch(() => props.reset, (reset: boolean): void => {
             align-items: center;
             text-align: center;
             width: 100%;
-            border: 2px dashed rgba(var(--border-color), 1);
+            border: 2px dashed rgba(var(--border-color), 0.5);
             background: var(--input-background);
-            border-radius: 0.375rem;
-            padding: 0.625rem;
-            font-size: 0.875rem;
+            border-radius: var(--normal-border-radius);
+            padding: 20px;
+            font-size: 16px;
             transition: 0.2s;
             color: var(--input-color);
             cursor: pointer;
@@ -277,8 +277,8 @@ watch(() => props.reset, (reset: boolean): void => {
               justify-content: center;
               align-items: center;
               flex-direction: column;
-              font-size: 0.875rem;
-              gap: 1rem;
+              font-size: 16px;
+              gap: 20px;
               position: absolute;
 
               .icon {
@@ -305,22 +305,23 @@ watch(() => props.reset, (reset: boolean): void => {
 
         label {
           color: var(--mini-title-color);
-          font-size: 0.805rem;
+          font-size: 16px;
           font-weight: 500;
+          cursor: pointer;
         }
 
         .input-error {
-          font-size: 0.875rem;
+          font-size: 16px;
           color: rgba(var(--error-color), 1);
         }
 
         input {
-          border-radius: 0.375rem;
-          font-size: 0.875rem;
+          border-radius: var(--normal-border-radius);
+          font-size: 16px;
           outline: none;
-          padding: 0.825rem 1rem;
-          border: 1px solid rgba(var(--border-color), 1);
-          min-width: 5rem;
+          padding: 15px;
+          border: var(--border-width) solid rgba(var(--border-color), 0.5);
+          min-width: 150px;
           background: var(--input-background);
           color: var(--input-color);
 
