@@ -38,11 +38,22 @@
   --actionBar-actions-edit-border: 21, 23, 162;
   --actionBar-actions-edit-background: 21, 23, 162;
 
-  // Status colors
+  //Status colors
   --error-color: 255, 34, 12;
   --success-color: 77, 139, 49;
   --warning-color: 247, 92, 3;
   --info-color: 21, 23, 162;
+
+  //Alerts
+  --alert-description-color: #000000;
+  --alert-success-background: #b1ee9d;
+  --alert-success-color: #4D8B31;
+  --alert-error-background: #ef9b94;
+  --alert-error-color: #FF220C;
+  --alert-warning-background: #efb694;
+  --alert-warning-color: #F75C03;
+  --alert-info-background: #aaacf3;
+  --alert-info-color: #1517A2;
 
   //Cards
   --card-1-background: transparent;

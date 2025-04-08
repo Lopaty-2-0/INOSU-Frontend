@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
+import {useAlertsStore} from "../../../stores/alerts";
 
 const props = defineProps({
   oldProfilePicture: {
@@ -20,7 +21,9 @@ const urlInput = ref<string>("");
 const errors = ref<{ file: string; url: string }>({ file: "", url: "" });
 
 const selectFile = (): void => {
-  if (fileInput.value) fileInput.value.click();
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
 };
 
 const resetErrors = (): void => {
@@ -49,7 +52,8 @@ const convertFileToBase64 = async (file: File): Promise<string> => {
   }
 
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+    const reader: FileReader = new FileReader();
+
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = () => reject("Nepodařilo se přečíst soubor.");
     reader.readAsDataURL(file);
@@ -58,9 +62,9 @@ const convertFileToBase64 = async (file: File): Promise<string> => {
 
 const convertUrlToFile = async (url: string): Promise<File> => {
   const response: Blob = await $fetch(url, { responseType: "blob" });
-  const filename = url.split("/").pop() || "image.png";
-  const mimeType = response.type;
-  const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
+  const filename: string = url.split("/").pop() || "image.png";
+  const mimeType: string = response.type;
+  const allowedMimeTypes: string[] = ["image/jpeg", "image/png", "image/gif"];
 
   if (!allowedMimeTypes.includes(mimeType)) {
     throw { customMessage: "Nepodporovaný typ souboru. Povoleny jsou pouze jpg, png nebo gif." };
@@ -72,8 +76,9 @@ const convertUrlToFile = async (url: string): Promise<File> => {
 const uploadFile = async (event: Event): Promise<void> => {
   resetErrors();
 
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
+  const target: HTMLInputElement = event.target as HTMLInputElement;
+  const file: File | undefined = target.files?.[0];
+
 
   if (!file) return;
 
@@ -95,7 +100,8 @@ const processUrlInput = async (url: string): Promise<void> => {
   resetErrors();
 
   try {
-    const file = await convertUrlToFile(url);
+    const file: File = await convertUrlToFile(url);
+
     profilePictureUrlImage.value = await convertFileToBase64(file);
     profilePictureFile.value = file;
   } catch (error: any) {
@@ -118,7 +124,7 @@ const pasteUrl = async (): Promise<void> => {
     urlInput.value = await navigator.clipboard.readText();
     await processUrlInput(urlInput.value);
   } catch {
-    //useAlertsStore().addAlert({ type: "warning", title: "Vložení URL", message: "Váš prohlížeč nepodporuje vkládání." });
+    useAlertsStore().addAlert({ type: "warning", title: "Vložení URL", message: "Váš prohlížeč nepodporuje vkládání." });
   }
 };
 
@@ -129,6 +135,7 @@ watch(() => profilePictureUrlImage.value, (): void => {
 watch(() => props.reset, (reset: boolean): void => {
   if (reset) {
     resetErrors();
+
     profilePictureUrlImage.value = props.oldProfilePicture;
     profilePictureFile.value = null;
     urlInput.value = "";
@@ -149,10 +156,10 @@ watch(() => props.reset, (reset: boolean): void => {
               {{ errors.file }}
             </p>
             <p v-else>
-              <Icon class="icon" size="5rem" name="material-symbols:cloud-upload" />
+              <Icon class="icon" size="60px" name="material-symbols:cloud-upload" />
               Klikni pro nahrání obrázku z počítače
             </p>
-            <input type="file" placeholder="Profile image file" ref="fileInput" @change="uploadFile($event)" accept=".png, .jpg, .jpeg .gif" />
+            <input type="file" size="2097152" placeholder="Profile image file" ref="fileInput" @change="uploadFile($event)" accept=".png,.jpg,.jpeg,.gif" />
           </div>
         </div>
       </div>
@@ -243,7 +250,7 @@ watch(() => props.reset, (reset: boolean): void => {
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 10px;
 
         &.image {
           display: flex;

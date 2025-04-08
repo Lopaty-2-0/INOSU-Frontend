@@ -3,13 +3,12 @@ import EditProfilePicture from "~/components/users/manage/ProfilePicture.vue";
 import EditPassword from "~/components/users/manage/Password.vue";
 import EditFormFooter from "~/components/users/manage/Footer.vue";
 import Navigation from "~/components/basics/Navigation.vue";
-import {definePageMeta, useHead} from "#imports";
+import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
 import { ref } from "vue";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "../../../stores/account";
-
-const { getAccountData: accountData } = storeToRefs(useAccountStore());
+import apiFetch from "../../../componsables/apiFetch";
 
 definePageMeta({
   middleware: ["auth"]
@@ -21,6 +20,8 @@ useHead({
     { name: "description", content: "Panel Settings User Information" }
   ],
 });
+
+const { getAccountData: accountData } = storeToRefs(useAccountStore());
 
 const submitLoading = ref<boolean>(false);
 const triggerReset = ref<boolean>(false);
@@ -43,17 +44,21 @@ const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefi
   newUserData.value.profilePicture = updatedUserData.profilePicture;
 };
 
-const checkPasswordRules = () => {
+const checkPasswordRules = (): void => {
   passwordRulesCheck.value[0] = newUserData.value.passwords.new.length >= 5; // Check if password length is at least 5 characters
 
-  if (!passwordRulesCheck.value[0]) return passwordRulesCheck.value = [false, false, false, false]; // Reset password rules check if password length is less than 6 characters
+  // Reset password rules check if password length is less than 6 characters
+  if (!passwordRulesCheck.value[0]) {
+    passwordRulesCheck.value = [false, false, false, false];
+    return;
+  }
 
   passwordRulesCheck.value[1] = !!(newUserData.value.passwords.new.match(/[A-Z]/g) && newUserData.value.passwords.new.match(/[a-z]/g) && newUserData.value.passwords.new.match(/[0-9]/g)); // Check if password contains 2-3 characters: uppercase, lowercase, numbers
   passwordRulesCheck.value[2] = !!newUserData.value.passwords.new.match(/[@#$%&*+=]/g); // Check if password contains at least 1 special character: @, #, $, %, &, *, +, =
   passwordRulesCheck.value[3] = !newUserData.value.passwords.new.match(/\s/g); // Check if password doesn't contain any spaces
 };
 
-const onPasswordsUpdate = (passwordsInputs: { old: string, new: string }) => {
+const onPasswordsUpdate = (passwordsInputs: { old: string, new: string }): void => {
   newUserData.value.passwords = passwordsInputs;
 
   checkPasswordRules();
@@ -71,19 +76,45 @@ const resetUserData = (): void => {
   passwordRulesCheck.value = [false, false, false, false];
   triggerReset.value = true;
 
-  setTimeout(() => {
+  setTimeout((): void => {
     triggerReset.value = false;
   }, 100);
 };
 
-const updateUserData = (): void => {
+const updateUserData = async (): Promise<void> => {
   submitLoading.value = true;
 
-  setTimeout(() => {
-    console.log(newUserData.value);
+  const updateProfileForm: FormData = new FormData();
 
-    submitLoading.value = false;
-  }, 2000);
+  if (newUserData.value.profilePicture) {
+    updateProfileForm.append("profilePicture", newUserData.value.profilePicture);
+  }
+
+  if (newUserData.value.passwords.old && newUserData.value.passwords.new) {
+    await apiFetch("/user/update/password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        oldPassword: newUserData.value.passwords.old,
+        newPassword: newUserData.value.passwords.new
+      },
+      credentials: "include",
+      ignoreResponseError: true,
+      async onResponse({ response }) {
+        const resCode: string = response._data.resCode.toString();
+
+        switch (resCode) {
+        }
+      },
+      async onRequestError() {
+        console.log("Nastala neznámá chyba");
+      }
+    });
+  }
+
+  submitLoading.value = false;
 };
 </script>
 
@@ -98,8 +129,9 @@ const updateUserData = (): void => {
 
     <template #content>
       <div id="settings">
-        <Navigation class="navigation" title="Nastavení účtu" :active-link-id="0" :links="[
+        <Navigation class="navigation" title="Nastavení" :active-link-id="0" :links="[
           { name: 'Profil', path: '/panel/settings' },
+          { name: 'Zabezpečení', path: '/panel/settings/security' },
           { name: 'Přizpůsobení', path: '/panel/settings/customization' },
         ]" />
 
@@ -114,26 +146,10 @@ const updateUserData = (): void => {
             </div>
           </EditProfilePicture>
 
-          <EditPassword class="page-section" @update="onPasswordsUpdate" :reset="triggerReset">
-            <div class="section-head">
-              <h3>Resetování hesla <span class="update" v-if="newUserData.passwords.new !== newUserData.passwords.old && passwordRulesCheck[0] && newUserData.passwords.old !== ''">(aktualizováno)</span></h3>
-              <p>Jednoduše změňte své heslo na jiné</p>
-
-              <div class="password-rules">
-                <h4>Doporučená pravidla hesla</h4>
-                <ul>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje minimálně 5 znaků <Icon size="1rem" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[0]"></Icon></p></li>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje 2 až 3 znaky: velké, malé, čísla <Icon size="1rem" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[1]"></Icon></p></li>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje aspoň 1 speciální znak: @, #, $, %, &, *, +, = <Icon size="1rem" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[2]"></Icon></p></li>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Neobsahuje žádné mezery <Icon size="1rem" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[3]"></Icon></p></li>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Neobsahuje žádné osobní informace</p></li>
-                </ul>
-              </div>
-            </div>
-          </EditPassword>
-
           <EditFormFooter :submit-function="updateUserData" :reset-function="resetUserData" :is-loading="submitLoading" />
         </div>
+
+        <Alerts/>
       </div>
     </template>
   </NuxtLayout>
@@ -216,6 +232,10 @@ const updateUserData = (): void => {
         }
 
         p {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+
           .icon {
             padding-left: 5px;
             color: rgba(var(--success-color), 1);

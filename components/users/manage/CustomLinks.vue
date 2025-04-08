@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-//import { useAlertsStore } from "~/stores/alerts";
+import { useAlertsStore } from "~/stores/alerts";
 
 const props = defineProps({
   oldCustomLinks: {
@@ -41,7 +41,7 @@ const setEditLinkId = (index: number) => {
 };
 
 const addCustomLink = () => {
-  //if (accountCustomLinks.value.length >= 5) return useAlertsStore().addAlert({ type: "warning", title: "Vlastní odkazy", message: "Nelze přidat více než 5 odkazů." });
+  if (accountCustomLinks.value.length >= 5) return useAlertsStore().addAlert({ type: "warning", title: "Vlastní odkazy", message: "Nelze přidat více než 5 odkazů." });
 
   accountCustomLinks.value.push({
     text: "YouTube",

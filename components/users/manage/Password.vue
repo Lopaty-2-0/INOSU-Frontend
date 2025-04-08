@@ -92,13 +92,18 @@ watch(() => props.reset, (reset: boolean) => {
 .section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 30px;
+  width: 100%;
+
+  .update {
+    color: rgba(var(--error-color), 1);
+  }
 
   .line {
     width: 100%;
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 20px;
     flex-wrap: wrap;
 
     input {
@@ -111,7 +116,7 @@ watch(() => props.reset, (reset: boolean) => {
   }
 
   .items {
-    gap: 2rem;
+    gap: 30px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -120,17 +125,17 @@ watch(() => props.reset, (reset: boolean) => {
     .item {
       display: flex;
       flex-direction: row;
-      gap: 0.5rem;
+      gap: 20px;
       flex: 1;
       align-items: flex-end;
 
       &.old-password {
         .icon-div {
-          padding: 0.825rem 1rem;
+          padding: 10px 15px;
           border: var(--border-width) solid rgba(var(--border-color), 0.5);
           color: var(--btn-2-color);
           background: var(--btn-2-background);
-          border-radius: 0.375rem;
+          border-radius: var(--normal-border-radius);
           cursor: pointer;
           transition: 0.2s;
           line-height: 0;
@@ -139,7 +144,7 @@ watch(() => props.reset, (reset: boolean) => {
           align-items: center;
 
           .icon {
-            font-size: 1rem;
+            font-size: 16px;
           }
 
           &:hover {
@@ -148,7 +153,7 @@ watch(() => props.reset, (reset: boolean) => {
         }
 
         input {
-          min-width: 5rem;
+          min-width: 150px;
         }
       }
 
@@ -156,31 +161,32 @@ watch(() => props.reset, (reset: boolean) => {
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 10px;
 
         label {
           color: var(--mini-title-color);
-          font-size: 0.805rem;
+          font-size: 16px;
           font-weight: 500;
+          cursor: pointer;
         }
 
         .input-error {
-          font-size: 0.875rem;
+          font-size: 16px;
           color: rgba(var(--error-color), 1);
         }
 
         .input-success {
-          font-size: 0.875rem;
+          font-size: 16px;
           color: rgba(var(--success-color), 1);
         }
 
         input {
-          border-radius: 0.375rem;
-          font-size: 0.875rem;
+          border-radius: var(--normal-border-radius);
+          font-size: 16px;
           outline: none;
-          padding: 0.825rem 1rem;
-          min-width: 5rem;
+          padding: 15px;
           border: var(--border-width) solid rgba(var(--border-color), 0.5);
+          min-width: 150px;
           background: var(--input-background);
           color: var(--input-color);
 
