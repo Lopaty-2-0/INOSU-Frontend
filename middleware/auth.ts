@@ -1,7 +1,8 @@
 import { useAccountStore } from "~/stores/account";
-import type {AccountTheme} from "../types/account";
-import {useState} from "nuxt/app";
+import type {AccountData, AccountTheme} from "../types/account";
+import {useCookie, useRuntimeConfig, useState} from "nuxt/app";
 import {apiUseFetch} from "../componsables/apiUseFetch";
+import type {RuntimeConfig} from "nuxt/schema";
 
 export default defineNuxtRouteMiddleware(async (from, to) => {
     if (process.server) return;
@@ -18,8 +19,12 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         const resCode: string = data.value.resCode.toString();
         const isLogged: boolean = data.value.data.logged;
 
+        console.log(isLogged);
+
+        console.log(resCode);
+
         if (resCode !== "17011" || !isLogged) {
-            return location.pathname = "/login";
+            //return location.pathname = "/login";
         }
 
         const accountStore = useAccountStore();
@@ -40,19 +45,15 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
 
         //Set account data
         accountStore.setLoading(false);
-        accountStore.setAccountData({
-            id: "",
-            name: "Test",
-            surname: "Account",
-            abbreviation: null,
-            profilePicture: "default.jpg",
-            role: "admin",
-            email: "test@test.cz",
-            createdAt: new Date(),
-            idClass: null,
-        });
+        const accountData: AccountData | null | undefined = useCookie("accountData").value as AccountData | null | undefined;
+
+        if (!accountData) {
+            return location.pathname = "/login";
+        }
+
+        accountStore.setAccountData(accountData);
         accountStore.setLinks([{ text: "YouTube", href: "https://youtube.com" }, { text: "Google", href: "https://google.com" }]);
     } catch {
-        return location.pathname = "/login";
+        //return location.pathname = "/login";
     }
 });

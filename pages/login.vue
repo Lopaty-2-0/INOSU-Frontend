@@ -2,7 +2,9 @@
 import Loading from "~/components/basics/Loading.vue";
 import { ref } from "vue";
 import apiFetch from "../componsables/apiFetch";
-import {navigateTo} from "nuxt/app";
+import {navigateTo, useCookie, useRuntimeConfig} from "nuxt/app";
+import type {AccountData} from "../types/account";
+import type {RuntimeConfig} from "nuxt/schema";
 
 useHead({
   title: "Panel | Přihlášení",
@@ -45,7 +47,7 @@ const submitLoginForm = async (): Promise<void> => {
     ignoreResponseError: true,
     async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
-      
+
       switch (resCode) {
         case "6010":
           errors.value.req = "Login nebo heslo nebylo zadáno";
@@ -54,6 +56,18 @@ const submitLoginForm = async (): Promise<void> => {
           errors.value.req = "Špatný login nebo heslo";
           break;
         case "6031":
+          useCookie("accountData").value = JSON.stringify({
+            id: response._data.data.id,
+            profilePicture: response._data.data.user.profilePicture,
+            email: response._data.data.user.email,
+            name: response._data.data.user.name,
+            surname: response._data.data.user.surname,
+            role: response._data.data.user.role,
+            idClass: response._data.data.user.idClass,
+            abbreviation: response._data.data.user.abbreviation,
+            createdAt: response._data.data.user.createdAt,
+          } as AccountData);
+
           navigateTo("/panel");
           break;
         default:

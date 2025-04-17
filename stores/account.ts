@@ -52,6 +52,10 @@ export const useAccountStore = defineStore("account", {
             this.idClass = accountData.idClass;
             this.createdAt = accountData.createdAt;
         },
+        updateProfilePicture(profilePicture: string): void {
+            this.profilePicture = profilePicture;
+            localStorage.setItem("profilePicture", profilePicture);
+        },
         setTheme(theme: AccountTheme): void {
             this.theme = theme;
         },

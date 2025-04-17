@@ -95,8 +95,17 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiUrl: process.env.API_URL,
+      serverUrl: process.env.SERVER_URL,
       production: process.env.NODE_ENV === "production",
-    }
+      cookies: {
+        options: {
+          signed: true,
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          overwrite: true
+        }
+      },
+    },
   }
 })

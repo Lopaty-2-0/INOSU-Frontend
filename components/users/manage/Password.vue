@@ -32,16 +32,16 @@ const onInput = () => {
   resetErrors();
 
   if (props.type === "updateUser" && passwords.value.old.input === "") passwords.value.old.error = "Pole musí být vyplněno.";
-  else if (props.type === "addUser" && passwords.value.old.input.length < 6) passwords.value.old.error = "Heslo musí mít alespoň 6 znaků.";
-  else if (passwords.value.new.input.length < 6) passwords.value.new.error = "Heslo musí mít alespoň 6 znaků.";
+  else if (props.type === "addUser" && passwords.value.old.input.length < 5) passwords.value.old.error = "Heslo musí mít alespoň 5 znaků.";
+  else if (passwords.value.new.input.length < 5) passwords.value.new.error = "Heslo musí mít alespoň 5 znaků.";
   else passwords.value.old.error = "";
 
   switch (props.type) {
     case "updateUser":
-      emits("update", { old: passwords.value.old.input, new: passwords.value.new.input });
+      emits("update", { old: !passwords.value.old.error ? passwords.value.old.input : undefined, new: !passwords.value.new.error ? passwords.value.new.input : undefined });
       break;
     case "addUser":
-      emits("update", { password: passwords.value.old.error === "" && passwords.value.old.input ? passwords.value.old.input : undefined });
+      emits("update", { password: !passwords.value.old.error && passwords.value.old.input ? passwords.value.old.input : undefined });
       break;
   }
 }

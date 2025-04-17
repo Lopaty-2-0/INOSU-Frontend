@@ -1,14 +1,12 @@
 <script lang="ts" setup>
-import EditProfilePicture from "~/components/users/manage/ProfilePicture.vue";
 import EditPassword from "~/components/users/manage/Password.vue";
 import EditFormFooter from "~/components/users/manage/Footer.vue";
 import Navigation from "~/components/basics/Navigation.vue";
 import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
 import { ref } from "vue";
-import {storeToRefs} from "pinia";
-import {useAccountStore} from "../../../stores/account";
 import apiFetch from "../../../componsables/apiFetch";
+import { useAlertsStore } from "../../../stores/alerts";
 
 definePageMeta({
   middleware: ["auth"]
@@ -21,31 +19,21 @@ useHead({
   ],
 });
 
-const { getAccountData: accountData } = storeToRefs(useAccountStore());
+const alertsStore = useAlertsStore();
 
 const submitLoading = ref<boolean>(false);
 const triggerReset = ref<boolean>(false);
 
 const passwordRulesCheck = ref<boolean[]>([false, false, false, false]);
-
-const oldUserData = ref<{ profilePicture: string}>({
-  profilePicture: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture,
-});
-
-const newUserData = ref<{ profilePicture: File | undefined, passwords: { old: string, new: string } }>({
-  profilePicture: undefined,
+const userData = ref<{ passwords: { old: string, new: string } }>({
   passwords: {
     old: "",
     new: ""
   }
 });
 
-const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefined }): void => {
-  newUserData.value.profilePicture = updatedUserData.profilePicture;
-};
-
 const checkPasswordRules = (): void => {
-  passwordRulesCheck.value[0] = newUserData.value.passwords.new.length >= 5; // Check if password length is at least 5 characters
+  passwordRulesCheck.value[0] = userData.value.passwords.new.length >= 5; // Check if password length is at least 5 characters
 
   // Reset password rules check if password length is less than 6 characters
   if (!passwordRulesCheck.value[0]) {
@@ -53,20 +41,28 @@ const checkPasswordRules = (): void => {
     return;
   }
 
-  passwordRulesCheck.value[1] = !!(newUserData.value.passwords.new.match(/[A-Z]/g) && newUserData.value.passwords.new.match(/[a-z]/g) && newUserData.value.passwords.new.match(/[0-9]/g)); // Check if password contains 2-3 characters: uppercase, lowercase, numbers
-  passwordRulesCheck.value[2] = !!newUserData.value.passwords.new.match(/[@#$%&*+=]/g); // Check if password contains at least 1 special character: @, #, $, %, &, *, +, =
-  passwordRulesCheck.value[3] = !newUserData.value.passwords.new.match(/\s/g); // Check if password doesn't contain any spaces
+  passwordRulesCheck.value[1] = !!(userData.value.passwords.new.match(/[A-Z]/g) && userData.value.passwords.new.match(/[a-z]/g) && userData.value.passwords.new.match(/[0-9]/g)); // Check if password contains 2-3 characters: uppercase, lowercase, numbers
+  passwordRulesCheck.value[2] = !!userData.value.passwords.new.match(/[@#$%&*+=]/g); // Check if password contains at least 1 special character: @, #, $, %, &, *, +, =
+  passwordRulesCheck.value[3] = !userData.value.passwords.new.match(/\s/g); // Check if password doesn't contain any spaces
 };
 
-const onPasswordsUpdate = (passwordsInputs: { old: string, new: string }): void => {
-  newUserData.value.passwords = passwordsInputs;
+const onPasswordsUpdate = (passwordsInputs: { old: string | undefined, new: string | undefined }): void => {
+  if (!passwordsInputs.old || !passwordsInputs.new) {
+    userData.value.passwords.old = "";
+    userData.value.passwords.new = "";
+    return;
+  }
+
+  userData.value.passwords = {
+    old: passwordsInputs.old,
+    new: passwordsInputs.new
+  };
 
   checkPasswordRules();
 };
 
 const resetUserData = (): void => {
-  newUserData.value = {
-    profilePicture: undefined,
+  userData.value = {
     passwords: {
       old: "",
       new: ""
@@ -84,21 +80,15 @@ const resetUserData = (): void => {
 const updateUserData = async (): Promise<void> => {
   submitLoading.value = true;
 
-  const updateProfileForm: FormData = new FormData();
-
-  if (newUserData.value.profilePicture) {
-    updateProfileForm.append("profilePicture", newUserData.value.profilePicture);
-  }
-
-  if (newUserData.value.passwords.old && newUserData.value.passwords.new) {
+  if (userData.value.passwords.old && userData.value.passwords.new) {
     await apiFetch("/user/update/password", {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
       body: {
-        oldPassword: newUserData.value.passwords.old,
-        newPassword: newUserData.value.passwords.new
+        oldPassword: userData.value.passwords.old,
+        newPassword: userData.value.passwords.new
       },
       credentials: "include",
       ignoreResponseError: true,
@@ -106,10 +96,28 @@ const updateUserData = async (): Promise<void> => {
         const resCode: string = response._data.resCode.toString();
 
         switch (resCode) {
+          case "11010":
+            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Staré heslo nebylo zadáno."});
+            break;
+          case "11020":
+            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nové heslo nebylo zadáno."});
+            break;
+          case "11030":
+            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nesprávné staré heslo."});
+            break;
+          case "11040":
+            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nové heslo musí mít minimálně 5 znaků."});
+            break;
+          case "11051":
+            alertsStore.addAlert({type: "success", title: "Změna hesla", message: "Heslo bylo úspěšně změněno."});
+            break;
+          default:
+            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nastala neznámá chyba."});
+            break;
         }
       },
       async onRequestError() {
-        console.log("Nastala neznámá chyba");
+        alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nastala neznámá chyba."});
       }
     });
   }
@@ -138,7 +146,7 @@ const updateUserData = async (): Promise<void> => {
         <div class="content">
           <EditPassword class="page-section" @update="onPasswordsUpdate" :reset="triggerReset">
             <div class="section-head">
-              <h3>Resetování hesla <span class="update" v-if="newUserData.passwords.new !== newUserData.passwords.old && passwordRulesCheck[0] && newUserData.passwords.old !== ''">(aktualizováno)</span></h3>
+              <h3>Resetování hesla <span class="update" v-if="userData.passwords.new !== userData.passwords.old && passwordRulesCheck[0] && userData.passwords.old !== ''">(aktualizováno)</span></h3>
               <p>Jednoduše změňte své heslo na jiné</p>
 
               <div class="password-rules">

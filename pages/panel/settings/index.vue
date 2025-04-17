@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import EditProfilePicture from "~/components/users/manage/ProfilePicture.vue";
-import EditPassword from "~/components/users/manage/Password.vue";
 import EditFormFooter from "~/components/users/manage/Footer.vue";
 import Navigation from "~/components/basics/Navigation.vue";
 import Alerts from "~/components/Alerts.vue";
@@ -9,6 +8,7 @@ import { ref } from "vue";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "../../../stores/account";
 import apiFetch from "../../../componsables/apiFetch";
+import {useAlertsStore} from "../../../stores/alerts";
 
 definePageMeta({
   middleware: ["auth"]
@@ -21,59 +21,32 @@ useHead({
   ],
 });
 
-const { getAccountData: accountData } = storeToRefs(useAccountStore());
+const alertsStore = useAlertsStore();
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 
 const submitLoading = ref<boolean>(false);
 const triggerReset = ref<boolean>(false);
 
-const passwordRulesCheck = ref<boolean[]>([false, false, false, false]);
 
 const oldUserData = ref<{ profilePicture: string}>({
   profilePicture: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture,
 });
 
-const newUserData = ref<{ profilePicture: File | undefined, passwords: { old: string, new: string } }>({
+const newUserData = ref<{ profilePicture: File | undefined }>({
   profilePicture: undefined,
-  passwords: {
-    old: "",
-    new: ""
-  }
 });
 
 const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefined }): void => {
   newUserData.value.profilePicture = updatedUserData.profilePicture;
 };
 
-const checkPasswordRules = (): void => {
-  passwordRulesCheck.value[0] = newUserData.value.passwords.new.length >= 5; // Check if password length is at least 5 characters
-
-  // Reset password rules check if password length is less than 6 characters
-  if (!passwordRulesCheck.value[0]) {
-    passwordRulesCheck.value = [false, false, false, false];
-    return;
-  }
-
-  passwordRulesCheck.value[1] = !!(newUserData.value.passwords.new.match(/[A-Z]/g) && newUserData.value.passwords.new.match(/[a-z]/g) && newUserData.value.passwords.new.match(/[0-9]/g)); // Check if password contains 2-3 characters: uppercase, lowercase, numbers
-  passwordRulesCheck.value[2] = !!newUserData.value.passwords.new.match(/[@#$%&*+=]/g); // Check if password contains at least 1 special character: @, #, $, %, &, *, +, =
-  passwordRulesCheck.value[3] = !newUserData.value.passwords.new.match(/\s/g); // Check if password doesn't contain any spaces
-};
-
-const onPasswordsUpdate = (passwordsInputs: { old: string, new: string }): void => {
-  newUserData.value.passwords = passwordsInputs;
-
-  checkPasswordRules();
-};
 
 const resetUserData = (): void => {
   newUserData.value = {
     profilePicture: undefined,
-    passwords: {
-      old: "",
-      new: ""
-    }
   };
 
-  passwordRulesCheck.value = [false, false, false, false];
   triggerReset.value = true;
 
   setTimeout((): void => {
@@ -84,32 +57,38 @@ const resetUserData = (): void => {
 const updateUserData = async (): Promise<void> => {
   submitLoading.value = true;
 
-  const updateProfileForm: FormData = new FormData();
-
   if (newUserData.value.profilePicture) {
-    updateProfileForm.append("profilePicture", newUserData.value.profilePicture);
-  }
+    const updateProfileForm: FormData = new FormData();
 
-  if (newUserData.value.passwords.old && newUserData.value.passwords.new) {
-    await apiFetch("/user/update/password", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: {
-        oldPassword: newUserData.value.passwords.old,
-        newPassword: newUserData.value.passwords.new
-      },
+    updateProfileForm.append("profilePicture", newUserData.value.profilePicture);
+
+    await apiFetch("/user/update", {
+      method: "PUT",
+      body: updateProfileForm,
       credentials: "include",
       ignoreResponseError: true,
       async onResponse({ response }) {
         const resCode: string = response._data.resCode.toString();
+        const data = response._data.data;
 
         switch (resCode) {
+          case "2010":
+            alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Profilová fotka nebyla zadána." });
+            break;
+          case "2020":
+            alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nepodporovaný formát obrázku." });
+            break;
+          case "2031":
+            alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Profilový obrázek byl aktualizován." });
+            break;
+          default:
+            alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nastala neznámá chyba." });
+            accountStore.updateProfilePicture(data.profilePicture);
+            break;
         }
       },
       async onRequestError() {
-        console.log("Nastala neznámá chyba");
+        alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nastala neznámá chyba." });
       }
     });
   }
