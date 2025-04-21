@@ -9,7 +9,7 @@ import type {RuntimeConfig} from "nuxt/schema";
 useHead({
   title: "Panel | Přihlášení",
   meta: [
-    { name: "Panel Login Page", content: "Panel Login Page" }
+    { name: "description", content: "Panel Login Page" }
   ]
 });
 

@@ -19,12 +19,8 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         const resCode: string = data.value.resCode.toString();
         const isLogged: boolean = data.value.data.logged;
 
-        console.log(isLogged);
-
-        console.log(resCode);
-
         if (resCode !== "17011" || !isLogged) {
-            //return location.pathname = "/login";
+            return location.pathname = "/login";
         }
 
         const accountStore = useAccountStore();
@@ -54,6 +50,6 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         accountStore.setAccountData(accountData);
         accountStore.setLinks([{ text: "YouTube", href: "https://youtube.com" }, { text: "Google", href: "https://google.com" }]);
     } catch {
-        //return location.pathname = "/login";
+        return location.pathname = "/login";
     }
 });

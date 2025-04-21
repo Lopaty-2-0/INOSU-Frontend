@@ -13,6 +13,10 @@ const props = defineProps({
     }>,
     required: true,
   },
+  updated: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const { getAccountData: accountData } = storeToRefs(useAccountStore());
@@ -25,11 +29,12 @@ const clickHamburger = (): void => {
   isHamburgerClicked.value = !isHamburgerClicked.value;
 };
 
-const profileData = ref<{ name: string, surname: string, profilePhoto: string }>({
+
+const profileData= computed<{ name: string; surname: string; profilePhoto: string; }>(() => ({
   name: accountData.value.name,
   surname: accountData.value.surname,
-  profilePhoto: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture
-});
+  profilePhoto: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture,
+}));
 
 onMounted((): void => {
   loading.value = false;

@@ -16,7 +16,7 @@ export default defineNuxtConfig({
       charset: "utf-8",
       viewport: "width=device-width, initial-scale=1",
       noscript: [
-        { children: "JavaScript is required" }
+        { innerHTML: "JavaScript is required" }
       ]
     }
   },
@@ -45,10 +45,10 @@ export default defineNuxtConfig({
   modules: [
     "@nuxt/eslint",
     "@pinia/nuxt",
-    "@nuxtjs/i18n",
+    //"@nuxtjs/i18n",
     "@nuxt/icon",
-    "@nuxtjs/tailwindcss",
     // "nuxt-security"
+    "@nuxtjs/tailwindcss"
   ],
 
   icon: {
@@ -56,16 +56,16 @@ export default defineNuxtConfig({
       collections: ["material-symbols"]
     }
   },
-
+/*
   i18n: {
     strategy: "no_prefix",
-    langDir: "./translations/",
+    langDir: "~/translations/",
     locales: [
         { code: "en", iso: "en-US", file: "en.json" },
         { code: "cz", iso: "cs-CZ", file: "cz.json" }
     ],
     defaultLocale: "cz",
-  },
+  },*/
 /*
   security: {
     hidePoweredBy: true,
@@ -96,16 +96,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       serverUrl: process.env.SERVER_URL,
+      apiUrl: process.env.SERVER_URL,
       production: process.env.NODE_ENV === "production",
-      cookies: {
-        options: {
-          signed: true,
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          path: "/",
-          overwrite: true
-        }
-      },
     },
   }
 })

@@ -4,7 +4,7 @@ import EditFormFooter from "~/components/users/manage/Footer.vue";
 import Navigation from "~/components/basics/Navigation.vue";
 import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "../../../stores/account";
 import apiFetch from "../../../componsables/apiFetch";
@@ -28,10 +28,9 @@ const { getAccountData: accountData } = storeToRefs(accountStore);
 const submitLoading = ref<boolean>(false);
 const triggerReset = ref<boolean>(false);
 
-
-const oldUserData = ref<{ profilePicture: string}>({
+const oldUserData = computed<{ profilePicture: string}>(() => ({
   profilePicture: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture,
-});
+}));
 
 const newUserData = ref<{ profilePicture: File | undefined }>({
   profilePicture: undefined,
@@ -40,7 +39,6 @@ const newUserData = ref<{ profilePicture: File | undefined }>({
 const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefined }): void => {
   newUserData.value.profilePicture = updatedUserData.profilePicture;
 };
-
 
 const resetUserData = (): void => {
   newUserData.value = {
@@ -79,11 +77,11 @@ const updateUserData = async (): Promise<void> => {
             alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nepodporovaný formát obrázku." });
             break;
           case "2031":
-            alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Profilový obrázek byl aktualizován." });
+            alertsStore.addAlert({ type: "success", title: "Změna profilu", message: "Profilový obrázek byl aktualizován." });
+            accountStore.updateProfilePicture(data.user.profilePicture);
             break;
           default:
             alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nastala neznámá chyba." });
-            accountStore.updateProfilePicture(data.profilePicture);
             break;
         }
       },

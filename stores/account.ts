@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
+import { useCookie } from "nuxt/app";
 import type {AccountData, AccountTheme, AccountLink} from "../types/account";
 
 export const useAccountStore = defineStore("account", {
@@ -52,9 +53,16 @@ export const useAccountStore = defineStore("account", {
             this.idClass = accountData.idClass;
             this.createdAt = accountData.createdAt;
         },
+        updateAccountDataCookie(accountData: AccountData): void {
+            useCookie("accountData").value = JSON.stringify(accountData);
+        },
         updateProfilePicture(profilePicture: string): void {
             this.profilePicture = profilePicture;
-            localStorage.setItem("profilePicture", profilePicture);
+
+            this.updateAccountDataCookie({
+                ...this.getAccountData,
+                profilePicture: profilePicture
+            });
         },
         setTheme(theme: AccountTheme): void {
             this.theme = theme;

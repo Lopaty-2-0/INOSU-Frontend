@@ -5,7 +5,7 @@ import { useRuntimeConfig } from "nuxt/app";
 
 const apiFetch = async (endpoint: string, options: NitroFetchOptions<string>): Promise<$Fetch> => {
     const appConfig: RuntimeConfig = useRuntimeConfig();
-    const url: string = appConfig.public.serverUrl + "/api" + endpoint;
+    const url: string = appConfig.public.apiUrl + endpoint;
 
     return $fetch(url, options);
 };
