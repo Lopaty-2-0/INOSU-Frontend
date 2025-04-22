@@ -136,7 +136,7 @@ const updateUserData = async (): Promise<void> => {
 #settings {
   display: flex;
   flex-direction: row;
-  gap: 3rem;
+  gap: 30px;
   position: relative;
 
   .navigation {
