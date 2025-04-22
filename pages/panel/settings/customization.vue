@@ -117,7 +117,7 @@ const updateUserData = () => {
     height: fit-content;
     position: sticky;
     top: 110px;
-    width: 300px;
+    min-width: 300px;
   }
 
   .content {
@@ -214,6 +214,7 @@ const updateUserData = () => {
       width: 100%;
       position: relative;
       top: 0;
+      min-width: 200px;
     }
   }
 }

@@ -15,7 +15,7 @@ interface AccountLink {
     text: string;
 }
 
-type AccountTheme = "light" | "dark";
+type AccountTheme = "light" | "dark" | "system";
 
 export type {
     AccountData,

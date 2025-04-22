@@ -46,6 +46,13 @@ watch(() => props.reset, (reset: boolean): void => {
         </div>
         <img src="../../../assets/images/theme-dark.svg" alt="Tmavý režim">
       </li>
+      <li :class="{ 'active': activeTheme === 'system' }" @click="setTheme('system')">
+        <div class="info">
+          <h4>Systém</h4>
+          <p>Motiv bude podle systému vašeho zařízení</p>
+        </div>
+        <img src="../../../assets/images/theme-system.svg" alt="Systémový režim">
+      </li>
     </ul>
   </div>
 </template>
@@ -54,28 +61,35 @@ watch(() => props.reset, (reset: boolean): void => {
 .section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 30px;
+  width: 100%;
 
   .items {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 2rem;
     justify-content: flex-start;
+    gap: 30px;
+    width: 100%;
 
     li {
       display: flex;
       flex-direction: column;
       flex: 1;
-      gap: 1rem;
-      padding: 1.5rem;
-      border-radius: 0.5rem;
+      gap: 20px;
+      padding: 30px;
+      border-radius: var(--normal-border-radius);
       border: var(--border-width) solid rgba(var(--border-color), 0.5);
+      background: var(--card-1-background);
       flex-wrap: wrap;
       transition: 0.2s;
       cursor: pointer;
 
-      &.active, &:hover {
+      &:hover {
+        background: var(--card-1-hover-background);
+      }
+
+      &.active {
         border-color: rgba(var(--main-color), 1);
 
         .info h4 {
@@ -86,10 +100,10 @@ watch(() => props.reset, (reset: boolean): void => {
       .info {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 10px;
 
         h4 {
-          font-size: 1rem;
+          font-size: 16px;
           font-weight: 600;
           color: var(--title-color);
           transition: 0.2s;
@@ -105,7 +119,7 @@ watch(() => props.reset, (reset: boolean): void => {
         min-width: 150px;
         max-height: 300px;
         object-fit: cover;
-        border-radius: 0.5rem;
+        border-radius: var(--normal-border-radius);
       }
     }
   }

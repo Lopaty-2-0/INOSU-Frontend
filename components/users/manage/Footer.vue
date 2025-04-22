@@ -37,14 +37,14 @@ const props = defineProps({
 .footer {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 30px;
 
   .content {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 10px;
 
-    font-size: 0.875rem;
+    font-size: 16px;
     color: rgba(var(--description-color), 1);
   }
 
@@ -52,7 +52,7 @@ const props = defineProps({
     width: 100%;
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 10px;
     flex-wrap: wrap;
 
     input {
@@ -61,25 +61,25 @@ const props = defineProps({
   }
 
   .error {
-    font-size: 0.875rem;
+    font-size: 16px;
     color: rgba(var(--error-color), 1);
   }
 
   .success {
-    font-size: 0.875rem;
+    font-size: 16px;
     color: rgba(var(--success-color), 1);
   }
 
   button {
-    padding: 0.825rem 1rem;
-    border-radius: 0.375rem;
+    padding: 10px 15px;
+    border-radius: var(--small-border-radius);
     transition: 0.2s;
-    font-size: 15px;
+    font-size: 16px;
 
     &[type="submit"] {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 10px;
       align-items: center;
       background: var(--btn-1-background);
       color: var(--btn-1-color);

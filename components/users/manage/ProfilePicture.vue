@@ -203,7 +203,7 @@ watch(() => props.reset, (reset: boolean): void => {
     width: 100%;
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 10px;
     flex-wrap: wrap;
 
     input {

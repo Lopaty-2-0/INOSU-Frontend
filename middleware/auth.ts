@@ -26,17 +26,17 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         const accountStore = useAccountStore();
 
         //Get user theme
-        let storedTheme: AccountTheme | null = localStorage.getItem("theme") as AccountTheme | null;
+        let storedTheme: string | null = localStorage.getItem("theme") as string | null;
 
-        if (!storedTheme) {
+        if (!storedTheme || !["dark", "light"].includes(storedTheme)) {
             const isDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-            storedTheme = isDarkMode ? "dark" : "light";
+            storedTheme = isDarkMode ? "light" : "light";
 
-            localStorage.setItem("theme", storedTheme);
+            accountStore.setTheme("system");
+        } else {
+            accountStore.setTheme(storedTheme as AccountTheme);
         }
 
-        //Set the theme
-        accountStore.setTheme(storedTheme);
         useState("theme", () => storedTheme);
 
         //Set account data
