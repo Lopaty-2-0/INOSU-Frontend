@@ -79,6 +79,7 @@ const updateUserData = async (): Promise<void> => {
           case "2031":
             alertsStore.addAlert({ type: "success", title: "Změna profilu", message: "Profilový obrázek byl aktualizován." });
             accountStore.updateProfilePicture(data.user.profilePicture);
+            newUserData.value.profilePicture = undefined;
             break;
           default:
             alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nastala neznámá chyba." });

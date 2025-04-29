@@ -7,11 +7,7 @@ import EditFormFooter from "../../../components/users/manage/Footer.vue";
 import Navbar from "../../../components/Navbar.vue";
 import {ref} from "vue";
 import { useAccountStore } from "../../../stores/account";
-import {storeToRefs} from "pinia";
 import type {AccountLink, AccountTheme} from "../../../types/account";
-
-const accountStore = useAccountStore();
-const { getTheme: theme, getLinks: links } = storeToRefs(accountStore);
 
 definePageMeta({
   middleware: ["auth"]
@@ -24,11 +20,12 @@ useHead({
   ],
 });
 
+const accountStore = useAccountStore();
 const submitLoading = ref<boolean>(false);
 const triggerReset = ref<boolean>(false);
 const oldUserData = ref<{ themeMode: AccountTheme, customLinks: AccountLink[] }>({
-  themeMode: theme.value,
-  customLinks: links.value,
+  themeMode: accountStore.getTheme,
+  customLinks: accountStore.getLinks,
 });
 const newUserData = ref<{ themeMode: AccountTheme | undefined, customLinks: AccountLink[] | undefined, }>({
   themeMode: undefined,
@@ -58,6 +55,20 @@ const resetUserData = () => {
 
 const updateUserData = () => {
   submitLoading.value = true;
+
+  if (newUserData.value.themeMode) {
+    localStorage.setItem("theme", newUserData.value.themeMode);
+    accountStore.setTheme(newUserData.value.themeMode);
+
+    window.location.reload();
+  }
+
+  if (newUserData.value.customLinks) {
+    accountStore.setLinks(JSON.parse(JSON.stringify(newUserData.value.customLinks)));
+    oldUserData.value.customLinks = JSON.parse(JSON.stringify(newUserData.value.customLinks));
+  }
+
+  submitLoading.value = false;
 };
 </script>
 

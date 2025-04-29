@@ -148,7 +148,7 @@ onMounted((): void => {
                 link: true,
                 notify: true,
               }">
-                <Icon size="16px" class="icon" :name="link.iconClass"></Icon>{{ link.text }}
+                <Icon class="icon" :name="link.iconClass"></Icon>{{ link.text }}
                 <div class="number">{{ link.notify }}</div>
               </a>
             </li>
@@ -273,6 +273,8 @@ onMounted((): void => {
 
         .icon {
           margin-right: 10px;
+          font-size: 16px;
+          min-width: fit-content;
         }
       }
 

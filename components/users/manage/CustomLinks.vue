@@ -1,21 +1,22 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useAlertsStore } from "~/stores/alerts";
-import type {AccountLink} from "~/types/account";
+import type { AccountLink } from "~/types/account";
 
 const props = defineProps({
   oldCustomLinks: {
     type: Array as () => AccountLink[],
-    required: true
+    required: true,
   },
   reset: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const emits = defineEmits(["update"]);
-const accountCustomLinks = ref<AccountLink[]>([ ...props.oldCustomLinks ]);
+
+const accountCustomLinks = ref<AccountLink[]>([...props.oldCustomLinks]);
 const editLinkId = ref<number | null>(null);
 const textInputValue = ref<string[]>([]);
 const hrefInputValue = ref<string[]>([]);
@@ -23,8 +24,8 @@ const hrefInputValue = ref<string[]>([]);
 const isEqual = (array1: AccountLink[], array2: AccountLink[]): boolean => {
   if (array1.length !== array2.length) return false;
 
-  return array1.every((element: AccountLink, index: number) => {
-    return (element.href === array2[index].href) && (element.text === array2[index].text);
+  return array1.every((element, index) => {
+    return element.href === array2[index].href && element.text === array2[index].text;
   });
 };
 
@@ -36,17 +37,21 @@ const setEditLinkId = (index: number) => {
   textInputValue.value[index] = accountCustomLinks.value[index].text || "";
   hrefInputValue.value[index] = accountCustomLinks.value[index].href || "";
 
-  if (editLinkId.value === index) return editLinkId.value = null;
-
-  editLinkId.value = index;
+  editLinkId.value = editLinkId.value === index ? null : index;
 };
 
 const addCustomLink = () => {
-  if (accountCustomLinks.value.length >= 5) return useAlertsStore().addAlert({ type: "warning", title: "Vlastní odkazy", message: "Nelze přidat více než 5 odkazů." });
+  if (accountCustomLinks.value.length >= 5) {
+    return useAlertsStore().addAlert({
+      type: "warning",
+      title: "Vlastní odkazy",
+      message: "Nelze přidat více než 5 odkazů.",
+    });
+  }
 
   accountCustomLinks.value.push({
     text: "YouTube",
-    href: "https://www.youtube.com"
+    href: "https://www.youtube.com",
   });
 
   setEditLinkId(accountCustomLinks.value.length - 1);
@@ -55,7 +60,6 @@ const addCustomLink = () => {
 
 const removeCustomLink = (id: number) => {
   accountCustomLinks.value.splice(id, 1);
-
   callUpdateEmit();
 };
 
@@ -63,8 +67,8 @@ const onInput = () => {
   if (editLinkId.value !== null) {
     accountCustomLinks.value[editLinkId.value] = {
       text: textInputValue.value[editLinkId.value],
-      href: hrefInputValue.value[editLinkId.value]
-    }
+      href: hrefInputValue.value[editLinkId.value],
+    };
 
     callUpdateEmit();
   }
@@ -72,7 +76,7 @@ const onInput = () => {
 
 watch(() => props.reset, (value: boolean) => {
   if (value) {
-    accountCustomLinks.value = [ ...props.oldCustomLinks ];
+    accountCustomLinks.value = [...props.oldCustomLinks];
     editLinkId.value = null;
     textInputValue.value = [];
     hrefInputValue.value = [];
@@ -138,6 +142,8 @@ watch(() => props.reset, (value: boolean) => {
   display: flex;
   flex-direction: column;
   gap: 30px;
+  position: relative;
+  width: 100%;
 
   .number-of-links {
     display: flex;
@@ -200,8 +206,9 @@ watch(() => props.reset, (value: boolean) => {
       justify-content: space-between;
       align-items: flex-start;
       gap: 20px;
-      width: 100%;
       color: rgba(var(--description-color), 1);
+      text-wrap: wrap;
+      width: 100%;
 
       &.open .link .body, &.open .link hr {
         display: flex;
@@ -226,9 +233,7 @@ watch(() => props.reset, (value: boolean) => {
             font-size: 16px;
             font-weight: 600;
             color: var(--title-color);
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: normal;
+            word-break: break-all;
           }
 
           a {
@@ -244,6 +249,7 @@ watch(() => props.reset, (value: boolean) => {
             word-wrap: break-word;
             overflow-wrap: break-word;
             white-space: normal;
+            word-break: break-all;
 
             &:hover {
               color: rgba(var(--main-color), 1);
@@ -260,7 +266,6 @@ watch(() => props.reset, (value: boolean) => {
           display: none;
           flex-direction: row;
           gap: 20px;
-          width: 100%;
           transition: 0.2s;
 
           .input {
@@ -341,7 +346,7 @@ watch(() => props.reset, (value: boolean) => {
   }
 }
 
-@media (max-width: 915px) {
+@media (max-width: 1300px) {
   .section .items li {
     flex-direction: column;
 
