@@ -1,16 +1,34 @@
 <script lang="ts" setup>
 import Alerts from "../../../components/Alerts.vue";
 import Navbar from "../../../components/Navbar.vue";
+import apiFetch from "~/componsables/apiFetch";
 
 definePageMeta({
   middleware: ["auth"]
 });
 
 useHead({
-  title: "Panel | Nastavení - Zabezpečení",
+  title: "Panel | Uživatelé - role",
   meta: [
     { name: "description", content: "Panel Settings User Information" }
   ],
+});
+
+const numberOfUsers = ref<number>(0);
+const allRoles = ref<string[]>(["admin", "student", "teacher", "admin", "student", "teacher", "admin", "student", "teacher"]); // Replace with API call to get roles
+
+await apiFetch("/user/get/number", {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }) {
+    const users: number = response._data.data.users;
+
+    numberOfUsers.value = users || 0;
+  },
 });
 </script>
 
@@ -23,12 +41,26 @@ useHead({
     </template>
 
     <template #content>
-      <div id="view">
+      <div id="users">
         <div class="content">
           <div class="line">
             <div class="section-head">
-              <h3 data-can-edit="true">Celkem uživatelů:</h3>
+              <h3>Celkem uživatelů: {{ numberOfUsers }}</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+            </div>
+          </div>
+
+          <div class="roles-section">
+            <div class="section-head">
+              <h4>Role uživatelů</h4>
+            </div>
+
+            <div class="roles">
+              <NuxtLink class="role" v-for="role in allRoles" :key="role" :to="`/panel/users/${role}`">
+                <div class="section-head">
+                  <span>{{ role }}</span>
+                </div>
+              </NuxtLink>
             </div>
           </div>
         </div>
@@ -40,18 +72,11 @@ useHead({
 </template>
 
 <style scoped lang="scss">
-#view {
+#users {
   display: flex;
   flex-direction: row;
   gap: 30px;
   position: relative;
-
-  .navigation {
-    height: fit-content;
-    position: sticky;
-    top: 110px;
-    min-width: 300px;
-  }
 
   .content {
     width: 100%;
@@ -76,13 +101,54 @@ useHead({
         color: var(--title-color);
       }
 
+      h4 {
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--title-color);
+      }
+
       p {
         color: rgba(var(--description-color), 1);
         font-size: 16px;
       }
+    }
 
-      .update {
-        color: rgba(var(--error-color), 1);
+    .roles-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .roles {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 30px;
+
+        .role {
+          border-radius: var(--normal-border-radius);
+          display: flex;
+          flex: 1;
+          gap: 30px;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          border: var(--border-width) solid rgba(var(--border-color), 0.5);
+          padding: 60px 30px;
+          transition: 0.2s;
+          cursor: pointer;
+          min-width: 200px;
+          background: var(--card-1-background);
+
+          span {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--title-color);
+          }
+
+          &:hover, &.active {
+            background: var(--card-1-hover-background);
+          }
+        }
       }
     }
 

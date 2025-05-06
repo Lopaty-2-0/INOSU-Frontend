@@ -54,7 +54,7 @@ const infoCards = ref<{
         <div class="info">
           <div class="line">
             <div class="section-head">
-              <h3 data-can-edit="true">Informativní karty</h3>
+              <h3>Informativní karty</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
             </div>
           </div>

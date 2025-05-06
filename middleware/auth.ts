@@ -1,8 +1,7 @@
 import { useAccountStore } from "~/stores/account";
 import type {AccountData, AccountTheme} from "../types/account";
-import {useCookie, useRuntimeConfig, useState} from "nuxt/app";
-import {apiUseFetch} from "../componsables/apiUseFetch";
-import type {RuntimeConfig} from "nuxt/schema";
+import {useCookie, useState} from "nuxt/app";
+import apiUseFetch from "../componsables/apiUseFetch";
 
 export default defineNuxtRouteMiddleware(async (from, to) => {
     if (process.server) return;

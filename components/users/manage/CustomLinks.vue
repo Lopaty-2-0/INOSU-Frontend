@@ -74,7 +74,7 @@ const onInput = () => {
   }
 };
 
-watch(() => props.reset, (value: boolean) => {
+watch(() => props.reset, (value: boolean): void => {
   if (value) {
     accountCustomLinks.value = [...props.oldCustomLinks];
     editLinkId.value = null;

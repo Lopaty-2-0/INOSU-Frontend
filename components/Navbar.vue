@@ -29,7 +29,6 @@ const clickHamburger = (): void => {
   isHamburgerClicked.value = !isHamburgerClicked.value;
 };
 
-
 const profileData= computed<{ name: string; surname: string; profilePhoto: string; }>(() => ({
   name: accountData.value.name,
   surname: accountData.value.surname,
