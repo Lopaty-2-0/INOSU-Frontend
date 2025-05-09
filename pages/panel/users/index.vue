@@ -14,8 +14,8 @@ useHead({
   ],
 });
 
-const numberOfUsers = ref<number>(0);
-const allRoles = ref<string[]>(["admin", "student", "teacher", "admin", "student", "teacher", "admin", "student", "teacher"]); // Replace with API call to get roles
+const numberOfUsers = ref<number>(-1);
+const allRoles = ref<string[]>([]);
 
 await apiFetch("/user/get/number", {
   method: "get",
@@ -30,10 +30,24 @@ await apiFetch("/user/get/number", {
     numberOfUsers.value = users || 0;
   },
 });
+
+await apiFetch("/user/get/roles", {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }) {
+    const roles: string[] = response._data.data.roles;
+
+    allRoles.value = roles || [];
+  },
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel">
+  <NuxtLayout name="panel" :loading="numberOfUsers < 0 || allRoles.length < 0">
     <template #header>
       <Navbar :links="[
         { name: 'Uživatelé', path: '/panel/users' },

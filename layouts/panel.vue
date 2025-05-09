@@ -6,6 +6,13 @@ import {useState} from "nuxt/app";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "../stores/account";
 
+const props = defineProps({
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const { getLoading: accountLoading } = storeToRefs(useAccountStore());
 
 const loading = ref<boolean>(true);
@@ -21,7 +28,7 @@ onMounted((): void => {
 </script>
 
 <template>
-  <div class="loading" v-if="loading || accountLoading">
+  <div class="loading" v-if="loading || accountLoading || props.loading">
     <Loading color="rgba(var(--description-color), 1)" />
   </div>
   <div v-else>

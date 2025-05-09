@@ -4,6 +4,9 @@ import Navbar from "../../../../components/Navbar.vue";
 import type {AccountData} from "../../../../types/account";
 import { ref, onMounted } from "vue";
 import apiFetch from "../../../../componsables/apiFetch";
+import ActionBar from "~/components/basics/ActionBar.vue";
+import UsersGrid from "../../../../components/users/Grid.vue";
+import GridNavigation from "../../../../components/users/Navigation.vue";
 
 definePageMeta({
   middleware: ["auth"]
@@ -19,28 +22,28 @@ useHead({
   ],
 });
 
-const users = ref<AccountData[]>([]);
+const users = ref<AccountData[] | null>(null);
+const numberOfPages = ref<number>(0);
+const activePage = ref<number>(0);
 
-onMounted(async () => {
-  await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }) {
-      console.log(response);
-      const usersData: AccountData[] = response._data.data.users;
+await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    console.log(response);
+    const usersData: AccountData[] = response._data?.data?.users || [];
 
-      users.value = usersData || [];
-    },
-  });
-})
+    users.value = usersData;
+  },
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel">
+  <NuxtLayout name="panel" :loading="!users">
     <template #header>
       <Navbar :links="[
         { name: 'Uživatelé', path: '/panel/users' },
@@ -48,9 +51,20 @@ onMounted(async () => {
       ]" />
     </template>
 
-    <template #content>
+    <template #content v-if="users">
+      <ActionBar description="Správa uživatelů" :texts="['Přidat', 'Upravit', 'Odebrat']" :icons="['material-symbols:add-rounded', 'material-symbols:edit-rounded', 'material-symbols:delete-rounded']" :navigate-to="[`/panel/users/add`, `/panel/users/${role}/edit`, `/panel/users/${role}/remove`]" />
+
       <div id="users">
         <div class="content">
+          <div class="line">
+            <div class="section-head">
+              <h3>Celkem uživatelů: {{ users.length }}</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+            </div>
+          </div>
+
+          <UsersGrid :users="users" :users-per-page="12" :action="'list'" :active-page="activePage" @get:number-of-pages="(value) => numberOfPages = value" />
+          <GridNavigation :number-of-pages="numberOfPages" @get:active-page="(value) => activePage = value" />
         </div>
       </div>
     </template>

@@ -51,6 +51,9 @@ importers:
       '@types/node':
         specifier: ^22.13.10
         version: 22.14.1
+      moment:
+        specifier: ^2.30.1
+        version: 2.30.1
       sass:
         specifier: ^1.85.1
         version: 1.86.3
@@ -3402,6 +3405,9 @@ packages:
     resolution: {integrity: sha512-kvw3B4G19IXk+BOXnYq/D/VeO9qfHaapMeuS7w7sNUqmGaA6hywdFHMi+VWeR9wUScXM7XjoryTffCZ5B0/8IA==}
     engines: {node: '>=14'}
     hasBin: true
+
+  moment@2.30.1:
+    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -8824,6 +8830,8 @@ snapshots:
     dependencies:
       ast-module-types: 5.0.0
       node-source-walk: 6.0.2
+
+  moment@2.30.1: {}
 
   mrmime@2.0.1: {}
 
