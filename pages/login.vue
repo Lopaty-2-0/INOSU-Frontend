@@ -2,26 +2,33 @@
 import Loading from "~/components/basics/Loading.vue";
 import { ref } from "vue";
 import apiFetch from "../componsables/apiFetch";
-import {navigateTo, useCookie, useRuntimeConfig} from "nuxt/app";
-import type {AccountData} from "../types/account";
-import type {RuntimeConfig} from "nuxt/schema";
+import { navigateTo, useCookie, useRuntimeConfig } from "nuxt/app";
+import type { AccountData } from "../types/account";
+import type { RuntimeConfig } from "nuxt/schema";
 
 useHead({
   title: "Panel | Přihlášení",
-  meta: [
-    { name: "description", content: "Panel Login Page" }
-  ]
+  meta: [{ name: "description", content: "Panel Login Page" }],
 });
 
-const loginData = ref<{ login: string | null, password: string | null, stayLogged: boolean }>({ login: null, password: null, stayLogged: false });
-const errors = ref<{ login: string | null, password: string | null, req: string | null }>({ login: null, password: null, req: null });
+const loginData = ref<{
+  login: string | null;
+  password: string | null;
+  stayLogged: boolean;
+}>({ login: null, password: null, stayLogged: false });
+const errors = ref<{
+  login: string | null;
+  password: string | null;
+  req: string | null;
+}>({ login: null, password: null, req: null });
 const loading = ref<boolean>(false);
 
 // Check user inputs
 const validateLogin = (): void => {
   resetErrors();
 
-  if (!loginData.value.login) errors.value.login = "Zadejte váš e-mail nebo zkratku";
+  if (!loginData.value.login)
+    errors.value.login = "Zadejte váš e-mail nebo zkratku";
   if (!loginData.value.password) errors.value.password = "Zadejte vaše heslo";
 };
 
@@ -36,12 +43,12 @@ const submitLoginForm = async (): Promise<void> => {
   await apiFetch("/auth/login", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: {
       login: loginData.value.login,
       password: loginData.value.password,
-      stayLogged: loginData.value.stayLogged
+      stayLogged: loginData.value.stayLogged,
     },
     credentials: "include",
     ignoreResponseError: true,
@@ -80,14 +87,14 @@ const submitLoginForm = async (): Promise<void> => {
     },
   }).finally((): void => {
     loading.value = false;
-  })
+  });
 };
 
 const resetErrors = (): void => {
   errors.value = {
     login: null,
     password: null,
-    req: null
+    req: null,
   };
 };
 </script>
@@ -97,24 +104,41 @@ const resetErrors = (): void => {
     <div class="container">
       <div class="head">
         <h2>INOSU panel</h2>
-        <p>Lorem Ipsum is simply dummy text of the printing and </p>
+        <p>Lorem Ipsum is simply dummy text of the printing and</p>
       </div>
 
       <form @submit.prevent="submitLoginForm" @input="resetErrors">
         <div class="item">
           <label for="login">E-mail / Zkratka</label>
-          <input id="login" v-model="loginData.login" type="text" name="login" placeholder="test@test.com / JUDE">
+          <input
+            id="login"
+            v-model="loginData.login"
+            type="text"
+            name="login"
+            placeholder="test@test.com / JUDE"
+          />
           <p v-if="errors.login" class="error">{{ errors.login }}</p>
         </div>
 
         <div class="item">
           <label for="password">Heslo</label>
-          <input id="password" v-model="loginData.password" type="password" name="password" placeholder="*****">
+          <input
+            id="password"
+            v-model="loginData.password"
+            type="password"
+            name="password"
+            placeholder="*****"
+          />
           <p v-if="errors.password" class="error">{{ errors.password }}</p>
         </div>
 
         <div class="custom-item">
-          <input id="stayLogged" type="checkbox" name="stayLogged" @change="() => loginData.stayLogged = !loginData.stayLogged">
+          <input
+            id="stayLogged"
+            type="checkbox"
+            name="stayLogged"
+            @change="() => (loginData.stayLogged = !loginData.stayLogged)"
+          />
           <label for="stayLogged">Zůstat přihlášen</label>
         </div>
 
@@ -226,7 +250,7 @@ const resetErrors = (): void => {
         gap: 10px;
         align-items: center;
 
-        input[type=checkbox] {
+        input[type="checkbox"] {
           accent-color: rgba(var(--main-color), 1);
           height: 15px;
           width: 15px;

@@ -1,58 +1,119 @@
 <script setup lang="ts">
 import moment from "moment";
-import {ref, watch} from "vue";
+import { ref, watch } from "vue";
 import useArrayChunks from "../../componsables/useArrayChunks";
-import type {AccountData} from "../../types/account";
+import type { AccountData } from "../../types/account";
 
 const props = defineProps({
   users: {
     type: Array as () => AccountData[],
-    default: () => []
+    default: () => [],
   },
   action: {
     type: String as () => "list" | "edit" | "remove",
-    default: "list"
+    default: "list",
   },
   activePage: {
     type: Number,
     default: 0,
-    required: true
+    required: true,
   },
   usersPerPage: {
     type: Number,
     default: 12,
-    required: true
-  }
+    required: true,
+  },
+  reset: {
+    type: Boolean,
+    default: false,
+  },
 });
-const emits = defineEmits(["get:numberOfPages"]);
+const emits = defineEmits(["get:numberOfPages", "get:selectedUsers"]);
 
 const numberOfPages = ref<number>(0);
 const allUsersPages = ref<AccountData[][]>([]);
+const selectedUsers = ref<AccountData[]>([]);
 
-watch(() => props.users, (newValue: AccountData[]): void => {
-  allUsersPages.value = useArrayChunks(newValue, props.usersPerPage);
-  numberOfPages.value = Math.ceil(newValue.length / props.usersPerPage);
+const onUserClick = (user: AccountData): void => {
+  switch (props.action) {
+    case "list":
+      navigateTo(`mailto:${user.email}`, { external: true });
+      break;
+    case "edit":
+      navigateTo(`/panel/users/${user.role}/edit/${user.id}`);
+      break;
+    case "remove":
+      selectedUsers.value = selectedUsers.value.includes(user)
+        ? selectedUsers.value.filter((u: AccountData) => u.id !== user.id)
+        : [...selectedUsers.value, user];
+      emits("get:selectedUsers", selectedUsers.value);
+      break;
+  }
+};
 
-  emits("get:numberOfPages", numberOfPages.value);
-}, { immediate: true });
+watch(
+  () => props.users,
+  (newValue: AccountData[]): void => {
+    allUsersPages.value = useArrayChunks(newValue, props.usersPerPage);
+    numberOfPages.value = Math.ceil(newValue.length / props.usersPerPage);
+
+    emits("get:numberOfPages", numberOfPages.value);
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.reset,
+  (newValue: boolean): void => {
+    if (newValue) {
+      selectedUsers.value = [];
+      
+      emits("get:selectedUsers", selectedUsers.value);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <div class="users-grid">
     <div class="all-users" v-if="users.length > 0">
-      <div v-for="user in (allUsersPages[props.activePage] as AccountData[])" :key="user.id" class="card">
-        <NuxtLink :to="'mailto:' + user.email" class="user list" v-if="props.action === 'list'">
+      <div
+        v-for="user in (allUsersPages[props.activePage] as AccountData[])"
+        :key="user.id"
+        class="card"
+        :class="{
+          [props.action]: true,
+          selected: selectedUsers.includes(user),
+        }"
+        @click="onUserClick(user)"
+      >
+        <div class="user">
           <div class="head">
-            <img :src="'http://89.203.248.163/uploads/profilePictures/' + user.profilePicture" alt="User profile photo" loading="lazy">
+            <img
+              :src="
+                'http://89.203.248.163/uploads/profilePictures/' +
+                user.profilePicture
+              "
+              alt="User profile photo"
+              loading="lazy"
+            />
             <h3>{{ user.name }} {{ user.surname }}</h3>
           </div>
 
           <div class="info">
-            <p>E-mail: <span>{{ user.email }}</span></p>
-            <p>Přezdívka: <span>{{ user.abbreviation || "Není" }}</span></p>
-            <p>Vytvořen: <span>{{ moment(user.createdAt).format("DD. MM. YYYY") }}</span></p>
+            <p>
+              E-mail: <span>{{ user.email }}</span>
+            </p>
+            <p>
+              Přezdívka: <span>{{ user.abbreviation || "Není" }}</span>
+            </p>
+            <p>
+              Vytvořen:
+              <span>{{ moment(user.createdAt).format("DD. MM. YYYY") }}</span>
+            </p>
           </div>
-        </NuxtLink>
+        </div>
       </div>
     </div>
 
@@ -131,6 +192,14 @@ watch(() => props.users, (newValue: AccountData[]): void => {
 
       &:hover {
         background: var(--card-1-hover-background);
+      }
+
+      &.remove {
+        &:hover,
+        &.selected {
+          background: rgba(var(--error-color), 0.1);
+          border: var(--border-width) solid rgba(var(--error-color), 0.5);
+        }
       }
     }
   }

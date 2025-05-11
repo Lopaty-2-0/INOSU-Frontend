@@ -2,9 +2,9 @@
 import Sidebar from "~/components/Sidebar.vue";
 import Loading from "~/components/basics/Loading.vue";
 import { ref, onMounted } from "vue";
-import {useState} from "nuxt/app";
-import {storeToRefs} from "pinia";
-import {useAccountStore} from "../stores/account";
+import { useState } from "nuxt/app";
+import { storeToRefs } from "pinia";
+import { useAccountStore } from "../stores/account";
 
 const props = defineProps({
   loading: {

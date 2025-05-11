@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
-import {useAlertsStore} from "../../../stores/alerts";
+import { ref, watch } from "vue";
+import { useAlertsStore } from "../../../stores/alerts";
 
 const props = defineProps({
   oldProfilePicture: {
@@ -10,7 +10,7 @@ const props = defineProps({
   reset: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 const emits = defineEmits(["update"]);
@@ -48,7 +48,10 @@ const convertFileToBase64 = async (file: File): Promise<string> => {
   const validExtensions: string[] = ["image/jpeg", "image/png", "image/gif"];
 
   if (!validExtensions.includes(file.type)) {
-    throw { customMessage: "Nepodporovaný typ souboru. Povoleny jsou pouze jpg, png nebo gif." };
+    throw {
+      customMessage:
+        "Nepodporovaný typ souboru. Povoleny jsou pouze jpg, png nebo gif.",
+    };
   }
 
   return new Promise((resolve, reject) => {
@@ -67,7 +70,10 @@ const convertUrlToFile = async (url: string): Promise<File> => {
   const allowedMimeTypes: string[] = ["image/jpeg", "image/png", "image/gif"];
 
   if (!allowedMimeTypes.includes(mimeType)) {
-    throw { customMessage: "Nepodporovaný typ souboru. Povoleny jsou pouze jpg, png nebo gif." };
+    throw {
+      customMessage:
+        "Nepodporovaný typ souboru. Povoleny jsou pouze jpg, png nebo gif.",
+    };
   }
 
   return new File([response], filename, { type: mimeType });
@@ -78,7 +84,6 @@ const uploadFile = async (event: Event): Promise<void> => {
 
   const target: HTMLInputElement = event.target as HTMLInputElement;
   const file: File | undefined = target.files?.[0];
-
 
   if (!file) return;
 
@@ -105,7 +110,10 @@ const processUrlInput = async (url: string): Promise<void> => {
     profilePictureUrlImage.value = await convertFileToBase64(file);
     profilePictureFile.value = file;
   } catch (error: any) {
-    handleError(error.customMessage || "Nepodařilo se načíst obrázek z URL adresy.", "url");
+    handleError(
+      error.customMessage || "Nepodařilo se načíst obrázek z URL adresy.",
+      "url"
+    );
   }
 };
 
@@ -124,23 +132,38 @@ const pasteUrl = async (): Promise<void> => {
     urlInput.value = await navigator.clipboard.readText();
     await processUrlInput(urlInput.value);
   } catch {
-    useAlertsStore().addAlert({ type: "warning", title: "Vložení URL", message: "Váš prohlížeč nepodporuje vkládání." });
+    useAlertsStore().addAlert({
+      type: "warning",
+      title: "Vložení URL",
+      message: "Váš prohlížeč nepodporuje vkládání.",
+    });
   }
 };
 
-watch(() => profilePictureUrlImage.value, (): void => {
-  emits("update", { profilePicture: props.oldProfilePicture !== profilePictureUrlImage.value ? profilePictureFile.value : undefined });
-});
-
-watch(() => props.reset, (reset: boolean): void => {
-  if (reset) {
-    resetErrors();
-
-    profilePictureUrlImage.value = props.oldProfilePicture;
-    profilePictureFile.value = null;
-    urlInput.value = "";
+watch(
+  () => profilePictureUrlImage.value,
+  (): void => {
+    emits("update", {
+      profilePicture:
+        props.oldProfilePicture !== profilePictureUrlImage.value
+          ? profilePictureFile.value
+          : undefined,
+    });
   }
-});
+);
+
+watch(
+  () => props.reset,
+  (reset: boolean): void => {
+    if (reset) {
+      resetErrors();
+
+      profilePictureUrlImage.value = props.oldProfilePicture;
+      profilePictureFile.value = null;
+      urlInput.value = "";
+    }
+  }
+);
 </script>
 
 <template>
@@ -149,17 +172,40 @@ watch(() => props.reset, (reset: boolean): void => {
     <div class="items">
       <div class="item">
         <div class="content image">
-          <img loading="lazy" :src="profilePictureUrlImage" alt="Profile photo" />
-          <div class="content upload-file" @click="selectFile" :class="{ error: errors.file }">
+          <img
+            loading="lazy"
+            :src="profilePictureUrlImage"
+            alt="Profile photo"
+          />
+          <div
+            class="content upload-file"
+            @click="selectFile"
+            :class="{ error: errors.file }"
+          >
             <p v-if="errors.file">
-              <Icon class="icon" size="60px" name="material-symbols:error-rounded" />
+              <Icon
+                class="icon"
+                size="60px"
+                name="material-symbols:error-rounded"
+              />
               {{ errors.file }}
             </p>
             <p v-else>
-              <Icon class="icon" size="60px" name="material-symbols:cloud-upload" />
+              <Icon
+                class="icon"
+                size="60px"
+                name="material-symbols:cloud-upload"
+              />
               Klikni pro nahrání obrázku z počítače
             </p>
-            <input type="file" size="2097152" placeholder="Profile image file" ref="fileInput" @change="uploadFile($event)" accept=".png,.jpg,.jpeg,.gif" />
+            <input
+              type="file"
+              size="2097152"
+              placeholder="Profile image file"
+              ref="fileInput"
+              @change="uploadFile($event)"
+              accept=".png,.jpg,.jpeg,.gif"
+            />
           </div>
         </div>
       </div>
@@ -169,16 +215,20 @@ watch(() => props.reset, (reset: boolean): void => {
           <label for="image">URL obrázku</label>
           <div class="line">
             <input
-                :class="{ error: errors.url }"
-                type="text"
-                id="image"
-                name="image"
-                placeholder="https://example.image/image.png"
-                v-model="urlInput"
-                @change="onUrlInput"
+              :class="{ error: errors.url }"
+              type="text"
+              id="image"
+              name="image"
+              placeholder="https://example.image/image.png"
+              v-model="urlInput"
+              @change="onUrlInput"
             />
             <div class="icon-div" @click="pasteUrl">
-              <Icon class="icon" size="16px" name="material-symbols:content-paste" />
+              <Icon
+                class="icon"
+                size="16px"
+                name="material-symbols:content-paste"
+              />
             </div>
           </div>
           <p v-if="errors.url" class="input-error">{{ errors.url }}</p>

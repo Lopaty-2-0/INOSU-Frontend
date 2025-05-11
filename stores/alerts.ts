@@ -1,4 +1,4 @@
-import {acceptHMRUpdate, defineStore} from "pinia";
+import { acceptHMRUpdate, defineStore } from "pinia";
 
 interface Alert {
     index?: number,
@@ -25,7 +25,7 @@ export const useAlertsStore = defineStore("alerts", {
                 if (alert.index && alert.index > maxIndex) maxIndex = alert.index;
             });
 
-            this.alerts = [...this.alerts, {index: maxIndex + 1, ...alert}];
+            this.alerts = [...this.alerts, { index: maxIndex + 1, ...alert }];
 
             // Remove the alert after the default timeout
             setTimeout(() => {

@@ -1,6 +1,6 @@
 import type { NitroFetchOptions } from "nitropack";
-import type {$Fetch} from "ohmyfetch";
-import type {RuntimeConfig} from "nuxt/schema";
+import type { $Fetch } from "ohmyfetch";
+import type { RuntimeConfig } from "nuxt/schema";
 import { useRuntimeConfig } from "nuxt/app";
 
 const apiFetch = async (endpoint: string, options: NitroFetchOptions<string>): Promise<$Fetch> => {

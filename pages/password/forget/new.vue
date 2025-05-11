@@ -5,12 +5,13 @@ import { ref } from "vue";
 
 useHead({
   title: "Panel | Zapomenuté heslo",
-  meta: [
-    { name: "description", content: "Zapomenuté heslo" }
-  ]
+  meta: [{ name: "description", content: "Zapomenuté heslo" }],
 });
 
-const messages = ref<{ email: string | null, form: { message: string | null, type: "error" | "success" | null } }>({ email: null, form: { message: null, type: null }});
+const messages = ref<{
+  email: string | null;
+  form: { message: string | null; type: "error" | "success" | null };
+}>({ email: null, form: { message: null, type: null } });
 const email = ref<string>("");
 const loading = ref<boolean>(false);
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -19,13 +20,14 @@ const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const validateForm = (): void => {
   resetMessages();
 
-  if (!emailRegex.test(email.value)) messages.value.email = "Špatný formát e-mailu";
+  if (!emailRegex.test(email.value))
+    messages.value.email = "Špatný formát e-mailu";
   if (!email.value) messages.value.email = "Zadejte váš e-mail";
 };
 
 //reset messages when user start typing
 const resetMessages = (): void => {
-  messages.value = { email: null, form: { message: null, type: null }};
+  messages.value = { email: null, form: { message: null, type: null } };
 };
 
 //check user inputs and send request to API
@@ -39,38 +41,53 @@ const submitForm = async (): Promise<void> => {
   await apiFetch("/user/password/new", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: {
-      email: email.value
+      email: email.value,
     },
     ignoreResponseError: true,
     credentials: "include",
-    async onResponse({response}) {
+    async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
         case "12010":
-          messages.value.form = { type: "error", message: "E-mail nebyl zadán" };
+          messages.value.form = {
+            type: "error",
+            message: "E-mail nebyl zadán",
+          };
           break;
         case "12020":
-          messages.value.form = { type: "error", message: "Špatný formát e-mailu" };
+          messages.value.form = {
+            type: "error",
+            message: "Špatný formát e-mailu",
+          };
           break;
         case "12030":
-          messages.value.form = { type: "error", message: "Tento e-mail nebyl nalezen" };
+          messages.value.form = {
+            type: "error",
+            message: "Tento e-mail nebyl nalezen",
+          };
           break;
         case "12041":
-          messages.value.form = { message: "E-mail byl odeslán", type: "success" };
+          messages.value.form = {
+            message: "E-mail byl odeslán",
+            type: "success",
+          };
           break;
         default:
-          messages.value.form = { type: "error", message: "Nastala neznámá chyba" };
+          messages.value.form = {
+            type: "error",
+            message: "Nastala neznámá chyba",
+          };
           break;
       }
     },
     async onRequestError() {
       messages.value.form = { message: "Nastala neznámá chyba", type: "error" };
     },
-  })
+  });
 
   loading.value = false;
 };
@@ -87,13 +104,27 @@ const submitForm = async (): Promise<void> => {
       <form @submit.prevent="submitForm" @input="resetMessages">
         <div class="item">
           <label for="email">E-mail</label>
-          <input type="text" id="email" name="email" placeholder="test@test.com" v-model="email">
+          <input
+            type="text"
+            id="email"
+            name="email"
+            placeholder="test@test.com"
+            v-model="email"
+          />
           <p v-if="messages.email" class="error">{{ messages.email }}</p>
         </div>
 
         <div class="footer">
           <button type="submit">Zaslat e-mail</button>
-          <p v-if="messages.form.message" :class="{ 'error': messages.form.type === 'error', 'success': messages.form.type === 'success' }">{{ messages.form.message }}</p>
+          <p
+            v-if="messages.form.message"
+            :class="{
+              error: messages.form.type === 'error',
+              success: messages.form.type === 'success',
+            }"
+          >
+            {{ messages.form.message }}
+          </p>
         </div>
 
         <div v-if="loading" class="loading">
@@ -204,7 +235,7 @@ const submitForm = async (): Promise<void> => {
         gap: 10px;
         align-items: center;
 
-        input[type=checkbox] {
+        input[type="checkbox"] {
           accent-color: rgba(var(--main-color), 1);
           height: 15px;
           width: 15px;

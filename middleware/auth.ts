@@ -1,6 +1,6 @@
 import { useAccountStore } from "~/stores/account";
-import type {AccountData, AccountTheme} from "../types/account";
-import {useCookie, useState} from "nuxt/app";
+import type { AccountData, AccountTheme } from "../types/account";
+import { useCookie, useState } from "nuxt/app";
 import apiUseFetch from "../componsables/apiUseFetch";
 
 export default defineNuxtRouteMiddleware(async (from, to) => {

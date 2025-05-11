@@ -12,13 +12,23 @@ const removeAlert = (index?: number): void => {
 
 <template>
   <div id="alerts">
-    <div v-for="(alert, index) in alerts" :key="index" class="alert" :class="alert.type">
+    <div
+      v-for="(alert, index) in alerts"
+      :key="index"
+      class="alert"
+      :class="alert.type"
+    >
       <div class="content">
         <span>{{ alert.title }}</span>
         <p>{{ alert.message }}</p>
       </div>
 
-      <Icon class="icon" size="24px" name="material-symbols:close-rounded" @click="removeAlert(alert.index)"></Icon>
+      <Icon
+        class="icon"
+        size="24px"
+        name="material-symbols:close-rounded"
+        @click="removeAlert(alert.index)"
+      ></Icon>
     </div>
   </div>
 </template>

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import Loading from "~/components/basics/Loading.vue";
-import {ref, onMounted} from "vue";
-import {useState} from "nuxt/app";
-import {storeToRefs} from "pinia";
-import {useAccountStore} from "../stores/account";
+import { ref, onMounted } from "vue";
+import { useState } from "nuxt/app";
+import { storeToRefs } from "pinia";
+import { useAccountStore } from "../stores/account";
 
 const props = defineProps({
   links: {
     type: Array<{
-      name: string,
-      path: string,
+      name: string;
+      path: string;
     }>,
     required: true,
   },
@@ -29,10 +29,16 @@ const clickHamburger = (): void => {
   isHamburgerClicked.value = !isHamburgerClicked.value;
 };
 
-const profileData= computed<{ name: string; surname: string; profilePhoto: string; }>(() => ({
+const profileData = computed<{
+  name: string;
+  surname: string;
+  profilePhoto: string;
+}>(() => ({
   name: accountData.value.name,
   surname: accountData.value.surname,
-  profilePhoto: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture,
+  profilePhoto:
+    "http://89.203.248.163/uploads/profilePictures/" +
+    accountData.value.profilePicture,
 }));
 
 onMounted((): void => {
@@ -44,14 +50,27 @@ onMounted((): void => {
   <nav id="navbar" :class="{ 'active-hamburger': isHamburgerClicked }">
     <div class="right">
       <div class="hamburger" @click="clickHamburger">
-        <Icon class="icon" size="30px" name="material-symbols:menu-rounded"></Icon>
+        <Icon
+          class="icon"
+          size="30px"
+          name="material-symbols:menu-rounded"
+        ></Icon>
       </div>
 
       <div class="full-path">
-        <div class="path-item" v-for="(link, index) in props.links" :key="index">
+        <div
+          class="path-item"
+          v-for="(link, index) in props.links"
+          :key="index"
+        >
           <NuxtLink :to="link.path">
             <p v-if="index === 0">
-              <Icon class="icon" size="20px" name="material-symbols:square-rounded"></Icon> <span>{{ link.name }}</span>
+              <Icon
+                class="icon"
+                size="20px"
+                name="material-symbols:square-rounded"
+              ></Icon>
+              <span>{{ link.name }}</span>
             </p>
             <p v-else>
               {{ link.name }}
@@ -64,14 +83,22 @@ onMounted((): void => {
 
     <div class="left">
       <div class="account">
-        <Loading v-if="loading" color="rgba(var(--description-color), 1)" size="8px" />
-        <img v-else :src="profileData.profilePhoto" alt="profile-photo" draggable="false" loading="lazy" />
+        <Loading
+          v-if="loading"
+          color="rgba(var(--description-color), 1)"
+          size="8px"
+        />
+        <img
+          v-else
+          :src="profileData.profilePhoto"
+          alt="profile-photo"
+          draggable="false"
+          loading="lazy"
+        />
 
         <div class="name">
           <p class="welcome">Přihlášen jako</p>
-          <p class="account-name" v-if="loading">
-            Načítání
-          </p>
+          <p class="account-name" v-if="loading">Načítání</p>
           <p class="account-name" v-else>
             {{ profileData.name + " " + profileData.surname }}
           </p>
@@ -184,7 +211,8 @@ onMounted((): void => {
     z-index: 100;
     cursor: pointer;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       color: var(--mini-title-color);
     }
   }

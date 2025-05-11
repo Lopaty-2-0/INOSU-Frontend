@@ -25,12 +25,19 @@ const isEqual = (array1: AccountLink[], array2: AccountLink[]): boolean => {
   if (array1.length !== array2.length) return false;
 
   return array1.every((element, index) => {
-    return element.href === array2[index].href && element.text === array2[index].text;
+    return (
+      element.href === array2[index].href && element.text === array2[index].text
+    );
   });
 };
 
 const callUpdateEmit = () => {
-  emits("update", isEqual(props.oldCustomLinks, accountCustomLinks.value) ? undefined : accountCustomLinks.value);
+  emits(
+    "update",
+    isEqual(props.oldCustomLinks, accountCustomLinks.value)
+      ? undefined
+      : accountCustomLinks.value
+  );
 };
 
 const setEditLinkId = (index: number) => {
@@ -74,14 +81,17 @@ const onInput = () => {
   }
 };
 
-watch(() => props.reset, (value: boolean): void => {
-  if (value) {
-    accountCustomLinks.value = [...props.oldCustomLinks];
-    editLinkId.value = null;
-    textInputValue.value = [];
-    hrefInputValue.value = [];
+watch(
+  () => props.reset,
+  (value: boolean): void => {
+    if (value) {
+      accountCustomLinks.value = [...props.oldCustomLinks];
+      editLinkId.value = null;
+      textInputValue.value = [];
+      hrefInputValue.value = [];
+    }
   }
-});
+);
 </script>
 
 <template>
@@ -101,21 +111,42 @@ watch(() => props.reset, (value: boolean): void => {
       </div>
 
       <ul class="items">
-        <li v-for="(link, index) in accountCustomLinks" :key="index" :class="{ open: editLinkId === index }" v-if="accountCustomLinks.length">
+        <li
+          v-for="(link, index) in accountCustomLinks"
+          :key="index"
+          :class="{ open: editLinkId === index }"
+          v-if="accountCustomLinks.length"
+        >
           <div class="link">
             <div class="head">
               <h4>{{ link.text }}</h4>
-              <NuxtLink target="_blank" :to="link.href">{{ link.href }}</NuxtLink>
+              <NuxtLink target="_blank" :to="link.href">{{
+                link.href
+              }}</NuxtLink>
             </div>
-            <hr>
+            <hr />
             <div class="body">
               <div class="input">
                 <label :for="'text-input-' + index">Text</label>
-                <input type="text" :id="'text-input-' + index" name="linkText" placeholder="YouTube" v-model="textInputValue[editLinkId!]" @input="onInput">
+                <input
+                  type="text"
+                  :id="'text-input-' + index"
+                  name="linkText"
+                  placeholder="YouTube"
+                  v-model="textInputValue[editLinkId!]"
+                  @input="onInput"
+                />
               </div>
               <div class="input">
                 <label :for="'url-input-' + index">Odkaz</label>
-                <input type="text" :id="'url-input-' + index" name="linkUrl" placeholder="https://www.youtube.com/" v-model="hrefInputValue[editLinkId!]" @input="onInput">
+                <input
+                  type="text"
+                  :id="'url-input-' + index"
+                  name="linkUrl"
+                  placeholder="https://www.youtube.com/"
+                  v-model="hrefInputValue[editLinkId!]"
+                  @input="onInput"
+                />
               </div>
             </div>
           </div>
@@ -129,9 +160,7 @@ watch(() => props.reset, (value: boolean): void => {
             </div>
           </div>
         </li>
-        <li v-else>
-          Nemáte vytvořené žádné vlastní odkazy.
-        </li>
+        <li v-else>Nemáte vytvořené žádné vlastní odkazy.</li>
       </ul>
     </div>
   </div>
@@ -170,7 +199,8 @@ watch(() => props.reset, (value: boolean): void => {
         font-size: 18px;
         background: rgba(var(--actionBar-actions-add-background), 1);
         color: var(--actionBar-actions-add-color);
-        border: var(--border-width) solid rgba(var(--actionBar-actions-add-border), 1);
+        border: var(--border-width) solid
+          rgba(var(--actionBar-actions-add-border), 1);
         cursor: pointer;
         line-height: 0;
 
@@ -210,7 +240,8 @@ watch(() => props.reset, (value: boolean): void => {
       text-wrap: wrap;
       width: 100%;
 
-      &.open .link .body, &.open .link hr {
+      &.open .link .body,
+      &.open .link hr {
         display: flex;
       }
 
@@ -351,7 +382,8 @@ watch(() => props.reset, (value: boolean): void => {
     flex-direction: column;
 
     .link {
-      .head, .body {
+      .head,
+      .body {
         flex-direction: column;
       }
     }

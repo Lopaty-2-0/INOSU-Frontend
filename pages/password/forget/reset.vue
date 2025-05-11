@@ -1,47 +1,68 @@
 <script lang="ts" setup>
 import Loading from "~/components/basics/Loading.vue";
 import { ref, onMounted } from "vue";
-import {useRoute} from "#imports";
-import type {LocationQueryValue} from "vue-router";
+import { useRoute } from "#imports";
+import type { LocationQueryValue } from "vue-router";
 import apiFetch from "../../../componsables/apiFetch";
 
 useHead({
   title: "Panel | Resetování hesla",
-  meta: [
-    { name: "description", content: "Resetování hesla" }
-  ]
+  meta: [{ name: "description", content: "Resetování hesla" }],
 });
 
-const messages = ref<{ password: string | null, passwordAgain: string | null, form: { message: string | null, type: "error" | "success" | null }}>({ password: null, passwordAgain: null, form: { message: null, type: null }});
+const messages = ref<{
+  password: string | null;
+  passwordAgain: string | null;
+  form: { message: string | null; type: "error" | "success" | null };
+}>({
+  password: null,
+  passwordAgain: null,
+  form: { message: null, type: null },
+});
 const loading = ref<boolean>(true);
 const tokenEmail = ref<string | null>(null);
-const formData = ref<{ password: string, passwordAgain: string }>({password: "", passwordAgain: ""});
+const formData = ref<{ password: string; passwordAgain: string }>({
+  password: "",
+  passwordAgain: "",
+});
 
 //check user inputs
 const validateForm = () => {
-  if (formData.value.password.length < 5) messages.value.password = "Nové heslo musí mít nejméně 5 znaků";
+  if (formData.value.password.length < 5)
+    messages.value.password = "Nové heslo musí mít nejméně 5 znaků";
   if (!formData.value.password) messages.value.password = "Zadejte nové heslo";
-  if (!formData.value.passwordAgain) messages.value.passwordAgain = "Zadejte heslo znovu";
-  else if (formData.value.passwordAgain !== formData.value.password) messages.value.passwordAgain = "Hesla se neshodují";
+  if (!formData.value.passwordAgain)
+    messages.value.passwordAgain = "Zadejte heslo znovu";
+  else if (formData.value.passwordAgain !== formData.value.password)
+    messages.value.passwordAgain = "Hesla se neshodují";
 };
 
 //reset messages when user start typing
 const resetMessages = (): void => {
-  messages.value = { password: null, passwordAgain: null, form: { message: null, type: null }};
+  messages.value = {
+    password: null,
+    passwordAgain: null,
+    form: { message: null, type: null },
+  };
 };
 
 //check user inputs and send request to API
 const submitForm = async (): Promise<void> => {
   validateForm();
 
-  if (messages.value.password || messages.value.passwordAgain || messages.value.form.type === "error") return;
+  if (
+    messages.value.password ||
+    messages.value.passwordAgain ||
+    messages.value.form.type === "error"
+  )
+    return;
 
   loading.value = true;
 
   await apiFetch("/user/password/reset", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: {
       email: tokenEmail.value,
@@ -49,32 +70,32 @@ const submitForm = async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    async onResponse({response}) {
+    async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
         case "14010":
           messages.value.form = {
             message: "Účet nebyl nalezen",
-            type: "error"
+            type: "error",
           };
           break;
         case "14030":
           messages.value.form = {
             message: "Nové heslo musí mít nejméně 5 znaků",
-            type: "error"
+            type: "error",
           };
           break;
         case "14041":
           messages.value.form = {
             message: "Heslo bylo úspěšně změněno",
-            type: "success"
+            type: "success",
           };
           break;
         default:
           messages.value.form = {
             message: "Nastala neznámá chyba",
-            type: "error"
+            type: "error",
           };
           break;
       }
@@ -82,8 +103,8 @@ const submitForm = async (): Promise<void> => {
     async onRequestError() {
       messages.value.form = {
         message: "Nastala neznámá chyba",
-        type: "error"
-      }
+        type: "error",
+      };
     },
   });
 
@@ -92,17 +113,18 @@ const submitForm = async (): Promise<void> => {
 
 //start checkToken on page load and set email from response to tokenEmail
 onMounted(async (): Promise<void> => {
-  const token: LocationQueryValue | LocationQueryValue[]  = useRoute().query.token;
+  const token: LocationQueryValue | LocationQueryValue[] =
+    useRoute().query.token;
 
   if (!token) tokenEmail.value = null;
 
   await apiFetch("/user/password/verify", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: {
-      token: token
+      token: token,
     },
     ignoreResponseError: true,
     async onResponse({ response }) {
@@ -135,11 +157,16 @@ onMounted(async (): Promise<void> => {
     <div class="container card" v-if="!loading">
       <div class="head">
         <h2>Token je neplatný</h2>
-        <p>Token pro resetování hesla je neplatný nebo vypršel, je potřeba vytvořit nový token a zkusit to znovu</p>
+        <p>
+          Token pro resetování hesla je neplatný nebo vypršel, je potřeba
+          vytvořit nový token a zkusit to znovu
+        </p>
       </div>
 
       <div class="footer">
-        <a href="/password/forget/new"><button type="submit">Zkusit znovu</button></a>
+        <a href="/password/forget/new"
+          ><button type="submit">Zkusit znovu</button></a
+        >
       </div>
     </div>
   </div>
@@ -154,19 +181,41 @@ onMounted(async (): Promise<void> => {
       <form @submit.prevent="submitForm" @input="resetMessages">
         <div class="item">
           <label for="password">Nové heslo</label>
-          <input type="password" id="password" name="password" placeholder="*****" v-model="formData.password">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="*****"
+            v-model="formData.password"
+          />
           <p v-if="messages.password" class="error">{{ messages.password }}</p>
         </div>
 
         <div class="item">
           <label for="passwordAgain">Heslo znovu</label>
-          <input type="password" id="passwordAgain" name="passwordAgain" placeholder="*****" v-model="formData.passwordAgain">
-          <p v-if="messages.passwordAgain" class="error">{{ messages.passwordAgain }}</p>
+          <input
+            type="password"
+            id="passwordAgain"
+            name="passwordAgain"
+            placeholder="*****"
+            v-model="formData.passwordAgain"
+          />
+          <p v-if="messages.passwordAgain" class="error">
+            {{ messages.passwordAgain }}
+          </p>
         </div>
 
         <div class="footer">
           <button type="submit">Změnit heslo</button>
-          <p v-if="messages.form.message" :class="{ 'error': messages.form.type === 'error', 'success': messages.form.type === 'success' }">{{ messages.form.message }}</p>
+          <p
+            v-if="messages.form.message"
+            :class="{
+              error: messages.form.type === 'error',
+              success: messages.form.type === 'success',
+            }"
+          >
+            {{ messages.form.message }}
+          </p>
         </div>
 
         <div v-if="loading" class="loading">
@@ -180,7 +229,8 @@ onMounted(async (): Promise<void> => {
 </template>
 
 <style lang="scss" scoped>
-#forgetPassword-reset, #forgetPassword-reset-error {
+#forgetPassword-reset,
+#forgetPassword-reset-error {
   width: 100%;
   min-height: 400px;
   height: 100vh;
@@ -344,7 +394,7 @@ onMounted(async (): Promise<void> => {
         gap: 10px;
         align-items: center;
 
-        input[type=checkbox] {
+        input[type="checkbox"] {
           accent-color: rgba(var(--main-color), 1);
           height: 15px;
           width: 15px;

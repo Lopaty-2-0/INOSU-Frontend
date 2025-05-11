@@ -9,24 +9,37 @@ const props = defineProps({
     required: true,
   },
   links: {
-    type: Array<{ name: string, path?: string, action?: Function }>,
-    default: []
+    type: Array<{ name: string; path?: string; action?: Function }>,
+    default: [],
   },
 });
 
-const clickAction = (link: { name: string, path?: string, action?: Function }) => {
+const clickAction = (link: {
+  name: string;
+  path?: string;
+  action?: Function;
+}) => {
   if (typeof link.action === "function") {
     link.action();
   }
-}
+};
 </script>
 
 <template>
   <div class="navigation">
     <h3>{{ props.title }}</h3>
     <ul>
-      <li v-for="(link, index) in props.links" :class="{ active: props.activeLinkId === index }" :key="index" @click="clickAction(link)">
-        <Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon>
+      <li
+        v-for="(link, index) in props.links"
+        :class="{ active: props.activeLinkId === index }"
+        :key="index"
+        @click="clickAction(link)"
+      >
+        <Icon
+          class="icon"
+          size="16px"
+          name="material-symbols:play-arrow-rounded"
+        ></Icon>
         <NuxtLink :to="link.path" v-if="link.path">
           {{ link.name }}
         </NuxtLink>
@@ -76,7 +89,6 @@ const clickAction = (link: { name: string, path?: string, action?: Function }) =
       .icon {
         font-size: 16px;
       }
-
 
       &.active {
         color: rgba(var(--main-color), 1);

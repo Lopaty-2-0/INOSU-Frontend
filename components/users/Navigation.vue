@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import useArrayChunks from "../../componsables/useArrayChunks";
-import {ref, watch} from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps({
   numberOfPages: {
     type: Number,
     required: true,
-    default: 0
-  }
+    default: 0,
+  },
 });
 
 const emits = defineEmits(["get:activePage"]);
@@ -17,9 +17,15 @@ const pagesArray = ref<number[]>([]);
 const navigationPages = ref<number[][]>([]);
 
 const previousPage = (): void => {
-  const firstActivePageNavigationPageIndex = navigationPages.value[activePagesIndex.value][0];
+  if (navigationPages.value.length <= 0) return;
 
-  if (activePage.value > firstActivePageNavigationPageIndex && activePage.value > 0) {
+  const firstActivePageNavigationPageIndex =
+    navigationPages.value[activePagesIndex.value][0];
+
+  if (
+    activePage.value > firstActivePageNavigationPageIndex &&
+    activePage.value > 0
+  ) {
     activePage.value--;
     emits("get:activePage", activePage.value);
   } else if (activePagesIndex.value > 0) {
@@ -28,8 +34,14 @@ const previousPage = (): void => {
 };
 
 const nextPage = (): void => {
-  const activePageNavigationPageLength = navigationPages.value[activePagesIndex.value].length - 1;
-  const lastActivePageNavigationPageIndex = navigationPages.value[activePagesIndex.value][activePageNavigationPageLength];
+  if (navigationPages.value.length <= 0) return;
+
+  const activePageNavigationPageLength =
+    navigationPages.value[activePagesIndex.value].length - 1;
+  const lastActivePageNavigationPageIndex =
+    navigationPages.value[activePagesIndex.value][
+      activePageNavigationPageLength
+    ];
 
   if (activePage.value < lastActivePageNavigationPageIndex) {
     activePage.value++;
@@ -46,7 +58,7 @@ const setActivePagesIndex = (index: number): void => {
 const setActivePage = (index: number): void => {
   activePage.value = index;
 
-    emits("get:activePage", activePage.value);
+  emits("get:activePage", activePage.value);
 };
 
 const navigationPagesNext = (): void => {
@@ -60,32 +72,72 @@ const navigationPagesNext = (): void => {
 const navigationPagesPrevious = (): void => {
   if (activePagesIndex.value > 0) {
     activePagesIndex.value--;
-    activePage.value = navigationPages.value[activePagesIndex.value][navigationPages.value[activePagesIndex.value].length - 1]; // Set to the last page of the previous navigation page
+    activePage.value =
+      navigationPages.value[activePagesIndex.value][
+        navigationPages.value[activePagesIndex.value].length - 1
+      ];
     emits("get:activePage", activePage.value);
   }
 };
 
-watch(() => props.numberOfPages, (newCount: number): void => {
-  if (newCount) {
-    pagesArray.value = Array.from({ length: Math.ceil(props.numberOfPages) }, (_, index) => index);
-    navigationPages.value = useArrayChunks(pagesArray.value, 3);
-    setActivePagesIndex(0);
-    setActivePage(0);
-  }
-}, { immediate: true });
+watch(
+  () => props.numberOfPages,
+  (newCount: number): void => {
+    if (newCount) {
+      pagesArray.value = Array.from(
+        { length: Math.ceil(props.numberOfPages) },
+        (_, index) => index
+      );
+      navigationPages.value = useArrayChunks(pagesArray.value, 3);
+      setActivePagesIndex(0);
+      setActivePage(0);
+    } else {
+      pagesArray.value = [];
+      navigationPages.value = [];
+      activePage.value = 0;
+      activePagesIndex.value = 0;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <div class="navigation">
-    <button class="back" @click="previousPage"><Icon class="icon" name="material-symbols:arrow-left-alt-rounded"></Icon> Zpět</button>
+    <button class="back" @click="previousPage">
+      <Icon class="icon" name="material-symbols:arrow-left-alt-rounded"></Icon>
+      Zpět
+    </button>
 
     <ul class="pages">
-      <li class="page" v-if="activePagesIndex > 0" @click="navigationPagesPrevious">...</li>
-      <li v-for="pageNumber in navigationPages[activePagesIndex]" :key="pageNumber" :class="{ page: true, active: pageNumber === activePage }" @click="setActivePage(pageNumber)">{{ pageNumber + 1 }}</li>
-      <li class="page" v-if="activePagesIndex < navigationPages.length - 1" @click="navigationPagesNext">...</li>
+      <li
+        class="page"
+        v-if="activePagesIndex > 0"
+        @click="navigationPagesPrevious"
+      >
+        ...
+      </li>
+      <li
+        v-for="pageNumber in navigationPages[activePagesIndex]"
+        :key="pageNumber"
+        :class="{ page: true, active: pageNumber === activePage }"
+        @click="setActivePage(pageNumber)"
+      >
+        {{ pageNumber + 1 }}
+      </li>
+      <li
+        class="page"
+        v-if="activePagesIndex < navigationPages.length - 1"
+        @click="navigationPagesNext"
+      >
+        ...
+      </li>
     </ul>
 
-    <button class="next" @click="nextPage">Další <Icon class="icon" name="material-symbols:arrow-right-alt-rounded"></Icon></button>
+    <button class="next" @click="nextPage">
+      Další
+      <Icon class="icon" name="material-symbols:arrow-right-alt-rounded"></Icon>
+    </button>
   </div>
 </template>
 

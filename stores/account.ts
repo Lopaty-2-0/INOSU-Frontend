@@ -1,6 +1,6 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { useCookie } from "nuxt/app";
-import type {AccountData, AccountTheme, AccountLink} from "../types/account";
+import type { AccountData, AccountTheme, AccountLink } from "../types/account";
 
 export const useAccountStore = defineStore("account", {
     state: () => ({

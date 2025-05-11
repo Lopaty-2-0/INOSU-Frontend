@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import { ref, watch } from "vue";
 import type { AccountTheme } from "../../../types/account";
 
 const props = defineProps({
@@ -10,7 +10,7 @@ const props = defineProps({
   reset: {
     type: Boolean,
     default: false,
-  }
+  },
 });
 
 const emits = defineEmits(["update"]);
@@ -22,9 +22,12 @@ const setTheme = (newTheme: AccountTheme): void => {
   emits("update", newTheme === props.oldTheme ? undefined : newTheme);
 };
 
-watch(() => props.reset, (reset: boolean): void => {
-  if (reset) activeTheme.value = props.oldTheme;
-});
+watch(
+  () => props.reset,
+  (reset: boolean): void => {
+    if (reset) activeTheme.value = props.oldTheme;
+  }
+);
 </script>
 
 <template>
@@ -32,26 +35,35 @@ watch(() => props.reset, (reset: boolean): void => {
     <slot />
 
     <ul class="items">
-      <li :class="{ 'active': activeTheme === 'light' }" @click="setTheme('light')">
+      <li
+        :class="{ active: activeTheme === 'light' }"
+        @click="setTheme('light')"
+      >
         <div class="info">
           <h4>Světlý</h4>
           <p>Váš panel bude mít světlý motiv</p>
         </div>
-        <img src="../../../assets/images/theme-light.svg" alt="Světlý režim">
+        <img src="../../../assets/images/theme-light.svg" alt="Světlý režim" />
       </li>
-      <li :class="{ 'active': activeTheme === 'dark' }" @click="setTheme('dark')">
+      <li :class="{ active: activeTheme === 'dark' }" @click="setTheme('dark')">
         <div class="info">
           <h4>Tmavý</h4>
           <p>Váš panel bude mít tmavý motiv</p>
         </div>
-        <img src="../../../assets/images/theme-dark.svg" alt="Tmavý režim">
+        <img src="../../../assets/images/theme-dark.svg" alt="Tmavý režim" />
       </li>
-      <li :class="{ 'active': activeTheme === 'system' }" @click="setTheme('system')">
+      <li
+        :class="{ active: activeTheme === 'system' }"
+        @click="setTheme('system')"
+      >
         <div class="info">
           <h4>Systém</h4>
           <p>Motiv bude podle systému vašeho zařízení</p>
         </div>
-        <img src="../../../assets/images/theme-system.svg" alt="Systémový režim">
+        <img
+          src="../../../assets/images/theme-system.svg"
+          alt="Systémový režim"
+        />
       </li>
     </ul>
   </div>

@@ -27,8 +27,17 @@ const props = defineProps({
     </div>
 
     <div class="line">
-      <button type="submit" @click="() => props.submitFunction()">Uložit změny <Loading v-show="props.isLoading" size="5px" color="var(--btn-1-color)" /></button>
-      <button type="reset" @click="() => props.resetFunction()">Resetovat změny</button>
+      <button type="submit" @click="() => props.submitFunction()">
+        Uložit změny
+        <Loading
+          v-show="props.isLoading"
+          size="5px"
+          color="var(--btn-1-color)"
+        />
+      </button>
+      <button type="reset" @click="() => props.resetFunction()">
+        Resetovat změny
+      </button>
     </div>
   </div>
 </template>

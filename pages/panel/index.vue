@@ -1,27 +1,27 @@
 <script setup lang="ts">
 import Navbar from "~/components/Navbar.vue";
 import { ref } from "vue";
-import {storeToRefs} from "pinia";
-import {useAccountStore} from "../../stores/account";
+import { storeToRefs } from "pinia";
+import { useAccountStore } from "../../stores/account";
 
 useHead({
   title: "Panel | Domů",
-  meta: [
-    { name: "description", content: "Panel Homepage" }
-  ],
+  meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
 definePageMeta({
-  middleware: ["auth"]
+  middleware: ["auth"],
 });
 
 const { getAccountData: userData } = storeToRefs(useAccountStore());
 
-const infoCards = ref<{
-  title: string;
-  icon: string;
-  value: string | number;
-}[]>([
+const infoCards = ref<
+  {
+    title: string;
+    icon: string;
+    value: string | number;
+  }[]
+>([
   {
     title: "Počet pracího prášku",
     icon: "material-symbols:footprint",
@@ -36,17 +36,21 @@ const infoCards = ref<{
     title: "Počet pracího prášku",
     icon: "material-symbols:adb",
     value: 6,
-  }
+  },
 ]);
 </script>
 
 <template>
   <NuxtLayout name="panel">
     <template #header>
-      <Navbar :links="[{
-        name: 'Domů',
-        path: '/panel'
-      }]" />
+      <Navbar
+        :links="[
+          {
+            name: 'Domů',
+            path: '/panel',
+          },
+        ]"
+      />
     </template>
 
     <template #content>
@@ -141,7 +145,8 @@ const infoCards = ref<{
         min-width: 200px;
         background: var(--card-1-background);
 
-        &:hover, &.active {
+        &:hover,
+        &.active {
           background: var(--card-1-hover-background);
         }
 

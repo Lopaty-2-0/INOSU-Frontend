@@ -2,23 +2,27 @@
 const props = defineProps({
   icons: {
     type: Array<string>,
-    default: ["material-symbols:add-rounded", "material-symbols:edit-rounded", "material-symbols:delete-rounded"]
+    default: [
+      "material-symbols:add-rounded",
+      "material-symbols:edit-rounded",
+      "material-symbols:delete-rounded",
+    ],
   },
   texts: {
     type: Array<string>,
-    default: ["Přidat", "Upravit", "Odstranit"]
+    default: ["Přidat", "Upravit", "Odstranit"],
   },
   description: {
     type: String,
     default: "Akční bar",
   },
   active: {
-    type: Number
+    type: Number,
   },
   navigateTo: {
     type: Array<string>,
-    default: ["#", "#", "#"]
-  }
+    default: ["#", "#", "#"],
+  },
 });
 const emits = defineEmits(["selected"]);
 </script>
@@ -28,16 +32,25 @@ const emits = defineEmits(["selected"]);
     <p class="description">{{ props.description }}</p>
 
     <div class="actions">
-      <NuxtLink v-for="(_, index) in props.texts.length" :key="index"
+      <NuxtLink
+        v-for="(_, index) in props.texts.length"
+        :key="index"
         :class="{
           action: true,
           active: props.active === index,
           edit: index === 1,
           remove: index === 2,
-          add: index === 0
-        }" :to="props.navigateTo[index] || '#'" @click="emits('selected', index)"
+          add: index === 0,
+        }"
+        :to="props.navigateTo[index] || '#'"
+        @click="emits('selected', index)"
       >
-        <Icon size="1rem" class="icon" :name="props.icons[index] || 'material-symbols:radio-button-unchecked'"></Icon>
+        <Icon
+          class="icon"
+          :name="
+            props.icons[index] || 'material-symbols:radio-button-unchecked'
+          "
+        ></Icon>
         {{ props.texts[index] }}
       </NuxtLink>
     </div>
@@ -79,7 +92,7 @@ const emits = defineEmits(["selected"]);
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 5px;
       padding: 10px 15px;
       border-radius: var(--small-border-radius);
       font-size: 16px;
@@ -92,7 +105,8 @@ const emits = defineEmits(["selected"]);
         font-size: 16px;
       }
 
-      &:hover, &.active {
+      &:hover,
+      &.active {
         color: var(--actionBar-actions-default-color);
         background: rgba(var(--actionBar-actions-default-background), 1);
         border-color: rgba(var(--actionBar-actions-default-border), 1);

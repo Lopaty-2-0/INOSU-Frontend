@@ -1,6 +1,6 @@
-import type {AsyncData, UseFetchOptions} from "nuxt/app";
+import type { AsyncData, UseFetchOptions } from "nuxt/app";
 import { useFetch, useRuntimeConfig } from "nuxt/app";
-import type {RuntimeConfig} from "nuxt/schema";
+import type { RuntimeConfig } from "nuxt/schema";
 
 const apiUseFetch = async <T>(endpoint: string | (() => string), options?: UseFetchOptions<T>): Promise<AsyncData<any, any>> => {
     const appConfig: RuntimeConfig = useRuntimeConfig();

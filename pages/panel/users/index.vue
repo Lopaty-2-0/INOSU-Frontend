@@ -4,14 +4,12 @@ import Navbar from "../../../components/Navbar.vue";
 import apiFetch from "~/componsables/apiFetch";
 
 definePageMeta({
-  middleware: ["auth"]
+  middleware: ["auth"],
 });
 
 useHead({
   title: "Panel | Uživatelé - role",
-  meta: [
-    { name: "description", content: "Panel Settings User Information" }
-  ],
+  meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
 const numberOfUsers = ref<number>(-1);
@@ -49,9 +47,7 @@ await apiFetch("/user/get/roles", {
 <template>
   <NuxtLayout name="panel" :loading="numberOfUsers < 0 || allRoles.length < 0">
     <template #header>
-      <Navbar :links="[
-        { name: 'Uživatelé', path: '/panel/users' },
-      ]" />
+      <Navbar :links="[{ name: 'Uživatelé', path: '/panel/users' }]" />
     </template>
 
     <template #content>
@@ -70,7 +66,12 @@ await apiFetch("/user/get/roles", {
             </div>
 
             <div class="roles">
-              <NuxtLink class="role" v-for="role in allRoles" :key="role" :to="`/panel/users/${role}`">
+              <NuxtLink
+                class="role"
+                v-for="role in allRoles"
+                :key="role"
+                :to="`/panel/users/${role}`"
+              >
                 <div class="section-head">
                   <span>{{ role }}</span>
                 </div>
@@ -79,7 +80,7 @@ await apiFetch("/user/get/roles", {
           </div>
         </div>
 
-        <Alerts/>
+        <Alerts />
       </div>
     </template>
   </NuxtLayout>
@@ -159,7 +160,8 @@ await apiFetch("/user/get/roles", {
             color: var(--title-color);
           }
 
-          &:hover, &.active {
+          &:hover,
+          &.active {
             background: var(--card-1-hover-background);
           }
         }

@@ -2,18 +2,27 @@
 const props = defineProps({
   color: {
     type: String,
-    default: "#000"
+    default: "#000",
   },
   size: {
     type: String,
-    default: "20px"
-  }
+    default: "20px",
+  },
 });
 </script>
 
 <template>
   <span class="dot-spinner">
-    <span v-for="index in 3" :key="index" :class="`dot${index}`" :style="{ 'background': props.color, 'width': props.size, 'height': props.size }"/>
+    <span
+      v-for="index in 3"
+      :key="index"
+      :class="`dot${index}`"
+      :style="{
+        background: props.color,
+        width: props.size,
+        height: props.size,
+      }"
+    />
   </span>
 </template>
 
@@ -41,13 +50,13 @@ const props = defineProps({
 
 @keyframes fade {
   0% {
-    opacity:1;
+    opacity: 1;
   }
   40% {
-    opacity:0;
+    opacity: 0;
   }
   60% {
-    opacity:0;
+    opacity: 0;
   }
   100% {
     opacity: 1;

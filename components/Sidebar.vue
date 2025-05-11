@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import {useRoute, useState} from "nuxt/app";
-import {storeToRefs} from "pinia";
-import {useAccountStore} from "../stores/account";
+import { useRoute, useState } from "nuxt/app";
+import { storeToRefs } from "pinia";
+import { useAccountStore } from "../stores/account";
 import apiFetch from "../componsables/apiFetch";
 import Loading from "./basics/Loading.vue";
 
@@ -18,16 +18,18 @@ const getStyledNumber = (number: number): string => {
 const loading = ref<boolean>(true);
 const logoutLoading = ref<boolean>(false);
 const numberOfUnreadRequests = ref<number>(1000);
-const sidebarLinks = ref<{
-  name: string;
-  links: {
-    text: string;
-    href: string;
-    iconClass: string;
-    activeHrefs?: string[];
-    notify?: boolean | string;
-  }[];
-}[]>([
+const sidebarLinks = ref<
+  {
+    name: string;
+    links: {
+      text: string;
+      href: string;
+      iconClass: string;
+      activeHrefs?: string[];
+      notify?: boolean | string;
+    }[];
+  }[]
+>([
   {
     name: "Hlavní",
     links: [
@@ -57,7 +59,12 @@ const sidebarLinks = ref<{
       {
         text: "Uživatelé",
         href: "/panel/users",
-        activeHrefs: ["/panel/users", "/panel/users/add", "/panel/users/remove", "/panel/users/edit"],
+        activeHrefs: [
+          "/panel/users",
+          "/panel/users/add",
+          "/panel/users/remove",
+          "/panel/users/edit",
+        ],
         iconClass: "material-symbols:user-attributes-rounded",
         notify: false,
       },
@@ -74,8 +81,12 @@ const sidebarLinks = ref<{
     links: [
       {
         text: "Nastavení",
-        href: /*usePermissions(["page.settings"]) ? */"/panel/settings" /*: "/panel/settings/customization"*/,
-        activeHrefs: ["/panel/settings", "/panel/settings/security", "/panel/settings/customization"],
+        href: /*usePermissions(["page.settings"]) ? */ "/panel/settings" /*: "/panel/settings/customization"*/,
+        activeHrefs: [
+          "/panel/settings",
+          "/panel/settings/security",
+          "/panel/settings/customization",
+        ],
         iconClass: "material-symbols:settings-rounded",
         notify: false,
       },
@@ -92,7 +103,11 @@ const sidebarLinks = ref<{
 const checkIfLinkIsActive = (link: string | string[]): boolean => {
   const activePath: string = route.path;
 
-  if (Array.isArray(link)) return link.includes(activePath) || link.some((href) => activePath.includes(href));
+  if (Array.isArray(link))
+    return (
+      link.includes(activePath) ||
+      link.some((href) => activePath.includes(href))
+    );
 
   return activePath === link;
 };
@@ -105,7 +120,7 @@ const logOut = async (): Promise<void> => {
   await apiFetch("/auth/logout", {
     method: "delete",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -113,7 +128,7 @@ const logOut = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       if (resCode === "7011") await navigateTo("/login");
-    }
+    },
   }).finally((): void => {
     logoutLoading.value = false;
   });
@@ -133,21 +148,39 @@ onMounted((): void => {
       </div>
 
       <div class="items">
-        <div class="item" v-for="(item, itemIndex) in sidebarLinks" :key="itemIndex">
+        <div
+          class="item"
+          v-for="(item, itemIndex) in sidebarLinks"
+          :key="itemIndex"
+        >
           <p class="name">{{ item.name }}</p>
           <ul class="links">
-            <li v-for="(link, linkIndex) in item.links" :key="linkIndex" >
-              <a v-if="!link.notify" :href="link.href" :class="{
-                active: checkIfLinkIsActive(link.activeHrefs ? link.activeHrefs : link.href),
-                link: true,
-              }">
-                <Icon size="16px" class="icon" :name="link.iconClass"></Icon>{{ link.text }}</a>
+            <li v-for="(link, linkIndex) in item.links" :key="linkIndex">
+              <a
+                v-if="!link.notify"
+                :href="link.href"
+                :class="{
+                  active: checkIfLinkIsActive(
+                    link.activeHrefs ? link.activeHrefs : link.href
+                  ),
+                  link: true,
+                }"
+              >
+                <Icon size="16px" class="icon" :name="link.iconClass"></Icon
+                >{{ link.text }}</a
+              >
 
-              <a v-else :href="link.href" :class="{
-                active: checkIfLinkIsActive(link.activeHrefs ? link.activeHrefs : link.href),
-                link: true,
-                notify: true,
-              }">
+              <a
+                v-else
+                :href="link.href"
+                :class="{
+                  active: checkIfLinkIsActive(
+                    link.activeHrefs ? link.activeHrefs : link.href
+                  ),
+                  link: true,
+                  notify: true,
+                }"
+              >
                 <Icon class="icon" :name="link.iconClass"></Icon>{{ link.text }}
                 <div class="number">{{ link.notify }}</div>
               </a>
@@ -156,9 +189,14 @@ onMounted((): void => {
         </div>
         <div class="item custom-links" v-if="!loading">
           <ul class="links">
-            <li v-for="(link, linkIndex) in accountLinks" :key="linkIndex" >
+            <li v-for="(link, linkIndex) in accountLinks" :key="linkIndex">
               <a :href="link.href" class="link" target="_blank">
-                <Icon size="16px" class="icon" name="material-symbols:link-rounded"></Icon> {{ link.text }}
+                <Icon
+                  size="16px"
+                  class="icon"
+                  name="material-symbols:link-rounded"
+                ></Icon>
+                {{ link.text }}
               </a>
             </li>
           </ul>
@@ -170,7 +208,11 @@ onMounted((): void => {
       <ul>
         <li class="log-out" @click="logOut">
           <button v-if="!logoutLoading">
-            <Icon size="16px" class="icon" name="material-symbols:logout-rounded"></Icon>
+            <Icon
+              size="16px"
+              class="icon"
+              name="material-symbols:logout-rounded"
+            ></Icon>
             Odhlásit se
           </button>
 
