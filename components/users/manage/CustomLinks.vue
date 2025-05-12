@@ -31,7 +31,7 @@ const isEqual = (array1: AccountLink[], array2: AccountLink[]): boolean => {
   });
 };
 
-const callUpdateEmit = () => {
+const callUpdateEmit = (): void => {
   emits(
     "update",
     isEqual(props.oldCustomLinks, accountCustomLinks.value)
@@ -40,14 +40,14 @@ const callUpdateEmit = () => {
   );
 };
 
-const setEditLinkId = (index: number) => {
+const setEditLinkId = (index: number): void => {
   textInputValue.value[index] = accountCustomLinks.value[index].text || "";
   hrefInputValue.value[index] = accountCustomLinks.value[index].href || "";
 
   editLinkId.value = editLinkId.value === index ? null : index;
 };
 
-const addCustomLink = () => {
+const addCustomLink = (): void => {
   if (accountCustomLinks.value.length >= 5) {
     return useAlertsStore().addAlert({
       type: "warning",
@@ -65,12 +65,12 @@ const addCustomLink = () => {
   callUpdateEmit();
 };
 
-const removeCustomLink = (id: number) => {
+const removeCustomLink = (id: number): void => {
   accountCustomLinks.value.splice(id, 1);
   callUpdateEmit();
 };
 
-const onInput = () => {
+const onInput = (): void => {
   if (editLinkId.value !== null) {
     accountCustomLinks.value[editLinkId.value] = {
       text: textInputValue.value[editLinkId.value],

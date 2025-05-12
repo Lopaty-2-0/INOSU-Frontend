@@ -6,11 +6,13 @@ import Navbar from "~/components/Navbar.vue";
 import { ref, computed } from "vue";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "../../../stores/account";
-import apiFetch from "../../../componsables/apiFetch";
 import {useAlertsStore} from "../../../stores/alerts";
 import EditFullName from "../../../components/users/manage/FullName.vue";
 import EditEmail from "../../../components/users/manage/Email.vue";
 import EditPassword from "../../../components/users/manage/Password.vue";
+import EditRole from "../../../components/users/manage/Role.vue";
+import EditAbbreviation from "../../../components/users/manage/Abbreviation.vue";
+import EditClass from "../../../components/users/manage/Class.vue";
 
 definePageMeta({
   middleware: ["auth"]
@@ -47,7 +49,22 @@ const newUserData = ref<{ name: string | undefined, surname: string | undefined,
   abbreviation: undefined,
   role: undefined,
 });
+const onFullNameUpdate = (fullName: { name: string | undefined, surname: string | undefined }): void => {
+  newUserData.value.name = fullName.name;
+  newUserData.value.surname = fullName.surname;
+};
 
+const onEmailUpdate = (data: { email: string | undefined }): void => {
+  newUserData.value.email = data.email;
+};
+
+const onPasswordUpdate = (data: { password: string | undefined }): void => {
+  newUserData.value.password = data.password;
+};
+
+const onAbbreviationUpdate = (data: { abbreviation: string | undefined }): void => {
+  newUserData.value.abbreviation = data.abbreviation;
+};
 
 const resetUserData = (): void => {
   newUserData.value = {
@@ -85,13 +102,63 @@ const createNewUser = async (): Promise<void> => {
     <template #content>
       <div id="settings">
         <div class="content">
-          <EditFullName :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" />
+          <div class="line page-section">
+            <EditFullName :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" :reset="triggerReset" @update="onFullNameUpdate">
+              <div class="section-head">
+                <h3>Jméno a příjmení *</h3>
+                <p>Změňte své jméno a příjmení</p>
+              </div>
+            </EditFullName>
+          </div>
 
-          <EditEmail :old-email="oldUserData.email" />
+          <div class="line page-section">
+            <EditEmail :old-email="oldUserData.email" :reset="triggerReset" @update="onEmailUpdate">
+              <div class="section-head">
+                <h3>E-mail * <span class="update" v-show="newUserData.email">(aktualizováno)</span></h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              </div>
+            </EditEmail>
+          </div>
 
-          <EditPassword />
+          <div class="line page-section">
+            <EditPassword type="new" :reset="triggerReset" @update="onPasswordUpdate">
+              <div class="section-head">
+                <h3>Heslo k účtu * <span class="update" v-show="newUserData.password">(aktualizováno)</span></h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              </div>
+            </EditPassword>
+          </div>
 
-          <EditFormFooter :submit-function="createNewUser" :reset-function="resetUserData" :is-loading="submitLoading" />
+          <div class="line page-section">
+            <EditRole :reset="triggerReset" @update="onPasswordUpdate">
+              <div class="section-head">
+                <h3>Role * <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              </div>
+            </EditRole>
+          </div>
+
+          <div class="line page-section">
+            <EditAbbreviation :full-name="{ name: newUserData.name, surname: newUserData.surname }" :old-abbreviation="oldUserData.abbreviation" :reset="triggerReset" @update="onAbbreviationUpdate">
+              <div class="section-head">
+                <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              </div>
+            </EditAbbreviation>
+          </div>
+
+          <div class="line page-section" >
+            <EditClass :reset="triggerReset" @update="onPasswordUpdate">
+              <div class="section-head">
+                <h3>Přezdívka * <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              </div>
+            </EditClass>
+          </div>
+
+          <EditFormFooter :is-loading="submitLoading" :reset-function="resetUserData" :submit-function="createNewUser">
+            Pole označená * jsou povinná
+          </EditFormFooter>
         </div>
 
         <Alerts/>

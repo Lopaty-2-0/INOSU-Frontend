@@ -275,7 +275,7 @@ watch(
       align-items: flex-end;
 
       &.url .icon-div {
-        padding: 10px 15px;
+        padding: 15px;
         border: var(--border-width) solid rgba(var(--border-color), 0.5);
         color: var(--btn-2-color);
         background: var(--btn-2-background);

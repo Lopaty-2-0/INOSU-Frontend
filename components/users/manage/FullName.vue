@@ -69,30 +69,28 @@ watch(() => props.reset, (reset: boolean) => {
 .section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 30px;
   width: 100%;
 
   .update {
-    color: var(--error-color);
+    color: rgba(var(--error-color), 1);
   }
 
   .line {
     width: 100%;
     display: flex;
     flex-direction: row;
-    gap: 0.5rem;
+    gap: 10px;
     flex-wrap: wrap;
 
     input {
       flex: 1;
-      min-width: 5rem;
     }
   }
 
   .items {
     display: flex;
-    gap: 2rem;
-    width: 100%;
+    gap: 30px;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
@@ -100,7 +98,7 @@ watch(() => props.reset, (reset: boolean) => {
     .item {
       display: flex;
       flex-direction: row;
-      gap: 0.5rem;
+      gap: 20px;
       flex: 1;
       align-items: flex-end;
 
@@ -108,25 +106,27 @@ watch(() => props.reset, (reset: boolean) => {
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 10px;
 
         label {
           color: var(--mini-title-color);
-          font-size: 0.805rem;
+          font-size: 16px;
           font-weight: 500;
+          cursor: pointer;
         }
 
         input {
-          border-radius: 0.375rem;
-          font-size: 0.875rem;
+          border-radius: var(--normal-border-radius);
+          font-size: 16px;
           outline: none;
-          padding: 0.825rem 1rem;
-          border: 1px solid var(--border-color);
+          padding: 15px;
+          border: var(--border-width) solid rgba(var(--border-color), 0.5);
+          min-width: 150px;
           background: var(--input-background);
           color: var(--input-color);
 
           &:focus {
-            border-color: var(--main-color);
+            border-color: rgba(var(--main-color), 1);
           }
         }
       }

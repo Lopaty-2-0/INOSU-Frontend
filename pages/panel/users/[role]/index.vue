@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import {useRoute} from "vue-router";
 import Navbar from "../../../../components/Navbar.vue";
-import type { AccountData } from "../../../../types/account";
-import { ref, onMounted } from "vue";
+import type {AccountData} from "../../../../types/account";
+import {ref} from "vue";
 import apiFetch from "../../../../componsables/apiFetch";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import UsersGrid from "../../../../components/users/Grid.vue";
@@ -23,6 +23,36 @@ useHead({
 const users = ref<AccountData[] | null>(null);
 const numberOfPages = ref<number>(0);
 const activePage = ref<number>(0);
+const searchInput = ref<string>("");
+const searchedUsers = ref<AccountData[]>([]);
+
+const searchUsers = (): void => {
+  const inputToArray: string[] = searchInput.value.split(" ");
+  const allSearchedUsers: AccountData[] = [];
+
+  if (!users.value) return;
+
+  users.value.forEach((user: AccountData) => {
+    const searchResult = [
+      user.name,
+      user.surname,
+      user.email,
+      user.abbreviation || "",
+    ].some((word: string) => {
+      let result: boolean = false;
+
+      inputToArray.forEach((inputWord: string) => {
+        result = word.toLowerCase().includes(inputWord.toLowerCase());
+      });
+
+      return result;
+    });
+
+    if (searchResult) allSearchedUsers.push(user);
+  });
+
+  searchedUsers.value = allSearchedUsers;
+};
 
 await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
   method: "get",
@@ -35,6 +65,7 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
     const usersData: AccountData[] = response._data?.data?.users || [];
 
     users.value = usersData;
+    searchedUsers.value = [...usersData];
   },
 });
 </script>
@@ -71,14 +102,25 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
 
           <div class="line">
             <div class="section-head">
-              <h3>Celkem uživatelů: {{ users.length }}</h3>
+              <h3>Celkem uživatelů: {{ searchedUsers.length }}</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+            </div>
+
+            <div class="search">
+              <input
+                type="text"
+                name="searchInput"
+                placeholder="Hledat uživatele"
+                @input="searchUsers"
+                v-model="searchInput"
+              />
+              <Icon class="icon" name="material-symbols:search-rounded"></Icon>
             </div>
           </div>
 
           <div class="users">
             <UsersGrid
-              :users="users"
+              :users="searchedUsers"
               :users-per-page="12"
               :action="'list'"
               :active-page="activePage"
@@ -115,6 +157,49 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
     flex-direction: column;
     gap: 35px;
     position: relative;
+
+    .line {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 30px;
+      width: 100%;
+    }
+
+    .search {
+      min-width: 150px;
+      display: flex;
+      align-items: center;
+
+      input {
+        border: var(--border-width) solid rgba(var(--border-color), 0.5);
+        border-radius: var(--normal-border-radius);
+        font-size: 16px;
+        outline: none;
+        padding: 15px 40px 15px 15px;
+        width: 100%;
+        background: var(--input-background);
+        color: var(--input-color);
+
+        &:focus {
+          border-color: rgba(var(--main-color), 1);
+        }
+      }
+
+      .icon {
+        margin-left: -30px;
+        cursor: pointer;
+        color: rgba(var(--description-color), 1);
+        transition: 0.2s;
+        font-size: 16px;
+
+        &:hover {
+          color: var(--mini-title-color);
+        }
+      }
+    }
 
     .users {
       display: flex;

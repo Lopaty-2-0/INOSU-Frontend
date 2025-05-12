@@ -3,7 +3,11 @@ import {ref, watch} from "vue";
 import { useAlertsStore } from "~/stores/alerts";
 
 const props = defineProps({
-  oldEmail: {
+  fullName: {
+    type: Object as () => { name: string | undefined, surname: string | undefined },
+    required: false,
+  },
+  oldAbbreviation: {
     type: String,
     required: true,
   },
@@ -14,37 +18,39 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["update"]);
-const email = ref<{ input: string, error: string }>({
-  input: props.oldEmail,
+const abbreviation = ref<{ input: string, error: string }>({
+  input: props.oldAbbreviation,
   error: "",
 });
-const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const onInput = (): void => {
-  if (email.value.input && !emailRegex.test(email.value.input)) email.value.error = "Špatný formát e-mailu";
-  else email.value.error = "";
+  abbreviation.value.input = abbreviation.value.input.toUpperCase();
 
-  const isUpdated: boolean = email.value.input !== "" && email.value.input !== props.oldEmail && email.value.error === "";
+  if (abbreviation.value.input.length > 4) abbreviation.value.error = "Délka přezdívky může být max 4 znaky.";
+  else abbreviation.value.error = "";
 
-  emits("update", { email: isUpdated ? email.value.input : undefined });
+  const isUpdated: boolean = abbreviation.value.input !== "" && abbreviation.value.input !== props.oldAbbreviation && abbreviation.value.error === "";
+
+  emits("update", { abbreviation: isUpdated ? abbreviation.value.input : undefined });
 };
 
-const pasteEmail = (): void => {
-  try {
-    navigator.clipboard.readText().then((text: string) => {
-      email.value.input = text;
+const generateAbbreviation = (): void => {
+  if (props.fullName?.name && props.fullName?.surname) {
+    const name: string = props.fullName.name;
+    const surname: string = props.fullName.surname;
 
-      onInput();
-    });
-  } catch {
-    useAlertsStore().addAlert({ type: "warning", title: "Vložení URL", message: "Váš prohlížeč nepodporuje vkládání." });
+    abbreviation.value.input = `${name[0]?.toUpperCase() || ""}${name[1]?.toUpperCase() || ""}${surname[0]?.toUpperCase() || ""}${surname[1]?.toUpperCase() || ""}`;
+    onInput();
+  } else {
+    abbreviation.value.error = "Ze jména a příjmení nelze vygenerovat přezdívku.";
+    abbreviation.value.input = "";
   }
 };
 
 watch(() => props.reset, (reset: boolean): void => {
   if (reset) {
-    email.value.error = "";
-    email.value.input = props.oldEmail;
+    abbreviation.value.error = "";
+    abbreviation.value.input = props.oldAbbreviation;
   }
 });
 </script>
@@ -55,13 +61,13 @@ watch(() => props.reset, (reset: boolean): void => {
 
     <div class="item url">
       <div class="content">
-        <label for="email">E-mail</label>
+        <label for="abbreviation">Přezdívka</label>
         <div class="line">
-          <input :class="{ error: email.error }" type="email" id="email" placeholder="example.email@gmail.com" v-model="email.input" @input="onInput" />
-          <div class="icon-div" @click="pasteEmail"><Icon class="icon" name="material-symbols:content-paste"></Icon></div>
+          <input :class="{ error: abbreviation.error }" type="text" id="abbreviation" placeholder="JUDE" v-model="abbreviation.input" @input="onInput" />
+          <div class="icon-div" @click="generateAbbreviation"><Icon class="icon" name="material-symbols:wand-stars-rounded"></Icon></div>
         </div>
 
-        <p v-if="email.error" class="input-error">{{ email.error}}</p>
+        <p v-if="abbreviation.error" class="input-error">{{ abbreviation.error }}</p>
       </div>
     </div>
   </div>

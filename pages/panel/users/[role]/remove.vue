@@ -312,6 +312,10 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
         width: 100%;
         background: var(--input-background);
         color: var(--input-color);
+
+        &:focus {
+          border-color: rgba(var(--main-color), 1);
+        }
       }
 
       .icon {

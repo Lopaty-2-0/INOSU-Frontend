@@ -3,8 +3,8 @@ import { ref, watch } from "vue";
 
 const props = defineProps({
   type: {
-    type: String,
-    default: "updateUser", // "updateUser" | "addUser"
+    type: String as () => "new" | "reset",
+    default: "reset",
   },
   reset: {
     type: Boolean,
@@ -20,50 +20,46 @@ const passwords = ref<{
   old: { input: "", error: "" },
   new: { input: "", error: "" },
 });
-
 const isPasswordVisible = ref<boolean>(false);
 
-const resetErrors = () => {
+const resetErrors = (): void => {
   passwords.value.old.error = "";
   passwords.value.new.error = "";
 };
 
-const onInput = () => {
+const onInput = (): void => {
   resetErrors();
 
-  if (props.type === "updateUser" && passwords.value.old.input === "")
+  if (props.type === "reset" && passwords.value.old.input === "")
     passwords.value.old.error = "Pole musí být vyplněno.";
-  else if (props.type === "addUser" && passwords.value.old.input.length < 5)
+  else if (props.type === "new" && passwords.value.old.input.length < 5)
     passwords.value.old.error = "Heslo musí mít alespoň 5 znaků.";
   else if (passwords.value.new.input.length < 5)
     passwords.value.new.error = "Heslo musí mít alespoň 5 znaků.";
   else passwords.value.old.error = "";
 
   switch (props.type) {
-    case "updateUser":
+    case "reset":
       emits("update", {
         old: !passwords.value.old.error ? passwords.value.old.input : undefined,
         new: !passwords.value.new.error ? passwords.value.new.input : undefined,
       });
       break;
-    case "addUser":
+    case "new":
       emits("update", {
-        password:
-          !passwords.value.old.error && passwords.value.old.input
-            ? passwords.value.old.input
-            : undefined,
+        password: !passwords.value.old.error && !!passwords.value.old.input ? passwords.value.old.input : undefined,
       });
       break;
   }
 };
 
-const showPassword = () => {
+const showPassword = (): void => {
   isPasswordVisible.value = !isPasswordVisible.value;
 };
 
 watch(
   () => props.reset,
-  (reset: boolean) => {
+  (reset: boolean): void => {
     if (reset) {
       resetErrors();
 
@@ -82,7 +78,7 @@ watch(
       <div class="item old-password">
         <div class="content">
           <label for="oldPassword">{{
-            props.type === "addUser" ? "Heslo" : "Staré heslo"
+            props.type === "new" ? "Heslo" : "Staré heslo"
           }}</label>
           <div class="line">
             <input
@@ -119,7 +115,7 @@ watch(
         </div>
       </div>
 
-      <div class="item" v-if="props.type !== 'addUser'">
+      <div class="item" v-if="props.type !== 'new'">
         <div class="content">
           <label for="newPassword">Nové heslo</label>
           <input
@@ -184,7 +180,7 @@ watch(
 
       &.old-password {
         .icon-div {
-          padding: 10px 15px;
+          padding: 15px;
           border: var(--border-width) solid rgba(var(--border-color), 0.5);
           color: var(--btn-2-color);
           background: var(--btn-2-background);
