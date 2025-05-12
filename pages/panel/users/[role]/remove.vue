@@ -406,4 +406,10 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
     }
   }
 }
+
+@media (max-width: 545px) {
+  .action-bar {
+    height: auto;
+  }
+}
 </style>
