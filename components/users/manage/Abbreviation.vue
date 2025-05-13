@@ -18,14 +18,9 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["update"]);
-const abbreviation = ref<{ input: string, error: string }>({
-  input: props.oldAbbreviation,
-  error: "",
-});
+const abbreviation = ref<{ input: string, error: string }>({ input: props.oldAbbreviation, error: "" });
 
 const onInput = (): void => {
-  abbreviation.value.input = abbreviation.value.input.toUpperCase();
-
   if (abbreviation.value.input.length > 4) abbreviation.value.error = "Délka přezdívky může být max 4 znaky.";
   else abbreviation.value.error = "";
 
@@ -152,6 +147,7 @@ watch(() => props.reset, (reset: boolean): void => {
         min-width: 150px;
         background: var(--input-background);
         color: var(--input-color);
+        text-transform: uppercase;
 
         &:focus {
           border-color: rgba(var(--main-color), 1);

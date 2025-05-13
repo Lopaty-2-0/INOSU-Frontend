@@ -13,6 +13,7 @@ import EditPassword from "../../../components/users/manage/Password.vue";
 import EditRole from "../../../components/users/manage/Role.vue";
 import EditAbbreviation from "../../../components/users/manage/Abbreviation.vue";
 import EditClass from "../../../components/users/manage/Class.vue";
+import apiFetch from "../../../componsables/apiFetch";
 
 definePageMeta({
   middleware: ["auth"]
@@ -25,29 +26,28 @@ useHead({
   ],
 });
 
-const alertsStore = useAlertsStore();
-const accountStore = useAccountStore();
-const { getAccountData: accountData } = storeToRefs(accountStore);
-
 const submitLoading = ref<boolean>(false);
 const triggerReset = ref<boolean>(false);
+const allRoles = ref<string[] | undefined>(undefined);
 
-const oldUserData = computed<{ name: string, surname: string, email: string, password: string, abbreviation: string, role: string}>(() => ({
+const oldUserData = computed<{ name: string, surname: string, email: string, password: string, abbreviation: string, role: string, class: string}>(() => ({
   name: "",
   surname: "",
   email: "",
   password: "",
   abbreviation: "",
   role: "",
+  class: ""
 }));
 
-const newUserData = ref<{ name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined}>({
+const newUserData = ref<{ name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, class: string | undefined}>({
   name: undefined,
   surname: undefined,
   email: undefined,
   password: undefined,
   abbreviation: undefined,
   role: undefined,
+  class: undefined,
 });
 const onFullNameUpdate = (fullName: { name: string | undefined, surname: string | undefined }): void => {
   newUserData.value.name = fullName.name;
@@ -66,6 +66,10 @@ const onAbbreviationUpdate = (data: { abbreviation: string | undefined }): void 
   newUserData.value.abbreviation = data.abbreviation;
 };
 
+const onRoleUpdate = (data: { role: string | undefined }): void => {
+  newUserData.value.role = data.role;
+};
+
 const resetUserData = (): void => {
   newUserData.value = {
     name: undefined,
@@ -74,6 +78,7 @@ const resetUserData = (): void => {
     password: undefined,
     abbreviation: undefined,
     role: undefined,
+    class: undefined,
   };
 
   triggerReset.value = true;
@@ -88,10 +93,24 @@ const createNewUser = async (): Promise<void> => {
 
   submitLoading.value = false;
 };
+
+await apiFetch("/user/get/roles", {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }) {
+    const roles: string[] = response._data.data.roles;
+
+    allRoles.value = roles || [];
+  },
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel">
+  <NuxtLayout name="panel" :loading="!allRoles">
     <template #header>
       <Navbar :links="[
         { name: 'Uživatelé', path: '/panel/users' },
@@ -130,7 +149,7 @@ const createNewUser = async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditRole :reset="triggerReset" @update="onPasswordUpdate">
+            <EditRole :roles="allRoles || []" :old-role="oldUserData.role" :reset="triggerReset" @update="onRoleUpdate">
               <div class="section-head">
                 <h3>Role * <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
@@ -150,7 +169,7 @@ const createNewUser = async (): Promise<void> => {
           <div class="line page-section" >
             <EditClass :reset="triggerReset" @update="onPasswordUpdate">
               <div class="section-head">
-                <h3>Přezdívka * <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
+                <h3>Třída * <span class="update" v-show="newUserData.class">(aktualizováno)</span></h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </div>
             </EditClass>
