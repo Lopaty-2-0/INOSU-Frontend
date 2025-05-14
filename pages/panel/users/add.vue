@@ -1,12 +1,8 @@
 <script lang="ts" setup>
-import EditProfilePicture from "~/components/users/manage/ProfilePicture.vue";
 import EditFormFooter from "~/components/users/manage/Footer.vue";
 import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
 import { ref, computed } from "vue";
-import {storeToRefs} from "pinia";
-import {useAccountStore} from "../../../stores/account";
-import {useAlertsStore} from "../../../stores/alerts";
 import EditFullName from "../../../components/users/manage/FullName.vue";
 import EditEmail from "../../../components/users/manage/Email.vue";
 import EditPassword from "../../../components/users/manage/Password.vue";
@@ -170,11 +166,11 @@ await apiFetch("/user/get/roles", {
             <EditClass :old-class-ids="[1, 2, 3]" :classes="[
                   { id: 1, specialization: 'V', name: 'Skibidi1', grade: 4, group: 'B' },
                   { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
-                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
-                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
-                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
-                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
-                  { id: 3, specialization: 'S', name: 'Skibidi3', grade: 1, group: 'C' },
+                  { id: 3, specialization: 'I', name: 'Skibidi3', grade: 2, group: 'A' },
+                  { id: 4, specialization: 'I', name: 'Skibidi4', grade: 3, group: 'A' },
+                  { id: 5, specialization: 'I', name: 'Skibidi5', grade: 2, group: 'A' },
+                  { id: 6, specialization: 'I', name: 'Skibidi6', grade: 2, group: 'A' },
+                  { id: 7, specialization: 'S', name: 'Skibidi7', grade: 1, group: 'C' },
               ]" :reset="triggerReset" @update="onPasswordUpdate">
               <div class="section-head">
                 <h3>Třída * <span class="update" v-show="newUserData.class">(aktualizováno)</span></h3>

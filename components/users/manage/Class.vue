@@ -21,15 +21,24 @@ const emits = defineEmits(["update"]);
 const title = computed<string>((): string => {
   const numberOfSelectedClasses: number = selectedClasses.value.length;
 
-  return numberOfSelectedClasses > 0 ? `Vybraných tříd: ${numberOfSelectedClasses}` : "";
+  return numberOfSelectedClasses > 0 ? `Vybrané třídy: ${numberOfSelectedClasses}` : "";
 });
-const searchedClasses = ref<ClassData[]>(props.classes);
+const searchedClasses = computed<ClassData[]>((): ClassData[] => {
+  return props.classes.filter((item: ClassData): boolean => {
+    return (
+      item.name.toLocaleLowerCase().includes(searchName.value.toLocaleLowerCase()) &&
+      (searchSpecialization.value ? item.specialization.toLocaleLowerCase() === searchSpecialization.value.toLocaleLowerCase() : true) &&
+      (searchGrade.value ? item.grade === searchGrade.value : true) &&
+      (searchGroup.value ? item.group.toLocaleLowerCase() === searchGroup.value.toLocaleLowerCase() : true)
+    );
+  });
+});
 const selectedClasses = ref<number[]>([...props.oldClassIds]);
 const open = ref<boolean>(false);
 const searchName = ref<string>("");
 const searchGrade = ref<number | null>(null);
 const searchGroup = ref<string>("");
-const searchSpecialization = ref<number | null>(null);
+const searchSpecialization = ref<string>("");
 const icons = {
   select: "material-symbols:done-rounded",
   selected: "material-symbols:close-rounded",
@@ -73,7 +82,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
           </label>
           <label for="searchGrade">
             Ročník
-            <input id="searchGrade" placeholder="3" type="number" v-model="searchGrade" />
+            <input id="searchGrade" min="1" max="10" placeholder="3" type="number" v-model="searchGrade" />
           </label>
           <label for="searchGroup">
             Skupina
@@ -97,9 +106,14 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
               class="item"
               :class="{ selected: selectedClasses.includes(item.id) }"
               @click="selectClass(item.id)"
+              v-if="searchedClasses.length > 0"
             >
               <Icon class="icon" :name="selectedClasses.includes(item.id) ? icons.select : icons.selected" />
               <span>{{ item.name }} - {{ item.specialization }}{{ item.grade }}{{ item.group }}</span>
+            </div>
+
+            <div v-else class="item error">
+              <p>Žádné třída nebyla nalezena.</p>
             </div>
           </div>
         </div>
@@ -150,7 +164,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
         flex-wrap: wrap;
 
         input {
-          padding: 15px 0 15px 15px;
+          padding: 15px;
           min-width: 150px;
           width: 100%;
           background: transparent;
@@ -162,7 +176,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
 
           &, &::placeholder {
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 400;
           }
         }
       }
@@ -245,6 +259,10 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
           .icon, span {
             color: rgba(var(--main-color), 1);
           }
+        }
+
+        &.error {
+          color: rgba(var(--error-color), 1);
         }
 
         &:hover {
