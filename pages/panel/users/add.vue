@@ -167,7 +167,15 @@ await apiFetch("/user/get/roles", {
           </div>
 
           <div class="line page-section" >
-            <EditClass :reset="triggerReset" @update="onPasswordUpdate">
+            <EditClass :old-class-ids="[1, 2, 3]" :classes="[
+                  { id: 1, specialization: 'V', name: 'Skibidi1', grade: 4, group: 'B' },
+                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
+                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
+                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
+                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
+                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
+                  { id: 3, specialization: 'S', name: 'Skibidi3', grade: 1, group: 'C' },
+              ]" :reset="triggerReset" @update="onPasswordUpdate">
               <div class="section-head">
                 <h3>Třída * <span class="update" v-show="newUserData.class">(aktualizováno)</span></h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>

@@ -166,7 +166,7 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
         email: userEmail,
         abbreviation: userAbbreviation,
         role: "user2",
-        idClass: null,
+        idClass: [],
         createdAt: new Date(),
         profilePicture: "default.jpg",
       });

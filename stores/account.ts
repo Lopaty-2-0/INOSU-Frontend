@@ -11,7 +11,7 @@ export const useAccountStore = defineStore("account", {
         email: "",
         role: "",
         profilePicture: "default.jpg",
-        idClass: null as number | null,
+        idClass: [] as number[],
         createdAt: new Date() as Date,
         links: [] as AccountLink[],
         theme: "" as AccountTheme,

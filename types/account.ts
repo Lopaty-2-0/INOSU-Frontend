@@ -6,7 +6,7 @@ interface AccountData {
     email: string;
     role: string;
     profilePicture: string;
-    idClass: number | null;
+    idClass: number[];
     createdAt: Date;
 }
 
