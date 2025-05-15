@@ -52,11 +52,20 @@ const toggleDropdown = (): void => {
 
 const selectClass = (classId: number): void => {
   selectedClasses.value = selectedClasses.value.includes(classId) ? selectedClasses.value.filter((item: number) => item !== classId) : [...selectedClasses.value, classId];
+
+  emits("update", {
+    classes: selectedClasses.value.length > 0 ? selectedClasses.value : undefined,
+  });
 };
 
 watch(() => props.reset, (reset: boolean): void => {
   if (reset) {
     open.value = false;
+    selectedClasses.value = [...props.oldClassIds];
+    searchName.value = "";
+    searchGrade.value = null;
+    searchGroup.value = "";
+    searchSpecialization.value = "";
   }
 });
 
@@ -109,7 +118,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
               v-if="searchedClasses.length > 0"
             >
               <Icon class="icon" :name="selectedClasses.includes(item.id) ? icons.select : icons.selected" />
-              <span>{{ item.name }} - {{ item.specialization }}{{ item.grade }}{{ item.group }}</span>
+              <span><span class="name" v-if="item.name">{{ item.name + " - " }}</span>{{ item.specialization }}{{ item.grade }}{{ item.group }}</span>
             </div>
 
             <div v-else class="item error">
@@ -177,6 +186,10 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
           &, &::placeholder {
             font-size: 16px;
             font-weight: 400;
+          }
+
+          &:focus {
+            border-color: rgba(var(--main-color), 1);
           }
         }
       }
@@ -249,6 +262,14 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
         padding: 15px;
         transition: 0.2s;
         cursor: pointer;
+
+        span {
+          text-transform: uppercase;
+        }
+
+        .name {
+          text-transform: none;
+        }
 
         .icon {
           font-size: 16px;

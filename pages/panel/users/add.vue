@@ -10,6 +10,10 @@ import EditRole from "../../../components/users/manage/Role.vue";
 import EditAbbreviation from "../../../components/users/manage/Abbreviation.vue";
 import EditClass from "../../../components/users/manage/Class.vue";
 import apiFetch from "../../../componsables/apiFetch";
+import type {ClassData} from "~/types/classes";
+import {navigateTo, useCookie} from "#app";
+import type {AccountData} from "~/types/account";
+import {useAlertsStore} from "~/stores/alerts";
 
 definePageMeta({
   middleware: ["auth"]
@@ -22,28 +26,30 @@ useHead({
   ],
 });
 
+const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
 const triggerReset = ref<boolean>(false);
 const allRoles = ref<string[] | undefined>(undefined);
+const allClasses = ref<ClassData[] | undefined>(undefined);
 
-const oldUserData = computed<{ name: string, surname: string, email: string, password: string, abbreviation: string, role: string, class: string}>(() => ({
+const oldUserData = computed<{ name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>(() => ({
   name: "",
   surname: "",
   email: "",
   password: "",
   abbreviation: "",
   role: "",
-  class: ""
+  classes: [],
 }));
 
-const newUserData = ref<{ name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, class: string | undefined}>({
+const newUserData = ref<{ name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[] | undefined}>({
   name: undefined,
   surname: undefined,
   email: undefined,
   password: undefined,
   abbreviation: undefined,
   role: undefined,
-  class: undefined,
+  classes: undefined,
 });
 const onFullNameUpdate = (fullName: { name: string | undefined, surname: string | undefined }): void => {
   newUserData.value.name = fullName.name;
@@ -66,6 +72,10 @@ const onRoleUpdate = (data: { role: string | undefined }): void => {
   newUserData.value.role = data.role;
 };
 
+const onClassUpdate = (data: { classes: number[] | undefined }): void => {
+  newUserData.value.classes = data.classes;
+};
+
 const resetUserData = (): void => {
   newUserData.value = {
     name: undefined,
@@ -74,7 +84,7 @@ const resetUserData = (): void => {
     password: undefined,
     abbreviation: undefined,
     role: undefined,
-    class: undefined,
+    classes: undefined,
   };
 
   triggerReset.value = true;
@@ -85,9 +95,89 @@ const resetUserData = (): void => {
 };
 
 const createNewUser = async (): Promise<void> => {
+  if (!newUserData.value.name || !newUserData.value.surname || !newUserData.value.email || !newUserData.value.password || !newUserData.value.role) {
+    alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Vyplňte všechna povinná pole." });
+    return;
+  }
+
   submitLoading.value = true;
 
-  submitLoading.value = false;
+  await apiFetch("/user/add", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {
+      name: newUserData.value.name,
+      surname: newUserData.value.surname,
+      email: newUserData.value.email,
+      password: newUserData.value.password,
+      abbreviation: newUserData.value.abbreviation,
+      role: newUserData.value.role,
+      classes: newUserData.value.classes,
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    async onResponse({ response }) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "1020":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Jméno nebylo zadáno." });
+          break;
+        case "1030":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Jméno je příliš dlouhé." });
+          break;
+        case "1040":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Příjmení nebylo zadáno." });
+          break;
+        case "1050":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Příjmení je příliš dlouhé." });
+          break;
+        case "1060":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role nebyla zadána." });
+          break;
+        case "1070":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role je příliš dlouhá." });
+          break;
+        case "1080":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Heslo nebylo zadáno." });
+          break;
+        case "1090":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Heslo je příliš krátké." });
+          break;
+        case "1100":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "E-mail nebyl zadán." });
+          break;
+        case "1110":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Špatný formát e-mailu." });
+          break;
+        case "1120":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "E-mail je příliš dlouhý." });
+          break;
+        case "1130":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "E-mail je již používán." });
+          break;
+        case "1140":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Zkratka je již používána." });
+          break;
+        case "1150":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Zkratka je příliš dlouhá." });
+          break;
+        case "1161":
+          alertsStore.addAlert({ type: "success", title: "Přidání uživatele", message: "Uživatel byl úspěšně přidán." });
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    async onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nastala neznámá chyba." });
+    },
+  }).finally((): void => {
+    submitLoading.value = false;
+  });
 };
 
 await apiFetch("/user/get/roles", {
@@ -103,10 +193,24 @@ await apiFetch("/user/get/roles", {
     allRoles.value = roles || [];
   },
 });
+
+await apiFetch("/class/get", {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }) {
+    const classes: ClassData[] = response._data.data.classes;
+
+    allClasses.value = classes || [];
+  },
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allRoles">
+  <NuxtLayout name="panel" :loading="!allRoles || !allClasses">
     <template #header>
       <Navbar :links="[
         { name: 'Uživatelé', path: '/panel/users' },
@@ -163,17 +267,9 @@ await apiFetch("/user/get/roles", {
           </div>
 
           <div class="line page-section" >
-            <EditClass :old-class-ids="[1, 2, 3]" :classes="[
-                  { id: 1, specialization: 'V', name: 'Skibidi1', grade: 4, group: 'B' },
-                  { id: 2, specialization: 'I', name: 'Skibidi2', grade: 2, group: 'A' },
-                  { id: 3, specialization: 'I', name: 'Skibidi3', grade: 2, group: 'A' },
-                  { id: 4, specialization: 'I', name: 'Skibidi4', grade: 3, group: 'A' },
-                  { id: 5, specialization: 'I', name: 'Skibidi5', grade: 2, group: 'A' },
-                  { id: 6, specialization: 'I', name: 'Skibidi6', grade: 2, group: 'A' },
-                  { id: 7, specialization: 'S', name: 'Skibidi7', grade: 1, group: 'C' },
-              ]" :reset="triggerReset" @update="onPasswordUpdate">
+            <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate">
               <div class="section-head">
-                <h3>Třída * <span class="update" v-show="newUserData.class">(aktualizováno)</span></h3>
+                <h3>Třída * <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </div>
             </EditClass>

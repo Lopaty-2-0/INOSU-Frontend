@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
-import apiFetch from "../../../componsables/apiFetch";
 
 const props = defineProps({
   roles: {
@@ -28,6 +27,14 @@ const icons = {
 };
 
 const selectItem = (value: string): void => {
+  role.value.error = "";
+
+  if (value === role.value.input) {
+    role.value.input = "";
+    emits("update", { role: undefined });
+    return;
+  }
+
   role.value.input = value;
 
   emits("update", { role: role.value.input });
@@ -38,9 +45,9 @@ const onInput = (): void => {
 
   if (role.value.input) {
     if (role.value.input.length < 2) {
-      role.value.error = "Role musí mít alespoň 2 znaky.";
-    } else if (role.value.input.length > 20) {
-      role.value.error = "Role může mít maximálně 30 znaků.";
+      role.value.error = "Nová role musí mít alespoň 2 znaky.";
+    } else if (role.value.input.length > 45) {
+      role.value.error = "Nová role může mít maximálně 45 znaků.";
     }
   }
 
@@ -68,11 +75,11 @@ watch(() => props.reset, (reset: boolean): void => {
 
     <div class="item">
       <div class="content">
-        <label>Role</label>
+        <label for="roleInput">Role</label>
 
         <div class="dropdown" :class="{ open: open, error: role.error }">
           <div class="title">
-            <input placeholder="Vyberte / Vytvořte roli" @input="onInput" v-model="role.input" />
+            <input id="roleInput" placeholder="Vyberte / Vytvořte roli" @input="onInput" v-model="role.input" />
 
             <div class="icon-div" @click="toggleDropdown">
               <Icon class="icon" :name="open ? icons.close : icons.open" />
@@ -88,12 +95,12 @@ watch(() => props.reset, (reset: boolean): void => {
               @click="selectItem(item)"
             >
               <Icon class="icon" :name="role.input === item ? icons.select : icons.selected" />
-              <span>{{ item}}</span>
+              <span>{{ item }}</span>
             </div>
           </div>
         </div>
 
-        <p v-if="role.error" class="input-error">{{ role.error}}</p>
+        <p v-if="role.error" class="input-error">{{ role.error }}</p>
       </div>
     </div>
   </div>
@@ -138,6 +145,10 @@ watch(() => props.reset, (reset: boolean): void => {
         border: var(--border-width) solid rgba(var(--border-color), 0.5);
         background: var(--input-background);
         color: var(--input-color);
+
+        &:focus {
+          border-color: rgba(var(--main-color), 1);
+        }
       }
 
       .icon-div {
