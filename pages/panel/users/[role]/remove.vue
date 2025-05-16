@@ -19,7 +19,7 @@ const route = useRoute();
 const role = route.params.role as string;
 
 useHead({
-  title: "Panel | Uživatelé - " + role,
+  title: "Panel | Odstranění uživatelů - " + role,
   meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
@@ -151,26 +151,6 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
   ignoreResponseError: true,
   onResponse({ response }: any) {
     const usersData: AccountData[] = response._data?.data?.users || [];
-
-    for (let i = 1; i <= 60; i++) {
-      const userId = (i * 10).toString();
-      const userName = `random${i}`;
-      const userSurname = `random-${i}`;
-      const userEmail = `${userName}@${userSurname}.cz`;
-      const userAbbreviation = `RAN${i}`;
-
-      usersData.push({
-        id: userId,
-        name: userName,
-        surname: userSurname,
-        email: userEmail,
-        abbreviation: userAbbreviation,
-        role: "user2",
-        idClass: [],
-        createdAt: new Date(),
-        profilePicture: "default.jpg",
-      });
-    }
 
     users.value = usersData;
     searchedUsers.value = [...usersData];

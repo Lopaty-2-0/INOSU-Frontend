@@ -166,6 +166,7 @@ const createNewUser = async (): Promise<void> => {
           break;
         case "1161":
           alertsStore.addAlert({ type: "success", title: "Přidání uživatele", message: "Uživatel byl úspěšně přidán." });
+          resetUserData();
           break;
         default:
           alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nastala neznámá chyba." });
@@ -269,7 +270,7 @@ await apiFetch("/class/get", {
           <div class="line page-section" >
             <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate">
               <div class="section-head">
-                <h3>Třída * <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
+                <h3>Třída <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </div>
             </EditClass>

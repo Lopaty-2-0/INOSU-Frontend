@@ -24,7 +24,7 @@ const onInput = (): void => {
   if (abbreviation.value.input.length > 4) abbreviation.value.error = "Délka přezdívky může být max 4 znaky.";
   else abbreviation.value.error = "";
 
-  const isUpdated: boolean = abbreviation.value.input !== "" && abbreviation.value.input !== props.oldAbbreviation && abbreviation.value.error === "";
+  const isUpdated: boolean = abbreviation.value.input !== "" && abbreviation.value.input.toLowerCase() !== props.oldAbbreviation.toLowerCase() && abbreviation.value.error === "";
 
   emits("update", { abbreviation: isUpdated ? abbreviation.value.input : undefined });
 };

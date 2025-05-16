@@ -28,7 +28,7 @@ export const useAccountStore = defineStore("account", {
                 role: this.role,
                 profilePicture: this.profilePicture,
                 idClass: this.idClass,
-                createdAt: this.createdAt
+                createdAt: this.createdAt,
             };
         },
         getTheme(): AccountTheme {
