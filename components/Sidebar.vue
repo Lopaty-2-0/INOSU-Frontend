@@ -57,6 +57,17 @@ const sidebarLinks = ref<
         notify: getStyledNumber(numberOfUnreadRequests.value),
       },
       {
+        text: "Třídy",
+        href: "/panel/classes",
+        activeHrefs: [
+          "/panel/classes",
+          "/panel/classes/add",
+          "/panel/classes/remove",
+        ],
+        iconClass: "material-symbols:flight-class-rounded",
+        notify: false,
+      },
+      {
         text: "Uživatelé",
         href: "/panel/users",
         activeHrefs: [
@@ -65,13 +76,7 @@ const sidebarLinks = ref<
           "/panel/users/remove",
           "/panel/users/edit",
         ],
-        iconClass: "material-symbols:user-attributes-rounded",
-        notify: false,
-      },
-      {
-        text: "Editor stránek",
-        href: "/panel/pageContentEditor",
-        iconClass: "material-symbols:edit-square-rounded",
+        iconClass: "material-symbols:supervisor-account-rounded",
         notify: false,
       },
     ],

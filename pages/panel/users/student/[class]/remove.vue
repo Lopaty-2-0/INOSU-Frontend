@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import Navbar from "../../../../components/Navbar.vue";
-import type { AccountData } from "../../../../types/account";
 import { ref, onMounted } from "vue";
-import apiFetch from "../../../../componsables/apiFetch";
 import ActionBar from "~/components/basics/ActionBar.vue";
-import UsersGrid from "../../../../components/users/Grid.vue";
-import GridNavigation from "../../../../components/users/Navigation.vue";
-import { useAlertsStore } from "../../../../stores/alerts";
-import Alerts from "../../../../components/Alerts.vue";
-import Loading from "../../../../components/basics/Loading.vue";
+import Navbar from "~/components/Navbar.vue";
+import UsersGrid from "~/components/users/Grid.vue";
+import GridNavigation from "~/components/users/Navigation.vue";
+import Alerts from "~/components/Alerts.vue";
+import { useAlertsStore } from "~/stores/alerts";
+import apiFetch from "~/componsables/apiFetch";
+import type { AccountData } from "~/types/account";
+import Loading from "~/components/basics/Loading.vue";
 
 definePageMeta({
   middleware: ["auth"],
 });
 
 const route = useRoute();
-const role = route.params.role as string;
+const classId = route.params.class as string;
 
 useHead({
-  title: "Panel | Odstranění uživatelů - " + role,
+  title: "Panel | Odstranění uživatelů -  Třída: " + classId,
   meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
@@ -128,7 +128,7 @@ const removeUsers = async (): Promise<void> => {
   });
 };
 
-await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
+await apiFetch(`/user_class/get/users?idClass=${encodeURIComponent(classId)}`, {
   method: "get",
   headers: {
     "Content-Type": "application/json",
@@ -150,8 +150,9 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
       <Navbar
         :links="[
           { name: 'Uživatelé', path: '/panel/users' },
-          { name: role, path: '/panel/users/' + role },
-          { name: 'Odstranění', path: '/panel/users/' + role + '/remove' },
+          { name: 'student', path: '/panel/users/student' },
+          { name: 'Třída: ' + classId, path: '/panel/users/student' + classId },
+          { name: 'Odstranění', path: '/panel/users/student/' + classId + '/remove' },
         ]"
       />
     </template>
@@ -171,8 +172,8 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
             ]"
             :navigate-to="[
               `/panel/users/add`,
-              `/panel/users/${role}/edit`,
-              `/panel/users/${role}/remove`,
+              `/panel/users/student/${classId}/edit`,
+              `/panel/users/student/${classId}/remove`,
             ]"
           />
 

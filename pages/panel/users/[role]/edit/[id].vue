@@ -108,7 +108,7 @@ const resetUserData = (): void => {
   }, 100);
 };
 
-const createNewUser = async (): Promise<void> => {
+const updateUser = async (): Promise<void> => {
   submitLoading.value = true;
 
   const updateUserForm: FormData = new FormData();
@@ -117,10 +117,9 @@ const createNewUser = async (): Promise<void> => {
   if (newUserData.value.name) updateUserForm.append("name", newUserData.value.name);
   if (newUserData.value.surname) updateUserForm.append("surname", newUserData.value.surname);
   if (newUserData.value.email) updateUserForm.append("email", newUserData.value.email);
-  if (newUserData.value.password) updateUserForm.append("password", newUserData.value.password);
   if (newUserData.value.abbreviation) updateUserForm.append("abbreviation", newUserData.value.abbreviation);
   if (newUserData.value.role) updateUserForm.append("role", newUserData.value.role);
-  if (newUserData.value.classes) updateUserForm.append("classes", JSON.stringify(newUserData.value.classes));
+  if (newUserData.value.classes) updateUserForm.append("idClass", JSON.stringify(newUserData.value.classes));
   updateUserForm.append("idUser", id);
 
   await apiFetch("/user/update", {
@@ -130,9 +129,57 @@ const createNewUser = async (): Promise<void> => {
     ignoreResponseError: true,
     async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "2040":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nemáte oprávnění k této akci." });
+          break;
+        case "2050":
+          alertsStore.addAlert({ type: "warning", title: "Úprava uživatele", message: "Nic nebylo zadáno ke změně." });
+          break;
+        case "2060":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatné ID uživatele." });
+          break;
+        case "2070":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je již používána." });
+          break;
+        case "2080":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je příliš dlouhá." });
+          break;
+        case "2090":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát e-mailu." });
+          break;
+        case "2100":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je již používán." });
+          break;
+        case "2110":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je příliš dlouhý." });
+          break;
+        case "2120":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát souboru." });
+          break;
+        case "2131":
+          alertsStore.addAlert({ type: "success", title: "Úprava uživatele", message: "Uživatel byl úspěšně upraven." });
+
+          if (newUserData.value.name) oldUserData.value.name = newUserData.value.name;
+          if (newUserData.value.surname) oldUserData.value.surname = newUserData.value.surname;
+          if (newUserData.value.email) oldUserData.value.email = newUserData.value.email;
+          if (newUserData.value.abbreviation) oldUserData.value.abbreviation = newUserData.value.abbreviation;
+          if (newUserData.value.role) oldUserData.value.role = newUserData.value.role;
+          if (newUserData.value.classes) oldUserData.value.classes = newUserData.value.classes;
+          if (newUserData.value.profilePicture) {
+            oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
+          }
+
+          resetUserData();
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nastala neznámá chyba." });
+          break;
+      }
     },
     async onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nastala neznámá chyba." });
     },
   }).finally((): void => {
     submitLoading.value = false;
@@ -188,15 +235,16 @@ await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
       oldUserData.value.profilePicture = "http://89.203.248.163/uploads/profilePictures/" + user.profilePicture;
     } else {
       await router.push(`/panel/users/${role}/edit`);
+      return;
     }
+
+    oldUserData.value.loaded = true;
   },
-}).finally((): void => {
-  oldUserData.value.loaded = true;
-});
+})
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allRoles || !allClasses">
+  <NuxtLayout name="panel" :loading="!allRoles || !allClasses || !oldUserData.loaded">
     <template #header>
       <Navbar :links="[
           { name: 'Uživatelé', path: '/panel/users' },
@@ -258,7 +306,7 @@ await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
           </div>
 
           <div class="line page-section">
-            <EditAbbreviation :full-name="{ name: newUserData.name, surname: newUserData.surname }" :old-abbreviation="oldUserData.abbreviation" :reset="triggerReset" @update="onAbbreviationUpdate">
+            <EditAbbreviation :full-name="{ name: newUserData.name ? newUserData.name : oldUserData.name, surname: newUserData.surname ? newUserData.surname : oldUserData.surname }" :old-abbreviation="oldUserData.abbreviation" :reset="triggerReset" @update="onAbbreviationUpdate">
               <div class="section-head">
                 <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
@@ -266,16 +314,19 @@ await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
             </EditAbbreviation>
           </div>
 
-          <div class="line page-section" >
-            <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate">
-              <div class="section-head">
-                <h3>Třída <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-              </div>
-            </EditClass>
+          <div class="line page-section">
+            <div class="section-head">
+              <h3>Třída <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+            </div>
+
+            <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" v-if="newUserData.role === 'student'" />
+            <p class="error" v-else>
+              Třídy můžete vybírat pouze pokud role uživatele je <strong>student</strong>.
+            </p>
           </div>
 
-          <EditFormFooter :is-loading="submitLoading" :reset-function="resetUserData" :submit-function="createNewUser" />
+          <EditFormFooter :is-loading="submitLoading" :reset-function="resetUserData" :submit-function="updateUser" />
         </div>
 
         <Alerts/>
@@ -298,9 +349,17 @@ await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
     gap: 35px;
     position: relative;
 
+    .error {
+      color: rgba(var(--error-color), 1);
+      font-size: 16px;
+    }
+
     .page-section {
       border-bottom: 1px solid rgba(var(--border-color), 0.5);
       padding-bottom: 35px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .section-head {

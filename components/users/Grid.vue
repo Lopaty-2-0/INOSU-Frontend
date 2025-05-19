@@ -138,7 +138,6 @@ watch(
       transition: 0.2s;
       cursor: pointer;
       border: var(--border-width) solid rgba(var(--border-color), 0.5);
-      border-radius: var(--normal-border-radius);
       background: var(--card-1-background);
       height: 100%;
 

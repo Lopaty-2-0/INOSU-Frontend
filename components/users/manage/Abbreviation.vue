@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
-import { useAlertsStore } from "~/stores/alerts";
 
 const props = defineProps({
   fullName: {

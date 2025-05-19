@@ -1,35 +1,29 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import Navbar from "../../../../components/Navbar.vue";
-import type { AccountData } from "../../../../types/account";
-import { ref, onMounted } from "vue";
-import apiFetch from "../../../../componsables/apiFetch";
+import { ref } from "vue";
 import ActionBar from "~/components/basics/ActionBar.vue";
-import UsersGrid from "../../../../components/users/Grid.vue";
-import GridNavigation from "../../../../components/users/Navigation.vue";
-import { useAlertsStore } from "../../../../stores/alerts";
-import Alerts from "../../../../components/Alerts.vue";
-import Loading from "../../../../components/basics/Loading.vue";
+import Navbar from "~/components/Navbar.vue";
+import UsersGrid from "~/components/users/Grid.vue";
+import GridNavigation from "~/components/users/Navigation.vue";
+import Alerts from "~/components/Alerts.vue";
+import apiFetch from "~/componsables/apiFetch";
+import type { AccountData } from "~/types/account";
 
 definePageMeta({
   middleware: ["auth"],
 });
 
 const route = useRoute();
-const role = route.params.role as string;
+const classId = route.params.class as string;
 
 useHead({
-  title: "Panel | Odstranění uživatelů - " + role,
+  title: "Panel | Upravení uživatelů - Třída: " + classId,
   meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
-const loading = ref<boolean>(false);
-const alertsStore = useAlertsStore();
 const users = ref<AccountData[] | null>(null);
 const numberOfPages = ref<number>(0);
 const activePage = ref<number>(0);
-const selectedUsers = ref<AccountData[]>([]);
-const resetSelectedUsers = ref<boolean>(false);
 const searchInput = ref<string>("");
 const searchedUsers = ref<AccountData[]>([]);
 
@@ -61,74 +55,7 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-const pingResetSelectedUsers = (): void => {
-  resetSelectedUsers.value = false;
-
-  setTimeout((): void => {
-    resetSelectedUsers.value = true;
-  }, 10);
-};
-
-const removeUsers = async (): Promise<void> => {
-  if (!users.value || !selectedUsers.value) return;
-
-  loading.value = true;
-
-  await apiFetch("/user/delete", {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: {
-      idUser: selectedUsers.value.map((user: AccountData) => user.id),
-    },
-    ignoreResponseError: true,
-    credentials: "include",
-    onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
-
-      switch (resCode) {
-        case "3010":
-          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nedostatečné oprávnění pro odstranění uživatelů.",});
-          break;
-        case "3020":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Žádný uživatel nebyl vybrán.",});
-          break;
-        case "3030":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nemůžete odstranit sám sebe.",});
-          break;
-        case "3040":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nemůžete odstranit sám sebe.",});
-          break;
-        case "3051":
-          alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: "Uživatelé byli úspěšně odstraněni.",});
-
-          if (users.value) {
-            users.value = users.value.filter((user: AccountData) => {
-              return !selectedUsers.value.some(
-                (selectedUser: AccountData) => selectedUser.id === user.id
-              );
-            });
-
-            searchedUsers.value = [...users.value];
-            pingResetSelectedUsers();
-          }
-
-          break;
-        default:
-          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nastala neznámá chyba.",});
-          break;
-      }
-    },
-    onRequestError() {
-      alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nastala neznámá chyba.",});
-    },
-  }).finally((): void => {
-    loading.value = false;
-  });
-};
-
-await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
+await apiFetch(`/user_class/get/users?idClass=${encodeURIComponent(classId)}`, {
   method: "get",
   headers: {
     "Content-Type": "application/json",
@@ -150,8 +77,9 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
       <Navbar
         :links="[
           { name: 'Uživatelé', path: '/panel/users' },
-          { name: role, path: '/panel/users/' + role },
-          { name: 'Odstranění', path: '/panel/users/' + role + '/remove' },
+          { name: 'student', path: '/panel/users/student' },
+          { name: 'Třída: ' + classId, path: '/panel/users/student' + classId },
+          { name: 'Upravení', path: '/panel/users/student/' + classId + '/edit' },
         ]"
       />
     </template>
@@ -160,71 +88,52 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
       <div id="users">
         <div class="content">
           <ActionBar
-            class="action-bar"
-            description="Správa uživatelů"
-            :active="2"
-            :texts="['Přidat', 'Upravit', 'Odebrat']"
-            :icons="[
+              class="action-bar"
+              description="Správa uživatelů"
+              :active="1"
+              :texts="['Přidat', 'Upravit', 'Odebrat']"
+              :icons="[
               'material-symbols:add-rounded',
               'material-symbols:edit-rounded',
               'material-symbols:delete-rounded',
             ]"
-            :navigate-to="[
+              :navigate-to="[
               `/panel/users/add`,
-              `/panel/users/${role}/edit`,
-              `/panel/users/${role}/remove`,
+              `/panel/users/student/${classId}/edit`,
+              `/panel/users/student/${classId}/remove`,
             ]"
           />
 
           <div class="line">
             <div class="section-head">
-              <h3>
-                Uživatelé: {{ selectedUsers.length }} /
-                {{ searchedUsers.length }}
-              </h3>
+              <h3>Upravení uživatelů</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
             </div>
 
             <div class="search">
               <input
-                type="text"
-                name="searchInput"
-                placeholder="Hledat uživatele"
-                @input="searchUsers"
-                v-model="searchInput"
+                  type="text"
+                  name="searchInput"
+                  placeholder="Hledat uživatele"
+                  @input="searchUsers"
+                  v-model="searchInput"
               />
               <Icon class="icon" name="material-symbols:search-rounded"></Icon>
             </div>
-          </div>
-
-          <div class="buttons">
-            <button class="remove" @click="removeUsers">
-              Odstranit
-              <Loading
-                v-show="loading"
-                size="5px"
-                color="var(--actionBar-actions-remove-color)"
-              />
-            </button>
-            <button class="reset" @click="pingResetSelectedUsers">
-              Zrušit vše
-            </button>
           </div>
 
           <div class="users">
             <UsersGrid
               :users="searchedUsers"
               :users-per-page="12"
-              :action="'remove'"
+              :action="'edit'"
               :active-page="activePage"
-              :reset="resetSelectedUsers"
-              @get:number-of-pages="(value) => (numberOfPages = value)"
-              @get:selected-users="(value) => (selectedUsers = value)"
+              @get:number-of-pages="(value: any) => (numberOfPages = value)"
             />
             <GridNavigation
               class="users-navigation"
               :number-of-pages="numberOfPages"
-              @get:active-page="(value) => (activePage = value)"
+              @get:active-page="(value: any) => (activePage = value)"
             />
           </div>
         </div>
