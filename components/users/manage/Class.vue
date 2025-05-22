@@ -78,7 +78,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
   <div class="section">
     <slot />
 
-    <div class="item">
+    <div class="section">
       <div class="content">
         <div class="search">
           <label for="searchName">
@@ -112,7 +112,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
             <div
               v-for="item in searchedClasses"
               :key="item.id"
-              class="item"
+              class="section"
               :class="{ selected: selectedClasses.includes(item.id) }"
               @click="selectClass(item.id)"
               v-if="searchedClasses.length > 0"
@@ -121,7 +121,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
               <span><span class="name" v-if="item.name">{{ item.name + " - " }}</span>{{ item.specialization }}{{ item.grade }}{{ item.group }}</span>
             </div>
 
-            <div v-else class="item error">
+            <div v-else class="section error">
               <p>Žádné třída nebyla nalezena.</p>
             </div>
           </div>
@@ -138,7 +138,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
   gap: 30px;
   width: 100%;
 
-  .item {
+  .section {
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -255,7 +255,7 @@ watch(() => props.oldClassIds, (newClassIds: number[]): void => {
         width: 5px;
       }
 
-      .item {
+      .section {
         display: flex;
         align-items: center;
         gap: 10px;

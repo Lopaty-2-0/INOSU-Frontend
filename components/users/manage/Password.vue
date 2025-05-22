@@ -73,7 +73,7 @@ watch(
     <slot />
 
     <div class="items reset-password">
-      <div class="item old-password">
+      <div class="section old-password">
         <div class="content">
           <label for="oldPassword">{{
             props.type === "new" ? "Heslo" : "Staré heslo"
@@ -113,7 +113,7 @@ watch(
         </div>
       </div>
 
-      <div class="item" v-if="props.type !== 'new'">
+      <div class="section" v-if="props.type !== 'new'">
         <div class="content">
           <label for="newPassword">Nové heslo</label>
           <input
@@ -169,7 +169,7 @@ watch(
     flex-wrap: wrap;
     align-items: flex-start;
 
-    .item {
+    .section {
       display: flex;
       flex-direction: row;
       gap: 20px;

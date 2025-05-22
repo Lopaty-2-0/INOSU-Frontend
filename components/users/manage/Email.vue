@@ -53,7 +53,7 @@ watch(() => props.reset, (reset: boolean): void => {
   <div class="section">
     <slot />
 
-    <div class="item url">
+    <div class="section url">
       <div class="content">
         <label for="email">E-mail</label>
         <div class="line">
@@ -90,7 +90,7 @@ watch(() => props.reset, (reset: boolean): void => {
     }
   }
 
-  .item {
+  .section {
     display: flex;
     flex-direction: row;
     gap: 20px;

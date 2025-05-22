@@ -10,7 +10,7 @@ interface Alert {
 export const useAlertsStore = defineStore("alerts", {
     state: () => ({
         alerts: [] as Alert[],
-        defaultAlertTimeout: 3000
+        defaultAlertTimeout: 5000
     }),
     getters: {
         getAlerts(): Alert[] {

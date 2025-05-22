@@ -73,7 +73,7 @@ watch(() => props.reset, (reset: boolean): void => {
   <div class="section">
     <slot />
 
-    <div class="item">
+    <div class="section">
       <div class="content">
         <label for="roleInput">Role</label>
 
@@ -91,7 +91,7 @@ watch(() => props.reset, (reset: boolean): void => {
               v-for="(item, index) in props.roles"
               :key="index"
               :class="{ selected: role.input === item }"
-              class="item"
+              class="section"
               @click="selectItem(item)"
             >
               <Icon class="icon" :name="role.input === item ? icons.select : icons.selected" />
@@ -188,7 +188,7 @@ watch(() => props.reset, (reset: boolean): void => {
       z-index: 5;
       left: 0;
 
-      .item {
+      .section {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -240,7 +240,7 @@ watch(() => props.reset, (reset: boolean): void => {
     }
   }
 
-  .item {
+  .section {
     display: flex;
     flex-direction: row;
     gap: 20px;

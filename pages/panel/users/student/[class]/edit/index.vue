@@ -97,7 +97,7 @@ await apiFetch(`/user_class/get/users?idClass=${encodeURIComponent(classId)}`, {
               'material-symbols:edit-rounded',
               'material-symbols:delete-rounded',
             ]"
-              :navigate-to="[
+            :navigate-to="[
               `/panel/users/add`,
               `/panel/users/student/${classId}/edit`,
               `/panel/users/student/${classId}/remove`,
@@ -112,11 +112,11 @@ await apiFetch(`/user_class/get/users?idClass=${encodeURIComponent(classId)}`, {
 
             <div class="search">
               <input
-                  type="text"
-                  name="searchInput"
-                  placeholder="Hledat uživatele"
-                  @input="searchUsers"
-                  v-model="searchInput"
+                type="text"
+                name="searchInput"
+                placeholder="Hledat uživatele"
+                @input="searchUsers"
+                v-model="searchInput"
               />
               <Icon class="icon" name="material-symbols:search-rounded"></Icon>
             </div>

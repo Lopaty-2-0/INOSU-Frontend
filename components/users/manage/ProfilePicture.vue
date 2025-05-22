@@ -170,7 +170,7 @@ watch(
   <div class="section">
     <slot />
     <div class="items">
-      <div class="item">
+      <div class="section">
         <div class="content image">
           <img
             loading="lazy"
@@ -210,7 +210,7 @@ watch(
         </div>
       </div>
 
-      <div class="item url">
+      <div class="section url">
         <div class="content">
           <label for="image">URL obrázku</label>
           <div class="line">
@@ -267,7 +267,7 @@ watch(
     gap: 30px;
     width: 100%;
 
-    .item {
+    .section {
       display: flex;
       flex-direction: row;
       gap: 20px;
@@ -396,7 +396,7 @@ watch(
 }
 
 @media (max-width: 994px) {
-  #settings .section .items .item .content.image {
+  #settings .section .items .section .content.image {
     .upload-file {
       max-width: 100%;
 
@@ -409,7 +409,7 @@ watch(
 }
 
 @media (max-width: 750px) {
-  .section .items .item .content.image {
+  .section .items .section .content.image {
     .upload-file {
       height: 150px;
     }
@@ -421,7 +421,7 @@ watch(
 }
 
 @media (max-width: 503px) {
-  .section .items .item .content.image {
+  .section .items .section .content.image {
     flex-direction: column;
 
     .upload-file {

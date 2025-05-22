@@ -320,7 +320,7 @@ await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
             </div>
 
-            <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" v-if="newUserData.role === 'student'" />
+            <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" v-if="newUserData.role ? newUserData.role === 'student' : oldUserData.role === 'student'" />
             <p class="error" v-else>
               Třídy můžete vybírat pouze pokud role uživatele je <strong>student</strong>.
             </p>
@@ -429,7 +429,7 @@ await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
       flex-direction: column;
     }
 
-    ::v-deep(.item) {
+    ::v-deep(.section) {
       width: 100%;
     }
   }

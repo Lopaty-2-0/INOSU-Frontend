@@ -384,7 +384,7 @@ await apiFetch("/class/get", {
       flex-direction: column;
     }
 
-    ::v-deep(.item) {
+    ::v-deep(.section) {
       width: 100%;
     }
   }

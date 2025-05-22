@@ -102,7 +102,7 @@ const submitForm = async (): Promise<void> => {
       </div>
 
       <form @submit.prevent="submitForm" @input="resetMessages">
-        <div class="item">
+        <div class="section">
           <label for="email">E-mail</label>
           <input
             type="text"
@@ -205,7 +205,7 @@ const submitForm = async (): Promise<void> => {
         color: rgba(var(--success-color), 1);
       }
 
-      .item {
+      .section {
         display: flex;
         flex-direction: column;
         gap: 10px;

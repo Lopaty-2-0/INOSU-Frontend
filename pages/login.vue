@@ -108,7 +108,7 @@ const resetErrors = (): void => {
       </div>
 
       <form @submit.prevent="submitLoginForm" @input="resetErrors">
-        <div class="item">
+        <div class="section">
           <label for="login">E-mail / Zkratka</label>
           <input
             id="login"
@@ -120,7 +120,7 @@ const resetErrors = (): void => {
           <p v-if="errors.login" class="error">{{ errors.login }}</p>
         </div>
 
-        <div class="item">
+        <div class="section">
           <label for="password">Heslo</label>
           <input
             id="password"
@@ -220,7 +220,7 @@ const resetErrors = (): void => {
         color: rgba(var(--error-color), 1);
       }
 
-      .item {
+      .section {
         display: flex;
         flex-direction: column;
         gap: 10px;

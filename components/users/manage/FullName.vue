@@ -48,14 +48,14 @@ watch(() => props.reset, (reset: boolean) => {
     <slot />
 
     <div class="items full-name">
-      <div class="item">
+      <div class="section">
         <div class="content">
           <label for="firstName">Jméno <span class="update" v-if="inputData.name.updated">(aktualizováno)</span></label>
           <input type="text" id="firstName" name="firstName" :placeholder="props.oldFullName?.name ? props.oldFullName?.name : 'Jan'" v-model="inputData.name.input" @input="onInput">
         </div>
       </div>
 
-      <div class="item">
+      <div class="section">
         <div class="content">
           <label for="secondName">Příjmení <span class="update" v-if="inputData.surname.updated">(aktualizováno)</span></label>
           <input type="text" id="secondName" name="secondName" :placeholder="props.oldFullName?.surname ? props.oldFullName?.surname : 'Novák'" v-model="inputData.surname.input" @input="onInput">
@@ -95,7 +95,7 @@ watch(() => props.reset, (reset: boolean) => {
     flex-wrap: wrap;
     align-items: flex-start;
 
-    .item {
+    .section {
       display: flex;
       flex-direction: row;
       gap: 20px;

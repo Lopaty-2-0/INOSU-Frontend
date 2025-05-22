@@ -168,7 +168,7 @@
         }
       }
 
-      ::v-deep(.item) {
+      ::v-deep(.section) {
         width: 100%;
       }
     }

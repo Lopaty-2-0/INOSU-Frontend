@@ -179,7 +179,7 @@ onMounted(async (): Promise<void> => {
       </div>
 
       <form @submit.prevent="submitForm" @input="resetMessages">
-        <div class="item">
+        <div class="section">
           <label for="password">Nové heslo</label>
           <input
             type="password"
@@ -191,7 +191,7 @@ onMounted(async (): Promise<void> => {
           <p v-if="messages.password" class="error">{{ messages.password }}</p>
         </div>
 
-        <div class="item">
+        <div class="section">
           <label for="passwordAgain">Heslo znovu</label>
           <input
             type="password"
@@ -364,7 +364,7 @@ onMounted(async (): Promise<void> => {
         color: rgba(var(--success-color), 1);
       }
 
-      .item {
+      .section {
         display: flex;
         flex-direction: column;
         gap: 10px;

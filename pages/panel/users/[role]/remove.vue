@@ -101,7 +101,7 @@ const removeUsers = async (): Promise<void> => {
           alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nemůžete odstranit sám sebe.",});
           break;
         case "3051":
-          alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: "Uživatelé byli úspěšně odstraněni.",});
+          alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: `Uživatelé byli úspěšně odstraněni. (${response._data.data.goodIds.length}/${selectedUsers.value.length})`});
 
           if (users.value) {
             users.value = users.value.filter((user: AccountData) => {
@@ -179,8 +179,7 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
           <div class="line">
             <div class="section-head">
               <h3>
-                Uživatelé: {{ selectedUsers.length }} /
-                {{ searchedUsers.length }}
+                Uživatelé: {{ selectedUsers.length }} / {{ searchedUsers.length }}
               </h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
             </div>

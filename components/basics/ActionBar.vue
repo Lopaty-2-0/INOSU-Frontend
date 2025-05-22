@@ -12,6 +12,10 @@ const props = defineProps({
     type: Array<string>,
     default: ["Přidat", "Upravit", "Odstranit"],
   },
+  actions: {
+    type: Array<string>,
+    default: ["add", "edit", "remove"],
+  },
   description: {
     type: String,
     default: "Akční bar",
@@ -33,21 +37,19 @@ const emits = defineEmits(["selected"]);
 
     <div class="actions">
       <NuxtLink
-        v-for="(_, index) in props.texts.length"
-        :key="index"
-        :class="{
+          v-for="(_, index) in props.texts.length"
+          :key="index"
+          :class="{
           action: true,
           active: props.active === index,
-          edit: index === 1,
-          remove: index === 2,
-          add: index === 0,
+          [props.actions[index]]: true,
         }"
-        :to="props.navigateTo[index] || '#'"
-        @click="emits('selected', index)"
+          :to="props.navigateTo[index] || '#'"
+          @click="emits('selected', index)"
       >
         <Icon
-          class="icon"
-          :name="
+            class="icon"
+            :name="
             props.icons[index] || 'material-symbols:radio-button-unchecked'
           "
         ></Icon>

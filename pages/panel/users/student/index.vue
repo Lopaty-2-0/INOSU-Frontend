@@ -171,7 +171,7 @@ await apiFetch("/class/get", {
       }
     }
 
-    ::v-deep(.item) {
+    ::v-deep(.section) {
       width: 100%;
     }
   }

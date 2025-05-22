@@ -154,7 +154,7 @@ onMounted((): void => {
 
       <div class="items">
         <div
-          class="item"
+          class="section"
           v-for="(item, itemIndex) in sidebarLinks"
           :key="itemIndex"
         >
@@ -192,7 +192,7 @@ onMounted((): void => {
             </li>
           </ul>
         </div>
-        <div class="item custom-links" v-if="!loading">
+        <div class="section custom-links" v-if="!loading">
           <ul class="links">
             <li v-for="(link, linkIndex) in accountLinks" :key="linkIndex">
               <a :href="link.href" class="link" target="_blank">
@@ -299,7 +299,7 @@ onMounted((): void => {
       font-weight: 700;
     }
 
-    .item {
+    .section {
       li {
         padding-right: 10px;
       }

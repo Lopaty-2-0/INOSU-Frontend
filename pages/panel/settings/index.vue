@@ -226,7 +226,7 @@ const updateUserData = async (): Promise<void> => {
       flex-direction: column;
     }
 
-    ::v-deep(.item) {
+    ::v-deep(.section) {
       width: 100%;
     }
   }
