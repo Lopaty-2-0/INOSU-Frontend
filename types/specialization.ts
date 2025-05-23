@@ -1,8 +1,8 @@
 interface SpecializationData {
     id: number;
-    name: number;
+    name: string;
     abbreviation: string;
-    lengthOfStudy: string;
+    lengthOfStudy: number;
 }
 
 export type {

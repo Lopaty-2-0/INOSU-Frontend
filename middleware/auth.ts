@@ -2,6 +2,7 @@ import { useAccountStore } from "~/stores/account";
 import type { AccountData, AccountTheme } from "../types/account";
 import { useCookie, useState } from "nuxt/app";
 import apiUseFetch from "../componsables/apiUseFetch";
+import checkPermissions from "~/componsables/checkPermissions";
 
 export default defineNuxtRouteMiddleware(async (from, to) => {
     if (process.server) return;
@@ -20,6 +21,17 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
 
         if (resCode !== "17011" || !isLogged) {
             return location.pathname = "/login";
+        }
+
+        const role: string = data.value.data.role;
+        const pageRoles: string[] = to.meta.roles as string[];
+
+        if (pageRoles) {
+            const permissionGranted = checkPermissions(pageRoles, role);
+
+            if (!permissionGranted) {
+                return navigateTo("/panel/errors/403");
+            }
         }
 
         const accountStore = useAccountStore();

@@ -55,7 +55,7 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-await apiFetch(`/user_class/get/users?idClass=${encodeURIComponent(classId)}`, {
+await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
   method: "get",
   headers: {
     "Content-Type": "application/json",

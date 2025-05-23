@@ -10,7 +10,7 @@ import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
 
 useHead({
-  title: "Panel | Třídy - Přidání",
+  title: "Panel | Zaměření - Přidání",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -20,113 +20,75 @@ definePageMeta({
 
 const alertsStore = useAlertsStore();
 const loading = ref<boolean>(false);
-const classData = ref<{ name: string; grade: number | null; group: string; specialization: number | null }>({
+const specializationData = ref<{ name: string; lengthOfStudy: number | null; abbreviation: string; }>({
   name: "",
-  grade: null,
-  group: "",
-  specialization: null
+  lengthOfStudy: null,
+  abbreviation: "",
 });
-const errors = ref<{ name: string; grade: string; group: string; specialization: string }>({
+const errors = ref<{ name: string; lengthOfStudy: string; abbreviation: string; }>({
   name: "",
-  grade: "",
-  group: "",
-  specialization: ""
+  lengthOfStudy: "",
+  abbreviation: "",
 });
 const allSpecializations = ref<SpecializationData[]>([]);
-const selectedSpecialization = ref<number | null>(null);
-const open = ref<boolean>(false);
-const searchName = ref<string>("");
-const searchLengthOfStudy = ref<number | null>(null);
-const searchAbbreviation = ref<string>("");
-const icons = {
-  select: "material-symbols:done-rounded",
-  selected: "material-symbols:close-rounded",
-  open: "material-symbols:arrow-downward-rounded",
-  close: "material-symbols:arrow-upward-rounded"
-};
-const title = ref<string>("");
-const searchedSpecializations = computed<SpecializationData[]>((): SpecializationData[] => {
-  return allSpecializations.value.filter((item: SpecializationData): boolean => {
-    return (
-        item.name.toLocaleLowerCase().includes(searchName.value.toLocaleLowerCase()) &&
-        (searchAbbreviation.value ? item.abbreviation.toLocaleLowerCase() === searchAbbreviation.value.toLocaleLowerCase() : true) &&
-        (searchLengthOfStudy.value ? item.lengthOfStudy === searchLengthOfStudy.value : true)
-    );
-  });
-});
-
-const toggleDropdown = (): void => {
-  open.value = !open.value;
-};
 
 const pingResetSelectedClasses = (): void => {
 };
 
-const onSpecializationSelect = (specialization: SpecializationData): void => {
-  if (specialization.id === selectedSpecialization.value) {
-    selectedSpecialization.value = null;
-    classData.value.specialization = null;
-    title.value = "";
-    return;
-  }
-
-  selectedSpecialization.value = specialization.id;
-  classData.value.specialization = specialization.id;
-  title.value = `${specialization.name} - ${specialization.abbreviation.toUpperCase()} - Délka studia (roky): ${specialization.lengthOfStudy}`;
-
-  checkForErrors();
-};
-
 const checkForErrors = (): void => {
   errors.value.name = "";
-  errors.value.grade = "";
-  errors.value.group = "";
-  errors.value.specialization = "";
+  errors.value.lengthOfStudy = "";
+  errors.value.abbreviation = "";
 
-  if (classData.value.name.length < 1) {
+  if (specializationData.value.name.length < 1) {
     errors.value.name = "Název třídy je povinný.";
   }
 
-  if (!classData.value.grade || classData.value.grade < 1) {
-    errors.value.grade = "Ročník třídy je povinný.";
-  } else if (classData.value.grade < 1) {
-    errors.value.grade = "Ročník třídy musí být větší než 0.";
+  if (specializationData.value.lengthOfStudy === null) {
+    errors.value.lengthOfStudy = "Délka studia je povinná.";
+  } else if (specializationData.value.lengthOfStudy < 1) {
+    errors.value.lengthOfStudy = "Délka studia musí být větší než 0.";
   }
 
-  if (classData.value.group.length < 1) {
-    errors.value.group = "Skupina třídy je povinná.";
-  } else if (classData.value.group.length > 1) {
-    errors.value.group = "Skupina třídy musí být maximálně 1 znak.";
-  }
-
-  console.log(classData.value.specialization);
-
-  if (classData.value.specialization === null) {
-    errors.value.specialization = "Zaměření třídy je povinné.";
+  if (specializationData.value.abbreviation.length < 1) {
+    errors.value.abbreviation = "Zkratka zaměření je povinná.";
+  } else if (specializationData.value.abbreviation.length > 1) {
+    errors.value.abbreviation = "Zkratka zaměření může mít maximálně 1 znak.";
   }
 };
 
-const addClass = async (): Promise<void> => {
-  if (!classData.value.specialization || !classData.value.group || !classData.value.grade || !classData.value.name) {
-    alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Některá pole jsou prázdná." });
+const resetInputs = (): void => {
+  specializationData.value.name = "";
+  specializationData.value.lengthOfStudy = null;
+  specializationData.value.abbreviation = "";
+
+  errors.value.name = "";
+  errors.value.lengthOfStudy = "";
+  errors.value.abbreviation = "";
+};
+
+const addSpecialization = async (): Promise<void> => {
+  if (specializationData.value.name.length < 1 || specializationData.value.lengthOfStudy === null || specializationData.value.abbreviation.length < 1) {
+    alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
     return;
   }
 
-  if (errors.value.name.length > 0 || errors.value.grade.length > 0 || errors.value.group.length > 0 || errors.value.specialization.length > 0) {
-    alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Některá pole obsahují chyby." });
+  if (errors.value.name.length > 0 || errors.value.lengthOfStudy.length > 0 || errors.value.abbreviation.length > 0) {
+    alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Opravte chyby ve formuláři." });
     return;
   }
 
   loading.value = true;
 
-  await apiFetch("/class/add", {
+  await apiFetch("/specialization/add", {
     method: "post",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: {
-      name: classData.value.name,
-      grade: classData.value.grade,
-      group: classData.value.group,
-      idSpecialization: classData.value.specialization,
+      name: specializationData.value.name,
+      lengthOfStudy: specializationData.value.lengthOfStudy,
+      abbreviation: specializationData.value.abbreviation,
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -134,61 +96,45 @@ const addClass = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "8010":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nemáte oprávnění k této akci." });
+        case "4010":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nemáte oprávnění k této akci." });
           break;
-        case "8020":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník chybí." });
+        case "4020":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia chybí." });
           break;
-        case "8030":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina chybí." });
+        case "4030":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být celé číslo." });
           break;
-        case "8040":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zaměření chybí." });
+        case "4040":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření chybí." });
           break;
-        case "8050":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy chybí." });
+        case "4050":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je příliš dlouhá." });
           break;
-        case "8060":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník musí být celé číslo." });
+        case "4060":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je již používána." });
           break;
-        case "8070":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina může mít maximálně 1 znak." }); break;
-        case "8080":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Neplatné zaměření." });
+        case "4070":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření chybí." });
           break;
-        case "8090":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník přesahuje délku studia zaměření." });
+        case "4080":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je příliš dlouhý." });
           break;
-        case "8100":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je již používán." });
+        case "4090":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je již používán." });
           break;
-        case "8111":
-          alertsStore.addAlert({ type: "success", title: "Vytvoření třídy", message: "Třída byla úspěšně vytvořena." });
+        case "4101":
+          alertsStore.addAlert({ type: "success", title: "Přidání zaměření", message: "Zaměření bylo úspěšně vytvořeno." });
 
-          classData.value.name = "";
-          classData.value.grade = null;
-          classData.value.group = "";
-          classData.value.specialization = null;
-          selectedSpecialization.value = null;
-          title.value = "";
-          searchName.value = "";
-          searchLengthOfStudy.value = null;
-          searchAbbreviation.value = "";
-          errors.value.name = "";
-          errors.value.grade = "";
-          errors.value.group = "";
-          errors.value.specialization = "";
-          open.value = false;
-
+          resetInputs();
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nastala neznámá chyba." });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nastala neznámá chyba." });
     },
   }).finally((): void => {
     loading.value = false;
@@ -215,18 +161,18 @@ await apiFetch("/specialization/get", {
     <template #header>
       <Navbar
           :links="[
-          { name: 'Třídy', path: '/panel/classes' },
-          { name: 'Vytvoření', path: '/panel/classes/add' },
+          { name: 'Zaměření', path: '/panel/specializations' },
+          { name: 'Vytvoření', path: '/panel/specializations/add' },
         ]"
       />
     </template>
 
     <template #content>
-      <div id="classes">
+      <div id="specializations">
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa tříd"
+            description="Správa zaměření"
             :texts="['Přidat', 'Odebrat']"
             :actions="['add', 'remove']"
             :icons="[
@@ -235,21 +181,21 @@ await apiFetch("/specialization/get", {
             ]"
             :active="0"
             :navigate-to="[
-              `/panel/classes/add`,
-              `/panel/classes/remove`,
+              `/panel/specializations/add`,
+              `/panel/specializations/remove`,
             ]"
           />
 
           <div class="form">
             <div class="section">
               <div class="section-head">
-                <h3>Název * <span class="update" v-show="classData.name">(aktualizováno)</span></h3>
+                <h3>Název</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </div>
 
               <div class="content">
                 <label for="name">Název</label>
-                <input type="text" id="name" placeholder="V1B-ANJ1" v-model="classData.name" @input="checkForErrors" />
+                <input type="text" id="name" placeholder="Informační technologie" v-model="specializationData.name" @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.name.length > 0">{{ errors.name }}</p>
               </div>
@@ -257,96 +203,39 @@ await apiFetch("/specialization/get", {
 
             <div class="section">
               <div class="section-head">
-                <h3>Zaměření * <span class="update" v-show="classData.specialization">(aktualizováno)</span></h3>
+                <h3>Zkratka</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </div>
 
               <div class="content">
-                <div class="search">
-                  <label for="searchName">
-                    Název
-                    <input id="searchName" placeholder="Vyhledat název" v-model="searchName" />
-                  </label>
-                  <label for="searchAbbreviation">
-                    Zkratka
-                    <input id="searchAbbreviation" placeholder="V" v-model="searchAbbreviation" />
-                  </label>
-                  <label for="searchLengthOfStudy">
-                    Délka studia
-                    <input id="searchLengthOfStudy" min="1" max="10" placeholder="3" type="number" v-model="searchLengthOfStudy " />
-                  </label>
-                </div>
+                <label for="abbreviation">Zkratka</label>
+                <input type="text" id="abbreviation" placeholder="V" v-model="specializationData.abbreviation " @input="checkForErrors" />
 
-                <label>Výběr zaměření</label>
-
-                <div class="dropdown">
-                  <div class="title" @click="toggleDropdown">
-                    <p>{{ title || "Vyberte zaměření" }}</p>
-
-                    <Icon class="icon" :name="open ? icons.close : icons.open" />
-                  </div>
-
-                  <div class="dropdown-content" v-show="open">
-                    <div
-                        v-for="item in searchedSpecializations"
-                        :key="item.id"
-                        class="item"
-                        :class="{ selected: selectedSpecialization === item.id }"
-                        @click="() => onSpecializationSelect(item)"
-                        v-if="searchedSpecializations.length > 0"
-                    >
-                      <Icon class="icon" :name="selectedSpecialization === item.id ? icons.select : icons.selected" />
-                      <span>
-                        <span class="name" v-if="item.name">{{ item.name + " - " }}</span>
-                        <span class="uppercase">{{ item.abbreviation + " - " }}</span>
-                        <span>Délka studia (roky): {{ item.lengthOfStudy }}</span>
-                      </span>
-                    </div>
-
-                    <div v-else class="item error">
-                      <p>Žádné zaměření nebylo nalezeno.</p>
-                    </div>
-                  </div>
-                </div>
-                <p class="input-error" v-if="errors.specialization.length > 0">{{ errors.specialization }}</p>
+                <p class="input-error" v-if="errors.abbreviation.length > 0">{{ errors.abbreviation }}</p>
               </div>
             </div>
 
             <div class="section">
               <div class="section-head">
-                <h3>Ročník * <span class="update" v-show="classData.grade">(aktualizováno)</span></h3>
+                <h3>Délka studia</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </div>
 
               <div class="content">
-                <label for="grade">Ročník</label>
-                <input type="number" id="grade" placeholder="1" min="1" v-model="classData.grade" @input="checkForErrors" />
+                <label for="lengthOfStudy">Délka studia</label>
+                <input type="number" id="lengthOfStudy" placeholder="1" min="1" v-model="specializationData.lengthOfStudy" @input="checkForErrors" />
 
-                <p class="input-error" v-if="errors.grade.length > 0">{{ errors.grade }}</p>
-              </div>
-            </div>
-
-            <div class="section">
-              <div class="section-head">
-                <h3>Skupina * <span class="update" v-show="classData.group">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-              </div>
-
-              <div class="content">
-                <label for="group">Skupina</label>
-                <input type="text" id="group" placeholder="A" v-model="classData.group" @input="checkForErrors" />
-
-                <p class="input-error" v-if="errors.group.length > 0">{{ errors.group }}</p>
+                <p class="input-error" v-if="errors.lengthOfStudy.length > 0">{{ errors.lengthOfStudy }}</p>
               </div>
             </div>
           </div>
 
           <div class="buttons">
-            <button type="submit" @click="addClass">
+            <button type="submit" @click="addSpecialization">
               Uložit změny
               <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
             </button>
-            <button type="reset" @click="pingResetSelectedClasses">
+            <button type="reset" @click="resetInputs">
               Resetovat změny
             </button>
           </div>
@@ -358,7 +247,7 @@ await apiFetch("/specialization/get", {
 </template>
 
 <style lang="scss" scoped>
-#classes {
+#specializations {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -482,7 +371,7 @@ await apiFetch("/specialization/get", {
           transition: 0.2s;
           cursor: pointer;
 
-          .uppercase {
+          span {
             text-transform: uppercase;
           }
 
@@ -681,7 +570,7 @@ await apiFetch("/specialization/get", {
 }
 
 @media (max-width: 1055px) {
-  #classes {
+  #specializations {
     flex-direction: column;
     gap: 30px;
   }

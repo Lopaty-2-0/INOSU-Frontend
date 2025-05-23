@@ -11,8 +11,6 @@ import EditAbbreviation from "../../../components/users/manage/Abbreviation.vue"
 import EditClass from "../../../components/users/manage/Class.vue";
 import apiFetch from "../../../componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
-import {navigateTo, useCookie} from "#app";
-import type {AccountData} from "~/types/account";
 import {useAlertsStore} from "~/stores/alerts";
 
 definePageMeta({

@@ -4,11 +4,11 @@ import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
-import type {ClassData} from "~/types/classes";
 import {ref} from "vue";
+import type {SpecializationData} from "~/types/specialization";
 
 useHead({
-  title: "Panel | Třídy",
+  title: "Panel | Zaměření",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -19,15 +19,13 @@ definePageMeta({
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string" },
-  { field: "class", title: "Třída", type: "string" },
-  { field: "grade", title: "Ročník", type: "number" },
-  { field: "group", title: "Skupina", type: "string" },
-  { field: "specialization", title: "Zaměření (zkratka)", type: "string" },
+  { field: "abbreviation", title: "Zkratka", type: "string" },
+  { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number" },
 ]);
-const allClasses = ref<ClassData[] | undefined>(undefined);
+const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
-await apiFetch("/class/get", {
+await apiFetch("/specialization/get", {
   method: "get",
   headers: {
     "Content-Type": "application/json",
@@ -35,44 +33,44 @@ await apiFetch("/class/get", {
   credentials: "include",
   ignoreResponseError: true,
   onResponse({ response }) {
-    const classes: ClassData[] = response._data.data.classes;
+    const specializations: SpecializationData[] = response._data.data.specializations;
 
-    allClasses.value = classes || [];
+    allSpecializations.value = specializations || [];
   },
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allClasses">
+  <NuxtLayout name="panel" :loading="!allSpecializations">
     <template #header>
       <Navbar
-        :links="[
-          { name: 'Třídy', path: '/panel/classes' },
+          :links="[
+          { name: 'Zaměření', path: '/panel/specializations' },
         ]"
       />
     </template>
 
-    <template #content v-if="allClasses">
-      <div id="classes">
+    <template #content v-if="allSpecializations">
+      <div id="specializations">
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa tříd"
+            description="Správa zaměření"
             :texts="['Přidat', 'Odebrat']"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
-            :navigate-to="[
-              `/panel/classes/add`,
-              `/panel/classes/remove`,
+              :navigate-to="[
+              `/panel/specializations/add`,
+              `/panel/specializations/remove`,
             ]"
           />
 
           <div class="line">
             <div class="section-head">
-              <h3>Všechny třídy</h3>
+              <h3>Všechny zaměření</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
             </div>
 
@@ -80,30 +78,16 @@ await apiFetch("/class/get", {
               <input
                   type="text"
                   name="searchInput"
-                  placeholder="Hledat třídy"
+                  placeholder="Hledat zaměření"
                   v-model="searchInput"
               />
               <Icon class="icon" name="material-symbols:search-rounded"></Icon>
             </div>
           </div>
 
-          <Vue3Datatable :rows="allClasses" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput">
-            <template #group="data">
-              <p>
-                {{ data.value.group }}
-              </p>
-            </template>
-
-            <template #specialization="data">
-              <p>
-                {{ data.value.specialization }}
-              </p>
-            </template>
-
-            <template #class="data">
-              <p>
-                {{ data.value.specialization }}{{ data.value.grade }}{{ data.value.group }}
-              </p>
+          <Vue3Datatable :rows="allSpecializations" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput">
+            <template #abbreviation="data">
+              <p>{{ data.value.abbreviation }}</p>
             </template>
           </Vue3Datatable>
         </div>
@@ -120,7 +104,7 @@ await apiFetch("/class/get", {
   text-transform: uppercase;
 }
 
-#classes {
+#specializations {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -255,7 +239,7 @@ await apiFetch("/class/get", {
 }
 
 @media (max-width: 1055px) {
-  #classes {
+  #specializations {
     flex-direction: column;
     gap: 30px;
   }

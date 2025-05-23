@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import Navbar from "~/components/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
@@ -128,7 +128,7 @@ const removeUsers = async (): Promise<void> => {
   });
 };
 
-await apiFetch(`/user_class/get/users?idClass=${encodeURIComponent(classId)}`, {
+await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
   method: "get",
   headers: {
     "Content-Type": "application/json",

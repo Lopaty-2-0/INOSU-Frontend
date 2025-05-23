@@ -5,13 +5,13 @@ import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
-import type {ClassData} from "~/types/classes";
 import {ref} from "vue";
 import Loading from "~/components/basics/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
+import type {SpecializationData} from "~/types/specialization";
 
 useHead({
-  title: "Panel | Třídy - Odstranění",
+  title: "Panel | Zaměření - Odstranění",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -23,81 +23,79 @@ const alertsStore = useAlertsStore();
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string" },
-  { field: "class", title: "Třída", type: "string" },
-  { field: "grade", title: "Ročník", type: "number" },
-  { field: "group", title: "Skupina", type: "string" },
-  { field: "specialization", title: "Zaměření", type: "string" },
+  { field: "abbreviation", title: "Zkratka", type: "string" },
+  { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number" },
 ]);
 const datatable = ref<any>(null);
-const allClasses = ref<ClassData[] | undefined>(undefined);
-const selectedClasses = ref<ClassData[]>([]);
+const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
+const selectedSpecializations = ref<SpecializationData[]>([]);
 const loading = ref<boolean>(false);
 const searchInput = ref<string>("");
 
-const pingResetSelectedClasses = (): void => {
+const pingResetSelectedSpecializations = (): void => {
   datatable.value.clearSelectedRows();
-  selectedClasses.value = [];
+  selectedSpecializations.value = [];
 };
 
 const onCheckboxSelect = (): void => {
   if (!datatable.value) return;
 
   setTimeout((): void => {
-    selectedClasses.value = datatable.value.getSelectedRows() as ClassData[];
+    selectedSpecializations.value = datatable.value.getSelectedRows() as SpecializationData[];
   }, 0);
 };
 
-const removeClasses = async (): Promise<void> => {
+const removeSpecializations = async (): Promise<void> => {
   loading.value = true;
 
-  await apiFetch("/class/delete", {
+  await apiFetch("/specialization/delete", {
     method: "delete",
     headers: {
       "Content-Type": "application/json",
     },
     body: {
-      idClass : selectedClasses.value.map((oneClass: ClassData) => oneClass.id),
+      idSpecialization: selectedSpecializations.value.map((specialization: SpecializationData) => specialization.id),
     },
     ignoreResponseError: true,
     credentials: "include",
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
-
       switch (resCode) {
-        case "9010":
-          alertsStore.addAlert({type: "error", title: "Odstranění tříd", message: "Nedostatečné oprávnění pro odstranění tříd.",});
+        case "5010":
+          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nemáte oprávnění k této akci." });
           break;
-        case "9020":
-          alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: "Žádná třída nebyla vybrána.",});
+        case "5020":
+          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Chybí ID zaměření." });
           break;
-        case "9031":
-          if ((response._data.data.taskIds || []).length >= 1) {
-            alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tyto úkoly používají některé z odstraňovaných tříd: ${response._data.data.taskIds.join(", ")}`});
-          } else if ((response._data.data.userIds || []).length >= 1) {
-            alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tito uživatelé používají některé z odstraňovaných tříd: ${response._data.data.userIds.join(", ")}`});
+        case "5030":
+          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Neproběhlo žádné odstranění." });
+          break;
+        case "5041":
+          if ((response._data.data.classIds || []).length >= 1) {
+            alertsStore.addAlert({type: "warning", title: "Odstranění zaměření", message: `Některé zaměření nebyly odstraněny. Tyto třídy používají některé z odstraňovaných zaměření: ${response._data.data.classIds.join(", ")}`});
           } else {
-            alertsStore.addAlert({type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${selectedClasses.value.length})`});
+            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${selectedSpecializations.value.length})`});
           }
 
-          allClasses.value = allClasses.value?.filter((oneClass: ClassData) => !response._data.data.goodIds.includes(oneClass.id));
+          allSpecializations.value = allSpecializations.value?.filter((specialization: SpecializationData) => !response._data.data.goodIds.includes(specialization.id));
 
-          pingResetSelectedClasses();
+          pingResetSelectedSpecializations();
           break;
         default:
-          alertsStore.addAlert({type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba.",});
+          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nastala neznámá chyba." });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba.",});
+      alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nastala neznámá chyba." });
     },
   }).finally((): void => {
     loading.value = false;
   });
-}
+};
 
-await apiFetch("/class/get", {
+await apiFetch("/specialization/get", {
   method: "get",
   headers: {
     "Content-Type": "application/json",
@@ -105,30 +103,30 @@ await apiFetch("/class/get", {
   credentials: "include",
   ignoreResponseError: true,
   onResponse({ response }) {
-    const classes: ClassData[] = response._data.data.classes;
+    const specializations: SpecializationData[] = response._data.data.specializations;
 
-    allClasses.value = classes || [];
+    allSpecializations.value = specializations || [];
   },
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allClasses">
+  <NuxtLayout name="panel" :loading="!allSpecializations">
     <template #header>
       <Navbar
-        :links="[
-          { name: 'Třídy', path: '/panel/classes' },
-          { name: 'Odstranění', path: '/panel/classes/remove' },
+          :links="[
+          { name: 'Zaměření', path: '/panel/specializations' },
+          { name: 'Odstranění', path: '/panel/specializations/remove' },
         ]"
       />
     </template>
 
-    <template #content v-if="allClasses">
-      <div id="classes">
+    <template #content v-if="allSpecializations">
+      <div id="specializations">
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa tříd"
+            description="Správa zaměření"
             :texts="['Přidat', 'Odebrat']"
             :actions="['add', 'remove']"
             :icons="[
@@ -137,59 +135,45 @@ await apiFetch("/class/get", {
             ]"
             :active="1"
             :navigate-to="[
-              `/panel/classes/add`,
-              `/panel/classes/remove`,
+              `/panel/specializations/add`,
+              `/panel/specializations/remove`,
             ]"
           />
 
           <div class="line">
             <div class="section-head">
-              <h3>Třídy: {{ selectedClasses.length }} / {{ allClasses.length }}</h3>
+              <h3>Zaměření: {{ selectedSpecializations.length }} / {{ allSpecializations.length }}</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
             </div>
 
             <div class="search">
               <input
-                type="text"
-                name="searchInput"
-                placeholder="Hledat třídy"
-                v-model="searchInput"
+                  type="text"
+                  name="searchInput"
+                  placeholder="Hledat zaměření"
+                  v-model="searchInput"
               />
               <Icon class="icon" name="material-symbols:search-rounded"></Icon>
             </div>
           </div>
 
           <div class="buttons">
-            <button class="remove" @click="removeClasses">
+            <button class="remove" @click="removeSpecializations">
               Odstranit
               <Loading
-                v-show="loading"
-                size="5px"
-                color="var(--actionBar-actions-remove-color)"
+                  v-show="loading"
+                  size="5px"
+                  color="var(--actionBar-actions-remove-color)"
               />
             </button>
-            <button class="reset" @click="pingResetSelectedClasses">
+            <button class="reset" @click="pingResetSelectedSpecializations">
               Zrušit vše
             </button>
           </div>
 
-          <Vue3Datatable ref="datatable" :rows="allClasses" :columns="cols" :hasCheckbox="true" :pageSize="10" :sortable="true" :search="searchInput" @input="onCheckboxSelect">
-            <template #group="data">
-              <p>
-                {{ data.value.group }}
-              </p>
-            </template>
-
-            <template #specialization="data">
-              <p>
-                {{ data.value.specialization }}
-              </p>
-            </template>
-
-            <template #class="data">
-              <p>
-                {{ data.value.specialization }}{{ data.value.grade }}{{ data.value.group }}
-              </p>
+          <Vue3Datatable ref="datatable" :rows="allSpecializations" :columns="cols" :hasCheckbox="true" :pageSize="10" :sortable="true" :search="searchInput" @input="onCheckboxSelect">
+            <template #abbreviation="data">
+              <p>{{ data.value.abbreviation }}</p>
             </template>
           </Vue3Datatable>
         </div>
@@ -206,7 +190,7 @@ await apiFetch("/class/get", {
   text-transform: uppercase;
 }
 
-#classes {
+#specializations {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -341,7 +325,7 @@ await apiFetch("/class/get", {
 }
 
 @media (max-width: 1055px) {
-  #classes {
+  #specializations {
     flex-direction: column;
     gap: 30px;
   }

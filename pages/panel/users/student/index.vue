@@ -36,7 +36,7 @@ await apiFetch("/class/get", {
     </template>
 
     <template #content v-if="allClasses">
-      <div id="classes">
+      <div id="specializations">
         <div class="content">
           <div class="line">
             <div class="section-head">
@@ -62,6 +62,15 @@ await apiFetch("/class/get", {
                   <span><span class="name" v-if="oneClass.name">{{ oneClass.name + " - " }}</span>{{ oneClass.specialization }}{{ oneClass.grade }}{{ oneClass.group }}</span>
                 </div>
               </NuxtLink>
+
+              <NuxtLink
+                  class="class"
+                  :to="`/panel/users/student/undefined`"
+              >
+                <div class="section-head">
+                  <span>Nezařazené</span>
+                </div>
+              </NuxtLink>
             </div>
           </div>
         </div>
@@ -73,7 +82,7 @@ await apiFetch("/class/get", {
 </template>
 
 <style scoped lang="scss">
-#classes {
+#specializations {
   display: flex;
   flex-direction: row;
   gap: 30px;

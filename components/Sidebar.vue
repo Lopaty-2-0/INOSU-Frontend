@@ -17,7 +17,6 @@ const getStyledNumber = (number: number): string => {
 
 const loading = ref<boolean>(true);
 const logoutLoading = ref<boolean>(false);
-const numberOfUnreadRequests = ref<number>(1000);
 const sidebarLinks = ref<
   {
     name: string;
@@ -39,22 +38,21 @@ const sidebarLinks = ref<
         iconClass: "material-symbols:home-rounded",
         notify: false,
       },
-      {
-        text: "Kalendář",
-        href: "/panel/calendar",
-        iconClass: "material-symbols:calendar-month",
-        notify: false,
-      },
     ],
   },
   {
     name: "Admin",
     links: [
       {
-        text: "Oznámení",
-        href: "/panel/notifications",
-        iconClass: "material-symbols:notifications-rounded",
-        notify: getStyledNumber(numberOfUnreadRequests.value),
+        text: "Zaměření",
+        href: "/panel/specializations",
+        activeHrefs: [
+          "/panel/specializations",
+          "/panel/specializations/add",
+          "/panel/specializations/remove",
+        ],
+        iconClass: "material-symbols:school",
+        notify: false,
       },
       {
         text: "Třídy",
@@ -86,7 +84,7 @@ const sidebarLinks = ref<
     links: [
       {
         text: "Nastavení",
-        href: /*usePermissions(["page.settings"]) ? */ "/panel/settings" /*: "/panel/settings/customization"*/,
+        href: "/panel/settings",
         activeHrefs: [
           "/panel/settings",
           "/panel/settings/security",
@@ -168,7 +166,7 @@ onMounted((): void => {
                   active: checkIfLinkIsActive(
                     link.activeHrefs ? link.activeHrefs : link.href
                   ),
-                  link: true,
+                  link: true
                 }"
               >
                 <Icon size="16px" class="icon" :name="link.iconClass"></Icon
@@ -183,7 +181,7 @@ onMounted((): void => {
                     link.activeHrefs ? link.activeHrefs : link.href
                   ),
                   link: true,
-                  notify: true,
+                  notify: true
                 }"
               >
                 <Icon class="icon" :name="link.iconClass"></Icon>{{ link.text }}
