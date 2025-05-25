@@ -1,7 +1,9 @@
-const checkPermissions = (allowedRoles: string[] = [], userRole: string) => {
-    if (!allowedRoles || userRole === "admin") return true;
+import { useAccountStore } from "~/stores/account";
 
-    return allowedRoles.includes(userRole);
+const checkPermissions = (allowedRoles: string[] = []) => {
+    if (!allowedRoles) return true;
+
+    return allowedRoles.includes(useAccountStore().getRole);
 };
 
 export default checkPermissions;

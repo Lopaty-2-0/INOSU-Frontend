@@ -4,7 +4,6 @@ import Navbar from "../../../components/Navbar.vue";
 import apiFetch from "~/componsables/apiFetch";
 
 definePageMeta({
-  middleware: ["auth"],
 });
 
 useHead({

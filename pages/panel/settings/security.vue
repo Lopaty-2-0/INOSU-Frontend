@@ -9,7 +9,6 @@ import apiFetch from "../../../componsables/apiFetch";
 import { useAlertsStore } from "../../../stores/alerts";
 
 definePageMeta({
-  middleware: ["auth"]
 });
 
 useHead({

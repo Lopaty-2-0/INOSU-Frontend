@@ -16,7 +16,6 @@ useHead({
 });
 
 definePageMeta({
-  middleware: ["auth"],
 });
 
 const alertsStore = useAlertsStore();

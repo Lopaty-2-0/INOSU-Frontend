@@ -10,8 +10,7 @@ useHead({
 });
 
 definePageMeta({
-  middleware: ["auth"],
-  roles: ["student"],
+  roles: ["admin"],
 });
 
 const { getAccountData: userData } = storeToRefs(useAccountStore());

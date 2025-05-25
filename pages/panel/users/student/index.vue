@@ -4,7 +4,6 @@ import apiFetch from "~/componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 
 definePageMeta({
-  middleware: ["auth"],
 });
 
 useHead({

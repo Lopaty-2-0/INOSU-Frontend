@@ -89,7 +89,10 @@ export default defineNuxtConfig({
       cors: true
     },
     "/": {
-      redirect: "/login"
+      redirect: "/login",
+    },
+    "/panel/**": {
+      appMiddleware: ["auth", "verify"],
     }
   },
 

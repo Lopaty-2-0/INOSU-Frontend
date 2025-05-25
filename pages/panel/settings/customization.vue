@@ -10,7 +10,6 @@ import { useAccountStore } from "../../../stores/account";
 import type {AccountLink, AccountTheme} from "../../../types/account";
 
 definePageMeta({
-  middleware: ["auth"]
 });
 
 useHead({

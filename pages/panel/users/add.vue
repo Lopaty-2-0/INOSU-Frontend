@@ -14,7 +14,6 @@ import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 
 definePageMeta({
-  middleware: ["auth"]
 });
 
 useHead({

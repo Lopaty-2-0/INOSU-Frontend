@@ -12,7 +12,6 @@ import Alerts from "../../../../components/Alerts.vue";
 import Loading from "../../../../components/basics/Loading.vue";
 
 definePageMeta({
-  middleware: ["auth"],
 });
 
 const route = useRoute();

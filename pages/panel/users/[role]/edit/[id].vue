@@ -17,7 +17,6 @@ import type {AccountData} from "../../../../../types/account";
 import EditProfilePicture from "~/components/users/manage/ProfilePicture.vue";
 
 definePageMeta({
-  middleware: ["auth"]
 });
 
 const route = useRoute();
@@ -160,7 +159,7 @@ const updateUser = async (): Promise<void> => {
           break;
         case "2131":
           alertsStore.addAlert({ type: "success", title: "Úprava uživatele", message: "Uživatel byl úspěšně upraven." });
-            
+
           if (newUserData.value.name) oldUserData.value.name = newUserData.value.name;
           if (newUserData.value.surname) oldUserData.value.surname = newUserData.value.surname;
           if (newUserData.value.email) oldUserData.value.email = newUserData.value.email;

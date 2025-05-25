@@ -12,7 +12,6 @@ import type { AccountData } from "~/types/account";
 import Loading from "~/components/basics/Loading.vue";
 
 definePageMeta({
-  middleware: ["auth"],
 });
 
 const route = useRoute();

@@ -39,7 +39,10 @@ export const useAccountStore = defineStore("account", {
         },
         getLoading(): boolean {
             return this.loading;
-        }
+        },
+        getRole(): string {
+            return this.role;
+        },
     },
     actions: {
         setAccountData(accountData: AccountData): void {
@@ -67,8 +70,13 @@ export const useAccountStore = defineStore("account", {
         setTheme(theme: AccountTheme): void {
             this.theme = theme;
         },
+        setRole(role: string): void {
+            this.role = role;
+        },
         setLinks(links: AccountLink[]): void {
             this.links = links;
+
+            localStorage.setItem("links", JSON.stringify(links));
         },
         setLoading(value: boolean): void {
             this.loading = value;

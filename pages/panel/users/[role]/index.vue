@@ -9,7 +9,6 @@ import UsersGrid from "../../../../components/users/Grid.vue";
 import GridNavigation from "../../../../components/users/Navigation.vue";
 
 definePageMeta({
-  middleware: ["auth"],
 });
 
 const route = useRoute();

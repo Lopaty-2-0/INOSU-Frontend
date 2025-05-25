@@ -13,7 +13,6 @@ useHead({
 });
 
 definePageMeta({
-  middleware: ["auth"],
 });
 
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([

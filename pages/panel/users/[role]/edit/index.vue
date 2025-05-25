@@ -11,7 +11,6 @@ import apiFetch from "~/componsables/apiFetch";
 import type { AccountData } from "~/types/account";
 
 definePageMeta({
-  middleware: ["auth"],
 });
 
 const route = useRoute();

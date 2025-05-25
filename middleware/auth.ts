@@ -20,24 +20,15 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         const isLogged: boolean = data.value.data.logged;
 
         if (resCode !== "17011" || !isLogged) {
-            return location.pathname = "/login";
-        }
-
-        const role: string = data.value.data.role;
-        const pageRoles: string[] = to.meta.roles as string[];
-
-        if (pageRoles) {
-            const permissionGranted = checkPermissions(pageRoles, role);
-
-            if (!permissionGranted) {
-                return navigateTo("/panel/errors/403");
-            }
+            location.pathname = "/login";
+            return;
         }
 
         const accountStore = useAccountStore();
 
         //Get user theme
         let storedTheme: string | null = localStorage.getItem("theme") as string | null;
+        let storedLinks: string | null = localStorage.getItem("links") as string | null;
 
         if (!storedTheme || !["dark", "light"].includes(storedTheme)) {
             const isDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -59,7 +50,9 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         }
 
         accountStore.setAccountData(accountData);
-        accountStore.setLinks([{ text: "YouTube", href: "https://youtube.com" }, { text: "Google", href: "https://google.com" }]);
+        accountStore.setRole(data.value.data.role);
+
+        accountStore.setLinks(JSON.parse(storedLinks as string) || []);
     } catch {
         return location.pathname = "/login";
     }
