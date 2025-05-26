@@ -7,7 +7,7 @@ import apiFetch from "../componsables/apiFetch";
 import Loading from "./basics/Loading.vue";
 
 const route = useRoute();
-const { getLinks: accountLinks } = storeToRefs(useAccountStore());
+const { getLinks: accountLinks, getRole: role } = storeToRefs(useAccountStore());
 
 const getStyledNumber = (number: number): string => {
   if (number >= 1000) return "1K+";
@@ -38,11 +38,17 @@ const sidebarLinks = ref<
         iconClass: "material-symbols:home-rounded",
         notify: false,
       },
-    ],
-  },
-  {
-    name: "Admin",
-    links: [
+      {
+        text: "Úkoly",
+        href: `/panel/tasks/${role.value}`,
+        activeHrefs: [
+          `/panel/tasks/${role.value}`,
+          `/panel/tasks/${role.value}/add`,
+          `/panel/tasks/${role.value}/remove`,
+        ],
+        iconClass: "material-symbols:folder-copy-rounded",
+        notify: false,
+      },
       {
         text: "Zaměření",
         href: "/panel/specializations",

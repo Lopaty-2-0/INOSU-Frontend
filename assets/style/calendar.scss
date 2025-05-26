@@ -1,0 +1,151 @@
+::v-deep(.vc-container) {
+  font-family: inherit;
+  color: inherit;
+}
+
+::v-deep(.vc-popover-content) {
+  background: var(--input-background);
+  border: var(--border-width) solid rgba(var(--border-color), 0.5);
+  border-radius: var(--normal-border-radius);
+  color: rgba(var(--description-color), 1);
+  box-shadow: none;
+}
+
+::v-deep(.vc-nav-title) {
+  color: var(--title-color);
+  font-size: 16px;
+  outline: none;
+  box-shadow: none;
+
+  &:hover {
+    color: var(--title-color);
+    background: transparent;
+  }
+}
+
+::v-deep(.vc-bordered) {
+  border: var(--border-width) solid rgba(var(--border-color), 0.5);
+  border-radius: var(--normal-border-radius);
+  background: var(--input-background);
+}
+
+::v-deep(.vc-nav-item) {
+  color: rgba(var(--description-color), 1);
+  font-size: 16px;
+  transition: 0.2s;
+  outline: none;
+  box-shadow: none;
+
+  &:hover {
+    background: var(--card-1-hover-background);
+    color: var(--title-color);
+  }
+
+  &.is-active {
+    background: var(--card-1-hover-background);
+    color: var(--title-color);
+    box-shadow: none;
+  }
+
+  &.is-current {
+    color: rgba(var(--main-color), 1);
+  }
+}
+
+::v-deep(.vc-nav-arrow), ::v-deep(.vc-arrow) {
+  color: var(--mini-title-color);
+  transition: 0.2s;
+  outline: none;
+  box-shadow: none;
+
+  &:hover {
+    color: var(--title-color);
+    background: transparent;
+  }
+}
+
+::v-deep(.vc-day-content) {
+  transition: 0.2s;
+  outline: none;
+  box-shadow: none;
+  font-size: 16px;
+}
+
+::v-deep(.vc-title) {
+  color: var(--title-color);
+  font-size: 16px;
+  outline: none;
+  box-shadow: none;
+  transition: 0.2s;
+}
+
+::v-deep(.vc-weekday) {
+  color: var(--mini-title-color);
+  font-size: 16px;
+}
+
+::v-deep(.vc-day) {
+  color: rgba(var(--description-color), 1);
+  font-size: 16px;
+  outline: none;
+  box-shadow: none;
+}
+
+::v-deep(.vc-highlight-bg-solid) {
+  background: var(--btn-1-background);
+}
+
+::v-deep(.vc-highlight-content-solid) {
+  color: var(--btn-1-color);
+}
+
+::v-deep(.vc-header) {
+  margin-bottom: 10px;
+}
+
+::v-deep(.vc-time-picker.vc-attached) {
+  border-top: var(--border-width) solid rgba(var(--border-color), 0.5);
+}
+
+::v-deep(.vc-time-picker) {
+  padding: 10px;
+}
+
+::v-deep(.vc-time-select-group) {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  padding: 10px;
+  border-radius: var(--normal-border-radius);
+  background: var(--card-1-background);
+  border: var(--border-width) solid rgba(var(--border-color), 0.5);
+
+  .vc-base-icon {
+    color: rgba(var(--main-color), 1);
+  }
+}
+
+::v-deep(.vc-base-select) {
+  font-size: 16px;
+
+  select {
+    border-radius: var(--small-border-radius);
+    color: rgba(var(--description-color), 1);
+
+    &.vc-align-left, &.vc-align-right {
+      text-align: center;
+    }
+  }
+}
+
+::v-deep(.vc-time-select-group select) {
+  padding: 5px;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  transition: 0.2s;
+
+  &:hover, &:focus {
+    background: var(--card-2-hover-background);
+  }
+}

@@ -48,7 +48,8 @@ export default defineNuxtConfig({
     //"@nuxtjs/i18n",
     "@nuxt/icon",
     // "nuxt-security"
-    "@nuxtjs/tailwindcss"
+    "@nuxtjs/tailwindcss",
+    "@samk-dev/nuxt-vcalendar"
   ],
 
   icon: {
