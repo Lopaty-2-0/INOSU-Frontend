@@ -30,27 +30,19 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         let storedTheme: string | null = localStorage.getItem("theme") as string | null;
         let storedLinks: string | null = localStorage.getItem("links") as string | null;
 
-        if (!storedTheme || !["dark", "light"].includes(storedTheme)) {
-            const isDarkMode: boolean = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-            storedTheme = isDarkMode ? "light" : "light";
-
-            accountStore.setTheme("system");
-        } else {
-            accountStore.setTheme(storedTheme as AccountTheme);
-        }
-
-        useState("theme", () => storedTheme);
+        accountStore.setTheme((storedTheme || "light") as AccountTheme);
 
         //Set account data
         accountStore.setLoading(false);
         const accountData: AccountData | null | undefined = useCookie("accountData").value as AccountData | null | undefined;
 
-        if (!accountData) {
+        if (!accountData || !data.value.data.id || !data.value.data.role) {
             return location.pathname = "/login";
         }
 
-        accountStore.setAccountData(accountData);
+        accountStore.setAccountData(accountData || {} as AccountData);
         accountStore.setRole(data.value.data.role);
+        accountStore.setId(data.value.data.id);
 
         accountStore.setLinks(JSON.parse(storedLinks as string) || []);
     } catch {

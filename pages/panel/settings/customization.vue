@@ -1,16 +1,13 @@
 <script lang="ts" setup>
 import Alerts from "../../../components/Alerts.vue";
 import Navigation from "../../../components/basics/Navigation.vue";
-import EditThemeMode from "../../../components/users/manage/ThemeMode.vue";
-import EditCustomLinks from "../../../components/users/manage/CustomLinks.vue";
-import EditFormFooter from "../../../components/users/manage/Footer.vue";
+import EditThemeMode from "../../../components/manage/ThemeMode.vue";
+import EditCustomLinks from "../../../components/manage/CustomLinks.vue";
+import EditFormFooter from "../../../components/manage/Footer.vue";
 import Navbar from "../../../components/Navbar.vue";
 import {ref} from "vue";
-import { useAccountStore } from "../../../stores/account";
-import type {AccountLink, AccountTheme} from "../../../types/account";
-
-definePageMeta({
-});
+import { useAccountStore } from "~/stores/account";
+import type {AccountLink, AccountTheme} from "~/types/account";
 
 useHead({
   title: "Panel | Nastavení - Přizpůsobení",

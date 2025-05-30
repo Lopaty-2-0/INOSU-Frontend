@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import Navbar from "../../../../components/Navbar.vue";
-import type { AccountData } from "../../../../types/account";
+import type { AccountData } from "~/types/account";
 import { ref, onMounted } from "vue";
 import apiFetch from "../../../../componsables/apiFetch";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import UsersGrid from "../../../../components/users/Grid.vue";
 import GridNavigation from "../../../../components/users/Navigation.vue";
-import { useAlertsStore } from "../../../../stores/alerts";
+import { useAlertsStore } from "~/stores/alerts";
 import Alerts from "../../../../components/Alerts.vue";
 import Loading from "../../../../components/basics/Loading.vue";
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 const route = useRoute();
@@ -127,19 +128,21 @@ const removeUsers = async (): Promise<void> => {
   });
 };
 
-await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const usersData: AccountData[] = response._data?.data?.users || [];
+onMounted(async (): Promise<void> => {
+  await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const usersData: AccountData[] = response._data?.data?.users || [];
 
-    users.value = usersData;
-    searchedUsers.value = [...usersData];
-  },
+      users.value = usersData;
+      searchedUsers.value = [...usersData];
+    },
+  });
 });
 </script>
 

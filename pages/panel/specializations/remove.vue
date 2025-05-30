@@ -16,6 +16,7 @@ useHead({
 });
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 const alertsStore = useAlertsStore();
@@ -94,18 +95,20 @@ const removeSpecializations = async (): Promise<void> => {
   });
 };
 
-await apiFetch("/specialization/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const specializations: SpecializationData[] = response._data.data.specializations;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/specialization/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const specializations: SpecializationData[] = response._data.data.specializations;
 
-    allSpecializations.value = specializations || [];
-  },
+      allSpecializations.value = specializations || [];
+    },
+  });
 });
 </script>
 

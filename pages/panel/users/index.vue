@@ -3,9 +3,6 @@ import Alerts from "../../../components/Alerts.vue";
 import Navbar from "../../../components/Navbar.vue";
 import apiFetch from "~/componsables/apiFetch";
 
-definePageMeta({
-});
-
 useHead({
   title: "Panel | Uživatelé - role",
   meta: [{name: "description", content: "Panel Settings User Information"}],
@@ -14,32 +11,34 @@ useHead({
 const numberOfUsers = ref<number>(-1);
 const allRoles = ref<string[] | undefined>(undefined);
 
-await apiFetch("/user/get/number", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({response}) {
-    const users: number = response._data.data.users;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/user/get/number", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({response}) {
+      const users: number = response._data.data.users;
 
-    numberOfUsers.value = users || 0;
-  },
-});
+      numberOfUsers.value = users || 0;
+    },
+  });
 
-await apiFetch("/user/get/roles", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({response}) {
-    const roles: string[] = response._data.data.roles;
+  await apiFetch("/user/get/roles", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({response}) {
+      const roles: string[] = response._data.data.roles;
 
-    allRoles.value = roles || [];
-  },
+      allRoles.value = roles || [];
+    },
+  });
 });
 </script>
 

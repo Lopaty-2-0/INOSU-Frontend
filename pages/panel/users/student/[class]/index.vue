@@ -7,9 +7,7 @@ import UsersGrid from "~/components/users/Grid.vue";
 import GridNavigation from "~/components/users/Navigation.vue";
 import apiFetch from "~/componsables/apiFetch";
 import type {AccountData} from "~/types/account";
-
-definePageMeta({
-});
+import checkPermissions from "~/componsables/checkPermissions";
 
 const route = useRoute();
 const classId = route.params.class as string;
@@ -53,19 +51,21 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const usersData: AccountData[] = response._data?.data?.users || [];
+onMounted(async (): Promise<void> => {
+  await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const usersData: AccountData[] = response._data?.data?.users || [];
 
-    users.value = usersData;
-    searchedUsers.value = [...usersData];
-  },
+      users.value = usersData;
+      searchedUsers.value = [...usersData];
+    },
+  });
 });
 </script>
 
@@ -76,7 +76,7 @@ await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encode
         :links="[
           { name: 'Uživatelé', path: '/panel/users' },
           { name: 'student', path: '/panel/users/student' },
-          { name: 'Třída: ' + classId, path: '/panel/users/student' + classId },
+          { name: 'Třída: ' + classId, path: '/panel/users/student/' + classId },
         ]"
       />
     </template>
@@ -98,6 +98,7 @@ await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encode
               `/panel/users/student/${classId}/edit`,
               `/panel/users/student/${classId}/remove`,
             ]"
+            v-if="checkPermissions(['admin'])"
           />
 
           <div class="line">

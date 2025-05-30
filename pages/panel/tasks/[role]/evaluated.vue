@@ -12,7 +12,7 @@ import moment from "moment/moment";
 import Navigation from "~/components/basics/Navigation.vue";
 
 useHead({
-  title: "Panel | Vaše úkoly",
+  title: "Panel | Vyhodnocené úkoly",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -46,7 +46,7 @@ onMounted(async (): Promise<void> => {
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }) {
-      const tasks: TaskData[] = (response._data.data.elaboratingTasks || []).filter((task: any) => !task.review).map((task: any) => {
+      const tasks: TaskData[] = (response._data.data.elaboratingTasks || []).filter((task: any) => task.review).map((task: any) => {
         return {
           ...task,
           id: task.idTask
@@ -73,7 +73,7 @@ onMounted(async (): Promise<void> => {
       <div id="tasks">
         <div class="content">
           <div class="line">
-            <Navigation class="navigation" title="Úkoly" :active-link-id="0" :links="[
+            <Navigation class="navigation" title="Úkoly" :active-link-id="3" :links="[
               { name: 'Aktivní', path: `/panel/tasks/${role}` },
               { name: 'Dostupné', path: `/panel/tasks/${role}/available` },
               { name: 'Stav úkolů', path: `/panel/tasks/${role}/status` },
@@ -83,7 +83,7 @@ onMounted(async (): Promise<void> => {
             <div class="line">
               <div class="line">
                 <div class="section-head">
-                  <h3>Vaše úkoly</h3>
+                  <h3>Vyhodnocené úkoly</h3>
                   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                 </div>
 

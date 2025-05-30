@@ -15,6 +15,7 @@ useHead({
 });
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 const alertsStore = useAlertsStore();
@@ -30,9 +31,6 @@ const errors = ref<{ name: string; lengthOfStudy: string; abbreviation: string; 
   abbreviation: "",
 });
 const allSpecializations = ref<SpecializationData[]>([]);
-
-const pingResetSelectedClasses = (): void => {
-};
 
 const checkForErrors = (): void => {
   errors.value.name = "";
@@ -140,18 +138,20 @@ const addSpecialization = async (): Promise<void> => {
   });
 };
 
-await apiFetch("/specialization/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const specializations: SpecializationData[] = response._data.data.specializations;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/specialization/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const specializations: SpecializationData[] = response._data.data.specializations;
 
-    allSpecializations.value = specializations || [];
-  },
+      allSpecializations.value = specializations || [];
+    },
+  });
 });
 </script>
 

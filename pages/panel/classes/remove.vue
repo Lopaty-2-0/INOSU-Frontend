@@ -16,6 +16,7 @@ useHead({
 });
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 const alertsStore = useAlertsStore();
@@ -96,18 +97,20 @@ const removeClasses = async (): Promise<void> => {
   });
 }
 
-await apiFetch("/class/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const classes: ClassData[] = response._data.data.classes;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/class/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const classes: ClassData[] = response._data.data.classes;
 
-    allClasses.value = classes || [];
-  },
+      allClasses.value = classes || [];
+    },
+  });
 });
 </script>
 

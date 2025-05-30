@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import type { AccountTheme } from "../../../types/account";
+import type { AccountTheme } from "../../types/account";
 
 const props = defineProps({
   oldTheme: {
@@ -43,14 +43,14 @@ watch(
           <h4>Světlý</h4>
           <p>Váš panel bude mít světlý motiv</p>
         </div>
-        <img src="../../../assets/images/theme-light.svg" alt="Světlý režim" />
+        <img src="../../assets/images/theme-light.svg" alt="Světlý režim" />
       </li>
       <li :class="{ active: activeTheme === 'dark' }" @click="setTheme('dark')">
         <div class="info">
           <h4>Tmavý</h4>
           <p>Váš panel bude mít tmavý motiv</p>
         </div>
-        <img src="../../../assets/images/theme-dark.svg" alt="Tmavý režim" />
+        <img src="../../assets/images/theme-dark.svg" alt="Tmavý režim" />
       </li>
       <li
         :class="{ active: activeTheme === 'system' }"
@@ -61,7 +61,7 @@ watch(
           <p>Motiv bude podle systému vašeho zařízení</p>
         </div>
         <img
-          src="../../../assets/images/theme-system.svg"
+          src="../../assets/images/theme-system.svg"
           alt="Systémový režim"
         />
       </li>

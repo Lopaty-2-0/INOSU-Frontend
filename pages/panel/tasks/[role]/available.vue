@@ -2,17 +2,17 @@
 import Navbar from "~/components/Navbar.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
-import ActionBar from "~/components/basics/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
 import {ref, onMounted} from "vue";
 import {useRoute} from "#vue-router";
-import {useAccountStore} from "~/stores/account";
 import type {TaskData} from "~/types/tasks";
 import moment from "moment/moment";
 import Navigation from "~/components/basics/Navigation.vue";
+import {useAlertsStore} from "~/stores/alerts";
+import { useAccountStore } from "~/stores/account";
 
 useHead({
-  title: "Panel | Vaše úkoly",
+  title: "Panel | Dostupné úkoly",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -23,6 +23,9 @@ definePageMeta({
 const route = useRoute();
 const role = route.params.role as string;
 
+const usersStore = useAccountStore();
+const alertsStore = useAlertsStore();
+const { getId: userId } = storeToRefs(usersStore);
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string" },
@@ -33,27 +36,141 @@ const cols = ref<{ field: string; title: string; type?: string; width?: string; 
 ]);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
+const loading = ref<boolean>(false);
 
-const openUserTask = async (id: number): Promise<void> => {
-  if (!id) return;
+const acceptTask = async (id: number, from: string): Promise<void> => {
+  loading.value = true;
 
-  await navigateTo(`/panel/tasks/${role}/${id}`);
+  if (from === "classTask") {
+    await apiFetch("/user_task/add", {
+      method: "post",
+      body: {
+        idTask: id,
+        idUser: userId.value,
+      },
+      credentials: "include",
+      ignoreResponseError: true,
+      headers: { "Content-Type": "application/json" },
+      onResponse({ response }: any) {
+        const resCode: string = response._data.resCode?.toString();
+
+        switch (resCode) {
+          case "36010":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nebyl zadán id úkolu." });
+            break;
+          case "36020":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nebyl zadán id uživatele." });
+            break;
+          case "36030":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Úkol neexistuje." });
+            break;
+          case "36040":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Záznam nebyl vytvořen." });
+            break;
+          case "36051":
+            alertsStore.addAlert({ type: "success", title: "Přijetí úkolu", message: "Úkol byl úspěšně přijat a čeká na schválení." });
+            allTasks.value = allTasks.value?.filter((task: TaskData) => task.id !== id);
+            break;
+          default:
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nastala neznámá chyba." });
+            break;
+        }
+      },
+      onRequestError() {
+        alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nastala neznámá chyba." });
+      },
+    }).finally((): void => {
+      loading.value = false;
+    });
+
+    return;
+  }
+
+  if (from === "waitingTask") {
+    const formData: FormData = new FormData();
+    formData.append("idTask", id.toString());
+    formData.append("idUser", userId.value);
+    formData.append("status", "pending");
+
+    await apiFetch("/user_task/update", {
+      method: "put",
+      body: formData,
+      credentials: "include",
+      ignoreResponseError: true,
+      onResponse({ response }: any) {
+        const resCode: string = response._data.resCode?.toString();
+
+        switch (resCode) {
+          case "38010":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nebyl zadán id úkolu." });
+            break;
+          case "38020":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Uživatel neexistuje." });
+            break;
+          case "38030":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Úkol neexistuje." });
+            break;
+          case "38040":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Záznam s uživatelem a úkolem neexistuje." });
+            break;
+          case "38050":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Špatný formát souboru (review)." });
+            break;
+          case "38060":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nelze provést tuto akci (review není povoleno)." });
+            break;
+          case "38070":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Název souboru (review) je příliš dlouhý." });
+            break;
+          case "38080":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Špatný formát souboru (elaboration)." });
+            break;
+          case "38090":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Název souboru (elaboration) je příliš dlouhý." });
+            break;
+          case "38100":
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nedostatečná oprávnění." });
+            break;
+          case "38111":
+            alertsStore.addAlert({ type: "success", title: "Přijetí úkolu", message: "Úkol byl úspěšně přijat a čeká na schválení." });
+            allTasks.value = allTasks.value?.filter((task: TaskData) => task.id !== id);
+            break;
+          default:
+            alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nastala neznámá chyba." });
+            break;
+        }
+      },
+      onRequestError() {
+        alertsStore.addAlert({ type: "error", title: "Přijetí úkolu", message: "Nastala neznámá chyba." });
+      },
+    }).finally((): void => {
+      loading.value = false;
+    });
+
+    return;
+  }
 };
 
 onMounted(async (): Promise<void> => {
-  await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["approved"]))}&which=1`, {
+  await apiFetch(`/task/get/possible`, {
     method: "get",
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }) {
-      const tasks: TaskData[] = (response._data.data.elaboratingTasks || []).filter((task: any) => !task.review).map((task: any) => {
+      const classTasks: TaskData[] = response._data.data.classTasks.map((task: any) => {
         return {
           ...task,
-          id: task.idTask
+          from: "classTask"
+        };
+      }) || [];
+      const waitingTasks: TaskData[] = response._data.data.waitingTasks.map((task: any) => {
+        return {
+          ...task,
+          from: "waitingTask"
         };
       }) || [];
 
-      allTasks.value = tasks || [];
+      allTasks.value = [...classTasks, ...waitingTasks];
     },
   });
 });
@@ -73,7 +190,7 @@ onMounted(async (): Promise<void> => {
       <div id="tasks">
         <div class="content">
           <div class="line">
-            <Navigation class="navigation" title="Úkoly" :active-link-id="0" :links="[
+            <Navigation class="navigation" title="Úkoly" :active-link-id="1" :links="[
               { name: 'Aktivní', path: `/panel/tasks/${role}` },
               { name: 'Dostupné', path: `/panel/tasks/${role}/available` },
               { name: 'Stav úkolů', path: `/panel/tasks/${role}/status` },
@@ -83,8 +200,8 @@ onMounted(async (): Promise<void> => {
             <div class="line">
               <div class="line">
                 <div class="section-head">
-                  <h3>Vaše úkoly</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                  <h3>Dostupné úkoly</h3>
+                  <p>tyto úkoly vyžadují potvrzení tvůrce úkolu</p>
                 </div>
 
                 <div class="search">
@@ -98,7 +215,7 @@ onMounted(async (): Promise<void> => {
                 </div>
               </div>
 
-              <Vue3Datatable :rows="allTasks" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput">
+              <Vue3Datatable :loading="loading" :rows="allTasks" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput">
                 <template #task="data">
                   <a :href="`http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`" class="link" download target="_blank">
                     {{ data.value.task }}
@@ -119,7 +236,7 @@ onMounted(async (): Promise<void> => {
 
                 <template #actions="data">
                   <div class="actions">
-                    <button type="button" class="primary" @click="openUserTask(data.value.id)">Otevřít</button>
+                    <button type="button" class="add" @click="acceptTask(data.value.id, data.value.from)">Přijmout</button>
                   </div>
                 </template>
               </Vue3Datatable>
@@ -189,6 +306,17 @@ onMounted(async (): Promise<void> => {
 
         &:hover {
           background: var(--btn-1-hover-background);
+        }
+      }
+
+      &.add {
+        background: rgba(var(--actionBar-actions-add-background), 1);
+        color: var(--actionBar-actions-add-color);
+        border: var(--border-width) solid
+        rgba(var(--actionBar-actions-add-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-add-background), 0.8);
         }
       }
     }

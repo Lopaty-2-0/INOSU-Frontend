@@ -4,117 +4,150 @@ import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
-import {ref, onMounted} from "vue";
-import {useRoute} from "#vue-router";
-import {useAccountStore} from "~/stores/account";
+import {onMounted, ref} from "vue";
+import {useRoute, useRouter} from "#vue-router";
 import type {TaskData} from "~/types/tasks";
 import moment from "moment/moment";
 import Navigation from "~/components/basics/Navigation.vue";
+import type {AccountData} from "~/types/account";
+
+const route = useRoute();
+const router = useRouter();
+const taskId = route.params.taskId as string;
+
+definePageMeta({
+  roles: ["teacher"],
+});
 
 useHead({
-  title: "Panel | Vaše úkoly",
+  title: "Panel | Rozpracované - " + taskId,
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
-definePageMeta({
-  roles: ["student"],
-});
-
-const route = useRoute();
-const role = route.params.role as string;
-
+const task = ref<TaskData | undefined>(undefined);
+const loading = ref<boolean>(false);
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
   { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "startDate", title: "Začátek", type: "date" },
-  { field: "endDate", title: "Konec", type: "date" },
-  { field: "task", title: "Zadání", type: "string" },
+  { field: "name", title: "Autor", type: "string" },
+  { field: "abbreviation", title: "Zkratka", type: "date" },
+  { field: "email", title: "E-mail", type: "string" },
   { field: "actions", title: "Akce" },
 ]);
-const allTasks = ref<TaskData[] | undefined>(undefined);
+const pendingUsers = ref<AccountData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
 const openUserTask = async (id: number): Promise<void> => {
   if (!id) return;
 
-  await navigateTo(`/panel/tasks/${role}/${id}`);
+  await navigateTo(`/panel/tasks/teacher/${taskId}/${id}`);
 };
 
 onMounted(async (): Promise<void> => {
-  await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["approved"]))}&which=1`, {
+  await apiFetch(`/task/get/id?idTask=${taskId}`, {
+    method: "get",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    ignoreResponseError: true,
+    async onResponse({ response }) {
+      const taskData = response._data.data.task;
+
+      if (!taskData) {
+        await router.push(`/panel/tasks/teacher`);
+        return;
+      }
+
+      task.value = taskData;
+    },
+  });
+
+  await apiFetch(`/user_task/get/status/idTask?idTask=${taskId}&status=${encodeURIComponent(JSON.stringify(["approved"]))}`, {
     method: "get",
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }) {
-      const tasks: TaskData[] = (response._data.data.elaboratingTasks || []).filter((task: any) => !task.review).map((task: any) => {
-        return {
-          ...task,
-          id: task.idTask
-        };
-      }) || [];
-
-      allTasks.value = tasks || [];
-    },
+      pendingUsers.value = (response._data.data.tasks || []).filter((task: any) => !task.elaboration).map((task: any) => task.elaborator) || [];
+    }
   });
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allTasks">
+  <NuxtLayout name="panel" :loading="!pendingUsers || !task">
     <template #header>
       <Navbar
           :links="[
-          { name: 'Úkoly', path: `/panel/tasks/${role}` },
+          { name: 'Úkoly', path: `/panel/tasks/teacher` },
+          { name: 'Rozpracované', path: `/panel/tasks/teacher/${taskId}/inProgress` },
         ]"
       />
     </template>
 
-    <template #content v-if="allTasks">
+    <template #content v-if="pendingUsers && task">
       <div id="tasks">
         <div class="content">
+          <ActionBar
+              class="action-bar"
+              description="Správa úkolů"
+              :texts="['Přidat', 'Odebrat']"
+              :actions="['add', 'remove']"
+              :icons="[
+              'material-symbols:add-rounded',
+              'material-symbols:delete-rounded',
+            ]"
+              :navigate-to="[
+              `/panel/tasks/teacher/add`,
+              `/panel/tasks/teacher/remove`,
+            ]"
+          />
+
           <div class="line">
-            <Navigation class="navigation" title="Úkoly" :active-link-id="0" :links="[
-              { name: 'Aktivní', path: `/panel/tasks/${role}` },
-              { name: 'Dostupné', path: `/panel/tasks/${role}/available` },
-              { name: 'Stav úkolů', path: `/panel/tasks/${role}/status` },
-              { name: 'Vyhodnocené', path: `/panel/tasks/${role}/evaluated` },
+            <Navigation class="navigation" title="Úkoly" :active-link-id="1" :links="[
+              { name: 'Žádosti', path: `/panel/tasks/teacher/${taskId}` },
+              { name: 'Rozpracované', path: `/panel/tasks/teacher/${taskId}/inProgress` },
+              { name: 'Vypracované', path: `/panel/tasks/teacher/${taskId}/done` },
             ]" />
 
             <div class="line">
               <div class="line">
                 <div class="section-head">
-                  <h3>Vaše úkoly</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                  <div class="section-head">
+                    <h3>Rozpracovaný úkol</h3>
+                    <p>Úkol ID: {{ task.id }}</p>
+                    <p>Název: {{ task.name }}</p>
+                    <p>Garant ID: {{ task.guarantor }}</p>
+                    <p>Začátek: {{ moment(task.startDate).format("DD.MM. YYYY HH:MM") }}</p>
+                    <p>Konec: {{ moment(task.endDate).format("DD.MM. YYYY HH:MM") }}</p>
+                    <p>Nutné potvrzení: {{ task.approve ? "Ano" : "Ne" }}</p>
+                    <p>
+                      Zadání:
+                      <a :href="`http://89.203.248.163/uploads/tasks/${task.id}/${task.task}`" class="link" download target="_blank">
+                        {{ task.task }}
+                      </a>
+                    </p>
+                  </div>
                 </div>
 
                 <div class="search">
                   <input
                       type="text"
                       name="searchInput"
-                      placeholder="Hledat úkol"
+                      placeholder="Hledat uživatele"
                       v-model="searchInput"
                   />
                   <Icon class="icon" name="material-symbols:search-rounded"></Icon>
                 </div>
               </div>
 
-              <Vue3Datatable :rows="allTasks" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput">
-                <template #task="data">
-                  <a :href="`http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`" class="link" download target="_blank">
-                    {{ data.value.task }}
-                  </a>
+              <Vue3Datatable :loading="loading" :rows="pendingUsers" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput">
+                <template #name="data">
+                  <div class="profile">
+                    <img :src="'http://89.203.248.163/uploads/profilePictures/' + data.value.profilePicture" alt="User profile photo" loading="lazy"/>
+                    <p>{{ data.value.name }} {{ data.value.surname }}</p>
+                  </div>
                 </template>
 
-                <template #startDate="data">
-                  <p>{{ moment(data.value.startDate).format("DD.MM. YYYY HH:MM") }}</p>
-                </template>
-
-                <template #endDate="data">
-                  <p>{{ moment(data.value.endDate).format("DD.MM. YYYY HH:MM") }}</p>
-                </template>
-
-                <template #approve="data">
-                  <p>{{ data.value.approve ? "Ano" : "Ne" }}</p>
+                <template #abbreviation="data">
+                  <p class="uppercase">{{ data.value.abbreviation || "Není" }}</p>
                 </template>
 
                 <template #actions="data">
@@ -133,11 +166,7 @@ onMounted(async (): Promise<void> => {
 </template>
 
 <style lang="scss" scoped>
-@use "../../../../assets/style/datatable";
-
-::v-deep(.bh-datatable .bh-table-responsive tr td p) {
-  text-transform: uppercase;
-}
+@use "../../../../../assets/style/datatable";
 
 #tasks {
   display: flex;
@@ -152,6 +181,30 @@ onMounted(async (): Promise<void> => {
 
     &:hover {
       color: rgba(var(--main-color), 0.8);
+    }
+  }
+
+  .uppercase {
+    text-transform: uppercase;
+  }
+
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    img {
+      min-width: 45px;
+      min-height: 45px;
+      width: 45px;
+      height: 45px;
+      border-radius: var(--small-border-radius);
+      object-fit: cover;
+    }
+
+    p {
+      font-size: 16px;
+      color: rgba(var(--description-color), 1);
     }
   }
 
@@ -189,6 +242,26 @@ onMounted(async (): Promise<void> => {
 
         &:hover {
           background: var(--btn-1-hover-background);
+        }
+      }
+
+      &.accept {
+        color: var(--actionBar-actions-add-color);
+        background: rgba(var(--actionBar-actions-add-background), 1);
+        border-color: rgba(var(--actionBar-actions-add-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-add-background), 0.8);
+        }
+      }
+
+      &.deny {
+        color: var(--actionBar-actions-remove-color);
+        background: rgba(var(--actionBar-actions-remove-background), 1);
+        border-color: rgba(var(--actionBar-actions-remove-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-remove-background), 0.8);
         }
       }
     }

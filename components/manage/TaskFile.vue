@@ -16,6 +16,7 @@ const emits = defineEmits(["update"]);
 const errors = ref<{ file: string }>({ file: "" });
 const taskFile = ref<File | null>(null);
 const fileInput = ref<null | HTMLInputElement>(null);
+const taskTitle = ref<string>(props.oldTaskFile || "");
 
 const selectFile = (): void => {
   if (fileInput.value) {
@@ -31,20 +32,30 @@ const uploadFile = async (event: Event): Promise<void> => {
 
   if (!file) return;
 
-  if (file.size > 2097152) {
-    errors.value.file = "Soubor je příliš velký, nahrajte prosím jiný.";
+  if (file.size > 31457280) {
+    errors.value.file = "Soubor je příliš velký, nahrajte prosím jiný (Max: 30MB).";
     return;
   }
 
   taskFile.value = file;
+  taskTitle.value = file.name;
 
   emits("update", file);
 };
+
+watch(() => props.oldTaskFile, (newVal) => {
+  if (newVal) {
+    taskTitle.value = newVal;
+  } else {
+    taskTitle.value = "";
+  }
+});
 
 watch(() => props.reset, (reset: boolean): void => {
   if (reset) {
     errors.value.file = "";
     taskFile.value = null;
+    taskTitle.value = props.oldTaskFile || "";
   }
 });
 </script>
@@ -73,7 +84,7 @@ watch(() => props.reset, (reset: boolean): void => {
                   class="icon"
                   name="material-symbols:cloud-upload"
               />
-              {{ taskFile ? "Soubor: " + taskFile.name : "Klikni pro nahrání souboru z počítače" }}
+              {{ (taskFile || taskTitle) ? "Soubor: " + taskTitle : "Klikni pro nahrání souboru z počítače" }}
             </p>
             <input
                 type="file"

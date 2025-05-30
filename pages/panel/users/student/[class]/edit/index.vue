@@ -10,6 +10,7 @@ import apiFetch from "~/componsables/apiFetch";
 import type { AccountData } from "~/types/account";
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 const route = useRoute();
@@ -54,19 +55,21 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const usersData: AccountData[] = response._data?.data?.users || [];
+onMounted(async (): Promise<void> => {
+  await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const usersData: AccountData[] = response._data?.data?.users || [];
 
-    users.value = usersData;
-    searchedUsers.value = [...usersData];
-  },
+      users.value = usersData;
+      searchedUsers.value = [...usersData];
+    },
+  });
 });
 </script>
 
@@ -77,7 +80,7 @@ await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encode
         :links="[
           { name: 'Uživatelé', path: '/panel/users' },
           { name: 'student', path: '/panel/users/student' },
-          { name: 'Třída: ' + classId, path: '/panel/users/student' + classId },
+          { name: 'Třída: ' + classId, path: '/panel/users/student/' + classId },
           { name: 'Upravení', path: '/panel/users/student/' + classId + '/edit' },
         ]"
       />

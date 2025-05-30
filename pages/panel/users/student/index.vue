@@ -3,9 +3,6 @@ import Alerts from "~/components/Alerts.vue";
 import apiFetch from "~/componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 
-definePageMeta({
-});
-
 useHead({
   title: "Panel | Uživatelé - student",
   meta: [{ name: "description", content: "Panel Settings User Information" }],
@@ -13,18 +10,20 @@ useHead({
 
 const allClasses = ref<ClassData[] | undefined>(undefined);
 
-await apiFetch("/class/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const classes: ClassData[] = response._data.data.classes;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/class/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const classes: ClassData[] = response._data.data.classes;
 
-    allClasses.value = classes || [];
-  },
+      allClasses.value = classes || [];
+    },
+  });
 });
 </script>
 

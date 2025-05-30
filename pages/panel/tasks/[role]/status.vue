@@ -12,7 +12,7 @@ import moment from "moment/moment";
 import Navigation from "~/components/basics/Navigation.vue";
 
 useHead({
-  title: "Panel | Vaše úkoly",
+  title: "Panel | Stavy přijatých úkolů",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -29,19 +29,13 @@ const cols = ref<{ field: string; title: string; type?: string; width?: string; 
   { field: "startDate", title: "Začátek", type: "date" },
   { field: "endDate", title: "Konec", type: "date" },
   { field: "task", title: "Zadání", type: "string" },
-  { field: "actions", title: "Akce" },
+  { field: "status", title: "Stav", type: "string" },
 ]);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
-const openUserTask = async (id: number): Promise<void> => {
-  if (!id) return;
-
-  await navigateTo(`/panel/tasks/${role}/${id}`);
-};
-
 onMounted(async (): Promise<void> => {
-  await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["approved"]))}&which=1`, {
+  await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["rejected", "pending"]))}&which=1`, {
     method: "get",
     credentials: "include",
     ignoreResponseError: true,
@@ -73,7 +67,7 @@ onMounted(async (): Promise<void> => {
       <div id="tasks">
         <div class="content">
           <div class="line">
-            <Navigation class="navigation" title="Úkoly" :active-link-id="0" :links="[
+            <Navigation class="navigation" title="Úkoly" :active-link-id="2" :links="[
               { name: 'Aktivní', path: `/panel/tasks/${role}` },
               { name: 'Dostupné', path: `/panel/tasks/${role}/available` },
               { name: 'Stav úkolů', path: `/panel/tasks/${role}/status` },
@@ -83,7 +77,7 @@ onMounted(async (): Promise<void> => {
             <div class="line">
               <div class="line">
                 <div class="section-head">
-                  <h3>Vaše úkoly</h3>
+                  <h3>Stavy přijatých úkolů</h3>
                   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                 </div>
 
@@ -116,11 +110,12 @@ onMounted(async (): Promise<void> => {
                 <template #approve="data">
                   <p>{{ data.value.approve ? "Ano" : "Ne" }}</p>
                 </template>
-
-                <template #actions="data">
-                  <div class="actions">
-                    <button type="button" class="primary" @click="openUserTask(data.value.id)">Otevřít</button>
-                  </div>
+                <template #status="data">
+                  <p :class="{[data.value.status]: true}">
+                    {{
+                      data.value.status === "rejected" ? "Zamítnuto" : data.value.status === "pending" ? "Čeká na schválení" : data.value.status
+                    }}
+                  </p>
                 </template>
               </Vue3Datatable>
             </div>
@@ -153,6 +148,16 @@ onMounted(async (): Promise<void> => {
     &:hover {
       color: rgba(var(--main-color), 0.8);
     }
+  }
+
+  .pending {
+    color: rgba(var(--main-color), 1);
+    font-weight: 600;
+  }
+
+  .rejected {
+    color: rgba(var(--error-color), 1);
+    font-weight: 600;
   }
 
   .navigation {

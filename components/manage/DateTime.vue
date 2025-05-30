@@ -49,7 +49,7 @@ watch(() => date.value.input, () => {
 </template>
 
 <style scoped lang="scss">
-@use "../../../assets/style/calendar";
+@use "../../assets/style/calendar";
 
 .section {
   display: flex;

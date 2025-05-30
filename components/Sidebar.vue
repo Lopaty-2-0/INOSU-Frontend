@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import {ref, onMounted, computed} from "vue";
 import { useRoute, useState } from "nuxt/app";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "../stores/account";
@@ -17,7 +17,8 @@ const getStyledNumber = (number: number): string => {
 
 const loading = ref<boolean>(true);
 const logoutLoading = ref<boolean>(false);
-const sidebarLinks = ref<
+const numberOfActiveTasks = ref<number | null>(null);
+const sidebarLinks = computed<
   {
     name: string;
     links: {
@@ -28,7 +29,7 @@ const sidebarLinks = ref<
       notify?: boolean | string;
     }[];
   }[]
->([
+>(() =>[
   {
     name: "Hlavní",
     links: [
@@ -47,7 +48,7 @@ const sidebarLinks = ref<
           `/panel/tasks/${role.value}/remove`,
         ],
         iconClass: "material-symbols:folder-copy-rounded",
-        notify: false,
+        notify: !["admin", "teacher"].includes(role.value) ? numberOfActiveTasks.value !== null ? getStyledNumber(numberOfActiveTasks.value) : "?" : false,
       },
       {
         text: "Zaměření",
@@ -98,13 +99,7 @@ const sidebarLinks = ref<
         ],
         iconClass: "material-symbols:settings-rounded",
         notify: false,
-      },
-      {
-        text: "Podpora",
-        href: "/panel/support",
-        iconClass: "material-symbols:help",
-        notify: false,
-      },
+      }
     ],
   },
 ]);
@@ -143,8 +138,27 @@ const logOut = async (): Promise<void> => {
   });
 };
 
-onMounted((): void => {
-  loading.value = false;
+onMounted(async (): Promise<void> => {
+  if (!["admin", "teacher"].includes(role.value)) {
+    await apiFetch("/user_task/count/approved_without_review", {
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      ignoreResponseError: true,
+      onResponse({ response }) {
+        const count: number = response._data.data.count;
+
+        numberOfActiveTasks.value = count ?? null;
+      },
+    }).finally((): void => {
+      loading.value = false;
+    });
+  } else {
+    loading.value = false;
+    numberOfActiveTasks.value = null;
+  }
 });
 </script>
 

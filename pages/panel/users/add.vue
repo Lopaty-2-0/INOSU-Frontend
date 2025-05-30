@@ -1,19 +1,20 @@
 <script lang="ts" setup>
-import EditFormFooter from "~/components/users/manage/Footer.vue";
+import EditFormFooter from "~/components/manage/Footer.vue";
 import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
 import { ref, computed } from "vue";
-import EditFullName from "../../../components/users/manage/FullName.vue";
-import EditEmail from "../../../components/users/manage/Email.vue";
-import EditPassword from "../../../components/users/manage/Password.vue";
-import EditRole from "../../../components/users/manage/Role.vue";
-import EditAbbreviation from "../../../components/users/manage/Abbreviation.vue";
-import EditClass from "../../../components/users/manage/Class.vue";
+import EditFullName from "../../../components/manage/FullName.vue";
+import EditEmail from "../../../components/manage/Email.vue";
+import EditPassword from "../../../components/manage/Password.vue";
+import EditRole from "../../../components/manage/Role.vue";
+import EditAbbreviation from "../../../components/manage/Abbreviation.vue";
+import EditClass from "../../../components/manage/Class.vue";
 import apiFetch from "../../../componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 useHead({
@@ -178,32 +179,34 @@ const createNewUser = async (): Promise<void> => {
   });
 };
 
-await apiFetch("/user/get/roles", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const roles: string[] = response._data.data.roles;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/user/get/roles", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const roles: string[] = response._data.data.roles;
 
-    allRoles.value = roles || [];
-  },
-});
+      allRoles.value = roles || [];
+    },
+  });
 
-await apiFetch("/class/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const classes: ClassData[] = response._data.data.classes;
+  await apiFetch("/class/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const classes: ClassData[] = response._data.data.classes;
 
-    allClasses.value = classes || [];
-  },
+      allClasses.value = classes || [];
+    },
+  });
 });
 </script>
 

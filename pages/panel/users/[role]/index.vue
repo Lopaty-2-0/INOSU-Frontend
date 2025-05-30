@@ -7,9 +7,7 @@ import apiFetch from "../../../../componsables/apiFetch";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import UsersGrid from "../../../../components/users/Grid.vue";
 import GridNavigation from "../../../../components/users/Navigation.vue";
-
-definePageMeta({
-});
+import checkPermissions from "~/componsables/checkPermissions";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -53,19 +51,21 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const usersData: AccountData[] = response._data?.data?.users || [];
+onMounted(async (): Promise<void> => {
+  await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const usersData: AccountData[] = response._data?.data?.users || [];
 
-    users.value = usersData;
-    searchedUsers.value = [...usersData];
-  },
+      users.value = usersData;
+      searchedUsers.value = [...usersData];
+    },
+  });
 });
 </script>
 
@@ -97,6 +97,7 @@ await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
               `/panel/users/${role}/edit`,
               `/panel/users/${role}/remove`,
             ]"
+            v-if="checkPermissions(['admin'])"
           />
 
           <div class="line">

@@ -43,6 +43,9 @@ export const useAccountStore = defineStore("account", {
         getRole(): string {
             return this.role;
         },
+        getId(): string {
+            return this.id;
+        }
     },
     actions: {
         setAccountData(accountData: AccountData): void {
@@ -55,6 +58,9 @@ export const useAccountStore = defineStore("account", {
             this.profilePicture = accountData.profilePicture;
             this.idClass = accountData.idClass;
             this.createdAt = accountData.createdAt;
+        },
+        setId(id: string): void {
+            this.id = id;
         },
         updateAccountDataCookie(accountData: AccountData): void {
             useCookie("accountData").value = JSON.stringify(accountData);

@@ -3,7 +3,7 @@ import {ref, watch} from "vue";
 
 const props = defineProps({
   oldCheck: {
-    type: Boolean,
+    type: [Boolean, null] as PropType<boolean | null>,
     required: false,
   },
   reset: {
@@ -13,10 +13,13 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["update"]);
-const check = ref<{ input: boolean, updated: boolean }>({ input: props.oldCheck, updated: false });
+const check = ref<{ input: boolean, updated: boolean }>({
+  input: props.oldCheck && props.oldCheck !== null ? props.oldCheck : false,
+  updated: false
+});
 
 const onInput = () => {
-  check.value.updated = check.value.input !== props.oldCheck;
+  check.value.updated = props.oldCheck === null ? true : check.value.input !== props.oldCheck;
 
   emits("update", check.value.updated ? check.value.input : undefined);
 };
@@ -24,7 +27,7 @@ const onInput = () => {
 watch(() => props.reset, (reset: boolean): void => {
   if (reset) {
     check.value.updated = false;
-    check.value.input = props.oldCheck;
+    check.value.input = props.oldCheck && props.oldCheck !== null ? props.oldCheck : false;
   }
 });
 </script>

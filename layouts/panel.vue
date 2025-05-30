@@ -16,14 +16,9 @@ const props = defineProps({
 const { getLoading: accountLoading } = storeToRefs(useAccountStore());
 
 const loading = ref<boolean>(true);
-const theme = useState<string>("theme");
 
 onMounted((): void => {
   loading.value = false;
-
-  if (theme.value) {
-    document.documentElement.setAttribute("data-theme", theme.value);
-  }
 });
 </script>
 

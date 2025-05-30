@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { ref } from "vue";
+import {onMounted, ref} from "vue";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import Navbar from "~/components/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
 import GridNavigation from "~/components/users/Navigation.vue";
 import Alerts from "~/components/Alerts.vue";
-import { useAlertsStore } from "~/stores/alerts";
 import apiFetch from "~/componsables/apiFetch";
 import type { AccountData } from "~/types/account";
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 const route = useRoute();
@@ -55,19 +55,21 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const usersData: AccountData[] = response._data?.data?.users || [];
+onMounted(async (): Promise<void> => {
+  await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const usersData: AccountData[] = response._data?.data?.users || [];
 
-    users.value = usersData;
-    searchedUsers.value = [...usersData];
-  },
+      users.value = usersData;
+      searchedUsers.value = [...usersData];
+    },
+  });
 });
 </script>
 

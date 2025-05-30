@@ -18,6 +18,14 @@
   }
 }
 
+::v-deep(.bh-skeleton-box) {
+  background-color: transparent;
+}
+
+::v-deep(tbody .\!bh-bg-white) {
+  background-color: transparent !important;
+}
+
 ::v-deep(.bh-table-responsive) {
   font-size: 16px;
   border-radius: var(--normal-border-radius);
@@ -157,4 +165,9 @@
   &:not(.active):hover {
     font-weight: normal;
   }
+}
+
+
+::v-deep(.bh-loader) {
+  color: rgba(var(--description-color), 1);
 }

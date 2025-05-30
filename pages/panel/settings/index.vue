@@ -1,17 +1,14 @@
 <script lang="ts" setup>
-import EditProfilePicture from "~/components/users/manage/ProfilePicture.vue";
-import EditFormFooter from "~/components/users/manage/Footer.vue";
+import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
+import EditFormFooter from "~/components/manage/Footer.vue";
 import Navigation from "~/components/basics/Navigation.vue";
 import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
 import { ref, computed } from "vue";
 import {storeToRefs} from "pinia";
-import {useAccountStore} from "../../../stores/account";
+import {useAccountStore} from "~/stores/account";
 import apiFetch from "../../../componsables/apiFetch";
-import {useAlertsStore} from "../../../stores/alerts";
-
-definePageMeta({
-});
+import {useAlertsStore} from "~/stores/alerts";
 
 useHead({
   title: "Panel | Nastavení - Profil",

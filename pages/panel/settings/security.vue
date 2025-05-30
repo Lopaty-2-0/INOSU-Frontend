@@ -1,15 +1,12 @@
 <script lang="ts" setup>
-import EditPassword from "~/components/users/manage/Password.vue";
-import EditFormFooter from "~/components/users/manage/Footer.vue";
+import EditPassword from "~/components/manage/Password.vue";
+import EditFormFooter from "~/components/manage/Footer.vue";
 import Navigation from "~/components/basics/Navigation.vue";
 import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
 import { ref } from "vue";
 import apiFetch from "../../../componsables/apiFetch";
-import { useAlertsStore } from "../../../stores/alerts";
-
-definePageMeta({
-});
+import { useAlertsStore } from "~/stores/alerts";
 
 useHead({
   title: "Panel | Nastavení - Zabezpečení",

@@ -6,13 +6,11 @@ import ActionBar from "~/components/basics/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import {ref} from "vue";
+import checkPermissions from "~/componsables/checkPermissions";
 
 useHead({
   title: "Panel | Třídy",
   meta: [{ name: "description", content: "Panel Homepage" }],
-});
-
-definePageMeta({
 });
 
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
@@ -26,18 +24,20 @@ const cols = ref<{ field: string; title: string; type?: string; width?: string; 
 const allClasses = ref<ClassData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
-await apiFetch("/class/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const classes: ClassData[] = response._data.data.classes;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/class/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const classes: ClassData[] = response._data.data.classes;
 
-    allClasses.value = classes || [];
-  },
+      allClasses.value = classes || [];
+    },
+  });
 });
 </script>
 
@@ -67,6 +67,7 @@ await apiFetch("/class/get", {
               `/panel/classes/add`,
               `/panel/classes/remove`,
             ]"
+            v-if="checkPermissions(['admin'])"
           />
 
           <div class="line">

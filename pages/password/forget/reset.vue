@@ -113,8 +113,7 @@ const submitForm = async (): Promise<void> => {
 
 //start checkToken on page load and set email from response to tokenEmail
 onMounted(async (): Promise<void> => {
-  const token: LocationQueryValue | LocationQueryValue[] =
-    useRoute().query.token;
+  const token: LocationQueryValue | LocationQueryValue[] = useRoute().query.token;
 
   if (!token) tokenEmail.value = null;
 

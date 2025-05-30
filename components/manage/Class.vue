@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
-import type {ClassData} from "../../../types/classes";
+import type {ClassData} from "../../types/classes";
 
 const props = defineProps({
   classes: {

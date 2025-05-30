@@ -1,14 +1,17 @@
 <script lang="ts" setup>
-import EditFormFooter from "~/components/tasks/manage/Footer.vue";
-import EditName from "~/components/tasks/manage/Name.vue";
-import EditNeedApprove from "~/components/tasks/manage/NeedApprove.vue";
-import EditTaskFile from "~/components/tasks/manage/TaskFile.vue";
-import EditDateTime from "~/components/tasks/manage/DateTime.vue";
+import EditFormFooter from "~/components/manage/Footer.vue";
+import EditName from "~/components/manage/Name.vue";
+import EditNeedApprove from "~/components/manage/NeedApprove.vue";
+import EditTaskFile from "~/components/manage/TaskFile.vue";
+import EditDateTime from "~/components/manage/DateTime.vue";
 import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
 import { ref, computed } from "vue";
 import {useRoute} from "#vue-router";
 import ActionBar from "~/components/basics/ActionBar.vue";
+import apiFetch from "~/componsables/apiFetch";
+import { useAlertsStore } from "~/stores/alerts";
+import {useAccountStore} from "~/stores/account";
 
 definePageMeta({
 });
@@ -20,23 +23,23 @@ useHead({
   ],
 });
 
-const route = useRoute();
-const role = route.params.role as string;
+definePageMeta({
+  roles: ["admin"],
+});
 
-const submitLoading = ref<boolean>(false);
+const alertsStore = useAlertsStore();
 const triggerReset = ref<boolean>(false);
-
-const oldData = computed<{ name: string, check: boolean, taskFile: string, startDate: Date | null, endDate: Date | null }>(() => ({
+const loading = ref<boolean>(false);
+const oldData = computed<{ name: string, needApprove: boolean | null, taskFile: string, startDate: Date | null, endDate: Date | null }>(() => ({
   name: "",
-  check: false,
+  needApprove: null,
   taskFile: "",
   startDate: null,
-  endDate: null,
+  endDate: null
 }));
-
-const newData = ref<{ name: string | undefined, check: boolean | undefined, taskFile: File | undefined, startDate: Date | undefined, endDate: Date | undefined }>({
+const newData = ref<{ name: string | undefined, needApprove: boolean | undefined, taskFile: File | undefined, startDate: Date | undefined, endDate: Date | undefined }>({
   name: undefined,
-  check: undefined,
+  needApprove: undefined,
   taskFile: undefined,
   startDate: undefined,
   endDate: undefined,
@@ -47,7 +50,7 @@ const onNameUpdate = (name: string): void => {
 };
 
 const onNeedApproveUpdate = (needApprove: boolean): void => {
-  newData.value.check = needApprove;
+  newData.value.needApprove = needApprove;
 };
 
 const onTaskFileUpdate = (taskFile: File | undefined): void => {
@@ -65,7 +68,7 @@ const onEndDateUpdate = (endDate: Date | undefined): void => {
 const resetUserData = (): void => {
   newData.value = {
     name: undefined,
-    check: undefined,
+    needApprove: undefined,
     taskFile: undefined,
     startDate: undefined,
     endDate: undefined,
@@ -78,14 +81,84 @@ const resetUserData = (): void => {
   }, 100);
 };
 
+const addTask = async (): Promise<void> => {
+  if (!newData.value.name || !newData.value.startDate || !newData.value.endDate || !newData.value.taskFile || newData.value.needApprove === undefined) {
+    alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Vyplňte všechna povinná pole." });
+    return;
+  }
+
+  loading.value = true;
+
+  const formData = new FormData();
+  formData.append("name", newData.value.name || "");
+  formData.append("startDate", newData.value.startDate?.getTime().toString() || "");
+  formData.append("endDate", newData.value.endDate?.getTime().toString() || "");
+  formData.append("task", newData.value.taskFile || "");
+  formData.append("guarantor", useAccountStore().getId || "");
+  formData.append("approve", newData.value.needApprove ? "true" : "false");
+
+  await apiFetch("/task/add", {
+    method: "post",
+    headers: {
+      "Accept": "application/json",
+    },
+    body: formData,
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "26091":
+          alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
+
+          resetUserData();
+
+          break;
+        case "26010":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Studenti nemohou vytvářet úkoly." });
+          break;
+        case "26020":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu nebyl zadán." });
+          break;
+        case "26030":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení nebylo zadáno." });
+          break;
+        case "26040":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je neplatné." });
+          break;
+        case "26050":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je před datem začátku." });
+          break;
+        case "26060":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor úkolu nebyl zadán." });
+          break;
+        case "26070":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Neplatný formát souboru." });
+          break;
+        case "26080":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nebyla zadána hodnota schválení." });
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba při odesílání požadavku." });
+    },
+  }).finally((): void => {
+    loading.value = false;
+  });
+};
 </script>
 
 <template>
   <NuxtLayout name="panel">
     <template #header>
       <Navbar :links="[
-        { name: 'Úkoly', path: `/panel/tasks/${role}` },
-        { name: 'Přidání', path: `/panel/tasks/${role}/add` },
+        { name: 'Úkoly', path: `/panel/tasks/admin` },
+        { name: 'Přidání', path: `/panel/tasks/admin/add` },
       ]" />
     </template>
 
@@ -93,18 +166,18 @@ const resetUserData = (): void => {
       <div id="tasks">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa  "
-              :texts="['Přidat', 'Odebrat']"
-              :actions="['add', 'remove']"
-              :icons="[
+            class="action-bar"
+            description="Správa úkolů"
+            :texts="['Přidat', 'Odebrat']"
+            :actions="['add', 'remove']"
+            :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
             :active="0"
             :navigate-to="[
-              `/panel/tasks/${role}/add`,
-              `/panel/tasks/${role}/remove`,
+              `/panel/tasks/admin/add`,
+              `/panel/tasks/admin/remove`,
             ]"
           />
 
@@ -139,15 +212,15 @@ const resetUserData = (): void => {
           </div>
 
           <div class="line page-section">
-            <EditNeedApprove @update="onNeedApproveUpdate" :reset="triggerReset" :old-check="oldData.check">
+            <EditNeedApprove @update="onNeedApproveUpdate" :reset="triggerReset" :old-check="oldData.needApprove">
               <div class="section-head">
-                <h3>Nutné schválení * <span class="update" v-show="newData.check">(aktualizováno)</span></h3>
+                <h3>Nutné schválení * <span class="update" v-show="newData.needApprove !== undefined">(aktualizováno)</span></h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aliquam consequatur mollitia officiis placeat!</p>
               </div>
             </EditNeedApprove>
           </div>
 
-          <EditFormFooter :is-loading="submitLoading" :reset-function="resetUserData" :submit-function="() => {}">
+          <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="addTask">
             Pole označená * jsou povinná
           </EditFormFooter>
         </div>

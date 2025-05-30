@@ -17,7 +17,30 @@ export default defineNuxtConfig({
       viewport: "width=device-width, initial-scale=1",
       noscript: [
         { innerHTML: "JavaScript is required" }
-      ]
+      ],
+      script: [
+        {
+          tagPosition: "head",
+          innerHTML: `(function () {
+            try {
+              const storedTheme = localStorage.getItem("theme");
+              const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+              let themeAttr;
+
+              if (storedTheme === "dark" || storedTheme === "light") {
+                themeAttr = storedTheme;
+              } else if (storedTheme === "system" || !storedTheme) {
+                themeAttr = prefersDark ? "dark" : "light";
+              } else {
+                themeAttr = "light";
+              }
+
+              document.documentElement.setAttribute("data-theme", themeAttr);
+            } catch (e) {}
+          })();`,
+          type: "text/javascript"
+        }
+      ],
     }
   },
 
@@ -33,13 +56,13 @@ export default defineNuxtConfig({
 
   sourcemap: process.env.NODE_ENV === "production",
   vite: {
-    css :{
-      preprocessorOptions : {
+    css: {
+      preprocessorOptions: {
         scss: {
-          api: "modern-compiler",
+          api: "modern-compiler"
         }
       }
-    },
+    }
   },
 
   modules: [
@@ -57,33 +80,33 @@ export default defineNuxtConfig({
       collections: ["material-symbols"]
     }
   },
-/*
-  i18n: {
-    strategy: "no_prefix",
-    langDir: "~/translations/",
-    locales: [
-        { code: "en", iso: "en-US", file: "en.json" },
-        { code: "cz", iso: "cs-CZ", file: "cz.json" }
-    ],
-    defaultLocale: "cz",
-  },*/
-/*
-  security: {
-    hidePoweredBy: true,
-    corsHandler: {
-      origin: process.env.API_ORIGIN,
-      methods: ["GET", "POST", "PUT", "DELETE"],
-      credentials: false,
-    },
-    xssValidator: false,
-    headers: {
-      crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
-      referrerPolicy: "origin",
-      contentSecurityPolicy: {
-        "img-src": ["self", "https:", "data:", "blob:", "http://89.203.248.163"],
+  /*
+    i18n: {
+      strategy: "no_prefix",
+      langDir: "~/translations/",
+      locales: [
+          { code: "en", iso: "en-US", file: "en.json" },
+          { code: "cz", iso: "cs-CZ", file: "cz.json" }
+      ],
+      defaultLocale: "cz",
+    },*/
+  /*
+    security: {
+      hidePoweredBy: true,
+      corsHandler: {
+        origin: process.env.API_ORIGIN,
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: false,
+      },
+      xssValidator: false,
+      headers: {
+        crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
+        referrerPolicy: "origin",
+        contentSecurityPolicy: {
+          "img-src": ["self", "https:", "data:", "blob:", "http://89.203.248.163"],
+        }
       }
-    }
-  },*/
+    },*/
 
   routeRules: {
     "/**": {
@@ -104,4 +127,4 @@ export default defineNuxtConfig({
       production: process.env.NODE_ENV === "production",
     },
   }
-})
+});

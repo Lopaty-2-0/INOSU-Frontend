@@ -4,7 +4,7 @@ import Alerts from "~/components/Alerts.vue";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import Loading from "~/components/basics/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
@@ -15,6 +15,7 @@ useHead({
 });
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 const alertsStore = useAlertsStore();
@@ -59,6 +60,24 @@ const toggleDropdown = (): void => {
 };
 
 const pingResetSelectedClasses = (): void => {
+  selectedSpecialization.value = null;
+  classData.value = {
+    name: "",
+    grade: null,
+    group: "",
+    specialization: null
+  };
+  errors.value = {
+    name: "",
+    grade: "",
+    group: "",
+    specialization: ""
+  };
+  searchAbbreviation.value = "";
+  searchLengthOfStudy.value = null;
+  searchName.value = "";
+  title.value = "";
+  open.value = false;
 };
 
 const onSpecializationSelect = (specialization: SpecializationData): void => {
@@ -97,8 +116,6 @@ const checkForErrors = (): void => {
   } else if (classData.value.group.length > 1) {
     errors.value.group = "Skupina třídy musí být maximálně 1 znak.";
   }
-
-  console.log(classData.value.specialization);
 
   if (classData.value.specialization === null) {
     errors.value.specialization = "Zaměření třídy je povinné.";
@@ -194,23 +211,25 @@ const addClass = async (): Promise<void> => {
   });
 };
 
-await apiFetch("/specialization/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const specializations: SpecializationData[] = response._data.data.specializations;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/specialization/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const specializations: SpecializationData[] = response._data.data.specializations;
 
-    allSpecializations.value = specializations || [];
-  },
+      allSpecializations.value = specializations || [];
+    },
+  });
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel">
+  <NuxtLayout name="panel" :loading="!allSpecializations">
     <template #header>
       <Navbar
           :links="[
@@ -220,7 +239,7 @@ await apiFetch("/specialization/get", {
       />
     </template>
 
-    <template #content>
+    <template #content v-if="allSpecializations">
       <div id="classes">
         <div class="content">
           <ActionBar

@@ -4,59 +4,103 @@ import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/basics/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
-import {ref, onMounted} from "vue";
+import {onMounted, ref} from "vue";
 import {useRoute} from "#vue-router";
 import {useAccountStore} from "~/stores/account";
-import type {TaskData} from "~/types/tasks";
-import moment from "moment/moment";
-import Navigation from "~/components/basics/Navigation.vue";
+import { storeToRefs } from "pinia";
+import { useAlertsStore } from "~/stores/alerts";
+import type { TaskData } from "~/types/tasks";
+import moment from "moment";
 
 useHead({
-  title: "Panel | Vaše úkoly",
+  title: "Panel | Úkoly - Odstranění",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
 definePageMeta({
-  roles: ["student"],
+  roles: ["admin"],
 });
 
-const route = useRoute();
-const role = route.params.role as string;
+const accountStore = useAccountStore();
+const alertsStore = useAlertsStore();
+const { getId: userId } = storeToRefs(accountStore);
 
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string" },
   { field: "startDate", title: "Začátek", type: "date" },
   { field: "endDate", title: "Konec", type: "date" },
+  { field: "approve", title: "Nutné potvrzení", type: "boolean" },
   { field: "task", title: "Zadání", type: "string" },
   { field: "actions", title: "Akce" },
 ]);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
+const loading = ref<boolean>(false);
 
-const openUserTask = async (id: number): Promise<void> => {
+const removeTask = async (id: number): Promise<void> => {
   if (!id) return;
 
-  await navigateTo(`/panel/tasks/${role}/${id}`);
+  loading.value = true;
+
+  await apiFetch("/task/delete", {
+    method: "delete",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {
+      id: id,
+    },
+    ignoreResponseError: true,
+    credentials: "include",
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode?.toString();
+
+      switch (resCode) {
+        case "28010":
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Studenti nemohou mazat úkoly." });
+          break;
+        case "28020":
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Chybí ID úkolu." });
+          break;
+        case "28030":
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nemáte oprávnění k této akci." });
+          break;
+        case "28040":
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Úkol nebyl nalezen." });
+          break;
+        case "28051":
+          alertsStore.addAlert({ type: "success", title: "Odstranění úkolu", message: "Úkol byl úspěšně odstraněn." });
+          allTasks.value = allTasks.value?.filter((task: TaskData) => task.id !== id);
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nastala neznámá chyba." });
+    },
+  }).finally((): void => {
+    loading.value = false;
+  });
 };
 
 onMounted(async (): Promise<void> => {
-  await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["approved"]))}&which=1`, {
+  await apiFetch(`/task/get/guarantor?idUser=${userId.value}`, {
     method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }) {
-      const tasks: TaskData[] = (response._data.data.elaboratingTasks || []).filter((task: any) => !task.review).map((task: any) => {
-        return {
-          ...task,
-          id: task.idTask
-        };
-      }) || [];
+      const tasks: TaskData[] = response._data.data.tasks || [];
 
       allTasks.value = tasks || [];
     },
   });
-});
+})
 </script>
 
 <template>
@@ -64,7 +108,8 @@ onMounted(async (): Promise<void> => {
     <template #header>
       <Navbar
           :links="[
-          { name: 'Úkoly', path: `/panel/tasks/${role}` },
+          { name: 'Úkoly', path: `/panel/tasks/admin` },
+          { name: 'Odstranění', path: `/panel/tasks/admin/remove` },
         ]"
       />
     </template>
@@ -72,59 +117,64 @@ onMounted(async (): Promise<void> => {
     <template #content v-if="allTasks">
       <div id="tasks">
         <div class="content">
+          <ActionBar
+              class="action-bar"
+              description="Správa úkolů"
+              :texts="['Přidat', 'Odebrat']"
+              :actions="['add', 'remove']"
+              :icons="[
+              'material-symbols:add-rounded',
+              'material-symbols:delete-rounded',
+            ]"
+              :active="1"
+              :navigate-to="[
+              `/panel/tasks/admin/add`,
+              `/panel/tasks/admin/remove`,
+            ]"
+          />
+
           <div class="line">
-            <Navigation class="navigation" title="Úkoly" :active-link-id="0" :links="[
-              { name: 'Aktivní', path: `/panel/tasks/${role}` },
-              { name: 'Dostupné', path: `/panel/tasks/${role}/available` },
-              { name: 'Stav úkolů', path: `/panel/tasks/${role}/status` },
-              { name: 'Vyhodnocené', path: `/panel/tasks/${role}/evaluated` },
-            ]" />
+            <div class="section-head">
+              <h3>Odstranění vašich úkolů</h3>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+            </div>
 
-            <div class="line">
-              <div class="line">
-                <div class="section-head">
-                  <h3>Vaše úkoly</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                </div>
-
-                <div class="search">
-                  <input
-                      type="text"
-                      name="searchInput"
-                      placeholder="Hledat úkol"
-                      v-model="searchInput"
-                  />
-                  <Icon class="icon" name="material-symbols:search-rounded"></Icon>
-                </div>
-              </div>
-
-              <Vue3Datatable :rows="allTasks" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput">
-                <template #task="data">
-                  <a :href="`http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`" class="link" download target="_blank">
-                    {{ data.value.task }}
-                  </a>
-                </template>
-
-                <template #startDate="data">
-                  <p>{{ moment(data.value.startDate).format("DD.MM. YYYY HH:MM") }}</p>
-                </template>
-
-                <template #endDate="data">
-                  <p>{{ moment(data.value.endDate).format("DD.MM. YYYY HH:MM") }}</p>
-                </template>
-
-                <template #approve="data">
-                  <p>{{ data.value.approve ? "Ano" : "Ne" }}</p>
-                </template>
-
-                <template #actions="data">
-                  <div class="actions">
-                    <button type="button" class="primary" @click="openUserTask(data.value.id)">Otevřít</button>
-                  </div>
-                </template>
-              </Vue3Datatable>
+            <div class="search">
+              <input
+                  type="text"
+                  name="searchInput"
+                  placeholder="Hledat úkol"
+                  v-model="searchInput"
+              />
+              <Icon class="icon" name="material-symbols:search-rounded"></Icon>
             </div>
           </div>
+
+          <Vue3Datatable :loading="loading" :rows="allTasks" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput">
+            <template #task="data">
+              <a :href="`http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`" class="link" download target="_blank">
+                {{ data.value.task }}
+              </a>
+            </template>
+
+            <template #startDate="data">
+              <p>{{ moment(data.value.startDate).format("DD.MM. YYYY HH:MM") }}</p>
+            </template>
+
+            <template #endDate="data">
+              <p>{{ moment(data.value.endDate).format("DD.MM. YYYY HH:MM") }}</p>
+            </template>
+
+            <template #approve="data">
+              <p>{{ data.value.approve ? "Ano" : "Ne" }}</p>
+            </template>
+
+            <template #actions="data">
+              <div class="actions">
+                <button type="button" class="remove" @click="removeTask(data.value.id)">Odebrat</button>
+              </div>
+            </template>
+          </Vue3Datatable>
         </div>
       </div>
       <Alerts />
@@ -145,6 +195,7 @@ onMounted(async (): Promise<void> => {
   gap: 30px;
   position: relative;
 
+
   .link {
     color: rgba(var(--main-color), 1);
     text-decoration: none;
@@ -153,12 +204,6 @@ onMounted(async (): Promise<void> => {
     &:hover {
       color: rgba(var(--main-color), 0.8);
     }
-  }
-
-  .navigation {
-    height: fit-content;
-    position: sticky;
-    min-width: 250px;
   }
 
   .actions {
@@ -171,24 +216,14 @@ onMounted(async (): Promise<void> => {
       border-radius: var(--small-border-radius);
       transition: 0.2s;
       font-size: 16px;
-      background: var(--btn-2-background);
-      color: var(--btn-2-color);
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
 
-      &:hover {
-        background: var(--btn-2-hover-background);
-      }
-
-      &.primary {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        background: var(--btn-1-background);
-        color: var(--btn-1-color);
+      &.remove {
+        color: var(--actionBar-actions-remove-color);
+        background: rgba(var(--actionBar-actions-remove-background), 1);
+        border-color: rgba(var(--actionBar-actions-remove-border), 1);
 
         &:hover {
-          background: var(--btn-1-hover-background);
+          background: rgba(var(--actionBar-actions-remove-background), 0.8);
         }
       }
     }
@@ -204,12 +239,11 @@ onMounted(async (): Promise<void> => {
     .line {
       display: flex;
       flex-direction: row;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 30px;
       width: 100%;
-      flex: 1;
     }
 
     .search {
@@ -320,12 +354,6 @@ onMounted(async (): Promise<void> => {
         color: rgba(var(--error-color), 1);
       }
     }
-  }
-}
-
-@media (max-width: 1420px) {
-  #tasks .navigation {
-    flex: 1;
   }
 }
 

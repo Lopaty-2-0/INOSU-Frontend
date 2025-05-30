@@ -1,22 +1,23 @@
 <script lang="ts" setup>
-import EditFormFooter from "~/components/users/manage/Footer.vue";
+import EditFormFooter from "~/components/manage/Footer.vue";
 import Alerts from "~/components/Alerts.vue";
 import Navbar from "~/components/Navbar.vue";
 import { ref } from "vue";
 import apiFetch from "~/componsables/apiFetch";
-import EditFullName from "~/components/users/manage/FullName.vue";
-import EditEmail from "~/components/users/manage/Email.vue";
-import EditPassword from "~/components/users/manage/Password.vue";
-import EditRole from "~/components/users/manage/Role.vue";
-import EditAbbreviation from "~/components/users/manage/Abbreviation.vue";
-import EditClass from "~/components/users/manage/Class.vue";
+import EditFullName from "~/components/manage/FullName.vue";
+import EditEmail from "~/components/manage/Email.vue";
+import EditPassword from "~/components/manage/Password.vue";
+import EditRole from "~/components/manage/Role.vue";
+import EditAbbreviation from "~/components/manage/Abbreviation.vue";
+import EditClass from "~/components/manage/Class.vue";
 import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 import {useRoute, useRouter} from "vue-router";
-import type {AccountData} from "../../../../../types/account";
-import EditProfilePicture from "~/components/users/manage/ProfilePicture.vue";
+import type {AccountData} from "~/types/account";
+import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 
 definePageMeta({
+  roles: ["admin"],
 });
 
 const route = useRoute();
@@ -185,61 +186,63 @@ const updateUser = async (): Promise<void> => {
   });
 };
 
-await apiFetch("/user/get/roles", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const roles: string[] = response._data.data.roles;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/user/get/roles", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const roles: string[] = response._data.data.roles;
 
-    allRoles.value = roles || [];
-  },
+      allRoles.value = roles || [];
+    },
+  });
+
+  await apiFetch("/class/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const classes: ClassData[] = response._data.data.classes;
+
+      allClasses.value = classes || [];
+    },
+  });
+
+  await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    async onResponse({ response }) {
+      const user: AccountData = response._data.data.user;
+
+      if (user) {
+        oldUserData.value.name = user.name;
+        oldUserData.value.surname = user.surname;
+        oldUserData.value.email = user.email;
+        oldUserData.value.password = "";
+        oldUserData.value.abbreviation = user.abbreviation || "";
+        oldUserData.value.role = user.role;
+        oldUserData.value.classes = user.idClass;
+        oldUserData.value.profilePicture = "http://89.203.248.163/uploads/profilePictures/" + user.profilePicture;
+      } else {
+        await router.push(`/panel/users/${role}/edit`);
+        return;
+      }
+
+      oldUserData.value.loaded = true;
+    },
+  });
 });
-
-await apiFetch("/class/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const classes: ClassData[] = response._data.data.classes;
-
-    allClasses.value = classes || [];
-  },
-});
-
-await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  async onResponse({ response }) {
-    const user: AccountData = response._data.data.user;
-
-    if (user) {
-      oldUserData.value.name = user.name;
-      oldUserData.value.surname = user.surname;
-      oldUserData.value.email = user.email;
-      oldUserData.value.password = "";
-      oldUserData.value.abbreviation = user.abbreviation || "";
-      oldUserData.value.role = user.role;
-      oldUserData.value.classes = user.idClass;
-      oldUserData.value.profilePicture = "http://89.203.248.163/uploads/profilePictures/" + user.profilePicture;
-    } else {
-      await router.push(`/panel/users/${role}/edit`);
-      return;
-    }
-
-    oldUserData.value.loaded = true;
-  },
-})
 </script>
 
 <template>

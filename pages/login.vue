@@ -64,12 +64,10 @@ const submitLoginForm = async (): Promise<void> => {
           break;
         case "6031":
           useCookie("accountData").value = JSON.stringify({
-            id: response._data.data.id,
             profilePicture: response._data.data.user.profilePicture,
             email: response._data.data.user.email,
             name: response._data.data.user.name,
             surname: response._data.data.user.surname,
-            role: response._data.data.user.role,
             idClass: response._data.data.user.idClass,
             abbreviation: response._data.data.user.abbreviation,
             createdAt: response._data.data.user.createdAt,

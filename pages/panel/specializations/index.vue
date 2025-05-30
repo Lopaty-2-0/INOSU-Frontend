@@ -6,6 +6,7 @@ import ActionBar from "~/components/basics/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
 import {ref} from "vue";
 import type {SpecializationData} from "~/types/specialization";
+import checkPermissions from "~/componsables/checkPermissions";
 
 useHead({
   title: "Panel | Zaměření",
@@ -24,18 +25,20 @@ const cols = ref<{ field: string; title: string; type?: string; width?: string; 
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
-await apiFetch("/specialization/get", {
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }) {
-    const specializations: SpecializationData[] = response._data.data.specializations;
+onMounted(async (): Promise<void> => {
+  await apiFetch("/specialization/get", {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }) {
+      const specializations: SpecializationData[] = response._data.data.specializations;
 
-    allSpecializations.value = specializations || [];
-  },
+      allSpecializations.value = specializations || [];
+    },
+  });
 });
 </script>
 
@@ -65,6 +68,7 @@ await apiFetch("/specialization/get", {
               `/panel/specializations/add`,
               `/panel/specializations/remove`,
             ]"
+            v-if="checkPermissions(['admin'])"
           />
 
           <div class="line">
