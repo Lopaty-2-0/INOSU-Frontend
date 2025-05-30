@@ -74,7 +74,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Všechny zaměření</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
             </div>
 
             <div class="search">

@@ -226,7 +226,7 @@ onMounted(async (): Promise<void> => {
             <EditFullName :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" :reset="triggerReset" @update="onFullNameUpdate">
               <div class="section-head">
                 <h3>Jméno a příjmení *</h3>
-                <p>Změňte své jméno a příjmení</p>
+                <p>Zadejte jméno a příjmení nového uživatele. Tato pole jsou povinná.</p>
               </div>
             </EditFullName>
           </div>
@@ -235,7 +235,7 @@ onMounted(async (): Promise<void> => {
             <EditEmail :old-email="oldUserData.email" :reset="triggerReset" @update="onEmailUpdate">
               <div class="section-head">
                 <h3>E-mail * <span class="update" v-show="newUserData.email">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte e-mailovou adresu nového uživatele. Toto pole je povinné a musí být ve správném formátu.</p>
               </div>
             </EditEmail>
           </div>
@@ -244,7 +244,7 @@ onMounted(async (): Promise<void> => {
             <EditPassword type="new" :reset="triggerReset" @update="onPasswordUpdate">
               <div class="section-head">
                 <h3>Heslo k účtu * <span class="update" v-show="newUserData.password">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte silné heslo pro nového uživatele. Heslo musí splňovat bezpečnostní požadavky a je povinné.</p>
               </div>
             </EditPassword>
           </div>
@@ -253,7 +253,7 @@ onMounted(async (): Promise<void> => {
             <EditRole :roles="allRoles || []" :old-role="oldUserData.role" :reset="triggerReset" @update="onRoleUpdate">
               <div class="section-head">
                 <h3>Role * <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Vyberte roli, kterou má mít nový uživatel. Toto pole je povinné.</p>
               </div>
             </EditRole>
           </div>
@@ -262,15 +262,15 @@ onMounted(async (): Promise<void> => {
             <EditAbbreviation :full-name="{ name: newUserData.name, surname: newUserData.surname }" :old-abbreviation="oldUserData.abbreviation" :reset="triggerReset" @update="onAbbreviationUpdate">
               <div class="section-head">
                 <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte přezdívku (zkratku) pro nového uživatele. Toto pole je volitelné, ale musí být jedinečné.</p>
               </div>
             </EditAbbreviation>
           </div>
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Třída <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <h3>Třídy <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
+              <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
             </div>
 
             <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" v-if="newUserData.role === 'student'" />

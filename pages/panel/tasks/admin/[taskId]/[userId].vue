@@ -229,7 +229,7 @@ onMounted(async (): Promise<void> => {
             <EditTaskFile :reset="triggerReset" :old-task-file="task.review" @update="onTaskFileUpdate">
               <div class="section-head">
                 <h3>Hodnocení <span class="update" v-show="taskReviewFile !== undefined">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aliquam consequatur mollitia officiis placeat!</p>
+                <p>Zde můžete nahrát nebo stáhnout soubor s hodnocením úkolu. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
               </div>
             </EditTaskFile>
             <div class="column">

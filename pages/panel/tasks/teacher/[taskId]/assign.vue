@@ -372,7 +372,7 @@ watch(datatable, (val: any): void => {
           <div class="line page-section" v-if="oldSelectedClasses.length <= 0 && oldSelectedUsers.length <= 0">
             <div class="section-head">
               <h3>Přiřazení pro (třídy/žáky)</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Zde můžete přiřadit úkol buď celé třídě, nebo jednotlivým žákům. Vyberte požadovanou možnost v rozbalovacím menu níže.</p>
             </div>
 
             <div class="dropdown" :class="{ open: open }">
@@ -405,7 +405,7 @@ watch(datatable, (val: any): void => {
                 Třídy
                 <span class="update" v-show="JSON.stringify([...(selectedClasses || [])].sort()) !== JSON.stringify([...(oldSelectedClasses || [])].sort())">(aktualizováno)</span>
               </h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Zde můžete upravit přiřazení tříd, kterým bude úkol zadán. Vyberte požadované třídy a potvrďte změny.</p>
             </div>
 
             <EditClass :old-class-ids="selectedClasses || []" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" />
@@ -417,7 +417,7 @@ watch(datatable, (val: any): void => {
                 Žáci
                 <span class="update" v-show="JSON.stringify([...(selectedUsers || [])].sort()) !== JSON.stringify([...(oldSelectedUsers || [])].sort())">(aktualizováno)</span>
               </h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Vyberte žáky, kterým chcete úkol přiřadit, a potvrďte změny.</p>
             </div>
 
             <Vue3Datatable :rows="allStudents" ref="datatable" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput" :hasCheckbox="true" @input="onCheckboxSelect">

@@ -116,7 +116,7 @@ const updateUserData = async (): Promise<void> => {
                 Profilová fotka
                 <span class="update" v-show="newUserData.profilePicture">(aktualizováno)</span>
               </h3>
-              <p>Změňte svůj profilový obrázek</p>
+              <p>Zde můžete změnit svou profilovou fotku. Nahrajte nový obrázek, pokud si přejete aktualizovat stávající profilovou fotografii.</p>
             </div>
           </EditProfilePicture>
 

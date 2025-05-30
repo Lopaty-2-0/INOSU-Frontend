@@ -91,7 +91,7 @@ const updateUserData = () => {
                 Tématický režim
                 <span class="update" v-show="newUserData.themeMode !== undefined && oldUserData.themeMode !== newUserData.themeMode">(aktualizováno)</span>
               </h3>
-              <p>Nastavte si motiv vašeho panelu</p>
+              <p>Zvolte preferovaný vzhled rozhraní. Vyberte si mezi světlým, tmavým nebo systémovým režimem podle svých potřeb.</p>
             </div>
           </EditThemeMode>
 
@@ -101,7 +101,7 @@ const updateUserData = () => {
                 Vlastní odkazy
                 <span class="update" v-show="newUserData.customLinks && JSON.stringify(oldUserData.customLinks) !== JSON.stringify(newUserData.customLinks)">(aktualizováno)</span>
               </h3>
-              <p>Přidejte vlastní odkazy pro rychlejší přístup z panelu</p>
+              <p>Zde můžete spravovat své vlastní odkazy, které se zobrazí v uživatelském rozhraní. Přidejte, upravte nebo odeberte odkazy podle svých preferencí.</p>
             </div>
           </EditCustomLinks>
 

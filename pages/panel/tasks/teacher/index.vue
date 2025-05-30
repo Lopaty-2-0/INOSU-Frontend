@@ -97,7 +97,7 @@ onMounted(async (): Promise<void> => {
               <div class="line">
                 <div class="section-head">
                   <h3>Vytvořené úkoly</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                  <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
                 </div>
 
                 <div class="search">

@@ -185,7 +185,7 @@ onMounted(async (): Promise<void> => {
                 Uživatelé: {{ selectedUsers.length }} /
                 {{ searchedUsers.length }}
               </h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Vyberte uživatele, které chcete odstranit, nebo použijte vyhledávání pro zúžení výběru.</p>
             </div>
 
             <div class="search">

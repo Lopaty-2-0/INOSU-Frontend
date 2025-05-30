@@ -262,7 +262,7 @@ onMounted(async (): Promise<void> => {
             <div class="section">
               <div class="section-head">
                 <h3>Název * <span class="update" v-show="classData.name">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte název nové třídy. Název by měl být unikátní a jasně identifikovat třídu v systému.</p>
               </div>
 
               <div class="content">
@@ -276,7 +276,7 @@ onMounted(async (): Promise<void> => {
             <div class="section">
               <div class="section-head">
                 <h3>Zaměření * <span class="update" v-show="classData.specialization">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Vyberte zaměření, ke kterému bude nová třída přiřazena. Můžete filtrovat podle názvu, zkratky nebo délky studia.</p>
               </div>
 
               <div class="content">
@@ -333,7 +333,7 @@ onMounted(async (): Promise<void> => {
             <div class="section">
               <div class="section-head">
                 <h3>Ročník * <span class="update" v-show="classData.grade">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte ročník, do kterého nová třída patří. Ročník musí být celé číslo větší než 0 a nesmí přesahovat délku studia zvoleného zaměření.</p>
               </div>
 
               <div class="content">
@@ -347,7 +347,7 @@ onMounted(async (): Promise<void> => {
             <div class="section">
               <div class="section-head">
                 <h3>Skupina * <span class="update" v-show="classData.group">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte označení skupiny, například písmeno A. Skupina musí být tvořena právě jedním znakem.</p>
               </div>
 
               <div class="content">

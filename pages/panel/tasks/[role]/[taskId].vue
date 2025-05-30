@@ -197,7 +197,7 @@ onMounted(async (): Promise<void> => {
             <EditTaskFile :reset="triggerReset" :old-task-file="task.elaboration" @update="onTaskFileUpdate">
               <div class="section-head">
                 <h3>Vypracování <span class="update" v-show="taskElaborationFile !== undefined">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aliquam consequatur mollitia officiis placeat!</p>
+                <p>Zde můžete nahrát nebo aktualizovat své vypracování úkolu. Vyberte soubor a potvrďte změny. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
               </div>
             </EditTaskFile>
             <div class="column">

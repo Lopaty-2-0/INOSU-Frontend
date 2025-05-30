@@ -182,6 +182,7 @@ onMounted(async (): Promise<void> => {
       <Navbar
           :links="[
           { name: 'Úkoly', path: `/panel/tasks/${role}` },
+          { name: 'Dostupné', path: `/panel/tasks/${role}/available` },
         ]"
       />
     </template>
@@ -201,7 +202,7 @@ onMounted(async (): Promise<void> => {
               <div class="line">
                 <div class="section-head">
                   <h3>Dostupné úkoly</h3>
-                  <p>tyto úkoly vyžadují potvrzení tvůrce úkolu</p>
+                  <p>Úkoly v této sekci vyžadují potvrzení jejich tvůrcem. Po odeslání žádosti o přijetí úkolu bude vaše žádost nejprve schválena, teprve poté budete moci na úkolu pracovat.</p>
                 </div>
 
                 <div class="search">

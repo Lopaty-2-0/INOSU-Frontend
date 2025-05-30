@@ -109,7 +109,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Upravení uživatelů</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Zde si můžete vybrat uživatele, kterého chcete upravit.</p>
             </div>
 
             <div class="search">

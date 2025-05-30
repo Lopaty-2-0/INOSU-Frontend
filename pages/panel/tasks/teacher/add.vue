@@ -183,7 +183,7 @@ const addTask = async (): Promise<void> => {
             <EditName :old-name="oldData.name" :reset="triggerReset" @update="onNameUpdate">
               <div class="section-head">
                 <h3>Název * <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aliquam consequatur mollitia officiis placeat!</p>
+                <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
               </div>
             </EditName>
           </div>
@@ -192,7 +192,7 @@ const addTask = async (): Promise<void> => {
             <EditTaskFile @update="onTaskFileUpdate" :reset="triggerReset" :old-check="oldData.taskFile">
               <div class="section-head">
                 <h3>Zadání * <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aliquam consequatur mollitia officiis placeat!</p>
+                <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
               </div>
             </EditTaskFile>
           </div>
@@ -200,7 +200,7 @@ const addTask = async (): Promise<void> => {
           <div class="line page-section">
             <div class="section-head">
               <h3>Časové rozmezí úkolu *</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aliquam consequatur mollitia officiis placeat!</p>
+              <p>Zadejte časové rozmezí, ve kterém bude úkol aktivní. Studenti budou moci úkol odevzdávat pouze v tomto období.</p>
             </div>
 
             <div class="line">
@@ -213,7 +213,7 @@ const addTask = async (): Promise<void> => {
             <EditNeedApprove @update="onNeedApproveUpdate" :reset="triggerReset" :old-check="oldData.needApprove">
               <div class="section-head">
                 <h3>Nutné schválení * <span class="update" v-show="newData.needApprove !== undefined">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aliquam consequatur mollitia officiis placeat!</p>
+                <p>Pokud je tato možnost aktivní, bude přijetí úkolu nejprve muset projít schválením garantem před jeho přidělením.</p>
               </div>
             </EditNeedApprove>
           </div>

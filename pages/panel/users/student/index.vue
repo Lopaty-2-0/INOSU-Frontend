@@ -39,7 +39,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Celkem tříd: {{ allClasses.length }}</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Zde vidíte všechny studenty, které můžete filtrovat podle třídy.</p>
             </div>
           </div>
 

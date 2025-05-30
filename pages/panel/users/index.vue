@@ -54,7 +54,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Celkem uživatelů: {{ numberOfUsers }}</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Zde najdete souhrn všech registrovaných uživatelů v systému.</p>
             </div>
           </div>
 
@@ -71,7 +71,9 @@ onMounted(async (): Promise<void> => {
                   :to="`/panel/users/${role}`"
               >
                 <div class="section-head">
-                  <span>{{ role }}</span>
+                  <span>{{
+                    role === "admin" ? "Administrátoři" : role === "teacher" ? "Učitelé" : role === "student" ? "Studenti" : role.charAt(0).toUpperCase() + role.slice(1)
+                  }}</span>
                 </div>
               </NuxtLink>
             </div>

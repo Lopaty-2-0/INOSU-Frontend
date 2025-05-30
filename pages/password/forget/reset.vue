@@ -26,7 +26,6 @@ const formData = ref<{ password: string; passwordAgain: string }>({
   passwordAgain: "",
 });
 
-//check user inputs
 const validateForm = () => {
   if (formData.value.password.length < 5)
     messages.value.password = "Nové heslo musí mít nejméně 5 znaků";
@@ -37,7 +36,6 @@ const validateForm = () => {
     messages.value.passwordAgain = "Hesla se neshodují";
 };
 
-//reset messages when user start typing
 const resetMessages = (): void => {
   messages.value = {
     password: null,
@@ -46,7 +44,6 @@ const resetMessages = (): void => {
   };
 };
 
-//check user inputs and send request to API
 const submitForm = async (): Promise<void> => {
   validateForm();
 
@@ -76,21 +73,35 @@ const submitForm = async (): Promise<void> => {
       switch (resCode) {
         case "14010":
           messages.value.form = {
+            message: "Špatný formát e-mailu",
+            type: "error",
+          };
+          break;
+        case "14020":
+          messages.value.form = {
             message: "Účet nebyl nalezen",
             type: "error",
           };
           break;
         case "14030":
           messages.value.form = {
+            message: "Chybí nové heslo",
+            type: "error",
+          };
+          break;
+        case "14040":
+          messages.value.form = {
             message: "Nové heslo musí mít nejméně 5 znaků",
             type: "error",
           };
           break;
-        case "14041":
+        case "14051":
           messages.value.form = {
             message: "Heslo bylo úspěšně změněno",
             type: "success",
           };
+          formData.value.password = "";
+          formData.value.passwordAgain = "";
           break;
         default:
           messages.value.form = {
@@ -111,7 +122,6 @@ const submitForm = async (): Promise<void> => {
   loading.value = false;
 };
 
-//start checkToken on page load and set email from response to tokenEmail
 onMounted(async (): Promise<void> => {
   const token: LocationQueryValue | LocationQueryValue[] = useRoute().query.token;
 

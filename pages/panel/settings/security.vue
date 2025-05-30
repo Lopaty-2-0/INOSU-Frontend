@@ -143,7 +143,7 @@ const updateUserData = async (): Promise<void> => {
           <EditPassword class="page-section" @update="onPasswordsUpdate" :reset="triggerReset">
             <div class="section-head">
               <h3>Resetování hesla <span class="update" v-if="userData.passwords.new !== userData.passwords.old && passwordRulesCheck[0] && userData.passwords.old !== ''">(aktualizováno)</span></h3>
-              <p>Jednoduše změňte své heslo na jiné</p>
+              <p>Zadejte nové heslo podle doporučených pravidel níže.</p>
 
               <div class="password-rules">
                 <h4>Doporučená pravidla hesla</h4>

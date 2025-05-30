@@ -102,7 +102,7 @@ const resetErrors = (): void => {
     <div class="container">
       <div class="head">
         <h2>INOSU panel</h2>
-        <p>Lorem Ipsum is simply dummy text of the printing and</p>
+        <p>Přihlaste se do systému pomocí svého účtu</p>
       </div>
 
       <form @submit.prevent="submitLoginForm" @input="resetErrors">

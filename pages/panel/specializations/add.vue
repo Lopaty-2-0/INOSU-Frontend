@@ -188,8 +188,8 @@ onMounted(async (): Promise<void> => {
           <div class="form">
             <div class="section">
               <div class="section-head">
-                <h3>Název</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <h3>Název * <span class="update" v-show="specializationData.name">(aktualizováno)</span></h3>
+                <p>Zadejte název zaměření, které chcete přidat. Název musí být jedinečný.</p>
               </div>
 
               <div class="content">
@@ -202,8 +202,8 @@ onMounted(async (): Promise<void> => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Zkratka</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <h3>Zkratka * <span class="update" v-show="specializationData.abbreviation">(aktualizováno)</span></h3>
+                <p>Zadejte jednopísmennou zkratku zaměření. Zkratka musí být unikátní.</p>
               </div>
 
               <div class="content">
@@ -216,8 +216,8 @@ onMounted(async (): Promise<void> => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Délka studia</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <h3>Délka studia * <span class="update" v-show="specializationData.lengthOfStudy">(aktualizováno)</span></h3>
+                <p>Zadejte délku studia v letech. Minimální hodnota je 1 rok.</p>
               </div>
 
               <div class="content">

@@ -145,7 +145,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Zaměření: {{ selectedSpecializations.length }} / {{ allSpecializations.length }}</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Vyberte zaměření, která chcete odstranit ze systému. Po potvrzení budou vybraná zaměření trvale smazána.</p>
             </div>
 
             <div class="search">

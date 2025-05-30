@@ -73,7 +73,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Všechny třídy</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Zde najdete seznam všech tříd v systému.</p>
             </div>
 
             <div class="search">

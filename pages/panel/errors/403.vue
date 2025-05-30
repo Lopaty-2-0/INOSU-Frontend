@@ -1,9 +1,6 @@
 <script lang="ts" setup>
 import Navbar from "~/components/Navbar.vue";
 
-definePageMeta({
-});
-
 useHead({
   title: "Panel | Přístup odepřen",
   meta: [
@@ -32,7 +29,6 @@ useHead({
           </div>
           <div class="group-btn">
             <NuxtLink class="primary" href="/panel">Vrátit zpět</NuxtLink>
-            <NuxtLink class="secondary" href="/panel/support">Podpora</NuxtLink>
           </div>
         </div>
       </div>

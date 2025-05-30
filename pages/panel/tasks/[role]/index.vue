@@ -65,6 +65,7 @@ onMounted(async (): Promise<void> => {
       <Navbar
           :links="[
           { name: 'Úkoly', path: `/panel/tasks/${role}` },
+          { name: 'Aktivní', path: `/panel/tasks/${role}` },
         ]"
       />
     </template>
@@ -84,7 +85,7 @@ onMounted(async (): Promise<void> => {
               <div class="line">
                 <div class="section-head">
                   <h3>Vaše úkoly</h3>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                  <p>Zde naleznete seznam všech vašich aktuálně aktivních úkolů.</p>
                 </div>
 
                 <div class="search">

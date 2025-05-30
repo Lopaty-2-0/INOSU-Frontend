@@ -171,7 +171,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Informativní karty</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Informativní karty slouží k rychlému nalezení zajímavých údajů z panelu.</p>
             </div>
           </div>
 
@@ -196,7 +196,7 @@ onMounted(async (): Promise<void> => {
             <div class="line">
               <div class="section-head">
                 <h3>{{ ["admin", "teacher"].includes(role) ? "Vytvořené úkoly" : "Rozpracované úkoly" }}</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>{{ ["admin", "teacher"].includes(role) ? "Rychlý přístup do vašich vytvořených úkolů." : "Rychlý přístup do vašich rozpracovaných úkolů." }}</p>
               </div>
 
               <div class="search">

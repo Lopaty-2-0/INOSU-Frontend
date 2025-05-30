@@ -104,7 +104,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Celkem uživatelů: {{ searchedUsers.length }}</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Zde vidíte uživatele dané role a třídě. Použijte vyhledávání pro rychlé filtrování seznamu.</p>
             </div>
 
             <div class="search">

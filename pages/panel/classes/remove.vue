@@ -147,7 +147,7 @@ onMounted(async (): Promise<void> => {
           <div class="line">
             <div class="section-head">
               <h3>Třídy: {{ selectedClasses.length }} / {{ allClasses.length }}</h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Vyberte třídy, které chcete trvale odstranit ze systému.</p>
             </div>
 
             <div class="search">

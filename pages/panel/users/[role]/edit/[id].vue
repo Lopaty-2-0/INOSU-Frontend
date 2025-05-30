@@ -259,14 +259,14 @@ onMounted(async (): Promise<void> => {
     <template #content>
       <div id="settings">
         <div class="content">
-          <div class="line page-section">
+          <div class="line page-section no-border">
             <EditProfilePicture class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate" :reset="triggerReset">
               <div class="section-head">
                 <h3>
                   Profilová fotka
                   <span class="update" v-show="newUserData.profilePicture">(aktualizováno)</span>
                 </h3>
-                <p>Změňte svůj profilový obrázek</p>
+                <p>Zde můžete změnit profilovou fotku uživatele. Nahrajte novou fotku, pokud si přejete aktualizovat stávající obrázek.</p>
               </div>
             </EditProfilePicture>
           </div>
@@ -275,7 +275,7 @@ onMounted(async (): Promise<void> => {
             <EditFullName :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" :reset="triggerReset" @update="onFullNameUpdate">
               <div class="section-head">
                 <h3>Jméno a příjmení</h3>
-                <p>Změňte své jméno a příjmení</p>
+                <p>Zadejte nové jméno a příjmení uživatele, pokud je chcete změnit.</p>
               </div>
             </EditFullName>
           </div>
@@ -284,7 +284,7 @@ onMounted(async (): Promise<void> => {
             <EditEmail :old-email="oldUserData.email" :reset="triggerReset" @update="onEmailUpdate">
               <div class="section-head">
                 <h3>E-mail <span class="update" v-show="newUserData.email">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte novou e-mailovou adresu uživatele, pokud ji chcete změnit.</p>
               </div>
             </EditEmail>
           </div>
@@ -293,7 +293,7 @@ onMounted(async (): Promise<void> => {
             <EditPassword type="new" :reset="triggerReset" @update="onPasswordUpdate">
               <div class="section-head">
                 <h3>Heslo k účtu <span class="update" v-show="newUserData.password">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte nové heslo, pokud chcete uživateli změnit přístupové údaje. Heslo musí splňovat bezpečnostní požadavky.</p>
               </div>
             </EditPassword>
           </div>
@@ -302,7 +302,7 @@ onMounted(async (): Promise<void> => {
             <EditRole :roles="allRoles || []" :old-role="oldUserData.role" :reset="triggerReset" @update="onRoleUpdate">
               <div class="section-head">
                 <h3>Role <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zvolte roli, kterou má uživatel mít. Role určuje oprávnění a možnosti uživatele v systému.</p>
               </div>
             </EditRole>
           </div>
@@ -311,7 +311,7 @@ onMounted(async (): Promise<void> => {
             <EditAbbreviation :full-name="{ name: newUserData.name ? newUserData.name : oldUserData.name, surname: newUserData.surname ? newUserData.surname : oldUserData.surname }" :old-abbreviation="oldUserData.abbreviation" :reset="triggerReset" @update="onAbbreviationUpdate">
               <div class="section-head">
                 <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <p>Zadejte novou přezdívku uživatele, pokud ji chcete změnit. Přezdívka slouží jako zkratka jména například pro rychlou identifikaci.</p>
               </div>
             </EditAbbreviation>
           </div>
@@ -319,7 +319,7 @@ onMounted(async (): Promise<void> => {
           <div class="line page-section">
             <div class="section-head">
               <h3>Třída <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+              <p>Vyberte třídu nebo více tříd, které chcete uživateli přiřadit.</p>
             </div>
 
             <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" v-if="newUserData.role ? newUserData.role === 'student' : oldUserData.role === 'student'" />
@@ -362,6 +362,11 @@ onMounted(async (): Promise<void> => {
       display: flex;
       flex-direction: column;
       gap: 20px;
+
+      &.no-border {
+        border: none;
+        padding-bottom: 0;
+      }
     }
 
     .section-head {
