@@ -255,7 +255,7 @@ const addTask = async (): Promise<void> => {
       padding-bottom: 35px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 30px;
 
       .line {
         width: 100%;

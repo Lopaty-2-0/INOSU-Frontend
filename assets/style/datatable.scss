@@ -16,6 +16,10 @@
       color: rgba(var(--main-color), 1);
     }
   }
+
+  thead {
+    background: var(--actionBar-background);
+  }
 }
 
 ::v-deep(.bh-skeleton-box) {

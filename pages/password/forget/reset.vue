@@ -125,6 +125,7 @@ onMounted(async (): Promise<void> => {
     body: {
       token: token,
     },
+    credentials: "include",
     ignoreResponseError: true,
     async onResponse({ response }) {
       const resCode: string = response._data.resCode.toString();
