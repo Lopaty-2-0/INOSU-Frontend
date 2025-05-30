@@ -1,0 +1,6 @@
+import { r as remove_vue_vue_type_style_index_0_scoped_4b0bdecc_lang } from './remove-styles-1.mjs2.mjs';
+
+const removeStyles_DAx6z0J8 = [remove_vue_vue_type_style_index_0_scoped_4b0bdecc_lang, remove_vue_vue_type_style_index_0_scoped_4b0bdecc_lang];
+
+export { removeStyles_DAx6z0J8 as default };
+//# sourceMappingURL=remove-styles.DAx6z0J8.mjs.map

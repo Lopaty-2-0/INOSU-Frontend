@@ -16,7 +16,7 @@ useHead({
 });
 
 const accountStore = useAccountStore();
-const { getRole: role } = storeToRefs(accountStore);
+const { getRole: role, getId: userId } = storeToRefs(accountStore);
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string" },
@@ -31,6 +31,26 @@ const numbers = ref<{ students: number | null; classes: number | null; teachers:
   students: null,
   classes: null,
   teachers: null,
+});
+const navigationLinks = computed<{
+  name: string;
+  path?: string | undefined;
+  action?: Function | undefined;
+}[]>(() => {
+  if (["admin", "teacher"].includes(role.value)) {
+    return [
+      { name: "Vytvořené úkoly", path: `/panel/tasks/${role.value}` },
+      { name: "Žáci", path: `/panel/users/student` },
+      { name: "Změna hesla", path: `/panel/settings/security` },
+    ];
+  }
+
+  return [
+    { name: "Aktivní úkoly", path: `/panel/tasks/${role.value}` },
+    { name: "Učitelé", path: `/panel/users/teacher` },
+    { name: "Změna hesla", path: `/panel/settings/security` },
+    { name: "Vyhodnocené úkoly", path: `/panel/tasks/${role.value}/evaluated` },
+  ];
 });
 const infoCards = computed<{ title: string; icon: string; value: string | number; }[]>(() =>[
   {
@@ -99,6 +119,23 @@ onMounted(async (): Promise<void> => {
     },
   });
 
+  if (["admin", "teacher"].includes(role.value)) {
+    await apiFetch(`/task/get/guarantor?idUser=${userId.value}`, {
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      ignoreResponseError: true,
+      onResponse({ response }) {
+        const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
+
+        allTasks.value = tasks || [];
+      },
+    });
+    return;
+  }
+
   await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["approved"]))}&which=1`, {
     method: "get",
     credentials: "include",
@@ -153,17 +190,12 @@ onMounted(async (): Promise<void> => {
         </div>
 
         <div class="line">
-          <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="[
-              { name: 'Aktivní úkoly', path: `/panel/tasks/${role}` },
-              { name: 'Učitelé', path: `/panel/users/teacher` },
-              { name: 'Změna hesla', path: `/panel/settings/security` },
-              { name: 'Vyhodnocené úkoly', path: `/panel/tasks/${role}/evaluated` },
-            ]" />
+          <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />
 
           <div class="line">
             <div class="line">
               <div class="section-head">
-                <h3>Rozpracované úkoly</h3>
+                <h3>{{ ["admin", "teacher"].includes(role) ? "Vytvořené úkoly" : "Rozpracované úkoly" }}</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </div>
 
@@ -211,7 +243,7 @@ onMounted(async (): Promise<void> => {
 </template>
 
 <style lang="scss" scoped>
-@import "../../assets/style/datatable";
+@use "../../assets/style/datatable";
 
 #home {
   width: 100%;
