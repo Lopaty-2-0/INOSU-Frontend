@@ -57,7 +57,7 @@ watch(() => props.reset, (reset: boolean): void => {
       <div class="content">
         <label for="abbreviation">Přezdívka</label>
         <div class="line">
-          <input :class="{ error: abbreviation.error }" type="text" id="abbreviation" placeholder="JUDE" v-model="abbreviation.input" @input="onInput" />
+          <input :class="{ error: abbreviation.error }" type="text" id="abbreviation" placeholder="JANO" v-model="abbreviation.input" @input="onInput" />
           <div class="icon-div" @click="generateAbbreviation"><Icon class="icon" name="material-symbols:wand-stars-rounded"></Icon></div>
         </div>
 

@@ -113,7 +113,7 @@ const resetErrors = (): void => {
             v-model="loginData.login"
             type="text"
             name="login"
-            placeholder="test@test.com / JUDE"
+            placeholder="example.email@gmail.com / JANO"
           />
           <p v-if="errors.login" class="error">{{ errors.login }}</p>
         </div>
@@ -172,6 +172,7 @@ const resetErrors = (): void => {
     flex-direction: column;
     justify-content: center;
     gap: 30px;
+    width: 100%;
 
     .head {
       display: flex;

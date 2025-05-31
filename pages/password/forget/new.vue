@@ -154,6 +154,7 @@ const submitForm = async (): Promise<void> => {
     flex-direction: column;
     justify-content: center;
     gap: 30px;
+    width: 100%;
 
     .head {
       display: flex;
