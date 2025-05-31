@@ -73,9 +73,9 @@ const removeClasses = async (): Promise<void> => {
           break;
         case "9031":
           if ((response._data.data.taskIds || []).length >= 1) {
-            alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tyto úkoly používají některé z odstraňovaných tříd: ${response._data.data.taskIds.join(", ")}`});
+            alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tyto třídy jsou přiřazeny k nějakému úkolu: ${response._data.data.taskIds.join(", ")}`});
           } else if ((response._data.data.userIds || []).length >= 1) {
-            alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tito uživatelé používají některé z odstraňovaných tříd: ${response._data.data.userIds.join(", ")}`});
+            alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tyto třídy obsahují nějaké uživatele: ${response._data.data.userIds.join(", ")}`});
           } else {
             alertsStore.addAlert({type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${selectedClasses.value.length})`});
           }

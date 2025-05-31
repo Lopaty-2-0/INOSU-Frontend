@@ -73,7 +73,7 @@ const removeSpecializations = async (): Promise<void> => {
           break;
         case "5041":
           if ((response._data.data.classIds || []).length >= 1) {
-            alertsStore.addAlert({type: "warning", title: "Odstranění zaměření", message: `Některé zaměření nebyly odstraněny. Tyto třídy používají některé z odstraňovaných zaměření: ${response._data.data.classIds.join(", ")}`});
+            alertsStore.addAlert({type: "warning", title: "Odstranění zaměření", message: `Některé zaměření nebyly odstraněny. Tyto zaměření používají některé třídy: ${response._data.data.classIds.join(", ")}`});
           } else {
             alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${selectedSpecializations.value.length})`});
           }

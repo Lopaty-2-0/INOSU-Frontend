@@ -89,34 +89,31 @@ const removeUsers = async (): Promise<void> => {
 
       switch (resCode) {
         case "3010":
-          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nedostatečné oprávnění pro odstranění uživatelů.",});
+          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nedostatečné oprávnění pro odstranění uživatelů."});
           break;
         case "3020":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Žádný uživatel nebyl vybrán.",});
+          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Žádný uživatel nebyl vybrán."});
           break;
         case "3030":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nemůžete odstranit sám sebe.",});
+          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nemůžete odstranit sami sebe."});
           break;
         case "3040":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nemůžete odstranit sám sebe.",});
+          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nebyl odstraněn žádný uživatel."});
           break;
         case "3051":
-          alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: "Uživatelé byli úspěšně odstraněni.",});
-
+          alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: "Uživatelé byli úspěšně odstraněni."});
           if (users.value) {
             users.value = users.value.filter((user: AccountData) => {
               return !selectedUsers.value.some(
-                (selectedUser: AccountData) => selectedUser.id === user.id
+                  (selectedUser: AccountData) => selectedUser.id === user.id
               );
             });
-
             searchedUsers.value = [...users.value];
             pingResetSelectedUsers();
           }
-
           break;
         default:
-          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nastala neznámá chyba.",});
+          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nastala neznámá chyba."});
           break;
       }
     },
