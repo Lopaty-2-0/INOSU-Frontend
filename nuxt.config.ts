@@ -22,22 +22,27 @@ export default defineNuxtConfig({
         {
           tagPosition: "head",
           innerHTML: `(function () {
-            try {
-              const storedTheme = localStorage.getItem("theme");
-              const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-              let themeAttr;
-
-              if (storedTheme === "dark" || storedTheme === "light") {
-                themeAttr = storedTheme;
-              } else if (storedTheme === "system" || !storedTheme) {
-                themeAttr = prefersDark ? "dark" : "light";
-              } else {
-                themeAttr = "light";
-              }
-
-              document.documentElement.setAttribute("data-theme", themeAttr);
-            } catch (e) {}
-          })();`,
+              try {
+                const storedTheme = localStorage.getItem("theme");
+                const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                let themeAttr;
+            
+                if (storedTheme === "dark" || storedTheme === "light") {
+                  themeAttr = storedTheme;
+                } else if (storedTheme === "system" || !storedTheme) {
+                  themeAttr = prefersDark ? "dark" : "light";
+                  if (!storedTheme) {
+                    localStorage.setItem("theme", "system");
+                  }
+                } else {
+                  themeAttr = "light";
+                  localStorage.setItem("theme", "light");
+                }
+            
+                document.documentElement.setAttribute("data-theme", themeAttr);
+              } catch (e) {}
+            })();
+          `,
           type: "text/javascript"
         }
       ],
