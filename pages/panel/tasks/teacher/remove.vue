@@ -108,8 +108,8 @@ onMounted(async (): Promise<void> => {
     <template #header>
       <Navbar
           :links="[
-          { name: 'Úkoly', path: `/panel/tasks/admin` },
-          { name: 'Odstranění', path: `/panel/tasks/admin/remove` },
+          { name: 'Úkoly', path: `/panel/tasks/teacher` },
+          { name: 'Odstranění', path: `/panel/tasks/teacher/remove` },
         ]"
       />
     </template>
@@ -128,8 +128,8 @@ onMounted(async (): Promise<void> => {
             ]"
               :active="1"
               :navigate-to="[
-              `/panel/tasks/admin/add`,
-              `/panel/tasks/admin/remove`,
+              `/panel/tasks/teacher/add`,
+              `/panel/tasks/teacher/remove`,
             ]"
           />
 

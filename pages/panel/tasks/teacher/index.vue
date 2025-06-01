@@ -38,13 +38,13 @@ const searchInput = ref<string>("");
 const assignTask = async (id: number): Promise<void> => {
   if (!id) return;
 
-  await navigateTo(`/panel/tasks/admin/${id}/assign`);
+  await navigateTo(`/panel/tasks/teacher/${id}/assign`);
 };
 
 const openTask = async (id: number): Promise<void> => {
   if (!id) return;
 
-  await navigateTo(`/panel/tasks/admin/${id}`);
+  await navigateTo(`/panel/tasks/teacher/${id}`);
 };
 
 onMounted(async (): Promise<void> => {
@@ -69,7 +69,7 @@ onMounted(async (): Promise<void> => {
     <template #header>
       <Navbar
         :links="[
-          { name: 'Úkoly', path: `/panel/tasks/admin` },
+          { name: 'Úkoly', path: `/panel/tasks/teacher` },
         ]"
       />
     </template>
@@ -87,8 +87,8 @@ onMounted(async (): Promise<void> => {
               'material-symbols:delete-rounded',
             ]"
             :navigate-to="[
-              `/panel/tasks/admin/add`,
-              `/panel/tasks/admin/remove`,
+              `/panel/tasks/teacher/add`,
+              `/panel/tasks/teacher/remove`,
             ]"
           />
 

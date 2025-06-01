@@ -155,8 +155,8 @@ const addTask = async (): Promise<void> => {
   <NuxtLayout name="panel">
     <template #header>
       <Navbar :links="[
-        { name: 'Úkoly', path: `/panel/tasks/admin` },
-        { name: 'Přidání', path: `/panel/tasks/admin/add` },
+        { name: 'Úkoly', path: `/panel/tasks/teacher` },
+        { name: 'Přidání', path: `/panel/tasks/teacher/add` },
       ]" />
     </template>
 
@@ -174,8 +174,8 @@ const addTask = async (): Promise<void> => {
             ]"
             :active="0"
             :navigate-to="[
-              `/panel/tasks/admin/add`,
-              `/panel/tasks/admin/remove`,
+              `/panel/tasks/teacher/add`,
+              `/panel/tasks/teacher/remove`,
             ]"
           />
 

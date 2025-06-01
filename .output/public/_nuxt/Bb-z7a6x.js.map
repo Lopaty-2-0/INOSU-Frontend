@@ -1,1 +1,0 @@
-{"version":3,"file":"Bb-z7a6x.js","sources":["../../../../layouts/default.vue"],"sourcesContent":["<template>\r\n  <slot />\r\n</template>"],"names":["_sfc_render","_ctx","_cache"],"mappings":"6DACEA,EAAQC,EAAAC,EAAA"}
