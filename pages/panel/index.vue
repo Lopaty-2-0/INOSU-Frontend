@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import Navbar from "~/components/Navbar.vue";
-import { ref } from "vue";
+import {ref} from "vue";
 import apiFetch from "~/componsables/apiFetch";
 import moment from "moment";
 import Navigation from "~/components/basics/Navigation.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import type {TaskData} from "~/types/tasks";
-import { useAccountStore } from "~/stores/account";
-import { storeToRefs } from "pinia";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 useHead({
   title: "Panel | Domů",
@@ -56,17 +56,17 @@ const infoCards = computed<{ title: string; icon: string; value: string | number
   {
     title: "Počet studentů",
     icon: "material-symbols:supervisor-account-rounded",
-    value: numbers.value.students || -1,
+    value: numbers.value.students || 0,
   },
   {
     title: "Počet tříd",
     icon: "material-symbols:flight-class-rounded",
-    value: numbers.value.classes || -1,
+    value: numbers.value.classes || 0,
   },
   {
     title: "Počet učitelů",
     icon: "material-symbols:supervisor-account-rounded",
-    value: numbers.value.teachers || -1,
+    value: numbers.value.teachers || 0,
   },
 ]);
 
@@ -85,9 +85,7 @@ onMounted(async (): Promise<void> => {
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }) {
-      const count: number = response._data.data.count;
-
-      numbers.value.students = count || null;
+      numbers.value.students = response._data.data.count;
     },
   });
 
@@ -99,9 +97,7 @@ onMounted(async (): Promise<void> => {
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }) {
-      const count: number = response._data.data.count;
-
-      numbers.value.teachers = count || null;
+      numbers.value.teachers = response._data.data.count;
     },
   });
 
@@ -113,9 +109,7 @@ onMounted(async (): Promise<void> => {
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }) {
-      const count: number = response._data.data.count;
-
-      numbers.value.classes = count || null;
+      numbers.value.classes = response._data.data.count;
     },
   });
 
@@ -156,7 +150,7 @@ onMounted(async (): Promise<void> => {
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!numbers.students || !numbers.classes || !numbers.teachers || !allTasks">
+  <NuxtLayout name="panel" :loading="numbers.students === null || !numbers.classes === null || numbers.teachers === null || !allTasks">
     <template #header>
       <Navbar
         :links="[

@@ -43,8 +43,9 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
         accountStore.setAccountData(accountData || {} as AccountData);
         accountStore.setRole(data.value.data.role);
         accountStore.setId(data.value.data.id);
-
         accountStore.setLinks(JSON.parse(storedLinks as string) || []);
+
+        return true;
     } catch {
         return location.pathname = "/login";
     }

@@ -221,14 +221,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const loading = ref(true);
     return (_ctx, _push, _parent, _attrs) => {
       if (loading.value || unref(accountLoading) || props.loading) {
-        _push(`<div${ssrRenderAttrs(mergeProps({ class: "loading" }, _attrs))} data-v-5f3f760d>`);
+        _push(`<div${ssrRenderAttrs(mergeProps({ class: "loading" }, _attrs))} data-v-e93c26d2>`);
         _push(ssrRenderComponent(Loading, { color: "rgba(var(--description-color), 1)" }, null, _parent));
         _push(`</div>`);
       } else {
-        _push(`<div${ssrRenderAttrs(_attrs)} data-v-5f3f760d><div class="header" data-v-5f3f760d>`);
+        _push(`<div${ssrRenderAttrs(_attrs)} data-v-e93c26d2><div class="header" data-v-e93c26d2>`);
         _push(ssrRenderComponent(Sidebar, null, null, _parent));
         ssrRenderSlot(_ctx.$slots, "header", {}, null, _push, _parent);
-        _push(`</div><div class="page" data-v-5f3f760d>`);
+        _push(`</div><div class="page" data-v-e93c26d2>`);
         ssrRenderSlot(_ctx.$slots, "content", {}, null, _push, _parent);
         _push(`</div></div>`);
       }
@@ -242,7 +242,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("layouts/panel.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const panel = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-5f3f760d"]]);
+const panel = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-e93c26d2"]]);
 
 export { panel as default };
 //# sourceMappingURL=panel.vue.mjs.map

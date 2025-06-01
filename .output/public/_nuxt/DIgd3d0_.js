@@ -1,2 +1,0 @@
-import{e as n,c as a,o as t,F as r,p as c,a as l,a0 as p,x as i,_ as d}from"./BOTJj54N.js";const _={class:"dot-spinner"},m=n({__name:"Loading",props:{color:{type:String,default:"#000"},size:{type:String,default:"20px"}},setup(o){const e=o;return(u,f)=>(t(),a("span",_,[(t(),a(r,null,c(3,s=>l("span",{key:s,class:i(`dot${s}`),style:p({background:e.color,width:e.size,height:e.size})},null,6)),64))]))}}),h=d(m,[["__scopeId","data-v-4db9bfd3"]]);export{h as L};
-//# sourceMappingURL=DIgd3d0_.js.map

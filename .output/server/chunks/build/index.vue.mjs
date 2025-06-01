@@ -74,17 +74,17 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       {
         title: "Počet studentů",
         icon: "material-symbols:supervisor-account-rounded",
-        value: numbers.value.students || -1
+        value: numbers.value.students || 0
       },
       {
         title: "Počet tříd",
         icon: "material-symbols:flight-class-rounded",
-        value: numbers.value.classes || -1
+        value: numbers.value.classes || 0
       },
       {
         title: "Počet učitelů",
         icon: "material-symbols:supervisor-account-rounded",
-        value: numbers.value.teachers || -1
+        value: numbers.value.teachers || 0
       }
     ]);
     const openTask = async (id) => {
@@ -96,7 +96,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       const _component_Icon = __nuxt_component_0$1;
       _push(ssrRenderComponent(_component_NuxtLayout, mergeProps({
         name: "panel",
-        loading: !numbers.value.students || !numbers.value.classes || !numbers.value.teachers || !allTasks.value
+        loading: numbers.value.students === null || !numbers.value.classes === null || numbers.value.teachers === null || !allTasks.value
       }, _attrs), createSlots({
         header: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
@@ -117,23 +117,23 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           name: "content",
           fn: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
-              _push2(`<div id="home" data-v-4100074f${_scopeId}><div class="info" data-v-4100074f${_scopeId}><div class="line" data-v-4100074f${_scopeId}><div class="section-head" data-v-4100074f${_scopeId}><h3 data-v-4100074f${_scopeId}>Informativní karty</h3><p data-v-4100074f${_scopeId}>Informativní karty slouží k rychlému nalezení zajímavých údajů z panelu.</p></div></div><ul class="cards" data-v-4100074f${_scopeId}><!--[-->`);
+              _push2(`<div id="home" data-v-acaad1c5${_scopeId}><div class="info" data-v-acaad1c5${_scopeId}><div class="line" data-v-acaad1c5${_scopeId}><div class="section-head" data-v-acaad1c5${_scopeId}><h3 data-v-acaad1c5${_scopeId}>Informativní karty</h3><p data-v-acaad1c5${_scopeId}>Informativní karty slouží k rychlému nalezení zajímavých údajů z panelu.</p></div></div><ul class="cards" data-v-acaad1c5${_scopeId}><!--[-->`);
               ssrRenderList(unref(infoCards), (data, index) => {
-                _push2(`<li class="card" data-v-4100074f${_scopeId}><div class="content" data-v-4100074f${_scopeId}><div class="data" data-v-4100074f${_scopeId}><h6 data-v-4100074f${_scopeId}>${ssrInterpolate(data.title)}</h6><p data-v-4100074f${_scopeId}>${ssrInterpolate(data.value)}</p></div>`);
+                _push2(`<li class="card" data-v-acaad1c5${_scopeId}><div class="content" data-v-acaad1c5${_scopeId}><div class="data" data-v-acaad1c5${_scopeId}><h6 data-v-acaad1c5${_scopeId}>${ssrInterpolate(data.title)}</h6><p data-v-acaad1c5${_scopeId}>${ssrInterpolate(data.value)}</p></div>`);
                 _push2(ssrRenderComponent(_component_Icon, {
                   class: "icon",
                   name: data.icon
                 }, null, _parent2, _scopeId));
                 _push2(`</div></li>`);
               });
-              _push2(`<!--]--></ul></div><div class="line" data-v-4100074f${_scopeId}>`);
+              _push2(`<!--]--></ul></div><div class="line" data-v-acaad1c5${_scopeId}>`);
               _push2(ssrRenderComponent(Navigation, {
                 class: "navigation",
                 title: "Rychlé odkazy",
                 "active-link-id": -1,
                 links: unref(navigationLinks)
               }, null, _parent2, _scopeId));
-              _push2(`<div class="line" data-v-4100074f${_scopeId}><div class="line" data-v-4100074f${_scopeId}><div class="section-head" data-v-4100074f${_scopeId}><h3 data-v-4100074f${_scopeId}>${ssrInterpolate(["admin", "teacher"].includes(unref(role)) ? "Vytvořené úkoly" : "Rozpracované úkoly")}</h3><p data-v-4100074f${_scopeId}>${ssrInterpolate(["admin", "teacher"].includes(unref(role)) ? "Rychlý přístup do vašich vytvořených úkolů." : "Rychlý přístup do vašich rozpracovaných úkolů.")}</p></div><div class="search" data-v-4100074f${_scopeId}><input type="text" name="searchInput" placeholder="Hledat úkol"${ssrRenderAttr("value", searchInput.value)} data-v-4100074f${_scopeId}>`);
+              _push2(`<div class="line" data-v-acaad1c5${_scopeId}><div class="line" data-v-acaad1c5${_scopeId}><div class="section-head" data-v-acaad1c5${_scopeId}><h3 data-v-acaad1c5${_scopeId}>${ssrInterpolate(["admin", "teacher"].includes(unref(role)) ? "Vytvořené úkoly" : "Rozpracované úkoly")}</h3><p data-v-acaad1c5${_scopeId}>${ssrInterpolate(["admin", "teacher"].includes(unref(role)) ? "Rychlý přístup do vašich vytvořených úkolů." : "Rychlý přístup do vašich rozpracovaných úkolů.")}</p></div><div class="search" data-v-acaad1c5${_scopeId}><input type="text" name="searchInput" placeholder="Hledat úkol"${ssrRenderAttr("value", searchInput.value)} data-v-acaad1c5${_scopeId}>`);
               _push2(ssrRenderComponent(_component_Icon, {
                 class: "icon",
                 name: "material-symbols:search-rounded"
@@ -149,7 +149,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
               }, {
                 task: withCtx((data, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<a${ssrRenderAttr("href", `http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`)} class="link" download target="_blank" data-v-4100074f${_scopeId2}>${ssrInterpolate(data.value.task)}</a>`);
+                    _push3(`<a${ssrRenderAttr("href", `http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`)} class="link" download target="_blank" data-v-acaad1c5${_scopeId2}>${ssrInterpolate(data.value.task)}</a>`);
                   } else {
                     return [
                       createVNode("a", {
@@ -163,7 +163,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 }),
                 startDate: withCtx((data, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<p data-v-4100074f${_scopeId2}>${ssrInterpolate(unref(moment)(data.value.startDate).format("DD.MM. YYYY HH:MM"))}</p>`);
+                    _push3(`<p data-v-acaad1c5${_scopeId2}>${ssrInterpolate(unref(moment)(data.value.startDate).format("DD.MM. YYYY HH:MM"))}</p>`);
                   } else {
                     return [
                       createVNode("p", null, toDisplayString(unref(moment)(data.value.startDate).format("DD.MM. YYYY HH:MM")), 1)
@@ -172,7 +172,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 }),
                 endDate: withCtx((data, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<p data-v-4100074f${_scopeId2}>${ssrInterpolate(unref(moment)(data.value.endDate).format("DD.MM. YYYY HH:MM"))}</p>`);
+                    _push3(`<p data-v-acaad1c5${_scopeId2}>${ssrInterpolate(unref(moment)(data.value.endDate).format("DD.MM. YYYY HH:MM"))}</p>`);
                   } else {
                     return [
                       createVNode("p", null, toDisplayString(unref(moment)(data.value.endDate).format("DD.MM. YYYY HH:MM")), 1)
@@ -181,7 +181,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 }),
                 approve: withCtx((data, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<p data-v-4100074f${_scopeId2}>${ssrInterpolate(data.value.approve ? "Ano" : "Ne")}</p>`);
+                    _push3(`<p data-v-acaad1c5${_scopeId2}>${ssrInterpolate(data.value.approve ? "Ano" : "Ne")}</p>`);
                   } else {
                     return [
                       createVNode("p", null, toDisplayString(data.value.approve ? "Ano" : "Ne"), 1)
@@ -190,7 +190,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                 }),
                 actions: withCtx((data, _push3, _parent3, _scopeId2) => {
                   if (_push3) {
-                    _push3(`<div class="actions" data-v-4100074f${_scopeId2}><button type="button" class="primary" data-v-4100074f${_scopeId2}>Otevřít</button></div>`);
+                    _push3(`<div class="actions" data-v-acaad1c5${_scopeId2}><button type="button" class="primary" data-v-acaad1c5${_scopeId2}>Otevřít</button></div>`);
                   } else {
                     return [
                       createVNode("div", { class: "actions" }, [
@@ -319,7 +319,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/panel/index.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-4100074f"]]);
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-acaad1c5"]]);
 
 export { index as default };
 //# sourceMappingURL=index.vue.mjs.map
