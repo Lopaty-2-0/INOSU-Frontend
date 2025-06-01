@@ -1,0 +1,1 @@
+{"id":"87b9a67d-a035-4996-b4ec-b85c59dc9f73","timestamp":1748801492608,"matcher":{"static":{"/":{"redirect":"/login"}},"wildcard":{"/panel":{"appMiddleware":{"auth":true,"verify":true}}},"dynamic":{}},"prerendered":[]}
