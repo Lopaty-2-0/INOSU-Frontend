@@ -1,0 +1,32 @@
+{
+  "login": {
+    "title": "INOSU panel",
+    "description": "Přihlaste se do systému pomocí svého účtu",
+    "form": {
+      "login": {
+        "label": "E-mail / Zkratka",
+        "placeholder": "example.email{'@'}gmail.com / JANO",
+        "errors": {
+          "required": "Zadejte váš e-mail nebo zkratku"
+        }
+      },
+      "password": {
+        "label": "Heslo",
+        "placeholder": "*****",
+        "errors": {
+          "required": "Zadejte vaše heslo"
+        }
+      },
+      "remember": {
+        "label": "Zůstat přihlášen"
+      },
+      "submit": "Přihlásit se",
+      "forgot-password": "Zapomněli jste heslo?",
+      "errors": {
+        "missing": "Login nebo heslo nebylo zadáno",
+        "invalid": "Špatný login nebo heslo",
+        "unknown": "Nastala neznámá chyba"
+      }
+    }
+  }
+}

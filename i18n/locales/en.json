@@ -1,0 +1,32 @@
+{
+  "login": {
+    "title": "INOSU panel",
+    "description": "Log in to the system using your account",
+    "form": {
+      "login": {
+        "label": "E-mail / Abbreviation",
+        "placeholder": "example.email{'@'}gmail.com / JANO",
+        "errors": {
+          "required": "Please enter your e-mail or shortcut"
+        }
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "*****",
+        "errors": {
+          "required": "Please enter your password"
+        }
+      },
+      "remember": {
+        "label": "Stay signed in"
+      },
+      "submit": "Sign in",
+      "forgot-password": "Forgot your password?",
+      "errors": {
+        "missing": "Login or password was not entered",
+        "invalid": "Invalid login or password",
+        "unknown": "An unknown error occurred"
+      }
+    }
+  }
+}

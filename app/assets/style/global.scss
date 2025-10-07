@@ -1,0 +1,30 @@
+@use "./variables";
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-background);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-track-hover-background);
+  cursor: pointer;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--main-font-family), system-ui;
+  line-height: var(--default-line-height);
+}
+
+body {
+  background: var(--main-background);
+}
