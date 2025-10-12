@@ -66,7 +66,7 @@ const submitLoginForm = async (): Promise<void> => {
           errors.value.req = t("login.form.errors.invalid");
           break;
         case "6031":
-          useCookie("accountData").value = JSON.stringify({
+          localStorage.setItem("accountData", JSON.stringify({
             profilePicture: response._data.data.user.profilePicture,
             email: response._data.data.user.email,
             name: response._data.data.user.name,
@@ -74,7 +74,7 @@ const submitLoginForm = async (): Promise<void> => {
             idClass: response._data.data.user.idClass,
             abbreviation: response._data.data.user.abbreviation,
             createdAt: response._data.data.user.createdAt,
-          } as AccountData);
+          } as AccountData));
 
           navigateTo("/panel");
           break;

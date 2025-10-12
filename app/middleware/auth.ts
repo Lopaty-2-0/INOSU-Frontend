@@ -25,6 +25,7 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
 
         const accountStore = useAccountStore();
 
+
         //Get user theme
         let storedTheme: string | null = localStorage.getItem("theme") as string | null;
         let storedLinks: string | null = localStorage.getItem("links") as string | null;
@@ -33,7 +34,8 @@ export default defineNuxtRouteMiddleware(async (from, to) => {
 
         //Set account data
         accountStore.setLoading(false);
-        const accountData: AccountData | null | undefined = useCookie("accountData").value as AccountData | null | undefined;
+        const accountDataString: string | null = localStorage.getItem("accountData") as string | null;
+        const accountData: AccountData | null = accountDataString ? JSON.parse(accountDataString) as AccountData : null;
 
         if (!accountData || !data.value.data.id || !data.value.data.role) {
             return location.pathname = "/login";
