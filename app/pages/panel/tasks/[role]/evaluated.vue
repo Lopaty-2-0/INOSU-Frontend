@@ -4,7 +4,7 @@ import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import apiFetch from "~/componsables/apiFetch";
 import {ref, onMounted} from "vue";
-import {useRoute} from "#vue-router";
+import {useRoute} from "#app";
 import type {TaskData} from "~/types/tasks";
 import moment from "moment/moment";
 import Navigation from "~/components/ui/Navigation.vue";
@@ -44,7 +44,7 @@ onMounted(async (): Promise<void> => {
     method: "get",
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const tasks: TaskData[] = (response._data.data.elaboratingTasks || []).filter((task: any) => task.review).map((task: any) => {
         return {
           ...task,

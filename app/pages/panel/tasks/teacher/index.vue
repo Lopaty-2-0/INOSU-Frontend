@@ -55,7 +55,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const tasks: TaskData[] = response._data.data.tasks || [];
 
       allTasks.value = tasks || [];

@@ -4,7 +4,7 @@ import type { RuntimeConfig } from "nuxt/schema";
 
 const apiUseFetch = async <T>(endpoint: string | (() => string), options?: UseFetchOptions<T>): Promise<AsyncData<any, any>> => {
     const appConfig: RuntimeConfig = useRuntimeConfig();
-    const url: string = appConfig.public.apiUrl + endpoint;
+    const url: string = (appConfig.public.apiUrl as string) + endpoint;
 
     return useFetch(url, {
         credentials: "include",

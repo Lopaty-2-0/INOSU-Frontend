@@ -2,7 +2,7 @@
 import Loading from "~/components/ui/Loading.vue";
 import Input from "~/components/ui/Input.vue";
 import { ref, onMounted } from "vue";
-import { useRoute } from "#imports";
+import { useRoute, useI18n } from "#imports";
 import type { LocationQueryValue } from "vue-router";
 import apiFetch from "../../../componsables/apiFetch";
 import type {LocaleObject} from "~/types/i18n";
@@ -73,7 +73,7 @@ const submitForm = async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    async onResponse({ response }) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
@@ -143,7 +143,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    async onResponse({ response }) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {

@@ -3,7 +3,7 @@ import type { AccountData, AccountTheme } from "~/types/account";
 import { useCookie } from "nuxt/app";
 import apiUseFetch from "../componsables/apiUseFetch";
 
-export default defineNuxtRouteMiddleware(async (from, to) => {
+export default defineNuxtRouteMiddleware(async () => {
     if (process.server) return;
 
     try {

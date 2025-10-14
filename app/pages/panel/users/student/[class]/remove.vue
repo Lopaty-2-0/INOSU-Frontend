@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import { useRoute } from "#app";
 import { ref } from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";

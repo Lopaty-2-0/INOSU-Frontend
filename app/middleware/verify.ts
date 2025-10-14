@@ -1,6 +1,7 @@
 import checkPermissions from "~/componsables/checkPermissions";
+import type {RouteLocationNormalizedGeneric} from "vue-router";
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware((to: RouteLocationNormalizedGeneric) => {
     if (process.server) return;
 
     const roles = to.meta.roles as string[] | undefined;

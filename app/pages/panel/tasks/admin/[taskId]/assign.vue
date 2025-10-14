@@ -5,7 +5,7 @@ import {onMounted, ref} from "vue";
 import type {ClassData} from "~/types/classes";
 import apiFetch from "~/componsables/apiFetch";
 import EditClass from "~/components/manage/Class.vue";
-import {useRoute, useRouter} from "#vue-router";
+import {useRoute, useRouter} from "#app";
 import type {TaskData} from "~/types/tasks";
 import moment from "moment/moment";
 import type {AccountData} from "~/types/account";
@@ -265,7 +265,7 @@ onMounted(async (): Promise<void> => {
       },
       credentials: "include",
       ignoreResponseError: true,
-      onResponse({ response }) {
+      onResponse({ response }: any) {
         const classes: ClassData[] = response._data.data.classes;
 
         allClasses.value = classes || [];

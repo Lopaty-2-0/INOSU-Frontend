@@ -22,7 +22,8 @@
     "pinia": "^3.0.1",
     "unhead": "^2.0.8",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "nitropack": "^2.12.7"
   },
   "devDependencies": {
     "@yuta-inoue-ph/nuxt-vcalendar": "^1.1.2",

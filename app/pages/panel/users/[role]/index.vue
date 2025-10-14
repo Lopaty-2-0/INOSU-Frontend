@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useRoute} from "vue-router";
+import {useRoute} from "#app";
 import Navbar from "../../../../components/layout/Navbar.vue";
 import type {AccountData} from "~/types/account";
 import {ref} from "vue";

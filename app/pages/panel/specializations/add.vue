@@ -146,7 +146,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const specializations: SpecializationData[] = response._data.data.specializations;
 
       allSpecializations.value = specializations || [];

@@ -50,6 +50,12 @@ docker compose build
 ```
 
 ### Start development server
+Make sure to install dependencies first:
+```bash
+pnpm install
+# or
+npm run install
+```
 Runs pnpm run dev inside Docker with live reload.
 ```bash
 docker compose up nuxt

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
+import { useRoute } from "#app";
 import {onMounted, ref} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
-import Alerts from "~/components/layout/Alerts.vue";
 import apiFetch from "~/componsables/apiFetch";
 import type { AccountData } from "~/types/account";
 import SearchInput from "~/components/ui/SearchInput.vue";

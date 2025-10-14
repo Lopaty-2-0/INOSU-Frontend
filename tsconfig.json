@@ -4,8 +4,8 @@
   "compilerOptions": {
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
-      "~/*": ["./app/*"]
+        "~/*": ["app/*"],
     },
-    "baseUrl": ".",
-  },
+    "baseUrl": "."
+  }
 }

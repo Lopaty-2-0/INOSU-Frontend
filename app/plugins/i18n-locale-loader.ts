@@ -1,4 +1,6 @@
-export default defineNuxtPlugin(async (nuxtApp) => {
+import type {NuxtApp} from "nuxt/app";
+
+export default defineNuxtPlugin(async (nuxtApp: NuxtApp) => {
     if (process.server) return;
 
     const storageLocale: string | null = localStorage.getItem("locale");

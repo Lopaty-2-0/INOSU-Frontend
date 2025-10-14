@@ -5,7 +5,7 @@ import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
 import {onMounted, ref} from "vue";
-import {useRoute, useRouter} from "#vue-router";
+import {useRoute, useRouter} from "#app";
 import type {TaskData} from "~/types/tasks";
 import moment from "moment/moment";
 import Navigation from "~/components/ui/Navigation.vue";
@@ -167,7 +167,7 @@ onMounted(async (): Promise<void> => {
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     ignoreResponseError: true,
-    async onResponse({ response }) {
+    async onResponse({ response }: any) {
       const taskData = response._data.data.task;
 
       if (!taskData) {
@@ -183,7 +183,7 @@ onMounted(async (): Promise<void> => {
     method: "get",
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       pendingUsers.value = (response._data.data.tasks || []).map((task: any) => task.elaborator) || [];
     }
   });

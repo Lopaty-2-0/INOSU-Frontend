@@ -1,7 +1,6 @@
-# Base image
 FROM node:22-bullseye AS base
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml* ./
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Development stage
@@ -15,7 +14,7 @@ CMD ["pnpm", "run", "dev"]
 # Build stage
 FROM base AS build
 ENV NODE_ENV=production
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 COPY . .
 RUN pnpm run build
 

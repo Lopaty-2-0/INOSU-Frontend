@@ -11,7 +11,6 @@ import type {TaskData} from "~/types/tasks";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
 import {computed, onMounted} from "vue";
-import apiUseFetch from "~/componsables/apiUseFetch";
 
 useHead({
   title: "Panel | Domů",
@@ -87,7 +86,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       numbers.value.students = response._data.data.count;
     },
   });
@@ -99,7 +98,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       numbers.value.teachers = response._data.data.count;
     },
   });
@@ -111,7 +110,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       numbers.value.classes = response._data.data.count;
     },
   });
@@ -124,7 +123,7 @@ onMounted(async (): Promise<void> => {
       },
       credentials: "include",
       ignoreResponseError: true,
-      onResponse({ response }) {
+      onResponse({ response }: any) {
         const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
 
         allTasks.value = tasks || [];

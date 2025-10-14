@@ -2,12 +2,13 @@
 import Loading from "~/components/ui/Loading.vue";
 import { ref } from "vue";
 import apiFetch from "../componsables/apiFetch";
-import { navigateTo, useCookie } from "nuxt/app";
+import { navigateTo } from "nuxt/app";
 import type { AccountData } from "~/types/account";
 import Checkbox from "~/components/ui/Checkbox.vue";
 import Input from "~/components/ui/Input.vue";
 import type {LocaleObject} from "~/types/i18n";
 import LocalePicker from "~/components/ui/LocalePicker.vue";
+import { useI18n } from "#imports";
 
 useHead({
   title: "Panel | Přihlášení",
@@ -55,7 +56,7 @@ const submitLoginForm = async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    async onResponse({ response }) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {

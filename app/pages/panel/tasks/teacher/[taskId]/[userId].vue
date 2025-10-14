@@ -2,7 +2,7 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import apiFetch from "~/componsables/apiFetch";
 import {onMounted, ref} from "vue";
-import {useRoute, useRouter} from "#vue-router";
+import {useRoute, useRouter} from "#app";
 import type {TaskData} from "~/types/tasks";
 import moment from "moment/moment";
 import type {AccountData} from "~/types/account";
@@ -134,7 +134,7 @@ onMounted(async (): Promise<void> => {
       method: "get",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      async onResponse({ response }) {
+      async onResponse({ response }: any) {
         const taskData = response._data.data.task;
         const elaboratorData = response._data.data.task.elaborator as AccountData;
         const guarantorData = response._data.data.task.guarantor as AccountData;

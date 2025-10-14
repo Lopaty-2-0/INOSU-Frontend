@@ -60,7 +60,7 @@ const updateUserData = async (): Promise<void> => {
       body: updateProfileForm,
       credentials: "include",
       ignoreResponseError: true,
-      async onResponse({ response }) {
+      async onResponse({ response }: any) {
         const resCode: string = response._data.resCode.toString();
         const data = response._data.data;
 

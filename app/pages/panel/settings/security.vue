@@ -87,7 +87,7 @@ const updateUserData = async (): Promise<void> => {
       },
       credentials: "include",
       ignoreResponseError: true,
-      async onResponse({ response }) {
+      async onResponse({ response }: any) {
         const resCode: string = response._data.resCode.toString();
 
         switch (resCode) {

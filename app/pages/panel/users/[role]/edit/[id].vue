@@ -11,7 +11,7 @@ import EditAbbreviation from "~/components/manage/Abbreviation.vue";
 import EditClass from "~/components/manage/Class.vue";
 import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
-import {useRoute, useRouter} from "vue-router";
+import {useRoute, useRouter} from "#app";
 import type {AccountData} from "~/types/account";
 import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 
@@ -126,7 +126,7 @@ const updateUser = async (): Promise<void> => {
     body: updateUserForm,
     credentials: "include",
     ignoreResponseError: true,
-    async onResponse({ response }) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
@@ -193,7 +193,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const roles: string[] = response._data.data.roles;
 
       allRoles.value = roles || [];
@@ -207,7 +207,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const classes: ClassData[] = response._data.data.classes;
 
       allClasses.value = classes || [];
@@ -221,7 +221,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    async onResponse({ response }) {
+    async onResponse({ response }: any) {
       const user: AccountData = response._data.data.user;
 
       if (user) {

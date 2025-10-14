@@ -32,7 +32,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const classes: ClassData[] = response._data.data.classes;
 
       allClasses.value = classes || [];

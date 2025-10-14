@@ -4,6 +4,7 @@ import Input from "~/components/ui/Input.vue";
 import apiFetch from "../../../componsables/apiFetch";
 import {onMounted, ref} from "vue";
 import type {LocaleObject} from "~/types/i18n";
+import { useI18n } from "#imports";
 import LocalePicker from "~/components/ui/LocalePicker.vue";
 
 useHead({
@@ -54,7 +55,7 @@ const submitForm = async (): Promise<void> => {
     },
     ignoreResponseError: true,
     credentials: "include",
-    async onResponse({ response }) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {

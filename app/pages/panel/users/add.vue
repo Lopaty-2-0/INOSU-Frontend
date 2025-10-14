@@ -115,7 +115,7 @@ const createNewUser = async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    async onResponse({ response }) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
@@ -186,7 +186,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const roles: string[] = response._data.data.roles;
 
       allRoles.value = roles || [];
@@ -200,7 +200,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const classes: ClassData[] = response._data.data.classes;
 
       allClasses.value = classes || [];

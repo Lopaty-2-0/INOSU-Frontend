@@ -128,7 +128,7 @@ const logOut = async (): Promise<void> => {
     },
     ignoreResponseError: true,
     credentials: "include",
-    async onResponse({ response }: { response: any }) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       if (resCode === "7011") await navigateTo("/login");
@@ -147,7 +147,7 @@ onMounted(async (): Promise<void> => {
       },
       credentials: "include",
       ignoreResponseError: true,
-      onResponse({ response }) {
+      onResponse({ response }: any) {
         const count: number = response._data.data.count;
 
         numberOfActiveTasks.value = count ?? null;

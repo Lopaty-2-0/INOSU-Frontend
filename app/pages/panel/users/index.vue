@@ -18,7 +18,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({response}) {
+    onResponse({response}: any) {
       const users: number = response._data.data.users;
 
       numberOfUsers.value = users || 0;
@@ -32,7 +32,7 @@ onMounted(async (): Promise<void> => {
     },
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({response}) {
+    onResponse({response}: any) {
       const roles: string[] = response._data.data.roles;
 
       allRoles.value = roles || [];
