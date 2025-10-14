@@ -128,7 +128,7 @@ const logOut = async (): Promise<void> => {
     },
     ignoreResponseError: true,
     credentials: "include",
-    async onResponse({ response }) {
+    async onResponse({ response }: { response: any }) {
       const resCode: string = response._data.resCode.toString();
 
       if (resCode === "7011") await navigateTo("/login");

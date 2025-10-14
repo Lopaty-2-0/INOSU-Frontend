@@ -1,75 +1,76 @@
-# Nuxt Minimal Starter
+# INOSU-Frontend
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+How to set up application for development and production without docker or with docker.
 
-## Setup
+## Setup - without Docker
+- Node.js v20+ and npm/pnpm are required.
 
+### Install dependencies
 Make sure to install dependencies:
-
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+# or
+npm run install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
+### Start development server
+Start the development server on http://localhost:3000:
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+# or
+npm run dev
 ```
 
-## Production
-
+### Production
 Build the application for production:
-
 ```bash
-# npm
-npm run build
-
-# pnpm
 pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+# or
+npm run build
 ```
 
 Locally preview production build:
-
 ```bash
-# npm
-npm run preview
-
-# pnpm
 pnpm preview
+# or
+npm run preview
+```
+The app will be available at: http://localhost:3000
 
-# yarn
-yarn preview
 
-# bun
-bun run preview
+
+## Setup - with Docker
+- Make sure to have Docker installed on your machine.
+- This ensures the same environment on any device — no need to install Node.js or dependencies locally.
+
+### Build Docker images
+This command builds all the services defined in the docker-compose.yml, creating the necessary Docker images and preparing them for running.
+```bash
+docker compose build
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### Start development server
+Runs pnpm run dev inside Docker with live reload.
+```bash
+docker compose up nuxt
+```
+Then open: http://localhost:3000
+
+
+### Production
+This will create an optimized production build inside the container.
+```bash
+docker compose build nuxt-prod
+```
+
+Run the production build
+```bash
+docker compose up nuxt-prod
+```
+The app will be available at: http://localhost:3000
+
+### Optional cleanup
+To free space from old images and cache:
+```bash
+docker system prune -a
+```
