@@ -2,10 +2,18 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "typeRoots": ["./types", "./node_modules/@types"],
+    "typeRoots": ["./types", "./node_modules/@types", "./.nuxt/types"],
     "paths": {
-        "~/*": ["app/*"],
+      "~/*": ["app/*"],
+      "#imports": [
+        ".nuxt/imports.d.ts"
+      ],
+      "#app": [
+        ".nuxt/types/app/index.d.ts"
+      ]
     },
-    "baseUrl": "."
+    "strict": true,
+    "baseUrl": ".",
+    "moduleResolution": "node"
   }
 }
