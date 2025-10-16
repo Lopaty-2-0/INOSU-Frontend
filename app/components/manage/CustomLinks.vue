@@ -9,10 +9,6 @@ const props = defineProps({
     type: Array as () => AccountLink[],
     required: true,
   },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emits = defineEmits(["update"]);
@@ -90,17 +86,14 @@ const onInput = (): void => {
   }
 };
 
-watch(
-    () => props.reset,
-    (value: boolean): void => {
-      if (value) {
-        accountCustomLinks.value = [...props.oldCustomLinks];
-        editLinkId.value = null;
-        textInputValue.value = [];
-        hrefInputValue.value = [];
-      }
-    }
-);
+const reset = (): void => {
+  accountCustomLinks.value = [...props.oldCustomLinks];
+  editLinkId.value = null;
+  textInputValue.value = [];
+  hrefInputValue.value = [];
+};
+
+defineExpose({ reset })
 </script>
 
 <template>

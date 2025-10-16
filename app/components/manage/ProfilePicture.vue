@@ -9,10 +9,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emits = defineEmits(["update"]);
@@ -115,6 +111,15 @@ const pasteUrl = async (): Promise<void> => {
   }
 };
 
+const reset = (): void => {
+  resetErrors();
+
+  profilePictureUrlImage.value = props.oldProfilePicture;
+  profilePictureFile.value = null;
+  urlInput.value = "";
+  if (fileInput.value) fileInput.value.resetError();
+};
+
 watch(() => profilePictureFile.value, async (newFile: File | null): Promise<void> => {
   if (newFile) {
     try {
@@ -134,19 +139,7 @@ watch(() => profilePictureUrlImage.value, (): void => {
   });
 });
 
-watch(
-  () => props.reset,
-  (reset: boolean): void => {
-    if (reset) {
-      resetErrors();
-
-      profilePictureUrlImage.value = props.oldProfilePicture;
-      profilePictureFile.value = null;
-      urlInput.value = "";
-      if (fileInput.value) fileInput.value.resetError();
-    }
-  }
-);
+defineExpose({ reset });
 </script>
 
 <template>

@@ -21,8 +21,7 @@ const accountStore = useAccountStore();
 const { getAccountData: accountData } = storeToRefs(accountStore);
 
 const submitLoading = ref<boolean>(false);
-const triggerReset = ref<boolean>(false);
-
+const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
 const oldUserData = computed<{ profilePicture: string}>(() => ({
   profilePicture: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture,
 }));
@@ -40,11 +39,7 @@ const resetUserData = (): void => {
     profilePicture: undefined,
   };
 
-  triggerReset.value = true;
-
-  setTimeout((): void => {
-    triggerReset.value = false;
-  }, 100);
+  if (editProfilePicture.value) editProfilePicture.value.reset();
 };
 
 const updateUserData = async (): Promise<void> => {
@@ -109,7 +104,7 @@ const updateUserData = async (): Promise<void> => {
         ]" />
 
         <div class="content">
-          <EditProfilePicture class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate" :reset="triggerReset">
+          <EditProfilePicture ref="editProfilePicture" class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate" :reset="triggerReset">
             <div class="section-head">
               <h3>
                 Profilová fotka

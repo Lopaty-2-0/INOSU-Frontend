@@ -6,10 +6,6 @@ const props = defineProps({
   oldName: {
     type: String,
     required: true,
-  },
-  reset: {
-    type: Boolean,
-    default: false
   }
 });
 
@@ -22,12 +18,12 @@ const onInput = () => {
   emits("update", name.value.updated ? name.value.input : undefined);
 };
 
-watch(() => props.reset, (reset: boolean) => {
-  if (reset) {
-    name.value.updated = false;
-    name.value.input = props.oldName;
-  }
-});
+const reset = (): void => {
+  name.value.updated = false;
+  name.value.input = props.oldName;
+};
+
+defineExpose({ reset })
 </script>
 
 <template>

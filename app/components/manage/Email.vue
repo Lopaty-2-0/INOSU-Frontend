@@ -7,11 +7,7 @@ const props = defineProps({
   oldEmail: {
     type: String,
     required: true,
-  },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
+  }
 });
 
 const emits = defineEmits(["update"]);
@@ -42,12 +38,12 @@ const pasteEmail = (): void => {
   }
 };
 
-watch(() => props.reset, (reset: boolean): void => {
-  if (reset) {
-    email.value.error = "";
-    email.value.input = props.oldEmail;
-  }
-});
+const reset = (): void => {
+  email.value.error = "";
+  email.value.input = props.oldEmail;
+};
+
+defineExpose({ reset });
 </script>
 
 <template>

@@ -6,11 +6,7 @@ const props = defineProps({
   type: {
     type: String as () => "new" | "reset",
     default: "reset",
-  },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
+  }
 });
 
 const emits = defineEmits(["update"]);
@@ -56,17 +52,14 @@ const showPassword = (): void => {
   isPasswordVisible.value = !isPasswordVisible.value;
 };
 
-watch(
-  () => props.reset,
-  (reset: boolean): void => {
-    if (reset) {
-      resetErrors();
+const reset = (): void => {
+  resetErrors();
 
-      passwords.value.old.input = "";
-      passwords.value.new.input = "";
-    }
-  }
-);
+  passwords.value.old.input = "";
+  passwords.value.new.input = "";
+};
+
+defineExpose({ reset });
 </script>
 
 <template>

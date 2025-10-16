@@ -23,10 +23,6 @@ const props = defineProps({
     default: 12,
     required: true,
   },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
 });
 const emits = defineEmits(["get:numberOfPages", "get:selectedUsers"]);
 
@@ -51,6 +47,11 @@ const onUserClick = (user: AccountData): void => {
   }
 };
 
+const reset = (): void => {
+  selectedUsers.value = [];
+  emits("get:selectedUsers", selectedUsers.value);
+};
+
 watch(() => props.users, (newValue: AccountData[]): void => {
   allUsersPages.value = useArrayChunks(newValue, props.usersPerPage);
   numberOfPages.value = Math.ceil(newValue.length / props.usersPerPage);
@@ -58,13 +59,7 @@ watch(() => props.users, (newValue: AccountData[]): void => {
   emits("get:numberOfPages", numberOfPages.value);
 }, { immediate: true });
 
-watch(() => props.reset, (newValue: boolean): void => {
-  if (newValue) {
-    selectedUsers.value = [];
-
-    emits("get:selectedUsers", selectedUsers.value);
-  }
-}, { immediate: true });
+defineExpose({ reset });
 </script>
 
 <template>

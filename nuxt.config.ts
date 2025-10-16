@@ -86,23 +86,24 @@ export default defineNuxtConfig({
             { code: "en", name: "English", file: "en.json" },
         ],
     },
-    /*
-      security: {
-        hidePoweredBy: true,
-        corsHandler: {
-          origin: process.env.API_ORIGIN,
-          methods: ["GET", "POST", "PUT", "DELETE"],
-          credentials: false,
-        },
-        xssValidator: false,
-        headers: {
-          crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
-          referrerPolicy: "origin",
-          contentSecurityPolicy: {
-            "img-src": ["self", "https:", "data:", "blob:", "http://89.203.248.163"],
-          }
-        }
-      },*/
+
+  security: {
+    enabled: process.env.NODE_ENV === "production",
+    hidePoweredBy: true,
+    corsHandler: {
+      origin: process.env.API_ORIGIN,
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      credentials: false,
+    },
+    xssValidator: false,
+    headers: {
+      crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
+      referrerPolicy: "origin",
+      contentSecurityPolicy: {
+        "img-src": ["self", "https:", "data:", "blob:", "http://89.203.248.163"],
+      }
+    }
+  },
 
     routeRules: {
         "/**": {

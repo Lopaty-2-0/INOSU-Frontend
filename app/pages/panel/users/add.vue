@@ -25,9 +25,14 @@ useHead({
 
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
-const triggerReset = ref<boolean>(false);
 const allRoles = ref<string[] | undefined>(undefined);
 const allClasses = ref<ClassData[] | undefined>(undefined);
+const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
+const editEmail = ref<InstanceType<typeof EditEmail> | null>(null);
+const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
+const editRole = ref<InstanceType<typeof EditRole> | null>(null);
+const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
+const editClass = ref<InstanceType<typeof EditClass> | null>(null);
 
 const oldUserData = computed<{ name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>(() => ({
   name: "",
@@ -84,11 +89,12 @@ const resetUserData = (): void => {
     classes: undefined,
   };
 
-  triggerReset.value = true;
-
-  setTimeout((): void => {
-    triggerReset.value = false;
-  }, 100);
+  if (editFullName.value) editFullName.value.reset();
+  if (editEmail.value) editEmail.value.reset();
+  if (editPassword.value) editPassword.value.reset();
+  if (editRole.value) editRole.value.reset();
+  if (editAbbreviation.value) editAbbreviation.value.reset();
+  if (editClass.value) editClass.value.reset();
 };
 
 const createNewUser = async (): Promise<void> => {
@@ -222,7 +228,7 @@ onMounted(async (): Promise<void> => {
       <div id="settings">
         <div class="content">
           <div class="line page-section">
-            <EditFullName :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" :reset="triggerReset" @update="onFullNameUpdate">
+            <EditFullName ref="editFullName" :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" :reset="triggerReset" @update="onFullNameUpdate">
               <div class="section-head">
                 <h3>Jméno a příjmení *</h3>
                 <p>Zadejte jméno a příjmení nového uživatele. Tato pole jsou povinná.</p>
@@ -231,7 +237,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditEmail :old-email="oldUserData.email" :reset="triggerReset" @update="onEmailUpdate">
+            <EditEmail ref="editEmail" :old-email="oldUserData.email" :reset="triggerReset" @update="onEmailUpdate">
               <div class="section-head">
                 <h3>E-mail * <span class="update" v-show="newUserData.email">(aktualizováno)</span></h3>
                 <p>Zadejte e-mailovou adresu nového uživatele. Toto pole je povinné a musí být ve správném formátu.</p>
@@ -240,7 +246,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditPassword type="new" :reset="triggerReset" @update="onPasswordUpdate">
+            <EditPassword ref="editPassword" type="new" :reset="triggerReset" @update="onPasswordUpdate">
               <div class="section-head">
                 <h3>Heslo k účtu * <span class="update" v-show="newUserData.password">(aktualizováno)</span></h3>
                 <p>Zadejte silné heslo pro nového uživatele. Heslo musí splňovat bezpečnostní požadavky a je povinné.</p>
@@ -249,7 +255,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditRole :roles="allRoles || []" :old-role="oldUserData.role" :reset="triggerReset" @update="onRoleUpdate">
+            <EditRole ref="editRole" :roles="allRoles || []" :old-role="oldUserData.role" :reset="triggerReset" @update="onRoleUpdate">
               <div class="section-head">
                 <h3>Role * <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
                 <p>Vyberte roli, kterou má mít nový uživatel. Toto pole je povinné.</p>
@@ -258,7 +264,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditAbbreviation :full-name="{ name: newUserData.name, surname: newUserData.surname }" :old-abbreviation="oldUserData.abbreviation" :reset="triggerReset" @update="onAbbreviationUpdate">
+            <EditAbbreviation ref="editAbbreviation" :full-name="{ name: newUserData.name, surname: newUserData.surname }" :old-abbreviation="oldUserData.abbreviation" :reset="triggerReset" @update="onAbbreviationUpdate">
               <div class="section-head">
                 <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
                 <p>Zadejte přezdívku (zkratku) pro nového uživatele. Toto pole je volitelné, ale musí být jedinečné.</p>
@@ -272,7 +278,7 @@ onMounted(async (): Promise<void> => {
               <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
             </div>
 
-            <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" v-if="newUserData.role === 'student'" />
+            <EditClass ref="editClass" :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" v-if="newUserData.role === 'student'" />
             <p class="error" v-else>
               Třídy můžete vybírat pouze pokud role uživatele je <strong>student</strong>.
             </p>

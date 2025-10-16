@@ -29,7 +29,7 @@ const users = ref<AccountData[] | null>(null);
 const numberOfPages = ref<number>(0);
 const activePage = ref<number>(0);
 const selectedUsers = ref<AccountData[]>([]);
-const resetSelectedUsers = ref<boolean>(false);
+const usersGrid = ref<InstanceType<typeof UsersGrid> | null>(null);
 const searchInput = ref<string>("");
 const searchedUsers = ref<AccountData[]>([]);
 
@@ -61,12 +61,8 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-const pingResetSelectedUsers = (): void => {
-  resetSelectedUsers.value = false;
-
-  setTimeout((): void => {
-    resetSelectedUsers.value = true;
-  }, 10);
+const resetSelectedUsers = (): void => {
+  if (usersGrid.value) usersGrid.value.resetSelectedUsers();
 };
 
 const removeUsers = async (): Promise<void> => {
@@ -110,7 +106,7 @@ const removeUsers = async (): Promise<void> => {
             });
 
             searchedUsers.value = [...users.value];
-            pingResetSelectedUsers();
+            resetSelectedUsers();
           }
           break;
         default:
@@ -196,18 +192,18 @@ onMounted(async (): Promise<void> => {
                 color="var(--actionBar-actions-remove-color)"
               />
             </button>
-            <button class="reset" @click="pingResetSelectedUsers">
+            <button class="reset" @click="resetSelectedUsers">
               Zrušit vše
             </button>
           </div>
 
           <div class="users">
             <UsersGrid
+              ref="usersGrid"
               :users="searchedUsers"
               :users-per-page="12"
               :action="'remove'"
               :active-page="activePage"
-              :reset="resetSelectedUsers"
               @get:number-of-pages="(value: number) => (numberOfPages = value)"
               @get:selected-users="(value: AccountData[]) => (selectedUsers = value)"
             />

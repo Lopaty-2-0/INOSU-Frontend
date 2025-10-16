@@ -4,7 +4,6 @@ import EditName from "~/components/manage/Name.vue";
 import EditNeedApprove from "~/components/manage/NeedApprove.vue";
 import EditTaskFile from "~/components/manage/TaskFile.vue";
 import EditDateTime from "~/components/manage/DateTime.vue";
-import Alerts from "~/components/layout/Alerts.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import { ref, computed } from "vue";
 import {useRoute} from "#vue-router";
@@ -26,7 +25,11 @@ useHead({
 
 const route = useRoute();
 const alertsStore = useAlertsStore();
-const triggerReset = ref<boolean>(false);
+const editName = ref<InstanceType<typeof EditName> | null>(null);
+const editNeedApprove = ref<InstanceType<typeof EditNeedApprove> | null>(null);
+const editTaskFile = ref<InstanceType<typeof EditTaskFile> | null>(null);
+const editStartDate = ref<InstanceType<typeof EditDateTime> | null>(null);
+const editEndDate = ref<InstanceType<typeof EditDateTime> | null>(null);
 const loading = ref<boolean>(false);
 const oldData = computed<{ name: string, needApprove: boolean | null, taskFile: string, startDate: Date | null, endDate: Date | null }>(() => ({
   name: "",
@@ -72,11 +75,11 @@ const resetUserData = (): void => {
     endDate: undefined,
   };
 
-  triggerReset.value = true;
-
-  setTimeout((): void => {
-    triggerReset.value = false;
-  }, 100);
+  if (editName.value) editName.value.resetInput();
+  if (editNeedApprove.value) editNeedApprove.value.resetInput();
+  if (editTaskFile.value) editTaskFile.value.resetInput();
+  if (editStartDate.value) editStartDate.value.resetInput();
+  if (editEndDate.value) editEndDate.value.resetInput();
 };
 
 const addTask = async (): Promise<void> => {
@@ -180,7 +183,7 @@ const addTask = async (): Promise<void> => {
           />
 
           <div class="line page-section">
-            <EditName :old-name="oldData.name" :reset="triggerReset" @update="onNameUpdate">
+            <EditName ref="editName" :old-name="oldData.name" @update="onNameUpdate">
               <div class="section-head">
                 <h3>Název * <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
                 <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
@@ -189,7 +192,7 @@ const addTask = async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditTaskFile @update="onTaskFileUpdate" :reset="triggerReset" :old-check="oldData.taskFile">
+            <EditTaskFile ref="editTaskFile" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
                 <h3>Zadání * <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
                 <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
@@ -204,13 +207,13 @@ const addTask = async (): Promise<void> => {
             </div>
 
             <div class="line">
-              <EditDateTime @update="onStartDateUpdate" :reset="triggerReset" :old-date="oldData.startDate" label="Začátek úkolu" />
-              <EditDateTime @update="onEndDateUpdate" :reset="triggerReset" :old-date="oldData.endDate" label="Konec úkolu" />
+              <EditDateTime ref="editStartDate" @update="onStartDateUpdate" :old-date="oldData.startDate" label="Začátek úkolu" />
+              <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec úkolu" />
             </div>
           </div>
 
           <div class="line page-section">
-            <EditNeedApprove @update="onNeedApproveUpdate" :reset="triggerReset" :old-check="oldData.needApprove">
+            <EditNeedApprove ref="editNeedApprove" @update="onNeedApproveUpdate" :old-check="oldData.needApprove">
               <div class="section-head">
                 <h3>Nutné schválení * <span class="update" v-show="newData.needApprove !== undefined">(aktualizováno)</span></h3>
                 <p>Pokud je tato možnost aktivní, bude přijetí úkolu nejprve muset projít schválením garantem před jeho přidělením.</p>

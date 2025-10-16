@@ -19,8 +19,9 @@ useHead({
 
 const { setLocale, locale, locales } = useI18n();
 const accountStore = useAccountStore();
+const editThemeMode = ref<InstanceType<typeof EditThemeMode> | null>(null);
+const editCustomLinks = ref<InstanceType<typeof EditCustomLinks> | null>(null);
 const submitLoading = ref<boolean>(false);
-const triggerReset = ref<boolean>(false);
 const oldUserData = ref<{ themeMode: AccountTheme, customLinks: AccountLink[] }>({
   themeMode: accountStore.getTheme,
   customLinks: accountStore.getLinks,
@@ -50,11 +51,8 @@ const resetUserData = () => {
     customLinks: undefined,
   };
 
-  triggerReset.value = true;
-
-  setTimeout(() => {
-    triggerReset.value = false;
-  }, 100);
+  if (editThemeMode.value) editThemeMode.value.reset();
+  if (editCustomLinks.value) editCustomLinks.value.reset();
 };
 
 const updateUserData = () => {
@@ -102,7 +100,7 @@ const updateUserData = () => {
           { name: 'Přizpůsobení', path: '/panel/settings/customization' },
         ]" />
         <div class="content">
-          <EditThemeMode class="page-section" :old-theme="oldUserData.themeMode" @update="onThemeModeUpdate" :reset="triggerReset">
+          <EditThemeMode ref="editThemeMode" class="page-section" :old-theme="oldUserData.themeMode" @update="onThemeModeUpdate">
             <div class="section-head">
               <h3>
                 Tématický režim
@@ -128,7 +126,7 @@ const updateUserData = () => {
             />
           </div>
 
-          <EditCustomLinks class="page-section" :old-custom-links="oldUserData.customLinks" @update="onCustomLinksUpdate" :reset="triggerReset">
+          <EditCustomLinks ref="editCustomLinks" class="page-section" :old-custom-links="oldUserData.customLinks" @update="onCustomLinksUpdate">
             <div class="section-head">
               <h3>
                 Vlastní odkazy

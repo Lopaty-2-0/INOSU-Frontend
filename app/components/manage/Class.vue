@@ -12,10 +12,6 @@ const props = defineProps({
     type: Array as () => number[],
     required: true,
   },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emits = defineEmits(["update"]);
@@ -59,20 +55,20 @@ const selectClass = (classId: number): void => {
   });
 };
 
-watch(() => props.reset, (reset: boolean): void => {
-  if (reset) {
-    open.value = false;
-    selectedClasses.value = [...props.oldClassIds];
-    searchName.value = "";
-    searchGrade.value = null;
-    searchGroup.value = "";
-    searchSpecialization.value = "";
-  }
-});
+const reset = (): void => {
+  open.value = false;
+  selectedClasses.value = [...props.oldClassIds];
+  searchName.value = "";
+  searchGrade.value = null;
+  searchGroup.value = "";
+  searchSpecialization.value = "";
+};
 
 watch(() => props.oldClassIds, (newClassIds: number[]): void => {
   selectedClasses.value = newClassIds;
 });
+
+defineExpose({ reset });
 </script>
 
 <template>

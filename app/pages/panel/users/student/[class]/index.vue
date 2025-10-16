@@ -86,10 +86,10 @@ onMounted(async (): Promise<void> => {
       <div id="users">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa uživatelů"
-              :texts="['Přidat', 'Upravit', 'Odebrat']"
-              :icons="[
+            class="action-bar"
+            description="Správa uživatelů"
+            :texts="['Přidat', 'Upravit', 'Odebrat']"
+            :icons="[
               'material-symbols:add-rounded',
               'material-symbols:edit-rounded',
               'material-symbols:delete-rounded',

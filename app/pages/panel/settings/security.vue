@@ -17,7 +17,7 @@ useHead({
 const alertsStore = useAlertsStore();
 
 const submitLoading = ref<boolean>(false);
-const triggerReset = ref<boolean>(false);
+const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
 
 const passwordRulesCheck = ref<boolean[]>([false, false, false, false]);
 const userData = ref<{ passwords: { old: string, new: string } }>({
@@ -65,11 +65,8 @@ const resetUserData = (): void => {
   };
 
   passwordRulesCheck.value = [false, false, false, false];
-  triggerReset.value = true;
 
-  setTimeout((): void => {
-    triggerReset.value = false;
-  }, 100);
+  if (editPassword.value) editPassword.value.reset();
 };
 
 const updateUserData = async (): Promise<void> => {
@@ -139,7 +136,7 @@ const updateUserData = async (): Promise<void> => {
         ]" />
 
         <div class="content">
-          <EditPassword class="page-section" @update="onPasswordsUpdate" :reset="triggerReset">
+          <EditPassword ref="editPassword" class="page-section" @update="onPasswordsUpdate" :reset="triggerReset">
             <div class="section-head">
               <h3>Resetování hesla <span class="update" v-if="userData.passwords.new !== userData.passwords.old && passwordRulesCheck[0] && userData.passwords.old !== ''">(aktualizováno)</span></h3>
               <p>Zadejte nové heslo podle doporučených pravidel níže.</p>

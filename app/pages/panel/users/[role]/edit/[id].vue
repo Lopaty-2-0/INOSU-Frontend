@@ -33,7 +33,13 @@ useHead({
 
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
-const triggerReset = ref<boolean>(false);
+const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
+const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
+const editMail = ref<InstanceType<typeof EditEmail> | null>(null);
+const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
+const editRole = ref<InstanceType<typeof EditRole> | null>(null);
+const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
+const editClass = ref<InstanceType<typeof EditClass> | null>(null);
 const allRoles = ref<string[] | undefined>(undefined);
 const allClasses = ref<ClassData[] | undefined>(undefined);
 
@@ -100,11 +106,13 @@ const resetUserData = (): void => {
     classes: undefined,
   };
 
-  triggerReset.value = true;
-
-  setTimeout((): void => {
-    triggerReset.value = false;
-  }, 100);
+  if (editProfilePicture.value) editProfilePicture.value.reset();
+  if (editFullName.value) editFullName.value.reset();
+  if (editMail.value) editMail.value.reset();
+  if (editPassword.value) editPassword.value.reset();
+  if (editRole.value) editRole.value.reset();
+  if (editAbbreviation.value) editAbbreviation.value.reset();
+  if (editClass.value) editClass.value.reset();
 };
 
 const updateUser = async (): Promise<void> => {
@@ -259,7 +267,7 @@ onMounted(async (): Promise<void> => {
       <div id="settings">
         <div class="content">
           <div class="line page-section no-border">
-            <EditProfilePicture class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate" :reset="triggerReset">
+            <EditProfilePicture ref="editProfilePicture" class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate">
               <div class="section-head">
                 <h3>
                   Profilová fotka
@@ -271,7 +279,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditFullName :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" :reset="triggerReset" @update="onFullNameUpdate">
+            <EditFullName ref="editFullName" :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" @update="onFullNameUpdate">
               <div class="section-head">
                 <h3>Jméno a příjmení</h3>
                 <p>Zadejte nové jméno a příjmení uživatele, pokud je chcete změnit.</p>
@@ -280,7 +288,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditEmail :old-email="oldUserData.email" :reset="triggerReset" @update="onEmailUpdate">
+            <EditEmail ref="editMail" :old-email="oldUserData.email" @update="onEmailUpdate">
               <div class="section-head">
                 <h3>E-mail <span class="update" v-show="newUserData.email">(aktualizováno)</span></h3>
                 <p>Zadejte novou e-mailovou adresu uživatele, pokud ji chcete změnit.</p>
@@ -289,7 +297,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditPassword type="new" :reset="triggerReset" @update="onPasswordUpdate">
+            <EditPassword ref="editPassword" type="new" @update="onPasswordUpdate">
               <div class="section-head">
                 <h3>Heslo k účtu <span class="update" v-show="newUserData.password">(aktualizováno)</span></h3>
                 <p>Zadejte nové heslo, pokud chcete uživateli změnit přístupové údaje. Heslo musí splňovat bezpečnostní požadavky.</p>
@@ -298,7 +306,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditRole :roles="allRoles || []" :old-role="oldUserData.role" :reset="triggerReset" @update="onRoleUpdate">
+            <EditRole ref="editRole" :roles="allRoles || []" :old-role="oldUserData.role" @update="onRoleUpdate">
               <div class="section-head">
                 <h3>Role <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
                 <p>Zvolte roli, kterou má uživatel mít. Role určuje oprávnění a možnosti uživatele v systému.</p>
@@ -307,7 +315,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditAbbreviation :full-name="{ name: newUserData.name ? newUserData.name : oldUserData.name, surname: newUserData.surname ? newUserData.surname : oldUserData.surname }" :old-abbreviation="oldUserData.abbreviation" :reset="triggerReset" @update="onAbbreviationUpdate">
+            <EditAbbreviation ref="editAbbreviation" :full-name="{ name: newUserData.name ? newUserData.name : oldUserData.name, surname: newUserData.surname ? newUserData.surname : oldUserData.surname }" :old-abbreviation="oldUserData.abbreviation" @update="onAbbreviationUpdate">
               <div class="section-head">
                 <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
                 <p>Zadejte novou přezdívku uživatele, pokud ji chcete změnit. Přezdívka slouží jako zkratka jména například pro rychlou identifikaci.</p>
@@ -321,7 +329,7 @@ onMounted(async (): Promise<void> => {
               <p>Vyberte třídu nebo více tříd, které chcete uživateli přiřadit.</p>
             </div>
 
-            <EditClass :old-class-ids="oldUserData.classes" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" v-if="newUserData.role ? newUserData.role === 'student' : oldUserData.role === 'student'" />
+            <EditClass ref="editClass" :old-class-ids="oldUserData.classes" :classes="allClasses || []" @update="onClassUpdate" v-if="newUserData.role ? newUserData.role === 'student' : oldUserData.role === 'student'" />
             <p class="error" v-else>
               Třídy můžete vybírat pouze pokud role uživatele je <strong>student</strong>.
             </p>

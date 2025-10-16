@@ -6,10 +6,6 @@ const props = defineProps({
   oldCheck: {
     type: [Boolean, null] as PropType<boolean | null>,
     required: false,
-  },
-  reset: {
-    type: Boolean,
-    default: false
   }
 });
 
@@ -25,12 +21,12 @@ const onInput = () => {
   emits("update", check.value.updated ? check.value.input : undefined);
 };
 
-watch(() => props.reset, (reset: boolean): void => {
-  if (reset) {
-    check.value.updated = false;
-    check.value.input = props.oldCheck ? props.oldCheck : false;
-  }
-});
+const reset = (): void => {
+  check.value.updated = false;
+  check.value.input = props.oldCheck ? props.oldCheck : false;
+};
+
+defineExpose({ reset });
 </script>
 
 <template>

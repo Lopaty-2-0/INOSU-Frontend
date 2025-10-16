@@ -10,11 +10,7 @@ const props = defineProps({
   oldRole: {
     type: String,
     required: true,
-  },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
+  }
 });
 
 const emits = defineEmits(["update"]);
@@ -27,21 +23,21 @@ const onCreate = (item: string): void => {
   roles.value.push(item);
 };
 
+const reset = (): void => {
+  role.value.error = "";
+  role.value.input = props.oldRole;
+  open.value = false;
+  selected.value = role.value.input ? [role.value.input] : [];
+  roles.value = [...props.roles];
+};
+
 watch(() => selected.value, (newVal: string[]): void => {
   role.value.input = newVal[0] || "";
   emits("update", { role: role.value.input !== props.oldRole ? role.value.input : undefined });
   role.value.error = "";
 });
 
-watch(() => props.reset, (reset: boolean): void => {
-  if (reset) {
-    role.value.error = "";
-    role.value.input = props.oldRole;
-    open.value = false;
-    selected.value = role.value.input ? [role.value.input] : [];
-    roles.value = [...props.roles];
-  }
-});
+defineExpose({ reset });
 </script>
 
 <template>

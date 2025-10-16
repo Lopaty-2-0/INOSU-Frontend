@@ -6,10 +6,6 @@ const props = defineProps({
   oldTaskFile: {
     type: String,
     required: false,
-  },
-  reset: {
-    type: Boolean,
-    default: false
   }
 });
 
@@ -18,6 +14,14 @@ const errors = ref<{ file: string }>({ file: "" });
 const fileInput = ref<InstanceType<typeof FileInput> | null>(null);
 const taskFile = ref<File | null>(null);
 const taskTitle = ref<string>(props.oldTaskFile || "");
+
+const reset = (): void => {
+  errors.value.file = "";
+  taskFile.value = null;
+  taskTitle.value = props.oldTaskFile || "";
+
+  if (fileInput.value) fileInput.value.resetError();
+};
 
 watch(() => taskFile.value, (newVal: File | null) => {
   emits("update", newVal);
@@ -39,15 +43,7 @@ watch(() => props.oldTaskFile, (newVal: string | undefined) => {
   }
 });
 
-watch(() => props.reset, (reset: boolean): void => {
-  if (reset) {
-    errors.value.file = "";
-    taskFile.value = null;
-    taskTitle.value = props.oldTaskFile || "";
-
-    if (fileInput.value) fileInput.value.resetError();
-  }
-});
+defineExpose({ reset });
 </script>
 
 <template>

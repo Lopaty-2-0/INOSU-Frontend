@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import {type PropType, ref, watch} from "vue";
 
 const props = defineProps({
   label: {
@@ -10,27 +10,23 @@ const props = defineProps({
     type: [Date, null] as PropType<Date | null>,
     required: true,
   },
-  reset: {
-    type: Boolean,
-    default: false
-  }
 });
 
 const emits = defineEmits(["update"]);
 const date = ref<{ input: Date | null, updated: boolean }>({ input: props.oldDate, updated: false });
 
-watch(() => props.reset, (reset: boolean) => {
-  if (reset) {
-    date.value.updated = false;
-    date.value.input = props.oldDate;
-  }
-});
+const reset = (): void => {
+  date.value.updated = false;
+  date.value.input = props.oldDate;
+};
 
 watch(() => date.value.input, () => {
   date.value.updated = date.value.input?.getTime() !== props.oldDate?.getTime();
 
   emits("update", date.value.updated ? date.value.input : undefined);
 });
+
+defineExpose({ reset })
 </script>
 
 <template>

@@ -11,10 +11,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emits = defineEmits(["update"]);
@@ -42,12 +38,12 @@ const generateAbbreviation = (): void => {
   }
 };
 
-watch(() => props.reset, (reset: boolean): void => {
-  if (reset) {
-    abbreviation.value.error = "";
-    abbreviation.value.input = props.oldAbbreviation;
-  }
-});
+const reset = (): void => {
+  abbreviation.value.error = "";
+  abbreviation.value.input = props.oldAbbreviation;
+};
+
+defineExpose({ reset });
 </script>
 
 <template>

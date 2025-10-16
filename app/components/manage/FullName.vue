@@ -6,10 +6,6 @@ const props = defineProps({
   oldFullName: {
     type: Object as () => { name: string, surname: string },
     required: true,
-  },
-  reset: {
-    type: Boolean,
-    default: false
   }
 });
 
@@ -34,14 +30,14 @@ const onInput = () => {
   emits("update", updateUserData);
 };
 
-watch(() => props.reset, (reset: boolean) => {
-  if (reset) {
-    inputData.value.name.updated = false;
-    inputData.value.surname.updated = false;
-    inputData.value.name.input = props.oldFullName?.name;
-    inputData.value.surname.input = props.oldFullName?.surname;
-  }
-});
+const reset = (): void => {
+  inputData.value.name.updated = false;
+  inputData.value.surname.updated = false;
+  inputData.value.name.input = props.oldFullName?.name;
+  inputData.value.surname.input = props.oldFullName?.surname;
+};
+
+defineExpose({ reset });
 </script>
 
 <template>

@@ -7,10 +7,6 @@ const props = defineProps({
     type: String as () => AccountTheme,
     required: true,
   },
-  reset: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const emits = defineEmits(["update"]);
@@ -22,12 +18,11 @@ const setTheme = (newTheme: AccountTheme): void => {
   emits("update", newTheme === props.oldTheme ? undefined : newTheme);
 };
 
-watch(
-  () => props.reset,
-  (reset: boolean): void => {
-    if (reset) activeTheme.value = props.oldTheme;
-  }
-);
+const reset = (): void => {
+  activeTheme.value = props.oldTheme;
+};
+
+defineExpose({ reset });
 </script>
 
 <template>
