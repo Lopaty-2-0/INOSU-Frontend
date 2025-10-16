@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware((to: RouteLocationNormalizedGeneric) =>
     const roles = to.meta.roles as string[] | undefined;
 
     if (roles) {
-        const permissionGranted = checkPermissions(roles);
+        const permissionGranted: boolean = checkPermissions(roles);
 
         if (!permissionGranted) {
             return navigateTo("/panel/errors/403");

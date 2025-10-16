@@ -104,7 +104,7 @@ const updateUserData = async (): Promise<void> => {
         ]" />
 
         <div class="content">
-          <EditProfilePicture ref="editProfilePicture" class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate" :reset="triggerReset">
+          <EditProfilePicture ref="editProfilePicture" class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate">
             <div class="section-head">
               <h3>
                 Profilová fotka

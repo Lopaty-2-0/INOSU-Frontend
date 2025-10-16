@@ -9,6 +9,7 @@ import { useAccountStore } from "~/stores/account";
 import type {AccountLink, AccountTheme} from "~/types/account";
 import type {LocaleObject} from "~/types/i18n";
 import LocalePicker from "~/components/ui/LocalePicker.vue";
+import { useI18n } from "#imports";
 
 useHead({
   title: "Panel | Nastavení - Přizpůsobení",
@@ -114,7 +115,6 @@ const updateUserData = () => {
             <div class="section-head">
               <h3>
                 Jazyk rozhraní
-                <span class="update" v-show="newUserData.locale !== locale">(aktualizováno)</span>
               </h3>
               <p>Vyberte preferovaný jazyk pro uživatelské rozhraní aplikace.</p>
             </div>

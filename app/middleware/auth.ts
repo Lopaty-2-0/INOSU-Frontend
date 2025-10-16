@@ -25,7 +25,6 @@ export default defineNuxtRouteMiddleware(async () => {
 
         const accountStore = useAccountStore();
 
-
         //Get user theme
         let storedTheme: string | null = localStorage.getItem("theme") as string | null;
         let storedLinks: string | null = localStorage.getItem("links") as string | null;

@@ -23,7 +23,6 @@ useHead({
   ],
 });
 
-const route = useRoute();
 const alertsStore = useAlertsStore();
 const editName = ref<InstanceType<typeof EditName> | null>(null);
 const editNeedApprove = ref<InstanceType<typeof EditNeedApprove> | null>(null);
@@ -75,11 +74,11 @@ const resetUserData = (): void => {
     endDate: undefined,
   };
 
-  if (editName.value) editName.value.resetInput();
-  if (editNeedApprove.value) editNeedApprove.value.resetInput();
-  if (editTaskFile.value) editTaskFile.value.resetInput();
-  if (editStartDate.value) editStartDate.value.resetInput();
-  if (editEndDate.value) editEndDate.value.resetInput();
+  if (editName.value) editName.value.reset();
+  if (editNeedApprove.value) editNeedApprove.value.reset();
+  if (editTaskFile.value) editTaskFile.value.reset();
+  if (editStartDate.value) editStartDate.value.reset();
+  if (editEndDate.value) editEndDate.value.reset();
 };
 
 const addTask = async (): Promise<void> => {

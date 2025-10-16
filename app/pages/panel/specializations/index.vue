@@ -14,9 +14,6 @@ useHead({
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
-definePageMeta({
-});
-
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string" },

@@ -36,7 +36,7 @@ const taskElaborationFile = ref<File | undefined>(undefined);
 const loading = ref<boolean>(false);
 const lastUploadedElaborationFileName = ref<string | undefined>(undefined);
 const firstFileName = ref<string | undefined>(undefined);
-const triggerReset = ref<boolean>(false);
+const editTaskFile = ref<InstanceType<typeof EditTaskFile> | null>(null);
 
 const reset = (): void => {
   if (task.value) task.value.elaboration = firstFileName.value;
@@ -51,11 +51,7 @@ const removeFile = (): void => {
     task.value.elaboration = undefined;
   }
 
-  triggerReset.value = true;
-
-  setTimeout((): void => {
-    triggerReset.value = false;
-  }, 100);
+  if (editTaskFile.value) editTaskFile.value.reset();
 };
 
 const submit = async (): Promise<void> => {
@@ -193,7 +189,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section review">
-            <EditTaskFile :reset="triggerReset" :old-task-file="task.elaboration" @update="onTaskFileUpdate">
+            <EditTaskFile ref="editTaskFile" :old-task-file="task.elaboration" @update="onTaskFileUpdate">
               <div class="section-head">
                 <h3>Vypracování <span class="update" v-show="taskElaborationFile !== undefined">(aktualizováno)</span></h3>
                 <p>Zde můžete nahrát nebo aktualizovat své vypracování úkolu. Vyberte soubor a potvrďte změny. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>

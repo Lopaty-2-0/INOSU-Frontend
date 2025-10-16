@@ -12,6 +12,7 @@ import type {AccountData} from "~/types/account";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import { useAlertsStore } from "~/stores/alerts";
+import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -24,30 +25,26 @@ useHead({
   ],
 });
 
+const emits = defineEmits(["update"]);
+
 const route = useRoute();
 const router = useRouter();
 const taskId = route.params.taskId as string;
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
 const datatable = ref<any>(null);
-const triggerReset = ref<boolean>(false);
 const allClasses = ref<ClassData[]>([]);
 const selectedClasses = ref<number[] | undefined>(undefined);
 const selectedUsers = ref<string[]>([]);
 const oldSelectedClasses = ref<number[]>([]);
 const oldSelectedUsers = ref<string[]>([]);
 const task = ref<TaskData | undefined>(undefined);
-const emits = defineEmits(["update"]);
-const dropdownItems = ref<string[]>(["Třídy", "Žáci"]);
-const title = ref<string>("Třídy");
-const selectedDropdown = ref<number>(0);
-const open = ref<boolean>(false);
-const icons = {
-  select: "material-symbols:done-rounded",
-  selected: "material-symbols:close-rounded",
-  open: "material-symbols:arrow-downward-rounded",
-  close: "material-symbols:arrow-upward-rounded"
-};
+const editClassComponent = ref<InstanceType<typeof EditClass> | null>(null);
+const dropdownItems = ref<InputMenuItem[]>([
+  { label: "Třídy", name: "class" },
+  { label: "Žáci", name: "student" },
+]);
+const selectedDropdown = ref<string[]>([]);
 const editClass = ref<boolean>(false);
 const allStudents = ref<AccountData[] | undefined>(undefined);
 const searchInput = ref<string>("");
@@ -63,28 +60,11 @@ const onClassUpdate = (data: { classes: number[] | undefined }): void => {
   selectedClasses.value = data.classes;
 };
 
-const onDropdownSelect = (index: number): void => {
-  selectedDropdown.value = index;
-  title.value = dropdownItems.value[index] || "Třídy";
-
-  if (index === 0) editClass.value = true;
-  else if (index === 1) editClass.value = false;
-
-  open.value = false;
-};
-
 const resetSelection = (): void => {
-  triggerReset.value = true;
   selectedClasses.value = [...oldSelectedClasses.value];
   selectedUsers.value = [...oldSelectedUsers.value];
 
-  setTimeout((): void => {
-    triggerReset.value = false;
-  }, 100);
-};
-
-const toggleDropdown = (): void => {
-  open.value = !open.value;
+  if (editClassComponent.value) editClassComponent.value.reset();
 };
 
 const onCheckboxSelect = (): void => {
@@ -106,7 +86,7 @@ const selectUsersInTable = (): void => {
 };
 
 const assignToTask = async (): Promise<void> => {
-  if (selectedDropdown.value === 0) {
+  if (selectedDropdown.value[0] && selectedDropdown.value[0] === "class") {
     submitLoading.value = true;
 
     await apiFetch("/task_class/update", {
@@ -179,7 +159,7 @@ const assignToTask = async (): Promise<void> => {
     });
   }
 
-  if (selectedDropdown.value === 1) {
+  else {
     submitLoading.value = true;
 
     await apiFetch("/user_task/change", {
@@ -292,7 +272,6 @@ onMounted(async (): Promise<void> => {
     const classData = classResponse.data.classes || [];
 
     if (classData.length > 0) editClass.value = true;
-    else onDropdownSelect(1);
 
     const userTaskResponse = await apiFetch(`/user_task/get/idTask?idTask=${taskId}`, {
       method: "get",
@@ -307,6 +286,7 @@ onMounted(async (): Promise<void> => {
         method: "get",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
+        ignoreResponseError: true,
       });
       studentData = usersResponse.data.users || [];
     } else {
@@ -315,6 +295,7 @@ onMounted(async (): Promise<void> => {
         method: "get",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
+        ignoreResponseError: true,
       });
       studentData = usersResponse.data.users || [];
     }
@@ -326,6 +307,7 @@ onMounted(async (): Promise<void> => {
     oldSelectedUsers.value = [...userTaskData];
     allStudents.value = studentData;
   } catch (error) {
+    alertsStore.addAlert({ type: "error", title: "Přiřazení úkolu", message: "Nastala neznámá chyba při načítání dat." });
     await router.push(`/panel/tasks/admin`);
   }
 
@@ -374,28 +356,12 @@ watch(datatable, (val: any): void => {
               <p>Zde můžete přiřadit úkol buď celé třídě, nebo jednotlivým žákům. Vyberte požadovanou možnost v rozbalovacím menu níže.</p>
             </div>
 
-            <div class="dropdown" :class="{ open: open }">
-              <div class="title" @click="toggleDropdown">
-                <span>{{ title }}</span>
-
-                <div class="icon-div">
-                  <Icon class="icon" :name="open ? icons.close : icons.open" />
-                </div>
-              </div>
-
-              <div class="dropdown-content" v-show="open">
-                <div
-                    v-for="(item, index) in dropdownItems"
-                    :key="index"
-                    :class="{ selected: selectedDropdown === index }"
-                    class="section"
-                    @click="onDropdownSelect(index)"
-                >
-                  <Icon class="icon" :name="selectedDropdown === index ? icons.select : icons.selected" />
-                  <span>{{ item }}</span>
-                </div>
-              </div>
-            </div>
+            <InputMenu
+              :items="dropdownItems"
+              :createItem="false"
+              v-model="selectedDropdown"
+              placeholder="Vyberte možnost"
+            />
           </div>
 
           <div class="line page-section" v-show="editClass">
@@ -407,7 +373,7 @@ watch(datatable, (val: any): void => {
               <p>Zde můžete upravit přiřazení tříd, kterým bude úkol zadán. Vyberte požadované třídy a potvrďte změny.</p>
             </div>
 
-            <EditClass :old-class-ids="selectedClasses || []" :classes="allClasses || []" :reset="triggerReset" @update="onClassUpdate" />
+            <EditClass ref="editClassComponent" :old-class-ids="selectedClasses || []" :classes="allClasses || []" @update="onClassUpdate" />
           </div>
 
           <div class="line page-section" v-show="!editClass">
@@ -493,107 +459,6 @@ watch(datatable, (val: any): void => {
       p {
         font-size: 16px;
         color: rgba(var(--description-color), 1);
-      }
-    }
-
-    .dropdown {
-      position: relative;
-      display: flex;
-      width: 100%;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-
-      &.error {
-        .title input {
-          border: var(--border-width) solid rgba(var(--error-color), 1);
-        }
-      }
-
-      .title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: 0.2s;
-        width: 100%;
-        gap: 10px;
-        padding: 15px;
-        outline: none;
-        border-radius: var(--normal-border-radius);
-        font-size: 16px;
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        background: var(--input-background);
-        color: var(--input-color);
-        cursor: pointer;
-
-        .icon-div {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: rgba(var(--description-color), 1);
-          font-size: 16px;
-        }
-
-        &:focus {
-          border-color: rgba(var(--main-color), 1);
-        }
-      }
-
-      .dropdown-content {
-        position: absolute;
-        display: flex;
-        flex-direction: column;
-        transition: 0.2s;
-        margin-top: 10px;
-        border-radius: var(--normal-border-radius);
-        font-size: 16px;
-        outline: none;
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        background: var(--input-background);
-        color: var(--input-color);
-        width: 100%;
-        word-break: break-word;
-        top: 100%;
-        z-index: 5;
-        left: 0;
-
-        .section {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 15px;
-          transition: 0.2s;
-          cursor: pointer;
-
-          .icon {
-            font-size: 16px;
-            color: rgba(var(--description-color), 1);
-          }
-
-          &.selected {
-            .icon, span {
-              color: rgba(var(--main-color), 1);
-            }
-          }
-
-          &:hover {
-            background: var(--input-background-hover);
-          }
-
-          &:last-child {
-            border-bottom-left-radius: var(--normal-border-radius);
-            border-bottom-right-radius: var(--normal-border-radius);
-          }
-
-          &:first-child {
-            border-top-left-radius: var(--normal-border-radius);
-            border-top-right-radius: var(--normal-border-radius);
-          }
-
-          &:not(:last-child) {
-            border-bottom: var(--border-width) solid rgba(var(--border-color), 1);
-          }
-        }
       }
     }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InputMenu from "~/components/ui/InputMenu.vue";
+import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
 import { ref, watch, computed } from "vue";
 import type { LocaleObject } from "~/types/i18n";
 
@@ -16,8 +16,8 @@ const props = defineProps({
 
 const emits = defineEmits(["update:modelValue"]);
 
-const localeItems = computed(() =>
-    props.locales.map((l) => ({
+const localeItems = computed<InputMenuItem[]>(() =>
+    props.locales.map((l: LocaleObject) => ({
       name: l.code,
       label: l.code.toUpperCase() + " - " + l.name,
     }))
@@ -37,5 +37,6 @@ watch(() => newLocale.value, (value: string[]) => {
     class="locale-picker"
     :items="localeItems"
     v-model="newLocale"
+    placeholder="Vyberte jazyk"
   />
 </template>

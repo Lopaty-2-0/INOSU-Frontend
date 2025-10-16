@@ -32,7 +32,7 @@ const taskReviewFile = ref<File | undefined>(undefined);
 const loading = ref<boolean>(false);
 const lastUploadedReviewFileName = ref<string | undefined>(undefined);
 const firstFileName = ref<string | undefined>(undefined);
-const triggerReset = ref<boolean>(false);
+const editTaskFile = ref<InstanceType<typeof EditTaskFile> | null>(null);
 
 const reset = (): void => {
   if (task.value) task.value.review = firstFileName.value;
@@ -47,11 +47,7 @@ const removeFile = (): void => {
     task.value.review = undefined;
   }
 
-  triggerReset.value = true;
-
-  setTimeout((): void => {
-    triggerReset.value = false;
-  }, 100);
+  if (editTaskFile.value) editTaskFile.value.reset();
 };
 
 const submit = async (): Promise<void> => {
@@ -224,7 +220,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section review">
-            <EditTaskFile :reset="triggerReset" :old-task-file="task.review" @update="onTaskFileUpdate">
+            <EditTaskFile ref="editTaskFile" :old-task-file="task.review" @update="onTaskFileUpdate">
               <div class="section-head">
                 <h3>Hodnocení <span class="update" v-show="taskReviewFile !== undefined">(aktualizováno)</span></h3>
                 <p>Zde můžete nahrát nebo stáhnout soubor s hodnocením úkolu. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>

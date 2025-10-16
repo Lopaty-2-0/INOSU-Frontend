@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
-import Alerts from "~/components/layout/Alerts.vue";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import apiFetch from "~/componsables/apiFetch";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
 import Input from "~/components/ui/Input.vue";
+import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
 
 useHead({
   title: "Panel | Třídy - Přidání",
@@ -35,17 +35,9 @@ const errors = ref<{ name: string; grade: string; group: string; specialization:
 });
 const allSpecializations = ref<SpecializationData[]>([]);
 const selectedSpecialization = ref<number | null>(null);
-const open = ref<boolean>(false);
 const searchName = ref<string>("");
 const searchLengthOfStudy = ref<number | null>(null);
 const searchAbbreviation = ref<string>("");
-const icons = {
-  select: "material-symbols:done-rounded",
-  selected: "material-symbols:close-rounded",
-  open: "material-symbols:arrow-downward-rounded",
-  close: "material-symbols:arrow-upward-rounded"
-};
-const title = ref<string>("");
 const searchedSpecializations = computed<SpecializationData[]>((): SpecializationData[] => {
   return allSpecializations.value.filter((item: SpecializationData): boolean => {
     return (
@@ -55,13 +47,24 @@ const searchedSpecializations = computed<SpecializationData[]>((): Specializatio
     );
   });
 });
+const dropdownItems = computed<InputMenuItem[]>(() => {
+  return searchedSpecializations.value.map((item: SpecializationData) => {
+    return {
+      name: item.id.toString(),
+      label: `${item.name} - ${item.abbreviation.toUpperCase()} - Délka studia (roky): ${item.lengthOfStudy}`
+    };
+  });
+});
+const selectedDropdownItem = ref<string[]>([]);
+const title = computed<string>(() => {
+  const specialization: SpecializationData | undefined = allSpecializations.value.find((item: SpecializationData) => item.id.toString() === selectedDropdownItem.value[0]);
 
-const toggleDropdown = (): void => {
-  open.value = !open.value;
-};
+  return specialization ? `${specialization.name} - ${specialization.abbreviation.toUpperCase()} - Délka studia (roky): ${specialization.lengthOfStudy}` : "";
+});
 
-const pingResetSelectedClasses = (): void => {
+const resetSelectedClasses = (): void => {
   selectedSpecialization.value = null;
+  selectedDropdownItem.value = [];
   classData.value = {
     name: "",
     grade: null,
@@ -77,21 +80,11 @@ const pingResetSelectedClasses = (): void => {
   searchAbbreviation.value = "";
   searchLengthOfStudy.value = null;
   searchName.value = "";
-  title.value = "";
-  open.value = false;
 };
 
-const onSpecializationSelect = (specialization: SpecializationData): void => {
-  if (specialization.id === selectedSpecialization.value) {
-    selectedSpecialization.value = null;
-    classData.value.specialization = null;
-    title.value = "";
-    return;
-  }
-
-  selectedSpecialization.value = specialization.id;
-  classData.value.specialization = specialization.id;
-  title.value = `${specialization.name} - ${specialization.abbreviation.toUpperCase()} - Délka studia (roky): ${specialization.lengthOfStudy}`;
+const onSpecializationSelect = (value: string[]): void => {
+  selectedSpecialization.value = value[0] ? parseInt(value[0]) : null;
+  classData.value.specialization = value[0] ? parseInt(value[0]) : null;
 
   checkForErrors();
 };
@@ -102,7 +95,7 @@ const checkForErrors = (): void => {
   errors.value.group = "";
   errors.value.specialization = "";
 
-  if (classData.value.name.length < 1) {
+  if (classData.value.name && classData.value.name.length < 1) {
     errors.value.name = "Název třídy je povinný.";
   }
 
@@ -112,9 +105,9 @@ const checkForErrors = (): void => {
     errors.value.grade = "Ročník třídy musí být větší než 0.";
   }
 
-  if (classData.value.group.length < 1) {
+  if (classData.value.group && classData.value.group.length < 1) {
     errors.value.group = "Skupina třídy je povinná.";
-  } else if (classData.value.group.length > 1) {
+  } else if (classData.value.group && classData.value.group.length > 1) {
     errors.value.group = "Skupina třídy musí být maximálně 1 znak.";
   }
 
@@ -183,20 +176,7 @@ const addClass = async (): Promise<void> => {
         case "8111":
           alertsStore.addAlert({ type: "success", title: "Vytvoření třídy", message: "Třída byla úspěšně vytvořena." });
 
-          classData.value.name = "";
-          classData.value.grade = null;
-          classData.value.group = "";
-          classData.value.specialization = null;
-          selectedSpecialization.value = null;
-          title.value = "";
-          searchName.value = "";
-          searchLengthOfStudy.value = null;
-          searchAbbreviation.value = "";
-          errors.value.name = "";
-          errors.value.grade = "";
-          errors.value.group = "";
-          errors.value.specialization = "";
-          open.value = false;
+          resetSelectedClasses();
 
           break;
         default:
@@ -298,35 +278,17 @@ onMounted(async (): Promise<void> => {
 
                 <label>Výběr zaměření</label>
 
-                <div class="dropdown">
-                  <div class="title" @click="toggleDropdown">
-                    <p>{{ title || "Vyberte zaměření" }}</p>
-
-                    <Icon class="icon" :name="open ? icons.close : icons.open" />
-                  </div>
-
-                  <div class="dropdown-content" v-show="open">
-                    <div
-                        v-for="item in searchedSpecializations"
-                        :key="item.id"
-                        class="item"
-                        :class="{ selected: selectedSpecialization === item.id }"
-                        @click="() => onSpecializationSelect(item)"
-                        v-if="searchedSpecializations.length > 0"
-                    >
-                      <Icon class="icon" :name="selectedSpecialization === item.id ? icons.select : icons.selected" />
-                      <span>
-                        <span class="name" v-if="item.name">{{ item.name + " - " }}</span>
-                        <span class="uppercase">{{ item.abbreviation + " - " }}</span>
-                        <span>Délka studia (roky): {{ item.lengthOfStudy }}</span>
-                      </span>
-                    </div>
-
-                    <div v-else class="item error">
-                      <p>Žádné zaměření nebylo nalezeno.</p>
-                    </div>
-                  </div>
-                </div>
+                <InputMenu
+                  v-model="selectedDropdownItem"
+                  :title="title"
+                  :multiple="false"
+                  :items="dropdownItems"
+                  :create-item="false"
+                  placeholder="Vyberte zaměření"
+                  :deselect="true"
+                  no-data-text="Žádné zaměření nebylo nalezeno"
+                  @update:model-value="onSpecializationSelect"
+                />
                 <p class="input-error" v-if="errors.specialization.length > 0">{{ errors.specialization }}</p>
               </div>
             </div>
@@ -365,7 +327,7 @@ onMounted(async (): Promise<void> => {
               Uložit změny
               <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
             </button>
-            <button type="reset" @click="pingResetSelectedClasses">
+            <button type="reset" @click="resetSelectedClasses">
               Resetovat změny
             </button>
           </div>

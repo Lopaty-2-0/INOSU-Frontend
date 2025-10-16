@@ -2,7 +2,7 @@
 import { ref, computed, watch } from "vue";
 import Input from "~/components/ui/Input.vue";
 
-type Item = {
+export type InputMenuItem = {
   name: string;
   label: string;
 };
@@ -14,7 +14,7 @@ const props = defineProps({
     default: [],
   },
   items: {
-    type: Array as () => (string | Item)[],
+    type: Array as () => (string | InputMenuItem)[],
     required: true,
   },
   multiple: {
@@ -41,9 +41,21 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  deselect: {
+    type: Boolean,
+    default: false,
+  },
   noDataText: {
     type: String,
     default: "Nic nebylo nalezeno.",
+  },
+  placeholder: {
+    type: String,
+    default: "Vyberte / Vytvořte položku",
+  },
+  title: {
+    type: String,
+    default: "",
   },
 });
 
@@ -60,17 +72,17 @@ const open = ref<boolean>(false);
 const input = ref<string>("");
 const selectedItems = ref<string[]>([...props.modelValue]);
 
-const normalizedItems = computed<Item[]>(() => {
-  return props.items.map((i) =>
+const normalizedItems = computed<InputMenuItem[]>(() => {
+  return props.items.map((i: string | InputMenuItem) =>
       typeof i === "string" ? { name: i, label: i } : i
   );
 });
 const placeholder = computed(() => {
   if (props.multiple) {
-    return selectedItems.value.length > 0 ? `Vybráno: ${selectedItems.value.length}` : "Vyberte / Vytvořte položku";
+    return selectedItems.value.length > 0 ? `Vybráno: ${selectedItems.value.length}` : props.title || props.placeholder;
   } else {
-    const selected: Item | undefined = normalizedItems.value.find((i) => i.name === selectedItems.value[0]);
-    let text: string = selected ? selected.label : "Vyberte / Vytvořte položku";
+    const selected: InputMenuItem | undefined = normalizedItems.value.find((i) => i.name === selectedItems.value[0]);
+    let text: string = selected ? selected.label : props.title || props.placeholder;
 
     if (props.uppercase) text = text.toUpperCase();
     if (props.lowercase) text = text.toLowerCase();
@@ -101,20 +113,26 @@ const toggleDropdown = () => {
   if (open.value) input.value = "";
 };
 
-const selectItem = (item: Item) => {
+const selectItem = (item: InputMenuItem) => {
   if (props.multiple) {
     selectedItems.value = selectedItems.value.includes(item.name) ? selectedItems.value.filter((n) => n !== item.name) : [...selectedItems.value, item.name];
 
     emit("update:modelValue", selectedItems.value);
   } else {
-    emit("update:modelValue", [item.name]);
+    if (props.deselect && selectedItems.value[0] === item.name) {
+      selectedItems.value = [];
+      emit("update:modelValue", []);
+    } else {
+      selectedItems.value = [item.name];
+      emit("update:modelValue", [item.name]);
+    }
 
     open.value = false;
   }
 };
 
 const createItem = () => {
-  const newItem: Item = { name: input.value, label: input.value };
+  const newItem: InputMenuItem = { name: input.value, label: input.value };
 
   selectItem(newItem);
   emit("create", newItem);
