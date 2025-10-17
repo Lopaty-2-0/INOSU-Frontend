@@ -1,0 +1,29 @@
+name: Deploy Nuxt App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Stop old containers
+        run: |
+          cd ~/INOSU-Frontend
+          docker compose down || true
+
+      - name: Build and start Nuxt production container
+        run: |
+          cd ~/INOSU-Frontend
+          docker compose build nuxt-prod
+          docker compose up -d nuxt-prod
+
+      - name: Clean up unused images and containers
+        run: |
+          docker system prune -af || true
