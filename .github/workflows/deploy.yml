@@ -13,6 +13,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Update repository
+        run: |
+          cd ~/runner1/INOSU-Frontend
+          git reset --hard
+          git pull origin main
+
       - name: Stop old containers
         run: |
           cd ~/runner1/INOSU-Frontend
@@ -27,4 +33,3 @@ jobs:
       - name: Clean up unused images and containers
         run: |
           docker system prune -af || true
-
