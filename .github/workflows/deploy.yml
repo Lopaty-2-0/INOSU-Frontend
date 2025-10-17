@@ -15,15 +15,16 @@ jobs:
 
       - name: Stop old containers
         run: |
-          cd ~/INOSU-Frontend
+          cd ~/runner1/INOSU-Frontend
           docker compose down || true
 
       - name: Build and start Nuxt production container
         run: |
-          cd ~/INOSU-Frontend
+          cd ~/runner1/INOSU-Frontend
           docker compose build nuxt-prod
           docker compose up -d nuxt-prod
 
       - name: Clean up unused images and containers
         run: |
           docker system prune -af || true
+
