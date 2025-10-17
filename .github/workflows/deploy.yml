@@ -15,21 +15,22 @@ jobs:
 
       - name: Update repository
         run: |
-          cd ~/runner1/INOSU-Frontend
+          cd /srv/github-runners/runner1/INOSU-Frontend
           git reset --hard
           git pull origin main
 
       - name: Stop old containers
         run: |
-          cd ~/runner1/INOSU-Frontend
+          cd /srv/github-runners/runner1/INOSU-Frontend
           docker compose down || true
 
       - name: Build and start Nuxt production container
         run: |
-          cd ~/runner1/INOSU-Frontend
+          cd /srv/github-runners/runner1/INOSU-Frontend
           docker compose build nuxt-prod
           docker compose up -d nuxt-prod
 
       - name: Clean up unused images and containers
         run: |
           docker system prune -af || true
+
