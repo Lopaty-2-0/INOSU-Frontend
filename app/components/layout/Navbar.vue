@@ -4,6 +4,7 @@ import { ref, onMounted } from "vue";
 import { useState } from "nuxt/app";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
+import type {RuntimeConfig} from "nuxt/schema";
 
 const props = defineProps({
   links: {
@@ -19,6 +20,7 @@ const props = defineProps({
   },
 });
 
+const config: RuntimeConfig = useRuntimeConfig();
 const { getAccountData: accountData } = storeToRefs(useAccountStore());
 
 // global state for hamburger click event
@@ -36,9 +38,7 @@ const profileData = computed<{
 }>(() => ({
   name: accountData.value.name,
   surname: accountData.value.surname,
-  profilePhoto:
-    "http://89.203.248.163/uploads/profilePictures/" +
-    accountData.value.profilePicture,
+  profilePhoto: config.public.apiUrl + "/file/pfp/" + accountData.value.profilePicture,
 }));
 
 onMounted((): void => {
