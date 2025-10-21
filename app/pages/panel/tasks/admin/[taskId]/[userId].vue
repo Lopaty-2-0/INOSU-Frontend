@@ -25,6 +25,7 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
+const config = useRuntimeConfig();
 const task = ref<TaskData & { review?: string } | undefined>(undefined);
 const elaborator = ref<AccountData | undefined>(undefined);
 const guarantor = ref<AccountData | undefined>(undefined);
@@ -185,7 +186,7 @@ onMounted(async (): Promise<void> => {
                 <p>Vypracovává:</p>
 
                 <div class="data">
-                  <img :src="'http://89.203.248.163/uploads/profilePictures/' + elaborator.profilePicture" alt="User profile photo" loading="lazy"/>
+                  <img :src="config.public.apiUrl + '/file/pfp/' + elaborator.profilePicture" alt="User profile photo" loading="lazy"/>
                   <span>{{ elaborator.name }} {{ elaborator.surname }}</span>
                 </div>
               </div>

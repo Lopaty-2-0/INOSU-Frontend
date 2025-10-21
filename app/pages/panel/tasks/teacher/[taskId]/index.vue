@@ -27,6 +27,7 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
+const config = useRuntimeConfig();
 const task = ref<TaskData | undefined>(undefined);
 const loading = ref<boolean>(false);
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
@@ -252,7 +253,7 @@ onMounted(async (): Promise<void> => {
               <Vue3Datatable :loading="loading" :rows="pendingUsers" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput" no-data-content="Žádná data k dispozici">
                 <template #name="data">
                   <div class="profile">
-                    <img :src="'http://89.203.248.163/uploads/profilePictures/' + data.value.profilePicture" alt="User profile photo" loading="lazy"/>
+                    <img :src="config.public.apiUrl + '/file/pfp/' + data.value.profilePicture" alt="User profile photo" loading="lazy"/>
                     <p>{{ data.value.name }} {{ data.value.surname }}</p>
                   </div>
                 </template>

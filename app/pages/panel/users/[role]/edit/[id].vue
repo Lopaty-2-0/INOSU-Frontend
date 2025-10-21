@@ -32,6 +32,7 @@ useHead({
 });
 
 const alertsStore = useAlertsStore();
+const config = useRuntimeConfig();
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
 const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
@@ -240,7 +241,7 @@ onMounted(async (): Promise<void> => {
         oldUserData.value.abbreviation = user.abbreviation || "";
         oldUserData.value.role = user.role;
         oldUserData.value.classes = user.idClass;
-        oldUserData.value.profilePicture = "http://89.203.248.163/uploads/profilePictures/" + user.profilePicture;
+        oldUserData.value.profilePicture = config.public.apiUrl + "/file/pfp/" + user.profilePicture;
       } else {
         await router.push(`/panel/users/${role}/edit`);
         return;

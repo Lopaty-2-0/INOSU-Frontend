@@ -30,6 +30,7 @@ const emits = defineEmits(["update"]);
 const route = useRoute();
 const router = useRouter();
 const taskId = route.params.taskId as string;
+const config = useRuntimeConfig();
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
 const datatable = ref<any>(null);
@@ -392,7 +393,7 @@ watch(datatable, (val: any): void => {
             <Vue3Datatable :rows="allStudents" ref="datatable" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput" :hasCheckbox="true" @input="onCheckboxSelect" no-data-content="Žádná data k dispozici">
               <template #name="data">
                 <div class="profile">
-                  <img :src="'http://89.203.248.163/uploads/profilePictures/' + data.value.profilePicture" alt="User profile photo" loading="lazy"/>
+                  <img :src="config.public.apiUrl + '/file/pfp/' + data.value.profilePicture" alt="User profile photo" loading="lazy"/>
                   <p>{{ data.value.name }} {{ data.value.surname }}</p>
                 </div>
               </template>
