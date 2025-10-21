@@ -13,7 +13,7 @@ const useSimpleDataCipher = () => {
     const encodeData = (data: Record<string, any>): string => {
         try {
             const json: string = JSON.stringify(data);
-            const base64: string = btoa(json);
+            const base64: string = btoa(encodeURIComponent(json));
             const reversed: string = base64.split("").reverse().join("");
             const hash: string = simpleHash(base64);
 
@@ -35,7 +35,7 @@ const useSimpleDataCipher = () => {
 
             if (hash !== simpleHash(base64)) return null;
 
-            const json: string = atob(base64);
+            const json: string = decodeURIComponent(atob(base64));
 
             return JSON.parse(json);
         } catch {

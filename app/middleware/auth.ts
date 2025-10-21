@@ -62,7 +62,7 @@ export default defineNuxtRouteMiddleware(async () => {
                             idClass: freshAccountData.idClass,
                             createdAt: freshAccountData.createdAt,
                             updatedAt: freshAccountData.updatedAt,
-                        }
+                        };
 
                         const encodedAccountData: string = encodeData(accountData);
 
