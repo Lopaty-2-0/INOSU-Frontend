@@ -1,4 +1,4 @@
-interface AccountData {
+type AccountData = {
     id: string;
     name: string;
     surname: string;
@@ -8,17 +8,20 @@ interface AccountData {
     profilePicture: string;
     idClass: number[];
     createdAt: Date;
+    updatedAt: Date;
 }
 
-interface AccountLink {
+type AccountLink = {
     href: string,
     text: string;
 }
 
 type AccountTheme = "light" | "dark" | "system";
+type LocalAccountData = Omit<AccountData, "id" | "role">;
 
 export type {
     AccountData,
+    LocalAccountData,
     AccountLink,
     AccountTheme
 }

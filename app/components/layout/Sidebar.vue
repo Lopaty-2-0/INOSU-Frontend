@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {ref, onMounted, computed} from "vue";
-import { useRoute, useState } from "nuxt/app";
+import {navigateTo, useRoute, useState} from "nuxt/app";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
 import apiFetch from "../../componsables/apiFetch";
@@ -131,7 +131,10 @@ const logOut = async (): Promise<void> => {
     async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
-      if (resCode === "7011") await navigateTo("/login");
+      if (resCode === "7011") {
+        sessionStorage.removeItem("accountData");
+        await navigateTo("/login");
+      }
     },
   }).finally((): void => {
     logoutLoading.value = false;

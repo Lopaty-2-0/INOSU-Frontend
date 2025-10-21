@@ -136,7 +136,7 @@ onMounted(async (): Promise<void> => {
     method: "get",
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }) {
+    onResponse({ response }: any) {
       const tasks: TaskData[] = (response._data.data.elaboratingTasks || [])
           .filter((task: any) => !task.review)
           .slice(0, 5)
@@ -202,7 +202,7 @@ onMounted(async (): Promise<void> => {
               />
             </div>
 
-            <Vue3Datatable :pageSize="5" :sortable="true" :search="searchInput" :pagination="false" :rows="allTasks" :columns="cols">
+            <Vue3Datatable :pageSize="5" :sortable="true" :search="searchInput" :pagination="false" :rows="allTasks" :columns="cols" no-data-content="Žádná data k dispozici">
               <template #task="data">
                 <a :href="`http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`" class="link" download target="_blank">
                   {{ data.value.task }}

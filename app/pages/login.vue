@@ -9,12 +9,14 @@ import Input from "~/components/ui/Input.vue";
 import type {LocaleObject} from "~/types/i18n";
 import LocalePicker from "~/components/ui/LocalePicker.vue";
 import { useI18n } from "#imports";
+import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
 
 useHead({
   title: "Panel | Přihlášení",
   meta: [{ name: "description", content: "Panel Login Page" }],
 });
 
+const { encodeData } = useSimpleDataCipher();
 const loginData = ref<{ login: string | null; password: string | null; stayLogged: boolean; }>({
   login: null,
   password: null,
@@ -67,7 +69,7 @@ const submitLoginForm = async (): Promise<void> => {
           errors.value.req = t("login.form.errors.invalid");
           break;
         case "6031":
-          localStorage.setItem("accountData", JSON.stringify({
+          sessionStorage.setItem("accountData", encodeData({
             profilePicture: response._data.data.user.profilePicture,
             email: response._data.data.user.email,
             name: response._data.data.user.name,
@@ -75,9 +77,10 @@ const submitLoginForm = async (): Promise<void> => {
             idClass: response._data.data.user.idClass,
             abbreviation: response._data.data.user.abbreviation,
             createdAt: response._data.data.user.createdAt,
+            updatedAt: response._data.data.user.updatedAt,
           } as AccountData));
 
-          navigateTo("/panel");
+          window.location.href = "/panel";
           break;
         default:
           errors.value.req = t("login.form.errors.unknown");

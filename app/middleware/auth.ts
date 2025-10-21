@@ -1,7 +1,8 @@
 import { useAccountStore } from "~/stores/account";
-import type { AccountData, AccountTheme } from "~/types/account";
-import { useCookie } from "nuxt/app";
+import type {AccountData, AccountTheme, LocalAccountData} from "~/types/account";
 import apiUseFetch from "../componsables/apiUseFetch";
+import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
+import apiFetch from "~/componsables/apiFetch";
 
 export default defineNuxtRouteMiddleware(async () => {
     if (process.server) return;
@@ -23,6 +24,7 @@ export default defineNuxtRouteMiddleware(async () => {
             return;
         }
 
+        const { encodeData, decodeData } = useSimpleDataCipher();
         const accountStore = useAccountStore();
 
         //Get user theme
@@ -32,15 +34,51 @@ export default defineNuxtRouteMiddleware(async () => {
         accountStore.setTheme((storedTheme || "light") as AccountTheme);
 
         //Set account data
+        const accountDataString: string | null = sessionStorage.getItem("accountData") as string | null;
+        let accountData: LocalAccountData | null = accountDataString ? decodeData(accountDataString) as LocalAccountData : null;
+
+        if (!accountData || (data.value.data.updatedAt !== accountData.updatedAt)) {
+            await apiFetch("/user/logged/data", {
+                method: "get",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                async onResponse({ response }: any): Promise<any> {
+                    const resCode: string = response._data.resCode.toString();
+
+                    if (resCode === "50011") {
+                        const freshAccountData: AccountData = response._data.data.user as AccountData;
+
+                        if (!freshAccountData) return;
+
+                        accountData = {
+                            name: freshAccountData.name,
+                            surname: freshAccountData.surname,
+                            abbreviation: freshAccountData.abbreviation,
+                            email: freshAccountData.email,
+                            profilePicture: freshAccountData.profilePicture,
+                            idClass: freshAccountData.idClass,
+                            createdAt: freshAccountData.createdAt,
+                            updatedAt: freshAccountData.updatedAt,
+                        }
+
+                        const encodedAccountData: string = encodeData(accountData);
+
+                        sessionStorage.setItem("accountData", encodedAccountData);
+                    }
+                }
+            });
+        }
+
         accountStore.setLoading(false);
-        const accountDataString: string | null = localStorage.getItem("accountData") as string | null;
-        const accountData: AccountData | null = accountDataString ? JSON.parse(accountDataString) as AccountData : null;
 
         if (!accountData || !data.value.data.id || !data.value.data.role) {
             return location.pathname = "/login";
         }
 
-        accountStore.setAccountData(accountData || {} as AccountData);
+        accountStore.setLocalAccountData(accountData || {} as LocalAccountData);
         accountStore.setRole(data.value.data.role);
         accountStore.setId(data.value.data.id);
         accountStore.setLinks(JSON.parse(storedLinks as string) || []);

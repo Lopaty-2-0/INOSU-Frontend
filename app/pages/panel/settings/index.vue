@@ -8,6 +8,7 @@ import {storeToRefs} from "pinia";
 import {useAccountStore} from "~/stores/account";
 import apiFetch from "../../../componsables/apiFetch";
 import {useAlertsStore} from "~/stores/alerts";
+import type {LocalAccountData} from "~/types/account";
 
 useHead({
   title: "Panel | Nastavení - Profil",
@@ -19,11 +20,12 @@ useHead({
 const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();
 const { getAccountData: accountData } = storeToRefs(accountStore);
+const config = useRuntimeConfig();
 
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
 const oldUserData = computed<{ profilePicture: string}>(() => ({
-  profilePicture: "http://89.203.248.163/uploads/profilePictures/" + accountData.value.profilePicture,
+  profilePicture: config.public.apiUrl + "/file/pfp/" + accountData.value.profilePicture,
 }));
 
 const newUserData = ref<{ profilePicture: File | undefined }>({
@@ -57,7 +59,7 @@ const updateUserData = async (): Promise<void> => {
       ignoreResponseError: true,
       async onResponse({ response }: any) {
         const resCode: string = response._data.resCode.toString();
-        const data = response._data.data;
+        const data: any = response._data.data;
 
         switch (resCode) {
           case "2010":
@@ -69,6 +71,7 @@ const updateUserData = async (): Promise<void> => {
           case "2031":
             alertsStore.addAlert({ type: "success", title: "Změna profilu", message: "Profilový obrázek byl aktualizován." });
             accountStore.updateProfilePicture(data.user.profilePicture);
+            accountStore.updateAccountDataSessionStorage();
             newUserData.value.profilePicture = undefined;
             break;
           default:
