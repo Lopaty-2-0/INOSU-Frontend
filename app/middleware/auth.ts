@@ -3,12 +3,13 @@ import type {AccountData, AccountTheme, LocalAccountData} from "~/types/account"
 import apiUseFetch from "../componsables/apiUseFetch";
 import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
 import apiFetch from "~/componsables/apiFetch";
+import {useFetch} from "nuxt/app";
 
 export default defineNuxtRouteMiddleware(async () => {
     if (process.server) return;
 
     try {
-        const { data } = await apiUseFetch("/auth/verify", {
+        const { data }: { data: any } = await useFetch("/api/auth/verify", {
             method: "get",
             headers: {
                 "Content-Type": "application/json"
@@ -19,8 +20,10 @@ export default defineNuxtRouteMiddleware(async () => {
         const resCode: string = data.value.resCode.toString();
         const isLogged: boolean = data.value.data.logged;
 
+        console.log(data.value)
+
         if (resCode !== "17011" || !isLogged) {
-            location.pathname = "/login";
+            //location.pathname = "/login";
             return;
         }
 
@@ -75,7 +78,7 @@ export default defineNuxtRouteMiddleware(async () => {
         accountStore.setLoading(false);
 
         if (!accountData || !data.value.data.id || !data.value.data.role) {
-            return location.pathname = "/login";
+            //return location.pathname = "/login";
         }
 
         accountStore.setLocalAccountData(accountData || {} as LocalAccountData);
@@ -85,6 +88,6 @@ export default defineNuxtRouteMiddleware(async () => {
 
         return true;
     } catch {
-        return location.pathname = "/login";
+        //return location.pathname = "/login";
     }
 });

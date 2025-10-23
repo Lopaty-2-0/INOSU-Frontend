@@ -11,6 +11,7 @@ import type {TaskData} from "~/types/tasks";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
 import {computed, onMounted} from "vue";
+import {useFetch} from "nuxt/app";
 
 useHead({
   title: "Panel | Domů",
@@ -78,77 +79,49 @@ const openTask = async (id: number): Promise<void> => {
   await navigateTo(`/panel/tasks/${role.value}/${id}`);
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/user/get/count/by-role?role=student", {
+useFetch("/api/user/get/count/by-role?role=student", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    numbers.value.students = response._data.data.count;
+  },
+});
+
+useFetch("/api/user/get/count/by-role?role=teacher", {
+  method: "get",
+  credentials: "include",
+  server: false,
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    numbers.value.teachers = response._data.data.count;
+  },
+});
+
+useFetch("/api/class/count", {
+  method: "get",
+  credentials: "include",
+  ignoreResponseError: true,
+  server: false,
+  onResponse({ response }: any) {
+    numbers.value.classes = response._data.data.count;
+  },
+});
+
+if (["admin", "teacher"].includes(role.value)) {
+  useFetch(`/api/task/get/guarantor?idUser=${userId.value}`, {
     method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    server: false,
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }: any) {
-      numbers.value.students = response._data.data.count;
-    },
-  });
-
-  await apiFetch("/user/get/count/by-role?role=teacher", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      numbers.value.teachers = response._data.data.count;
-    },
-  });
-
-  await apiFetch("/class/count", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      numbers.value.classes = response._data.data.count;
-    },
-  });
-
-  if (["admin", "teacher"].includes(role.value)) {
-    await apiFetch(`/task/get/guarantor?idUser=${userId.value}`, {
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      ignoreResponseError: true,
-      onResponse({ response }: any) {
-        const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
-
-        allTasks.value = tasks || [];
-      },
-    });
-    return;
-  }
-
-  await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["approved"]))}&which=1`, {
-    method: "get",
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const tasks: TaskData[] = (response._data.data.elaboratingTasks || [])
-          .filter((task: any) => !task.review)
-          .slice(0, 5)
-          .map((task: any) => ({
-            ...task,
-            id: task.idTask
-          })) || [];
+      const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
 
       allTasks.value = tasks || [];
     },
   });
-})
+}
 </script>
 
 <template>

@@ -45,7 +45,7 @@ const submitForm = async (): Promise<void> => {
 
   loading.value = true;
 
-  await apiFetch("/user/password/new", {
+  await $fetch("/api/user/password/new", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

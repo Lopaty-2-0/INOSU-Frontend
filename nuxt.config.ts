@@ -3,6 +3,7 @@ import { defineNuxtConfig } from "nuxt/config";
 import * as process from "node:process";
 
 export default defineNuxtConfig({
+    $development: undefined, $env: undefined, $meta: undefined, $production: undefined, $test: undefined,
     compatibilityDate: "2024-11-01",
     devtools: { enabled: true },
     pages: true,
@@ -106,6 +107,11 @@ export default defineNuxtConfig({
   },
 
     routeRules: {
+        "/api/**": {
+            proxy: {
+                to: process.env.SERVER_URL + "/**",
+            },
+        },
         "/**": {
             cors: true,
         },
@@ -123,5 +129,5 @@ export default defineNuxtConfig({
             apiUrl: process.env.SERVER_URL,
             production: process.env.NODE_ENV === "production",
         },
-    },
+    }
 });
