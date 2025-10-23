@@ -3,7 +3,6 @@ import { defineNuxtConfig } from "nuxt/config";
 import * as process from "node:process";
 
 export default defineNuxtConfig({
-    $development: undefined, $env: undefined, $meta: undefined, $production: undefined, $test: undefined,
     compatibilityDate: "2024-11-01",
     devtools: { enabled: true },
     pages: true,
@@ -68,7 +67,7 @@ export default defineNuxtConfig({
         "@nuxt/eslint",
         "@nuxtjs/i18n",
         "@nuxt/icon",
-        // "nuxt-security"
+        "nuxt-security",
         "@nuxtjs/tailwindcss",
         "@yuta-inoue-ph/nuxt-vcalendar",
     ],
@@ -92,7 +91,7 @@ export default defineNuxtConfig({
     enabled: process.env.NODE_ENV === "production",
     hidePoweredBy: true,
     corsHandler: {
-      origin: process.env.API_ORIGIN,
+      origin: process.env.SERVER_URL,
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: false,
     },
@@ -101,7 +100,7 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
       referrerPolicy: "origin",
       contentSecurityPolicy: {
-        "img-src": ["self", "https:", "data:", "blob:", "http://89.203.248.163"],
+        "img-src": ["self", "https:", "data:", "blob:", process.env.SERVER_URL],
       }
     }
   },
@@ -109,7 +108,7 @@ export default defineNuxtConfig({
     routeRules: {
         "/api/**": {
             proxy: {
-                to: process.env.SERVER_URL + "/**",
+                to: process.env.API_URL + "/**",
             },
         },
         "/**": {
@@ -125,8 +124,8 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            serverUrl: process.env.SERVER_URL,
-            apiUrl: process.env.SERVER_URL,
+            serverUrl: process.env.SERVER_URL || null,
+            apiUrl: process.env.API_URL || null,
             production: process.env.NODE_ENV === "production",
         },
     }
