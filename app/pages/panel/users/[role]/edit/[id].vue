@@ -41,8 +41,8 @@ const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
 const editRole = ref<InstanceType<typeof EditRole> | null>(null);
 const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
 const editClass = ref<InstanceType<typeof EditClass> | null>(null);
-const allRoles = ref<string[] | undefined>(undefined);
 const allClasses = ref<ClassData[] | undefined>(undefined);
+const allRoles: string[] = ["admin", "teacher", "student"];
 
 const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>( {
   loaded: false,
@@ -195,20 +195,6 @@ const updateUser = async (): Promise<void> => {
 };
 
 onMounted(async (): Promise<void> => {
-  await apiFetch("/user/get/roles", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const roles: string[] = response._data.data.roles;
-
-      allRoles.value = roles || [];
-    },
-  });
-
   await apiFetch("/class/get", {
     method: "get",
     headers: {
@@ -254,7 +240,7 @@ onMounted(async (): Promise<void> => {
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allRoles || !allClasses || !oldUserData.loaded">
+  <NuxtLayout name="panel" :loading="!allRoles || !oldUserData.loaded">
     <template #header>
       <Navbar :links="[
           { name: 'Uživatelé', path: '/panel/users' },

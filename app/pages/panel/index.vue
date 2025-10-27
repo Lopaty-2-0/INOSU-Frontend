@@ -2,7 +2,6 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import {ref} from "vue";
-import apiFetch from "~/componsables/apiFetch";
 import moment from "moment";
 import Navigation from "~/components/ui/Navigation.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
@@ -12,6 +11,7 @@ import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
 import {computed, onMounted} from "vue";
 import {useFetch} from "nuxt/app";
+import Editor from "~/components/ui/Editor.vue";
 
 useHead({
   title: "Panel | Domů",
@@ -55,6 +55,13 @@ const navigationLinks = computed<{
     { name: "Vyhodnocené úkoly", path: `/panel/tasks/${role.value}/evaluated` },
   ];
 });
+const editorContent = ref("");
+const editorFocus = ref(false);
+const editorEnable = ref(true);
+
+const updateContent = (newContent: { html: string }) => {
+  console.log(newContent);
+};
 const infoCards = computed<{ title: string; icon: string; value: string | number; }[]>(() =>[
   {
     title: "Počet studentů",
@@ -159,6 +166,13 @@ if (["admin", "teacher"].includes(role.value)) {
         </div>
 
         <div class="line">
+          <Editor
+            @update:content="updateContent"
+            :content="editorContent"
+            :focus="editorFocus"
+            :enable="editorEnable"
+            placeholder="Vyberte textový element na stránce"
+          />
           <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />
 
           <div class="line">

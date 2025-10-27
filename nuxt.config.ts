@@ -106,11 +106,6 @@ export default defineNuxtConfig({
   },
 
     routeRules: {
-        "/api/**": {
-            proxy: {
-                to: process.env.API_URL + "/**",
-            },
-        },
         "/**": {
             cors: true,
         },

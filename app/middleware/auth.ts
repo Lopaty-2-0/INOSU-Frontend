@@ -21,8 +21,8 @@ export default defineNuxtRouteMiddleware(async () => {
         const isLogged: boolean = data.value.data.logged;
 
         if (resCode !== "17011" || !isLogged) {
-            location.pathname = "/login";
-            return;
+            //location.pathname = "/login";
+            //return;
         }
 
         const { encodeData, decodeData } = useSimpleDataCipher();
@@ -76,7 +76,7 @@ export default defineNuxtRouteMiddleware(async () => {
         accountStore.setLoading(false);
 
         if (!accountData || !data.value.data.id || !data.value.data.role) {
-            return location.pathname = "/login";
+            //return location.pathname = "/login";
         }
 
         accountStore.setLocalAccountData(accountData || {} as LocalAccountData);
@@ -86,6 +86,6 @@ export default defineNuxtRouteMiddleware(async () => {
 
         return true;
     } catch {
-        return location.pathname = "/login";
+        //return location.pathname = "/login";
     }
 });

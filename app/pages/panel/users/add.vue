@@ -25,7 +25,6 @@ useHead({
 
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
-const allRoles = ref<string[] | undefined>(undefined);
 const allClasses = ref<ClassData[] | undefined>(undefined);
 const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
 const editEmail = ref<InstanceType<typeof EditEmail> | null>(null);
@@ -33,6 +32,7 @@ const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
 const editRole = ref<InstanceType<typeof EditRole> | null>(null);
 const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
 const editClass = ref<InstanceType<typeof EditClass> | null>(null);
+const allRoles: string[] = ["admin", "teacher", "student"];
 
 const oldUserData = computed<{ name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>(() => ({
   name: "",
@@ -185,20 +185,6 @@ const createNewUser = async (): Promise<void> => {
 };
 
 onMounted(async (): Promise<void> => {
-  await apiFetch("/user/get/roles", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const roles: string[] = response._data.data.roles;
-
-      allRoles.value = roles || [];
-    },
-  });
-
   await apiFetch("/class/get", {
     method: "get",
     headers: {
@@ -216,7 +202,7 @@ onMounted(async (): Promise<void> => {
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allRoles || !allClasses">
+  <NuxtLayout name="panel" :loading="!allRoles">
     <template #header>
       <Navbar :links="[
         { name: 'Uživatelé', path: '/panel/users' },
