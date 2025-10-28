@@ -9,6 +9,7 @@ import UsersGrid from "../../../../components/users/Grid.vue";
 import Pagination from "../../../../components/ui/Pagination.vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -73,12 +74,14 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!users">
     <template #header>
-      <Navbar
-        :links="[
-          { name: 'Uživatelé', path: '/panel/users' },
-          { name: role, path: '/panel/users/' + role },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: role, to: '/panel/users/' + role, active: true },
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="users">

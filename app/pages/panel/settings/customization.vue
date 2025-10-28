@@ -10,6 +10,7 @@ import type {AccountLink, AccountTheme} from "~/types/account";
 import type {LocaleObject} from "~/types/i18n";
 import LocalePicker from "~/components/ui/LocalePicker.vue";
 import { useI18n } from "#imports";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Nastavení - Přizpůsobení",
@@ -87,10 +88,14 @@ const updateUserData = () => {
 <template>
   <NuxtLayout name="panel">
     <template #header>
-      <Navbar :links="[
-        { name: 'Nastavení', path: '/panel/settings' },
-        { name: 'Přizpůsobení', path: '/panel/settings/customization' },
-      ]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Nastavení', to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
+            { label: 'Přizpůsobení', to: '/panel/settings/customization', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>

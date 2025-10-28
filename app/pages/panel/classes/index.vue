@@ -7,6 +7,7 @@ import apiFetch from "~/componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import {ref} from "vue";
 import checkPermissions from "~/componsables/checkPermissions";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Třídy",
@@ -44,11 +45,13 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!allClasses">
     <template #header>
-      <Navbar
-        :links="[
-          { name: 'Třídy', path: '/panel/classes' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Třídy', to: '/panel/classes', active: true, icon: 'material-symbols:flight-class-rounded' },
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allClasses">

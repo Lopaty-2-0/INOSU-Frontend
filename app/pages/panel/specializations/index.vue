@@ -8,6 +8,7 @@ import {ref} from "vue";
 import type {SpecializationData} from "~/types/specialization";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Zaměření",
@@ -43,11 +44,13 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!allSpecializations">
     <template #header>
-      <Navbar
-          :links="[
-          { name: 'Zaměření', path: '/panel/specializations' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Zaměření', to: '/panel/specializations', active: true, icon: 'material-symbols:school' },
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allSpecializations">

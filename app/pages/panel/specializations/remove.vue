@@ -9,6 +9,7 @@ import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Zaměření - Odstranění",
@@ -115,12 +116,14 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!allSpecializations">
     <template #header>
-      <Navbar
-          :links="[
-          { name: 'Zaměření', path: '/panel/specializations' },
-          { name: 'Odstranění', path: '/panel/specializations/remove' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Zaměření', to: '/panel/specializations', icon: 'material-symbols:school' },
+            { label: 'Odstranění', to: '/panel/specializations/remove', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allSpecializations">

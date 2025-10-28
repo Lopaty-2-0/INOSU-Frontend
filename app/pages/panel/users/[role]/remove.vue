@@ -10,6 +10,7 @@ import Pagination from "../../../../components/ui/Pagination.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Loading from "~/components/ui/Loading.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -62,7 +63,7 @@ const searchUsers = (): void => {
 };
 
 const resetSelectedUsers = (): void => {
-  if (usersGrid.value) usersGrid.value.resetSelectedUsers();
+  if (usersGrid.value) usersGrid.value.reset();
 };
 
 const removeUsers = async (): Promise<void> => {
@@ -143,13 +144,15 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!users">
     <template #header>
-      <Navbar
-        :links="[
-          { name: 'Uživatelé', path: '/panel/users' },
-          { name: role, path: '/panel/users/' + role },
-          { name: 'Odstranění', path: '/panel/users/' + role + '/remove' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: role, to: '/panel/users/' + role },
+            { label: 'Odstranění', to: '/panel/users/' + role + '/remove', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="users">

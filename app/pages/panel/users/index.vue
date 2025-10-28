@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Navbar from "../../../components/layout/Navbar.vue";
 import apiFetch from "~/componsables/apiFetch";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Uživatelé - role",
@@ -44,7 +45,13 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="numberOfUsers < 0 || !allRoles">
     <template #header>
-      <Navbar :links="[{ name: 'Uživatelé', path: '/panel/users' }]"/>
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', active: true, icon: 'material-symbols:supervisor-account-rounded' }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allRoles">

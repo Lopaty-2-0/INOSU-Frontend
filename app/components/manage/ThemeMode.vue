@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import type { AccountTheme } from "~/types/account";
+import Card from "~/components/ui/Card.vue";
 
 const props = defineProps({
   oldTheme: {
@@ -29,38 +30,37 @@ defineExpose({ reset });
   <div class="section">
     <slot />
 
-    <ul class="items">
-      <li
-        :class="{ active: activeTheme === 'light' }"
-        @click="setTheme('light')"
-      >
-        <div class="info">
-          <h4>Světlý</h4>
-          <p>Váš panel bude mít světlý motiv</p>
+    <div class="items">
+      <Card class="card" :class="{ active: activeTheme === 'light' }" @click="setTheme('light')">
+        <div class="body">
+          <div class="info">
+            <h4>Světlý</h4>
+            <p>Váš panel bude mít světlý motiv</p>
+          </div>
+          <img src="../../assets/images/theme-light.svg" alt="Světlý režim" />
         </div>
-        <img src="../../assets/images/theme-light.svg" alt="Světlý režim" />
-      </li>
-      <li :class="{ active: activeTheme === 'dark' }" @click="setTheme('dark')">
-        <div class="info">
-          <h4>Tmavý</h4>
-          <p>Váš panel bude mít tmavý motiv</p>
+      </Card>
+
+      <Card class="card" :class="{ active: activeTheme === 'dark' }" @click="setTheme('dark')">
+        <div class="body">
+          <div class="info">
+            <h4>Tmavý</h4>
+            <p>Váš panel bude mít tmavý motiv</p>
+          </div>
+          <img src="../../assets/images/theme-dark.svg" alt="Tmavý režim" />
         </div>
-        <img src="../../assets/images/theme-dark.svg" alt="Tmavý režim" />
-      </li>
-      <li
-        :class="{ active: activeTheme === 'system' }"
-        @click="setTheme('system')"
-      >
-        <div class="info">
-          <h4>Systém</h4>
-          <p>Motiv bude podle systému vašeho zařízení</p>
+      </Card>
+
+      <Card class="card" :class="{ active: activeTheme === 'system' }" @click="setTheme('system')">
+        <div class="body">
+          <div class="info">
+            <h4>Systém</h4>
+            <p>Motiv bude podle systému vašeho zařízení</p>
+          </div>
+          <img src="../../assets/images/theme-system.svg" alt="Systémový režim"/>
         </div>
-        <img
-          src="../../assets/images/theme-system.svg"
-          alt="Systémový režim"
-        />
-      </li>
-    </ul>
+      </Card>
+    </div>
   </div>
 </template>
 
@@ -79,18 +79,20 @@ defineExpose({ reset });
     gap: 30px;
     width: 100%;
 
-    li {
+    .card {
       display: flex;
-      flex-direction: column;
       flex: 1;
-      gap: 20px;
-      padding: 30px;
-      border-radius: var(--normal-border-radius);
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
-      background: var(--card-1-background);
-      flex-wrap: wrap;
       transition: 0.2s;
       cursor: pointer;
+
+      .body {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        height: 100%;
+      }
 
       &:hover {
         background: var(--card-1-hover-background);

@@ -8,6 +8,7 @@ import type {ClassData} from "~/types/classes";
 import {ref} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Třídy - Odstranění",
@@ -116,12 +117,14 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!allClasses">
     <template #header>
-      <Navbar
-        :links="[
-          { name: 'Třídy', path: '/panel/classes' },
-          { name: 'Odstranění', path: '/panel/classes/remove' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Třídy', to: '/panel/classes', icon: 'material-symbols:flight-class-rounded' },
+            { label: 'Odstranění', to: '/panel/classes/remove', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allClasses">

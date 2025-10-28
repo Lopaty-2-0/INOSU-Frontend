@@ -9,6 +9,7 @@ import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
 import Input from "~/components/ui/Input.vue";
 import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Třídy - Přidání",
@@ -212,12 +213,14 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!allSpecializations">
     <template #header>
-      <Navbar
-          :links="[
-          { name: 'Třídy', path: '/panel/classes' },
-          { name: 'Vytvoření', path: '/panel/classes/add' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Třídy', to: '/panel/classes', icon: 'material-symbols:flight-class-rounded' },
+            { label: 'Vytvoření', to: '/panel/users/add', active: true },
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allSpecializations">

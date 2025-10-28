@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Card from "~/components/ui/Card.vue";
+
 const props = defineProps({
   activeLinkId: {
     type: Number,
@@ -14,11 +16,7 @@ const props = defineProps({
   },
 });
 
-const clickAction = (link: {
-  name: string;
-  path?: string;
-  action?: Function;
-}) => {
+const clickAction = (link: { name: string; path?: string; action?: Function; }): void => {
   if (typeof link.action === "function") {
     link.action();
   }
@@ -26,29 +24,23 @@ const clickAction = (link: {
 </script>
 
 <template>
-  <div class="navigation">
-    <h3>{{ props.title }}</h3>
-    <ul>
-      <li
-        v-for="(link, index) in props.links"
-        :class="{ active: props.activeLinkId === index }"
-        :key="index"
-        @click="clickAction(link)"
-      >
-        <Icon
-          class="icon"
-          size="16px"
-          name="material-symbols:play-arrow-rounded"
-        ></Icon>
-        <NuxtLink :to="link.path" v-if="link.path">
-          {{ link.name }}
-        </NuxtLink>
-        <p v-else>
-          {{ link.name }}
-        </p>
-      </li>
-    </ul>
-  </div>
+  <Card class="card">
+    <div class="navigation">
+      <h3>{{ props.title }}</h3>
+
+      <ul>
+        <li v-for="(link, index) in props.links" :class="{ active: props.activeLinkId === index }" :key="index" @click="clickAction(link)">
+          <Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon>
+          <NuxtLink :to="link.path" v-if="link.path">
+            {{ link.name }}
+          </NuxtLink>
+          <p v-else>
+            {{ link.name }}
+          </p>
+        </li>
+      </ul>
+    </div>
+  </Card>
 </template>
 
 <style scoped lang="scss">
@@ -56,9 +48,6 @@ const clickAction = (link: {
   display: flex;
   flex-direction: column;
   gap: 30px;
-  border-radius: var(--normal-border-radius);
-  border: var(--border-width) solid rgba(var(--border-color), 0.5);
-  padding: 30px;
 
   h3 {
     font-weight: 600;

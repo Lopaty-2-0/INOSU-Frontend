@@ -2,6 +2,8 @@
 import apiFetch from "~/componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import Navbar from "~/components/layout/Navbar.vue";
+import Card from "~/components/ui/Card.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Uživatelé - student",
@@ -30,7 +32,14 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!allClasses">
     <template #header>
-      <Navbar :links="[{ name: 'Uživatelé', path: '/panel/users' }, { name: 'student', path: '/panel/users/student' }]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: 'student', to: '/panel/users/student', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allClasses">
@@ -56,18 +65,19 @@ onMounted(async (): Promise<void> => {
                 :key="oneClass.id"
                 :to="`/panel/users/student/${oneClass.id}`"
               >
-                <div class="section-head">
-                  <span><span class="name" v-if="oneClass.name">{{ oneClass.name + " - " }}</span>{{ oneClass.specialization }}{{ oneClass.grade }}{{ oneClass.group }}</span>
-                </div>
+                <Card class="card">
+                  <div class="section-head">
+                    <span><span class="name" v-if="oneClass.name">{{ oneClass.name + " - " }}</span>{{ oneClass.specialization }}{{ oneClass.grade }}{{ oneClass.group }}</span>
+                  </div>
+                </Card>
               </NuxtLink>
 
-              <NuxtLink
-                  class="class"
-                  :to="`/panel/users/student/undefined`"
-              >
-                <div class="section-head">
-                  <span>Nezařazené</span>
-                </div>
+              <NuxtLink class="class" :to="`/panel/users/student/undefined`">
+                <Card class="card">
+                  <div class="section-head">
+                    <span>Nezařazené</span>
+                  </div>
+                </Card>
               </NuxtLink>
             </div>
           </div>
@@ -143,19 +153,19 @@ onMounted(async (): Promise<void> => {
         gap: 30px;
 
         .class {
-          border-radius: var(--normal-border-radius);
           display: flex;
           flex: 1;
-          gap: 30px;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          border: var(--border-width) solid rgba(var(--border-color), 0.5);
-          padding: 60px 30px;
-          transition: 0.2s;
           cursor: pointer;
           min-width: 200px;
-          background: var(--card-1-background);
+
+          .card {
+            width: 100%;
+            padding: 30px 0;
+            display: flex;
+            align-items: center;
+            transition: 0.2s;
+            justify-content: center;
+          }
 
           span {
             font-weight: 600;
@@ -170,7 +180,9 @@ onMounted(async (): Promise<void> => {
 
           &:hover,
           &.active {
-            background: var(--card-1-hover-background);
+            .card {
+              background: var(--card-1-hover-background);
+            }
           }
         }
       }

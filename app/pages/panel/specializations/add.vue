@@ -8,6 +8,7 @@ import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
 import Input from "~/components/ui/Input.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Zaměření - Přidání",
@@ -158,12 +159,14 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel">
     <template #header>
-      <Navbar
-          :links="[
-          { name: 'Zaměření', path: '/panel/specializations' },
-          { name: 'Vytvoření', path: '/panel/specializations/add' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Zaměření', to: '/panel/specializations', icon: 'material-symbols:school' },
+            { label: 'Vytvoření', to: '/panel/specializations/add', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>

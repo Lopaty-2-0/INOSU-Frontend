@@ -14,6 +14,7 @@ import {useAlertsStore} from "~/stores/alerts";
 import {useRoute, useRouter} from "#app";
 import type {AccountData} from "~/types/account";
 import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -242,12 +243,16 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!allRoles || !oldUserData.loaded">
     <template #header>
-      <Navbar :links="[
-          { name: 'Uživatelé', path: '/panel/users' },
-          { name: role, path: '/panel/users/' + role },
-          { name: 'Upravení', path: '/panel/users/' + role + '/edit' },
-          { name: id, path: '/panel/users/' + role + '/edit' + '/' + id },
-      ]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: role, to: '/panel/users/' + role },
+            { label: 'Upravení', to: '/panel/users/' + role + '/edit' },
+            { label: id, to: '/panel/users/' + role + '/edit' + '/' + id, active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>

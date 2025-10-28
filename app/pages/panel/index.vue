@@ -12,6 +12,8 @@ import {storeToRefs} from "pinia";
 import {computed, onMounted} from "vue";
 import {useFetch} from "nuxt/app";
 import Editor from "~/components/ui/Editor.vue";
+import Card from "~/components/ui/Card.vue";
+import Breadcrumb, {type BreadcrumbItem} from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Domů",
@@ -134,11 +136,13 @@ if (["admin", "teacher"].includes(role.value)) {
 <template>
   <NuxtLayout name="panel" :loading="numbers.students === null || !numbers.classes === null || numbers.teachers === null || !allTasks">
     <template #header>
-      <Navbar
-          :links="[
-          { name: 'Domů', path: '/panel'},
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Domů', to: '/panel', active: true, icon: 'material-symbols:home-rounded' }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allTasks">
@@ -150,18 +154,19 @@ if (["admin", "teacher"].includes(role.value)) {
               <p>Informativní karty slouží k rychlému nalezení zajímavých údajů z panelu.</p>
             </div>
           </div>
-
           <ul class="cards">
-            <li class="card" v-for="(data, index) in infoCards" :key="index">
-              <div class="content">
-                <div class="data">
-                  <h6>{{ data.title }}</h6>
-                  <p>{{ data.value }}</p>
-                </div>
+            <Card class="card" v-for="(data, index) in infoCards" :key="index">
+              <div class="body">
+                <div class="content">
+                  <div class="data">
+                    <h6>{{ data.title }}</h6>
+                    <p>{{ data.value }}</p>
+                  </div>
 
-                <Icon class="icon" :name="data.icon"></Icon>
+                  <Icon class="icon" :name="data.icon"></Icon>
+                </div>
               </div>
-            </li>
+            </Card>
           </ul>
         </div>
 
@@ -320,62 +325,62 @@ if (["admin", "teacher"].includes(role.value)) {
       justify-content: flex-start;
 
       .card {
-        border-radius: var(--normal-border-radius);
         display: flex;
         flex: 1;
-        gap: 30px;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: space-between;
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        padding: 30px;
         transition: 0.2s;
         cursor: pointer;
         min-width: 200px;
-        background: var(--card-1-background);
 
-        .icon {
-          font-size: 40px;
+        .body {
+          width: 100%;
+          gap: 30px;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: space-between;
+
+          .icon {
+            font-size: 40px;
+          }
+
+          .content {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            flex-wrap: wrap;
+
+            .data {
+              display: flex;
+              flex-direction: column;
+              gap: 20px;
+              order: 0;
+
+              h6 {
+                color: rgba(var(--description-color), 1);
+                font-size: 16px;
+                font-weight: 600;
+              }
+
+              p {
+                color: var(--mini-title-color);
+                font-weight: 800;
+                font-size: 28px;
+              }
+            }
+
+            span {
+              font-size: 40px;
+              color: rgba(var(--description-color), 1);
+              order: 1;
+            }
+          }
         }
 
         &:hover,
         &.active {
           background: var(--card-1-hover-background);
-        }
-
-        .content {
-          display: flex;
-          flex-direction: row;
-          gap: 20px;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          flex-wrap: wrap;
-
-          .data {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            order: 0;
-
-            h6 {
-              color: rgba(var(--description-color), 1);
-              font-size: 16px;
-              font-weight: 600;
-            }
-
-            p {
-              color: var(--mini-title-color);
-              font-weight: 800;
-              font-size: 28px;
-            }
-          }
-
-          span {
-            font-size: 40px;
-            color: rgba(var(--description-color), 1);
-            order: 1;
-          }
         }
       }
     }

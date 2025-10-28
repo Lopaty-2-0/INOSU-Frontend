@@ -11,6 +11,7 @@ import EditClass from "../../../components/manage/Class.vue";
 import apiFetch from "../../../componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -204,10 +205,14 @@ onMounted(async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel" :loading="!allRoles">
     <template #header>
-      <Navbar :links="[
-        { name: 'Uživatelé', path: '/panel/users' },
-        { name: 'Přidání', path: '/panel/users/add' },
-      ]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: 'Přidání', to: '/panel/users/add', active: true },
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>

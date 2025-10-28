@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Navbar from "~/components/layout/Navbar.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Přístup odepřen",
@@ -12,10 +13,14 @@ useHead({
 <template>
   <NuxtLayout name="panel">
     <template #header>
-      <Navbar :links="[
-        { name: 'Domů', path: '/panel' },
-        { name: 'Přístup odepřen', path: '/panel/errors/403' }
-      ]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Domů', to: '/panel', icon: 'material-symbols:flight-class-rounded' },
+            { label: 'Přístup odepřen', to: '/panel/errors/403', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>
