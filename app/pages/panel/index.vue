@@ -37,6 +37,12 @@ const numbers = ref<{ students: number | null; classes: number | null; teachers:
   classes: null,
   teachers: null,
 });
+const editorContent = ref<string>("");
+const editorFocus = ref<boolean>(false);
+const editorEnable = ref<boolean>(true);
+const isPageLoading = computed<boolean>(() => {
+  return numbers.students === null || numbers.classes === null || numbers.teachers === null || !allTasks;
+});
 const navigationLinks = computed<{
   name: string;
   path?: string | undefined;
@@ -57,13 +63,6 @@ const navigationLinks = computed<{
     { name: "Vyhodnocené úkoly", path: `/panel/tasks/${role.value}/evaluated` },
   ];
 });
-const editorContent = ref("");
-const editorFocus = ref(false);
-const editorEnable = ref(true);
-
-const updateContent = (newContent: { html: string }) => {
-  console.log(newContent);
-};
 const infoCards = computed<{ title: string; icon: string; value: string | number; }[]>(() =>[
   {
     title: "Počet studentů",
@@ -81,6 +80,10 @@ const infoCards = computed<{ title: string; icon: string; value: string | number
     value: numbers.value.teachers || 0,
   },
 ]);
+
+const updateContent = (newContent: { html: string }) => {
+  console.log(newContent);
+};
 
 const openTask = async (id: number): Promise<void> => {
   if (!id) return;
@@ -134,7 +137,7 @@ if (["admin", "teacher"].includes(role.value)) {
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="numbers.students === null || !numbers.classes === null || numbers.teachers === null || !allTasks">
+  <NuxtLayout name="panel" :loading="isPageLoading">
     <template #header>
       <Navbar>
         <template #left>
@@ -145,7 +148,7 @@ if (["admin", "teacher"].includes(role.value)) {
       </Navbar>
     </template>
 
-    <template #content v-if="allTasks">
+    <template #content>
       <div id="home">
         <div class="info">
           <div class="line">

@@ -8,7 +8,6 @@ import {storeToRefs} from "pinia";
 import {useAccountStore} from "~/stores/account";
 import apiFetch from "../../../componsables/apiFetch";
 import {useAlertsStore} from "~/stores/alerts";
-import type {LocalAccountData} from "~/types/account";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({

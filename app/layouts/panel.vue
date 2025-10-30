@@ -2,7 +2,7 @@
 import Sidebar from "~/components/layout/Sidebar.vue";
 import Loading from "~/components/ui/Loading.vue";
 import Alerts from "~/components/layout/Alerts.vue";
-import { ref, onMounted } from "vue";
+import {ref, onMounted, watch} from "vue";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
 
