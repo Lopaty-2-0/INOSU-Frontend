@@ -6,7 +6,6 @@ import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
 import type {RuntimeConfig} from "nuxt/schema";
 
-const config: RuntimeConfig = useRuntimeConfig();
 const slots = useSlots();
 const { getAccountData: accountData } = storeToRefs(useAccountStore());
 
@@ -21,7 +20,7 @@ const clickHamburger = (): void => {
 const profileData = computed<{ name: string; surname: string; profilePhoto: string; }>(() => ({
   name: accountData.value.name,
   surname: accountData.value.surname,
-  profilePhoto: config.public.apiUrl + "/file/pfp/" + accountData.value.profilePicture,
+  profilePhoto: "/api/file/pfp/" + accountData.value.profilePicture,
 }));
 
 onMounted((): void => {

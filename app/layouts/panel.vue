@@ -2,27 +2,20 @@
 import Sidebar from "~/components/layout/Sidebar.vue";
 import Loading from "~/components/ui/Loading.vue";
 import Alerts from "~/components/layout/Alerts.vue";
-import {ref, onMounted, watch} from "vue";
+import {ref, onMounted} from "vue";
 import { storeToRefs } from "pinia";
-import { useAccountStore } from "~/stores/account";
+import {useLoadingStore} from "~/stores/loading";
 
-const props = defineProps({
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const { getLoading: accountLoading } = storeToRefs(useAccountStore());
-const loading = ref<boolean>(true);
+const { isAccountDataLoading: isAccountDataLoading, isDataLoading: isDataLoading } = storeToRefs(useLoadingStore());
+const isPageLoading = ref<boolean>(true);
 
 onMounted((): void => {
-  loading.value = false;
+  isPageLoading.value = false;
 });
 </script>
 
 <template>
-  <div class="loading" v-if="loading || accountLoading || props.loading">
+  <div class="loading" v-if="isPageLoading || isDataLoading || isAccountDataLoading">
     <Loading color="rgba(var(--description-color), 1)" />
   </div>
   <div v-else>

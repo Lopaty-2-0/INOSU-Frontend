@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import { ref, computed } from "vue";
+import {ref, computed, watchEffect} from "vue";
 import EditFullName from "../../../components/manage/FullName.vue";
 import EditEmail from "../../../components/manage/Email.vue";
 import EditPassword from "../../../components/manage/Password.vue";
@@ -12,6 +12,7 @@ import apiFetch from "../../../componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useLoadingStore} from "~/stores/loading";
 
 definePageMeta({
   roles: ["admin"],
@@ -106,7 +107,7 @@ const createNewUser = async (): Promise<void> => {
 
   submitLoading.value = true;
 
-  await apiFetch("/user/add", {
+  $fetch("/api/user/add", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -203,7 +204,7 @@ onMounted(async (): Promise<void> => {
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allRoles">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>
@@ -246,7 +247,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditRole ref="editRole" :roles="allRoles || []" :old-role="oldUserData.role" @update="onRoleUpdate">
+            <EditRole ref="editRole" :roles="allRoles" :old-role="oldUserData.role" @update="onRoleUpdate">
               <div class="section-head">
                 <h3>Role * <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
                 <p>Vyberte roli, kterou má mít nový uživatel. Toto pole je povinné.</p>

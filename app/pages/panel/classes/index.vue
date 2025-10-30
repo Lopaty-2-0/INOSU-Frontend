@@ -3,11 +3,12 @@ import Navbar from "~/components/layout/Navbar.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useFetch} from "nuxt/app";
+import {useLoadingStore} from "~/stores/loading";
 
 useHead({
   title: "Panel | Třídy",
@@ -25,25 +26,27 @@ const cols = ref<{ field: string; title: string; type?: string; width?: string; 
 const allClasses = ref<ClassData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/class/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const classes: ClassData[] = response._data.data.classes;
+useFetch("/api/class/get", {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const classes: ClassData[] = response._data.data.classes;
 
-      allClasses.value = classes || [];
-    },
-  });
+    allClasses.value = classes || [];
+  },
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !allClasses.value);
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allClasses">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>
@@ -54,7 +57,7 @@ onMounted(async (): Promise<void> => {
       </Navbar>
     </template>
 
-    <template #content v-if="allClasses">
+    <template #content>
       <div id="classes">
         <div class="content">
           <ActionBar

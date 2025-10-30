@@ -5,5 +5,9 @@ export default defineEventHandler((event) => {
     const path: string = event.path.replace(/^\/api/, "");
     const target: string = joinURL(apiUrl, path);
 
-    return proxyRequest(event, target);
+    return proxyRequest(event, target, {
+        fetchOptions: {
+            redirect: "manual"
+        }
+    });
 });

@@ -192,9 +192,8 @@ onMounted(async (): Promise<void> => {
                   link: true
                 }"
               >
-                <Icon size="16px" class="icon" :name="link.iconClass"></Icon
-                >{{ link.text }}</a
-              >
+                <Icon size="16px" class="icon" :name="link.iconClass"></Icon>{{ link.text }}
+              </a>
 
               <a
                 v-else
@@ -217,11 +216,7 @@ onMounted(async (): Promise<void> => {
           <ul class="links">
             <li v-for="(link, linkIndex) in accountLinks" :key="linkIndex">
               <a :href="link.href" class="link" target="_blank">
-                <Icon
-                  size="16px"
-                  class="icon"
-                  name="material-symbols:link-rounded"
-                ></Icon>
+                <Icon size="16px" class="icon" name="material-symbols:link-rounded"></Icon>
                 {{ link.text }}
               </a>
             </li>
@@ -234,11 +229,7 @@ onMounted(async (): Promise<void> => {
       <ul>
         <li class="log-out" @click="logOut">
           <button v-if="!logoutLoading">
-            <Icon
-              size="16px"
-              class="icon"
-              name="material-symbols:logout-rounded"
-            ></Icon>
+            <Icon size="16px" class="icon" name="material-symbols:logout-rounded"></Icon>
             Odhlásit se
           </button>
 

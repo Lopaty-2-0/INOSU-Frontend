@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "#app";
-import { ref } from "vue";
+import {ref, watchEffect} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
@@ -9,6 +9,7 @@ import apiFetch from "~/componsables/apiFetch";
 import type { AccountData } from "~/types/account";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useLoadingStore} from "~/stores/loading";
 
 definePageMeta({
   roles: ["admin"],
@@ -72,10 +73,14 @@ onMounted(async (): Promise<void> => {
     },
   });
 });
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !users.value);
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!users">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>
@@ -89,7 +94,7 @@ onMounted(async (): Promise<void> => {
       </Navbar>
     </template>
 
-    <template #content v-if="users">
+    <template #content>
       <div id="users">
         <div class="content">
           <ActionBar

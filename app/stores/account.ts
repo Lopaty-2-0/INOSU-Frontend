@@ -1,4 +1,4 @@
-import { defineStore, acceptHMRUpdate } from "pinia";
+import { defineStore } from "pinia";
 import type {AccountData, AccountTheme, AccountLink, LocalAccountData} from "~/types/account";
 import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
 
@@ -16,7 +16,6 @@ export const useAccountStore = defineStore("account", {
         updatedAt: new Date() as Date,
         links: [] as AccountLink[],
         theme: "" as AccountTheme,
-        loading: true
     }),
     getters: {
         getAccountData(): AccountData {
@@ -50,9 +49,6 @@ export const useAccountStore = defineStore("account", {
         },
         getLinks(): AccountLink[] {
             return this.links;
-        },
-        getLoading(): boolean {
-            return this.loading;
         },
         getRole(): string {
             return this.role;
@@ -101,12 +97,5 @@ export const useAccountStore = defineStore("account", {
 
             localStorage.setItem("links", JSON.stringify(links));
         },
-        setLoading(value: boolean): void {
-            this.loading = value;
-        }
     }
 });
-
-if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useAccountStore, import.meta.hot));
-}

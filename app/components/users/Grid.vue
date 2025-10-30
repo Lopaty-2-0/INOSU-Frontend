@@ -78,7 +78,7 @@ defineExpose({ reset });
       >
         <div class="user">
           <div class="head">
-            <img :src="'http://89.203.248.163/uploads/profilePictures/' +user.profilePicture" alt="User profile photo" loading="lazy"/>
+            <img :src="'/api/file/pfp/' + user.profilePicture" alt="User profile photo" loading="lazy"/>
             <h3>{{ user.name }} {{ user.surname }}</h3>
           </div>
 

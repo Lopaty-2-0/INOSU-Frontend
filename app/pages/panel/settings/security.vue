@@ -4,7 +4,6 @@ import EditFormFooter from "~/components/manage/Footer.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import { ref } from "vue";
-import apiFetch from "../../../componsables/apiFetch";
 import { useAlertsStore } from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
@@ -73,7 +72,7 @@ const updateUserData = async (): Promise<void> => {
   submitLoading.value = true;
 
   if (userData.value.passwords.old && userData.value.passwords.new) {
-    await apiFetch("/user/update/password", {
+    await $fetch("/api/user/update/password", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"

@@ -2,11 +2,9 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
 import {ref} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
-import type {SpecializationData} from "~/types/specialization";
 import Input from "~/components/ui/Input.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
@@ -31,7 +29,6 @@ const errors = ref<{ name: string; lengthOfStudy: string; abbreviation: string; 
   lengthOfStudy: "",
   abbreviation: "",
 });
-const allSpecializations = ref<SpecializationData[]>([]);
 
 const checkForErrors = (): void => {
   errors.value.name = "";
@@ -78,7 +75,7 @@ const addSpecialization = async (): Promise<void> => {
 
   loading.value = true;
 
-  await apiFetch("/specialization/add", {
+  await $fetch("/api/specialization/add", {
     method: "post",
     headers: {
       "Content-Type": "application/json",
@@ -138,22 +135,6 @@ const addSpecialization = async (): Promise<void> => {
     loading.value = false;
   });
 };
-
-onMounted(async (): Promise<void> => {
-  await apiFetch("/specialization/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const specializations: SpecializationData[] = response._data.data.specializations;
-
-      allSpecializations.value = specializations || [];
-    },
-  });
-});
 </script>
 
 <template>

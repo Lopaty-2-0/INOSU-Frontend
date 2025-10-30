@@ -2,14 +2,15 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
-import {computed, onMounted, ref} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
 import Input from "~/components/ui/Input.vue";
 import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useFetch} from "nuxt/app";
+import {useLoadingStore} from "~/stores/loading";
 
 useHead({
   title: "Panel | Třídy - Přidání",
@@ -130,7 +131,7 @@ const addClass = async (): Promise<void> => {
 
   loading.value = true;
 
-  await apiFetch("/class/add", {
+  await $fetch("/api/class/add", {
     method: "post",
     headers: { "Content-Type": "application/json" },
     body: {
@@ -193,25 +194,28 @@ const addClass = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/specialization/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }) {
-      const specializations: SpecializationData[] = response._data.data.specializations;
+useFetch("/api/specialization/get", {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+  server: false,
+  ignoreResponseError: true,
+  onResponse({ response }) {
+    const specializations: SpecializationData[] = response._data.data.specializations;
 
-      allSpecializations.value = specializations || [];
-    },
-  });
+    allSpecializations.value = specializations || [];
+  },
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !allSpecializations.value);
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allSpecializations">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>
@@ -223,7 +227,7 @@ onMounted(async (): Promise<void> => {
       </Navbar>
     </template>
 
-    <template #content v-if="allSpecializations">
+    <template #content>
       <div id="classes">
         <div class="content">
           <ActionBar

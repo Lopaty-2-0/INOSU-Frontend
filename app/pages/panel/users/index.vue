@@ -1,7 +1,11 @@
 <script lang="ts" setup>
 import Navbar from "../../../components/layout/Navbar.vue";
-import apiFetch from "~/componsables/apiFetch";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import checkPermissions from "~/componsables/checkPermissions";
+import ActionBar from "~/components/ui/ActionBar.vue";
+import {useFetch} from "nuxt/app";
+import {watchEffect} from "vue";
+import {useLoadingStore} from "~/stores/loading";
 
 useHead({
   title: "Panel | Uživatelé - role",
@@ -11,39 +15,44 @@ useHead({
 const numberOfUsers = ref<number>(-1);
 const allRoles = ref<string[] | undefined>(undefined);
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/user/get/number", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({response}: any) {
-      const users: number = response._data.data.users;
 
-      numberOfUsers.value = users || 0;
-    },
-  });
+await useFetch("/api/user/get/number", {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({response}: any) {
+    const users: number = response._data.data.users;
 
-  await apiFetch("/user/get/roles", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({response}: any) {
-      const roles: string[] = response._data.data.roles;
-
-      allRoles.value = roles || [];
-    },
-  });
+    numberOfUsers.value = users || 0;
+  },
 });
+
+await useFetch("/api/user/get/roles", {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  credentials: "include",
+  server: false,
+  ignoreResponseError: true,
+  onResponse({response}: any) {
+    const roles: string[] = response._data.data.roles;
+
+    allRoles.value = roles || [];
+  },
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", numberOfUsers.value < 0 || !allRoles.value)
+})
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="numberOfUsers < 0 || !allRoles">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>
@@ -54,9 +63,22 @@ onMounted(async (): Promise<void> => {
       </Navbar>
     </template>
 
-    <template #content v-if="allRoles">
+    <template #content>
       <div id="users">
         <div class="content">
+          <ActionBar
+              class="action-bar"
+              description="Správa uživatelů"
+              :texts="['Přidat']"
+              :icons="[
+              'material-symbols:add-rounded',
+            ]"
+              :navigate-to="[
+              `/panel/users/add`,
+            ]"
+              v-if="checkPermissions(['admin'])"
+          />
+
           <div class="line">
             <div class="section-head">
               <h3>Celkem uživatelů: {{ numberOfUsers }}</h3>

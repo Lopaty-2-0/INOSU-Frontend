@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import moment from "moment";
 import Navigation from "~/components/ui/Navigation.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
@@ -9,11 +9,12 @@ import "@bhplugin/vue3-datatable/dist/style.css";
 import type {TaskData} from "~/types/tasks";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
-import {computed, onMounted} from "vue";
+import {computed} from "vue";
 import {useFetch} from "nuxt/app";
 import Editor from "~/components/ui/Editor.vue";
 import Card from "~/components/ui/Card.vue";
-import Breadcrumb, {type BreadcrumbItem} from "~/components/ui/Breadcrumb.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import { useLoadingStore } from "~/stores/loading";
 
 useHead({
   title: "Panel | Domů",
@@ -40,9 +41,7 @@ const numbers = ref<{ students: number | null; classes: number | null; teachers:
 const editorContent = ref<string>("");
 const editorFocus = ref<boolean>(false);
 const editorEnable = ref<boolean>(true);
-const isPageLoading = computed<boolean>(() => {
-  return numbers.students === null || numbers.classes === null || numbers.teachers === null || !allTasks;
-});
+
 const navigationLinks = computed<{
   name: string;
   path?: string | undefined;
@@ -134,10 +133,14 @@ if (["admin", "teacher"].includes(role.value)) {
     },
   });
 }
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", numbers.value.students === null || numbers.value.classes === null || numbers.value.teachers === null || !allTasks.value);
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="isPageLoading">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>

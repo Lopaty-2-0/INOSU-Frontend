@@ -2,7 +2,7 @@
 import {useRoute} from "#app";
 import Navbar from "../../../../components/layout/Navbar.vue";
 import type {AccountData} from "~/types/account";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import apiFetch from "../../../../componsables/apiFetch";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import UsersGrid from "../../../../components/users/Grid.vue";
@@ -10,6 +10,7 @@ import Pagination from "../../../../components/ui/Pagination.vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useLoadingStore} from "~/stores/loading";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -69,10 +70,14 @@ onMounted(async (): Promise<void> => {
     },
   });
 });
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !users.value);
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!users">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>
@@ -84,7 +89,7 @@ onMounted(async (): Promise<void> => {
       </Navbar>
     </template>
 
-    <template #content v-if="users">
+    <template #content>
       <div id="users">
         <div class="content">
           <ActionBar

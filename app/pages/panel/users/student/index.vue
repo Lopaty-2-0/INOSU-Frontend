@@ -4,6 +4,10 @@ import type {ClassData} from "~/types/classes";
 import Navbar from "~/components/layout/Navbar.vue";
 import Card from "~/components/ui/Card.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import checkPermissions from "~/componsables/checkPermissions";
+import ActionBar from "~/components/ui/ActionBar.vue";
+import {watchEffect} from "vue";
+import {useLoadingStore} from "~/stores/loading";
 
 useHead({
   title: "Panel | Uživatelé - student",
@@ -27,10 +31,14 @@ onMounted(async (): Promise<void> => {
     },
   });
 });
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !allClasses.value);
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allClasses">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>
@@ -45,6 +53,19 @@ onMounted(async (): Promise<void> => {
     <template #content v-if="allClasses">
       <div id="specializations">
         <div class="content">
+          <ActionBar
+              class="action-bar"
+              description="Správa uživatelů"
+              :texts="['Přidat']"
+              :icons="[
+              'material-symbols:add-rounded',
+            ]"
+              :navigate-to="[
+              `/panel/users/add`,
+            ]"
+              v-if="checkPermissions(['admin'])"
+          />
+
           <div class="line">
             <div class="section-head">
               <h3>Celkem tříd: {{ allClasses.length }}</h3>
