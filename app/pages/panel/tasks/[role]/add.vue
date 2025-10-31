@@ -6,9 +6,7 @@ import EditTaskFile from "~/components/manage/TaskFile.vue";
 import EditDateTime from "~/components/manage/DateTime.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import { ref, computed } from "vue";
-import {useRoute} from "#vue-router";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
 import { useAlertsStore } from "~/stores/alerts";
 import {useAccountStore} from "~/stores/account";
 
@@ -97,11 +95,8 @@ const addTask = async (): Promise<void> => {
   formData.append("guarantor", useAccountStore().getId || "");
   formData.append("approve", newData.value.needApprove ? "true" : "false");
 
-  await apiFetch("/task/add", {
+  await $fetch("/api/task/add", {
     method: "post",
-    headers: {
-      "Accept": "application/json",
-    },
     body: formData,
     credentials: "include",
     ignoreResponseError: true,

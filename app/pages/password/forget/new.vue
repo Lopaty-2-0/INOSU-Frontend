@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import Loading from "~/components/ui/Loading.vue";
 import Input from "~/components/ui/Input.vue";
-import apiFetch from "../../../componsables/apiFetch";
 import {onMounted, ref} from "vue";
 import type {LocaleObject} from "~/types/i18n";
 import { useI18n } from "#imports";
@@ -45,7 +44,7 @@ const submitForm = async (): Promise<void> => {
 
   loading.value = true;
 
-  await apiFetch("/user/password/new", {
+  await $fetch("/api/user/password/new", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

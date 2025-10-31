@@ -4,7 +4,6 @@ import Input from "~/components/ui/Input.vue";
 import { ref, onMounted } from "vue";
 import { useRoute, useI18n } from "#imports";
 import type { LocationQueryValue } from "vue-router";
-import apiFetch from "../../../componsables/apiFetch";
 import type {LocaleObject} from "~/types/i18n";
 import LocalePicker from "~/components/ui/LocalePicker.vue";
 
@@ -12,6 +11,8 @@ useHead({
   title: "Panel | Resetování hesla",
   meta: [{ name: "description", content: "Resetování hesla" }],
 });
+
+const token: LocationQueryValue | LocationQueryValue[] | undefined = useRoute().query.token;
 
 const messages = ref<{
   password: string | null;
@@ -53,20 +54,12 @@ const resetMessages = (): void => {
 const submitForm = async (): Promise<void> => {
   validateForm();
 
-  if (
-    messages.value.password ||
-    messages.value.passwordAgain ||
-    messages.value.form.type === "error"
-  )
-    return;
+  if (messages.value.password || messages.value.passwordAgain || messages.value.form.type === "error") return;
 
   loading.value = true;
 
-  await apiFetch("/user/password/reset", {
+  await $fetch("/api/user/password/reset", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       email: tokenEmail.value,
       newPassword: formData.value.password,
@@ -128,47 +121,36 @@ const submitForm = async (): Promise<void> => {
   loading.value = false;
 };
 
-onMounted(async (): Promise<void> => {
-  const token: LocationQueryValue | LocationQueryValue[] | undefined = useRoute().query.token;
-
-  if (!token) tokenEmail.value = null;
-
-  await apiFetch("/user/password/verify", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: {
-      token: token,
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    async onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
-
-      switch (resCode) {
-        case "13021":
-          tokenEmail.value = response._data.data.email;
-          break;
-        default:
-          tokenEmail.value = null;
-          break;
-      }
-    },
-    async onResponseError() {
-      tokenEmail.value = null;
-    },
-  });
-
-  loading.value = false;
-});
-
 const onLocaleUpdate = (newLocale: string): void => {
   if (newLocale === locale.value) return;
 
   setLocale(newLocale as any);
   localStorage.setItem("locale", newLocale);
 };
+
+useFetch("/api/user/password/verify", {
+  method: "POST",
+  body: {
+    token: token,
+  },
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  async onResponse({ response }: any) {
+    const resCode: string = response._data.resCode.toString();
+
+    switch (resCode) {
+      case "13021":
+        tokenEmail.value = response._data.data.email;
+        break;
+      default:
+        tokenEmail.value = null;
+        break;
+    }
+  },
+}).then((): void => {
+  loading.value = false;
+});
 
 onMounted((): void => {
   pageLoading.value = false;

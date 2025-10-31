@@ -2,59 +2,63 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
-import apiFetch from "~/componsables/apiFetch";
+import ActionBar from "~/components/ui/ActionBar.vue";
 import {ref, onMounted} from "vue";
-import {useRoute} from "#app";
+import {useAccountStore} from "~/stores/account";
 import type {TaskData} from "~/types/tasks";
 import moment from "moment/moment";
-import Navigation from "~/components/ui/Navigation.vue";
+import { storeToRefs } from "pinia";
 import SearchInput from "~/components/ui/SearchInput.vue";
 
 useHead({
-  title: "Panel | Vaše úkoly",
+  title: "Panel | Úkoly",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
 definePageMeta({
-  roles: ["student"],
+  roles: ["teacher", "admin"],
 });
 
 const route = useRoute();
 const role = route.params.role as string;
+
+const accountStore = useAccountStore();
+const { getId: userId } = storeToRefs(accountStore);
 
 const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string" },
   { field: "startDate", title: "Začátek", type: "date" },
   { field: "endDate", title: "Konec", type: "date" },
+  { field: "approve", title: "Nutné potvrzení", type: "boolean" },
   { field: "task", title: "Zadání", type: "string" },
   { field: "actions", title: "Akce" },
 ]);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
-const openUserTask = async (id: number): Promise<void> => {
+const assignTask = async (id: number): Promise<void> => {
+  if (!id) return;
+
+  await navigateTo(`/panel/tasks/${role}/${id}/assign`);
+};
+
+const openTask = async (id: number): Promise<void> => {
   if (!id) return;
 
   await navigateTo(`/panel/tasks/${role}/${id}`);
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["approved"]))}&which=1`, {
-    method: "get",
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const tasks: TaskData[] = (response._data.data.elaboratingTasks || []).filter((task: any) => !task.review).map((task: any) => {
-        return {
-          ...task,
-          id: task.idTask
-        };
-      }) || [];
+useFetch(`/api/task/get/guarantor?idUser=${userId.value}`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const tasks: TaskData[] = response._data.data.tasks || [];
 
-      allTasks.value = tasks || [];
-    },
-  });
+    allTasks.value = tasks || [];
+  },
 });
 </script>
 
@@ -62,9 +66,8 @@ onMounted(async (): Promise<void> => {
   <NuxtLayout name="panel" :loading="!allTasks">
     <template #header>
       <Navbar
-          :links="[
+        :links="[
           { name: 'Úkoly', path: `/panel/tasks/${role}` },
-          { name: 'Aktivní', path: `/panel/tasks/${role}` },
         ]"
       />
     </template>
@@ -72,19 +75,27 @@ onMounted(async (): Promise<void> => {
     <template #content v-if="allTasks">
       <div id="tasks">
         <div class="content">
-          <div class="line">
-            <Navigation class="navigation" title="Úkoly" :active-link-id="0" :links="[
-              { name: 'Aktivní', path: `/panel/tasks/${role}` },
-              { name: 'Dostupné', path: `/panel/tasks/${role}/available` },
-              { name: 'Stav úkolů', path: `/panel/tasks/${role}/status` },
-              { name: 'Vyhodnocené', path: `/panel/tasks/${role}/evaluated` },
-            ]" />
+          <ActionBar
+              class="action-bar"
+              description="Správa úkolů"
+              :texts="['Přidat', 'Odebrat']"
+              :actions="['add', 'remove']"
+              :icons="[
+              'material-symbols:add-rounded',
+              'material-symbols:delete-rounded',
+            ]"
+            :navigate-to="[
+              `/panel/tasks/${role}/add`,
+              `/panel/tasks/${role}/remove`,
+            ]"
+          />
 
+          <div class="line">
             <div class="line">
               <div class="line">
                 <div class="section-head">
-                  <h3>Vaše úkoly</h3>
-                  <p>Zde naleznete seznam všech vašich aktuálně aktivních úkolů.</p>
+                  <h3>Vytvořené úkoly</h3>
+                  <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
                 </div>
 
                 <SearchInput v-model="searchInput" placeholder="Hledat úkol" />
@@ -111,14 +122,15 @@ onMounted(async (): Promise<void> => {
 
                 <template #actions="data">
                   <div class="actions">
-                    <button type="button" class="primary" @click="openUserTask(data.value.id)">Otevřít</button>
+                    <button type="button" class="default" @click="openTask(data.value.id)">Otevřít</button>
+                    <button type="button" class="assign" @click="assignTask(data.value.id)">Přiřadit</button>
                   </div>
                 </template>
               </Vue3Datatable>
             </div>
+            </div>
           </div>
         </div>
-      </div>
     </template>
   </NuxtLayout>
 </template>
@@ -170,7 +182,7 @@ onMounted(async (): Promise<void> => {
         background: var(--btn-2-hover-background);
       }
 
-      &.primary {
+      &.assign {
         display: flex;
         flex-direction: column;
         gap: 10px;

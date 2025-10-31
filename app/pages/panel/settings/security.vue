@@ -4,8 +4,8 @@ import EditFormFooter from "~/components/manage/Footer.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import { ref } from "vue";
-import apiFetch from "../../../componsables/apiFetch";
 import { useAlertsStore } from "~/stores/alerts";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Nastavení - Zabezpečení",
@@ -72,11 +72,8 @@ const updateUserData = async (): Promise<void> => {
   submitLoading.value = true;
 
   if (userData.value.passwords.old && userData.value.passwords.new) {
-    await apiFetch("/user/update/password", {
+    await $fetch("/api/user/update/password", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: {
         oldPassword: userData.value.passwords.old,
         newPassword: userData.value.passwords.new
@@ -120,10 +117,14 @@ const updateUserData = async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel">
     <template #header>
-      <Navbar :links="[
-        { name: 'Nastavení', path: '/panel/settings' },
-        { name: 'Zabezpečení', path: '/panel/settings/security' },
-      ]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Nastavení', to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
+            { label: 'Zabezpečeí', to: '/panel/settings/security', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>

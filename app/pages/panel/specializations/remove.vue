@@ -3,12 +3,14 @@ import Navbar from "~/components/layout/Navbar.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useLoadingStore} from "~/stores/loading";
+import {useFetch} from "nuxt/app";
 
 useHead({
   title: "Panel | Zaměření - Odstranění",
@@ -48,11 +50,8 @@ const onCheckboxSelect = (): void => {
 const removeSpecializations = async (): Promise<void> => {
   loading.value = true;
 
-  await apiFetch("/specialization/delete", {
+  await $fetch("/api/specialization/delete", {
     method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       idSpecialization: selectedSpecializations.value.map((specialization: SpecializationData) => specialization.id),
     },
@@ -95,32 +94,34 @@ const removeSpecializations = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/specialization/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const specializations: SpecializationData[] = response._data.data.specializations;
+useFetch("/api/specialization/get", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const specializations: SpecializationData[] = response._data.data.specializations;
 
-      allSpecializations.value = specializations || [];
-    },
-  });
+    allSpecializations.value = specializations || [];
+  },
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !allSpecializations.value);
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allSpecializations">
+  <NuxtLayout name="panel">
     <template #header>
-      <Navbar
-          :links="[
-          { name: 'Zaměření', path: '/panel/specializations' },
-          { name: 'Odstranění', path: '/panel/specializations/remove' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Zaměření', to: '/panel/specializations', icon: 'material-symbols:school' },
+            { label: 'Odstranění', to: '/panel/specializations/remove', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allSpecializations">

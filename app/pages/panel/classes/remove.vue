@@ -3,11 +3,13 @@ import Navbar from "~/components/layout/Navbar.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useFetch} from "nuxt/app";
+import {useLoadingStore} from "~/stores/loading";
 
 useHead({
   title: "Panel | Třídy - Odstranění",
@@ -49,11 +51,8 @@ const onCheckboxSelect = (): void => {
 const removeClasses = async (): Promise<void> => {
   loading.value = true;
 
-  await apiFetch("/class/delete", {
+  await $fetch("/api/class/delete", {
     method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       idClass : selectedClasses.value.map((oneClass: ClassData) => oneClass.id),
     },
@@ -95,33 +94,34 @@ const removeClasses = async (): Promise<void> => {
     loading.value = false;
   });
 }
+useFetch("/api/class/get", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const classes: ClassData[] = response._data.data.classes;
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/class/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const classes: ClassData[] = response._data.data.classes;
+    allClasses.value = classes || [];
+  },
+});
 
-      allClasses.value = classes || [];
-    },
-  });
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !allClasses.value);
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allClasses">
+  <NuxtLayout name="panel">
     <template #header>
-      <Navbar
-        :links="[
-          { name: 'Třídy', path: '/panel/classes' },
-          { name: 'Odstranění', path: '/panel/classes/remove' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Třídy', to: '/panel/classes', icon: 'material-symbols:flight-class-rounded' },
+            { label: 'Odstranění', to: '/panel/classes/remove', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content v-if="allClasses">

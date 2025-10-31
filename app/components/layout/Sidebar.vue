@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import {ref, onMounted, computed} from "vue";
-import {navigateTo, useRoute, useState} from "nuxt/app";
+import {navigateTo, useFetch, useRoute, useState} from "nuxt/app";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
-import apiFetch from "../../componsables/apiFetch";
 import Loading from "~/components/ui/Loading.vue";
 
 const route = useRoute();
@@ -121,11 +120,8 @@ const isHamburgerClicked = useState<string>("isHamburgerClicked");
 const logOut = async (): Promise<void> => {
   logoutLoading.value = true;
 
-  await apiFetch("/auth/logout", {
+  await $fetch("/api/auth/logout", {
     method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-    },
     ignoreResponseError: true,
     credentials: "include",
     async onResponse({ response }: any) {
@@ -141,28 +137,24 @@ const logOut = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  if (!["admin", "teacher"].includes(role.value)) {
-    await apiFetch("/user_task/count/approved_without_review", {
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      ignoreResponseError: true,
-      onResponse({ response }: any) {
-        const count: number = response._data.data.count;
+if (!["admin", "teacher"].includes(role.value)) {
+  useFetch("/api/user_task/count/approved_without_review", {
+    method: "get",
+    server: false,
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const count: number = response._data.data.count;
 
-        numberOfActiveTasks.value = count ?? null;
-      },
-    }).finally((): void => {
-      loading.value = false;
-    });
-  } else {
+      numberOfActiveTasks.value = count ?? null;
+    },
+  }).finally((): void => {
     loading.value = false;
-    numberOfActiveTasks.value = null;
-  }
-});
+  });
+} else {
+  loading.value = false;
+  numberOfActiveTasks.value = null;
+}
 </script>
 
 <template>
@@ -192,9 +184,8 @@ onMounted(async (): Promise<void> => {
                   link: true
                 }"
               >
-                <Icon size="16px" class="icon" :name="link.iconClass"></Icon
-                >{{ link.text }}</a
-              >
+                <Icon size="16px" class="icon" :name="link.iconClass"></Icon>{{ link.text }}
+              </a>
 
               <a
                 v-else
@@ -217,11 +208,7 @@ onMounted(async (): Promise<void> => {
           <ul class="links">
             <li v-for="(link, linkIndex) in accountLinks" :key="linkIndex">
               <a :href="link.href" class="link" target="_blank">
-                <Icon
-                  size="16px"
-                  class="icon"
-                  name="material-symbols:link-rounded"
-                ></Icon>
+                <Icon size="16px" class="icon" name="material-symbols:link-rounded"></Icon>
                 {{ link.text }}
               </a>
             </li>
@@ -234,11 +221,7 @@ onMounted(async (): Promise<void> => {
       <ul>
         <li class="log-out" @click="logOut">
           <button v-if="!logoutLoading">
-            <Icon
-              size="16px"
-              class="icon"
-              name="material-symbols:logout-rounded"
-            ></Icon>
+            <Icon size="16px" class="icon" name="material-symbols:logout-rounded"></Icon>
             Odhlásit se
           </button>
 

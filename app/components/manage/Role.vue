@@ -53,7 +53,6 @@ defineExpose({ reset });
           v-model="selected"
           :error="!!role.error"
           @create="onCreate"
-          create-item
         />
 
         <p v-if="role.error" class="input-error">{{ role.error }}</p>

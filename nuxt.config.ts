@@ -67,7 +67,7 @@ export default defineNuxtConfig({
         "@nuxt/eslint",
         "@nuxtjs/i18n",
         "@nuxt/icon",
-        // "nuxt-security"
+        "nuxt-security",
         "@nuxtjs/tailwindcss",
         "@yuta-inoue-ph/nuxt-vcalendar",
     ],
@@ -91,7 +91,7 @@ export default defineNuxtConfig({
     enabled: process.env.NODE_ENV === "production",
     hidePoweredBy: true,
     corsHandler: {
-      origin: process.env.API_ORIGIN,
+      origin: process.env.SERVER_URL,
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: false,
     },
@@ -100,7 +100,7 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
       referrerPolicy: "origin",
       contentSecurityPolicy: {
-        "img-src": ["self", "https:", "data:", "blob:", "http://89.203.248.163"],
+        "img-src": ["self", "https:", "data:", "blob:", process.env.SERVER_URL],
       }
     }
   },
@@ -119,9 +119,9 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            serverUrl: process.env.SERVER_URL,
-            apiUrl: process.env.SERVER_URL,
+            serverUrl: process.env.SERVER_URL || null,
+            apiUrl: process.env.API_URL || null,
             production: process.env.NODE_ENV === "production",
         },
-    },
+    }
 });

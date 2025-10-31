@@ -6,21 +6,7 @@ import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
 import type {RuntimeConfig} from "nuxt/schema";
 
-const props = defineProps({
-  links: {
-    type: Array<{
-      name: string;
-      path: string;
-    }>,
-    required: true,
-  },
-  updated: {
-    type: Boolean,
-    default: false,
-  },
-});
-
-const config: RuntimeConfig = useRuntimeConfig();
+const slots = useSlots();
 const { getAccountData: accountData } = storeToRefs(useAccountStore());
 
 // global state for hamburger click event
@@ -31,14 +17,10 @@ const clickHamburger = (): void => {
   isHamburgerClicked.value = !isHamburgerClicked.value;
 };
 
-const profileData = computed<{
-  name: string;
-  surname: string;
-  profilePhoto: string;
-}>(() => ({
+const profileData = computed<{ name: string; surname: string; profilePhoto: string; }>(() => ({
   name: accountData.value.name,
   surname: accountData.value.surname,
-  profilePhoto: config.public.apiUrl + "/file/pfp/" + accountData.value.profilePicture,
+  profilePhoto: "/api/file/pfp/" + accountData.value.profilePicture,
 }));
 
 onMounted((): void => {
@@ -48,7 +30,7 @@ onMounted((): void => {
 
 <template>
   <nav id="navbar" :class="{ 'active-hamburger': isHamburgerClicked }">
-    <div class="right">
+    <div class="left">
       <div class="hamburger" @click="clickHamburger">
         <Icon
           class="icon"
@@ -57,31 +39,12 @@ onMounted((): void => {
         ></Icon>
       </div>
 
-      <div class="full-path">
-        <div
-          class="path-item"
-          v-for="(link, index) in props.links"
-          :key="index"
-        >
-          <NuxtLink :to="link.path">
-            <p v-if="index === 0">
-              <Icon
-                class="icon"
-                size="20px"
-                name="material-symbols:square-rounded"
-              ></Icon>
-              <span>{{ link.name }}</span>
-            </p>
-            <p v-else>
-              {{ link.name }}
-            </p>
-          </NuxtLink>
-          <p v-if="index !== props.links?.length - 1">/</p>
-        </div>
+      <div class="slot">
+        <slot name="left" v-if="slots.left" />
       </div>
     </div>
 
-    <div class="left">
+    <div class="right">
       <div class="account">
         <Loading
           v-if="loading"
@@ -103,6 +66,10 @@ onMounted((): void => {
             {{ profileData.name + " " + profileData.surname }}
           </p>
         </div>
+      </div>
+
+      <div class="slot">
+        <slot name="right" v-if="slots.right" />
       </div>
     </div>
   </nav>
@@ -132,41 +99,6 @@ onMounted((): void => {
     flex-direction: row;
     align-items: center;
     gap: 20px;
-  }
-
-  .full-path {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 5px;
-    color: rgba(var(--description-color), 1);
-
-    .path-item {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 5px;
-
-      a p {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        transition: 0.2s;
-
-        span {
-          color: rgba(var(--main-color), 1);
-          text-transform: uppercase;
-        }
-
-        .icon {
-          color: var(--navbar-square-icon-color);
-        }
-
-        &:hover {
-          color: var(--mini-title-color);
-        }
-      }
-    }
   }
 
   .account {
@@ -245,7 +177,7 @@ onMounted((): void => {
         margin-left: 250px;
       }
 
-      .full-path {
+      .slot {
         display: none;
       }
     }
@@ -258,8 +190,8 @@ onMounted((): void => {
   }
 }
 
-@media (max-width: 497px) {
-  #navbar .full-path {
+@media (max-width: 600px) {
+  #navbar .slot {
     display: none;
   }
 }

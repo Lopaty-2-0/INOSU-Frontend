@@ -2,7 +2,6 @@
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import { ref } from "vue";
-import apiFetch from "~/componsables/apiFetch";
 import EditFullName from "~/components/manage/FullName.vue";
 import EditEmail from "~/components/manage/Email.vue";
 import EditPassword from "~/components/manage/Password.vue";
@@ -14,6 +13,7 @@ import {useAlertsStore} from "~/stores/alerts";
 import {useRoute, useRouter} from "#app";
 import type {AccountData} from "~/types/account";
 import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -41,8 +41,8 @@ const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
 const editRole = ref<InstanceType<typeof EditRole> | null>(null);
 const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
 const editClass = ref<InstanceType<typeof EditClass> | null>(null);
-const allRoles = ref<string[] | undefined>(undefined);
 const allClasses = ref<ClassData[] | undefined>(undefined);
+const allRoles: string[] = ["admin", "teacher", "student"];
 
 const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>( {
   loaded: false,
@@ -130,7 +130,7 @@ const updateUser = async (): Promise<void> => {
   if (newUserData.value.classes) updateUserForm.append("idClass", JSON.stringify(newUserData.value.classes));
   updateUserForm.append("idUser", id);
 
-  await apiFetch("/user/update", {
+  await $fetch("/api/user/update", {
     method: "PUT",
     body: updateUserForm,
     credentials: "include",
@@ -194,74 +194,58 @@ const updateUser = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/user/get/roles", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const roles: string[] = response._data.data.roles;
+useFetch("/api/class/get", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const classes: ClassData[] = response._data.data.classes;
 
-      allRoles.value = roles || [];
-    },
-  });
+    allClasses.value = classes || [];
+  },
+});
 
-  await apiFetch("/class/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const classes: ClassData[] = response._data.data.classes;
+useFetch(`/api/user/get/id?id=${encodeURIComponent(id)}`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  async onResponse({ response }: any) {
+    const user: AccountData = response._data.data.user;
 
-      allClasses.value = classes || [];
-    },
-  });
+    if (user) {
+      oldUserData.value.name = user.name;
+      oldUserData.value.surname = user.surname;
+      oldUserData.value.email = user.email;
+      oldUserData.value.password = "";
+      oldUserData.value.abbreviation = user.abbreviation || "";
+      oldUserData.value.role = user.role;
+      oldUserData.value.classes = user.idClass;
+      oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
+    } else {
+      await router.push(`/panel/users/${role}/edit`);
+      return;
+    }
 
-  await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    async onResponse({ response }: any) {
-      const user: AccountData = response._data.data.user;
-
-      if (user) {
-        oldUserData.value.name = user.name;
-        oldUserData.value.surname = user.surname;
-        oldUserData.value.email = user.email;
-        oldUserData.value.password = "";
-        oldUserData.value.abbreviation = user.abbreviation || "";
-        oldUserData.value.role = user.role;
-        oldUserData.value.classes = user.idClass;
-        oldUserData.value.profilePicture = config.public.apiUrl + "/file/pfp/" + user.profilePicture;
-      } else {
-        await router.push(`/panel/users/${role}/edit`);
-        return;
-      }
-
-      oldUserData.value.loaded = true;
-    },
-  });
+    oldUserData.value.loaded = true;
+  },
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allRoles || !allClasses || !oldUserData.loaded">
+  <NuxtLayout name="panel" :loading="!allRoles || !oldUserData.loaded">
     <template #header>
-      <Navbar :links="[
-          { name: 'Uživatelé', path: '/panel/users' },
-          { name: role, path: '/panel/users/' + role },
-          { name: 'Upravení', path: '/panel/users/' + role + '/edit' },
-          { name: id, path: '/panel/users/' + role + '/edit' + '/' + id },
-      ]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: role, to: '/panel/users/' + role },
+            { label: 'Upravení', to: '/panel/users/' + role + '/edit' },
+            { label: id, to: '/panel/users/' + role + '/edit' + '/' + id, active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>

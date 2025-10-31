@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import {useRoute} from "#app";
-import {ref} from "vue";
+import {ref, watchEffect} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
 import Pagination from "~/components/ui/Pagination.vue";
-import apiFetch from "~/componsables/apiFetch";
 import type {AccountData} from "~/types/account";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useLoadingStore} from "~/stores/loading";
 
 const route = useRoute();
 const classId = route.params.class as string;
@@ -52,37 +53,39 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const usersData: AccountData[] = response._data?.data?.users || [];
+useFetch(classId !== "undefined" ? `/api/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/api/user/get/noClass`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const usersData: AccountData[] = response._data?.data?.users || [];
 
-      users.value = usersData;
-      searchedUsers.value = [...usersData];
-    },
-  });
+    users.value = usersData;
+    searchedUsers.value = [...usersData];
+  },
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !users.value);
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!users">
+  <NuxtLayout name="panel">
     <template #header>
-      <Navbar
-        :links="[
-          { name: 'Uživatelé', path: '/panel/users' },
-          { name: 'student', path: '/panel/users/student' },
-          { name: 'Třída: ' + classId, path: '/panel/users/student/' + classId },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: 'student', to: '/panel/users/student' },
+            { label: 'Třída: ' + classId, to: '/panel/users/student/' + classId, active: true },
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
-    <template #content v-if="users">
+    <template #content>
       <div id="users">
         <div class="content">
           <ActionBar

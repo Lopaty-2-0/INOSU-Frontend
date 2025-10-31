@@ -1,16 +1,16 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import { ref, computed } from "vue";
+import {ref, computed, watchEffect} from "vue";
 import EditFullName from "../../../components/manage/FullName.vue";
 import EditEmail from "../../../components/manage/Email.vue";
 import EditPassword from "../../../components/manage/Password.vue";
 import EditRole from "../../../components/manage/Role.vue";
 import EditAbbreviation from "../../../components/manage/Abbreviation.vue";
 import EditClass from "../../../components/manage/Class.vue";
-import apiFetch from "../../../componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -25,7 +25,6 @@ useHead({
 
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
-const allRoles = ref<string[] | undefined>(undefined);
 const allClasses = ref<ClassData[] | undefined>(undefined);
 const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
 const editEmail = ref<InstanceType<typeof EditEmail> | null>(null);
@@ -33,6 +32,7 @@ const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
 const editRole = ref<InstanceType<typeof EditRole> | null>(null);
 const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
 const editClass = ref<InstanceType<typeof EditClass> | null>(null);
+const allRoles: string[] = ["admin", "teacher", "student"];
 
 const oldUserData = computed<{ name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>(() => ({
   name: "",
@@ -105,11 +105,8 @@ const createNewUser = async (): Promise<void> => {
 
   submitLoading.value = true;
 
-  await apiFetch("/user/add", {
+  await $fetch("/api/user/add", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       name: newUserData.value.name,
       surname: newUserData.value.surname,
@@ -184,44 +181,30 @@ const createNewUser = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/user/get/roles", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const roles: string[] = response._data.data.roles;
+useFetch("/api/class/get", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const classes: ClassData[] = response._data.data.classes;
 
-      allRoles.value = roles || [];
-    },
-  });
-
-  await apiFetch("/class/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const classes: ClassData[] = response._data.data.classes;
-
-      allClasses.value = classes || [];
-    },
-  });
+    allClasses.value = classes || [];
+  },
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allRoles || !allClasses">
+  <NuxtLayout name="panel">
     <template #header>
-      <Navbar :links="[
-        { name: 'Uživatelé', path: '/panel/users' },
-        { name: 'Přidání', path: '/panel/users/add' },
-      ]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: 'Přidání', to: '/panel/users/add', active: true },
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>
@@ -255,7 +238,7 @@ onMounted(async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditRole ref="editRole" :roles="allRoles || []" :old-role="oldUserData.role" @update="onRoleUpdate">
+            <EditRole ref="editRole" :roles="allRoles" :old-role="oldUserData.role" @update="onRoleUpdate">
               <div class="section-head">
                 <h3>Role * <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
                 <p>Vyberte roli, kterou má mít nový uživatel. Toto pole je povinné.</p>

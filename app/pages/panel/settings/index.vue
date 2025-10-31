@@ -6,9 +6,8 @@ import Navbar from "~/components/layout/Navbar.vue";
 import { ref, computed } from "vue";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "~/stores/account";
-import apiFetch from "../../../componsables/apiFetch";
 import {useAlertsStore} from "~/stores/alerts";
-import type {LocalAccountData} from "~/types/account";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
   title: "Panel | Nastavení - Profil",
@@ -20,12 +19,11 @@ useHead({
 const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();
 const { getAccountData: accountData } = storeToRefs(accountStore);
-const config = useRuntimeConfig();
 
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
 const oldUserData = computed<{ profilePicture: string}>(() => ({
-  profilePicture: config.public.apiUrl + "/file/pfp/" + accountData.value.profilePicture,
+  profilePicture: "/api/file/pfp/" + accountData.value.profilePicture,
 }));
 
 const newUserData = ref<{ profilePicture: File | undefined }>({
@@ -52,7 +50,7 @@ const updateUserData = async (): Promise<void> => {
 
     updateProfileForm.append("profilePicture", newUserData.value.profilePicture);
 
-    await apiFetch("/user/update", {
+    await $fetch("/api/user/update", {
       method: "PUT",
       body: updateProfileForm,
       credentials: "include",
@@ -92,10 +90,14 @@ const updateUserData = async (): Promise<void> => {
 <template>
   <NuxtLayout name="panel">
     <template #header>
-      <Navbar :links="[
-        { name: 'Nastavení', path: '/panel/settings' },
-        { name: 'Profil', path: '/panel/settings' },
-      ]" />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Nastavení', to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
+            { label: 'Profil', to: '/panel/settings', active: true }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
     <template #content>

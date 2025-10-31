@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
-import {ref} from "vue";
-import apiFetch from "~/componsables/apiFetch";
+import {ref, watchEffect} from "vue";
 import moment from "moment";
 import Navigation from "~/components/ui/Navigation.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
@@ -10,7 +9,12 @@ import "@bhplugin/vue3-datatable/dist/style.css";
 import type {TaskData} from "~/types/tasks";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
-import {computed, onMounted} from "vue";
+import {computed} from "vue";
+import {useFetch} from "nuxt/app";
+import Editor from "~/components/ui/Editor.vue";
+import Card from "~/components/ui/Card.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import { useLoadingStore } from "~/stores/loading";
 
 useHead({
   title: "Panel | Domů",
@@ -34,6 +38,10 @@ const numbers = ref<{ students: number | null; classes: number | null; teachers:
   classes: null,
   teachers: null,
 });
+const editorContent = ref<string>("");
+const editorFocus = ref<boolean>(false);
+const editorEnable = ref<boolean>(true);
+
 const navigationLinks = computed<{
   name: string;
   path?: string | undefined;
@@ -72,96 +80,78 @@ const infoCards = computed<{ title: string; icon: string; value: string | number
   },
 ]);
 
+const updateContent = (newContent: { html: string }) => {
+  console.log(newContent);
+};
+
 const openTask = async (id: number): Promise<void> => {
   if (!id) return;
 
   await navigateTo(`/panel/tasks/${role.value}/${id}`);
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/user/get/count/by-role?role=student", {
+useFetch("/api/user/get/count/by-role?role=student", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    numbers.value.students = response._data.data.count;
+  },
+});
+
+useFetch("/api/user/get/count/by-role?role=teacher", {
+  method: "get",
+  credentials: "include",
+  server: false,
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    numbers.value.teachers = response._data.data.count;
+  },
+});
+
+useFetch("/api/class/count", {
+  method: "get",
+  credentials: "include",
+  ignoreResponseError: true,
+  server: false,
+  onResponse({ response }: any) {
+    numbers.value.classes = response._data.data.count;
+  },
+});
+
+if (["admin", "teacher"].includes(role.value)) {
+  useFetch(`/api/task/get/guarantor?idUser=${userId.value}`, {
     method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    server: false,
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }: any) {
-      numbers.value.students = response._data.data.count;
-    },
-  });
-
-  await apiFetch("/user/get/count/by-role?role=teacher", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      numbers.value.teachers = response._data.data.count;
-    },
-  });
-
-  await apiFetch("/class/count", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      numbers.value.classes = response._data.data.count;
-    },
-  });
-
-  if (["admin", "teacher"].includes(role.value)) {
-    await apiFetch(`/task/get/guarantor?idUser=${userId.value}`, {
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      ignoreResponseError: true,
-      onResponse({ response }: any) {
-        const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
-
-        allTasks.value = tasks || [];
-      },
-    });
-    return;
-  }
-
-  await apiFetch(`/user_task/get/status?status=${encodeURIComponent(JSON.stringify(["approved"]))}&which=1`, {
-    method: "get",
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const tasks: TaskData[] = (response._data.data.elaboratingTasks || [])
-          .filter((task: any) => !task.review)
-          .slice(0, 5)
-          .map((task: any) => ({
-            ...task,
-            id: task.idTask
-          })) || [];
+      const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
 
       allTasks.value = tasks || [];
     },
   });
-})
+}
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", numbers.value.students === null || numbers.value.classes === null || numbers.value.teachers === null || !allTasks.value);
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="numbers.students === null || !numbers.classes === null || numbers.teachers === null || !allTasks">
+  <NuxtLayout name="panel">
     <template #header>
-      <Navbar
-          :links="[
-          { name: 'Domů', path: '/panel'},
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Domů', to: '/panel', active: true, icon: 'material-symbols:home-rounded' }
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
-    <template #content v-if="allTasks">
+    <template #content>
       <div id="home">
         <div class="info">
           <div class="line">
@@ -170,22 +160,30 @@ onMounted(async (): Promise<void> => {
               <p>Informativní karty slouží k rychlému nalezení zajímavých údajů z panelu.</p>
             </div>
           </div>
-
           <ul class="cards">
-            <li class="card" v-for="(data, index) in infoCards" :key="index">
-              <div class="content">
-                <div class="data">
-                  <h6>{{ data.title }}</h6>
-                  <p>{{ data.value }}</p>
-                </div>
+            <Card class="card" v-for="(data, index) in infoCards" :key="index">
+              <div class="body">
+                <div class="content">
+                  <div class="data">
+                    <h6>{{ data.title }}</h6>
+                    <p>{{ data.value }}</p>
+                  </div>
 
-                <Icon class="icon" :name="data.icon"></Icon>
+                  <Icon class="icon" :name="data.icon"></Icon>
+                </div>
               </div>
-            </li>
+            </Card>
           </ul>
         </div>
 
         <div class="line">
+          <Editor
+            @update:content="updateContent"
+            :content="editorContent"
+            :focus="editorFocus"
+            :enable="editorEnable"
+            placeholder="Vyberte textový element na stránce"
+          />
           <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />
 
           <div class="line">
@@ -333,62 +331,62 @@ onMounted(async (): Promise<void> => {
       justify-content: flex-start;
 
       .card {
-        border-radius: var(--normal-border-radius);
         display: flex;
         flex: 1;
-        gap: 30px;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: space-between;
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        padding: 30px;
         transition: 0.2s;
         cursor: pointer;
         min-width: 200px;
-        background: var(--card-1-background);
 
-        .icon {
-          font-size: 40px;
+        .body {
+          width: 100%;
+          gap: 30px;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: space-between;
+
+          .icon {
+            font-size: 40px;
+          }
+
+          .content {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            flex-wrap: wrap;
+
+            .data {
+              display: flex;
+              flex-direction: column;
+              gap: 20px;
+              order: 0;
+
+              h6 {
+                color: rgba(var(--description-color), 1);
+                font-size: 16px;
+                font-weight: 600;
+              }
+
+              p {
+                color: var(--mini-title-color);
+                font-weight: 800;
+                font-size: 28px;
+              }
+            }
+
+            span {
+              font-size: 40px;
+              color: rgba(var(--description-color), 1);
+              order: 1;
+            }
+          }
         }
 
         &:hover,
         &.active {
           background: var(--card-1-hover-background);
-        }
-
-        .content {
-          display: flex;
-          flex-direction: row;
-          gap: 20px;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          flex-wrap: wrap;
-
-          .data {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            order: 0;
-
-            h6 {
-              color: rgba(var(--description-color), 1);
-              font-size: 16px;
-              font-weight: 600;
-            }
-
-            p {
-              color: var(--mini-title-color);
-              font-weight: 800;
-              font-size: 28px;
-            }
-          }
-
-          span {
-            font-size: 40px;
-            color: rgba(var(--description-color), 1);
-            order: 1;
-          }
         }
       }
     }

@@ -3,11 +3,13 @@ import Navbar from "~/components/layout/Navbar.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
-import {ref} from "vue";
+import {ref, computed, watch, watchEffect} from "vue";
 import type {SpecializationData} from "~/types/specialization";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useFetch} from "nuxt/app";
+import { useLoadingStore } from "~/stores/loading";
 
 useHead({
   title: "Panel | Zaměření",
@@ -23,34 +25,36 @@ const cols = ref<{ field: string; title: string; type?: string; width?: string; 
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/specialization/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const specializations: SpecializationData[] = response._data.data.specializations;
+useFetch("/api/specialization/get", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const specializations: SpecializationData[] = response._data.data.specializations;
 
-      allSpecializations.value = specializations || [];
-    },
-  });
+    allSpecializations.value = specializations || [];
+  },
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", allSpecializations.value === undefined);
 });
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allSpecializations">
+  <NuxtLayout name="panel">
     <template #header>
-      <Navbar
-          :links="[
-          { name: 'Zaměření', path: '/panel/specializations' },
-        ]"
-      />
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Zaměření', to: '/panel/specializations', active: true, icon: 'material-symbols:school' },
+          ]"/>
+        </template>
+      </Navbar>
     </template>
 
-    <template #content v-if="allSpecializations">
+    <template #content>
       <div id="specializations">
         <div class="content">
           <ActionBar

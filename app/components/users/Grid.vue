@@ -3,6 +3,7 @@ import moment from "moment";
 import { ref, watch } from "vue";
 import useArrayChunks from "../../componsables/useArrayChunks";
 import type { AccountData } from "~/types/account";
+import Card from "~/components/ui/Card.vue";
 
 const props = defineProps({
   users: {
@@ -65,7 +66,7 @@ defineExpose({ reset });
 <template>
   <div class="users-grid">
     <div class="all-users" v-if="users.length > 0">
-      <div
+      <Card
         v-for="user in (allUsersPages[props.activePage] as AccountData[])"
         :key="user.id"
         class="card"
@@ -77,14 +78,7 @@ defineExpose({ reset });
       >
         <div class="user">
           <div class="head">
-            <img
-              :src="
-                'http://89.203.248.163/uploads/profilePictures/' +
-                user.profilePicture
-              "
-              alt="User profile photo"
-              loading="lazy"
-            />
+            <img :src="'/api/file/pfp/' + user.profilePicture" alt="User profile photo" loading="lazy"/>
             <h3>{{ user.name }} {{ user.surname }}</h3>
           </div>
 
@@ -101,7 +95,7 @@ defineExpose({ reset });
             </p>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
 
     <p class="error message" v-else>Žádný uživatel nebyl zobrazen!</p>
@@ -120,13 +114,8 @@ defineExpose({ reset });
     grid-gap: 30px;
 
     .card {
-      border-radius: var(--normal-border-radius);
-      padding: 30px;
       transition: 0.2s;
       cursor: pointer;
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
-      background: var(--card-1-background);
-      height: 100%;
 
       .user {
         display: flex;
