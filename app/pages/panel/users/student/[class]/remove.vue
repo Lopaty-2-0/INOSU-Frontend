@@ -6,7 +6,6 @@ import Navbar from "~/components/layout/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import { useAlertsStore } from "~/stores/alerts";
-import apiFetch from "~/componsables/apiFetch";
 import type { AccountData } from "~/types/account";
 import Loading from "~/components/ui/Loading.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
@@ -76,11 +75,8 @@ const removeUsers = async (): Promise<void> => {
 
   loading.value = true;
 
-  await apiFetch("/user/delete", {
+  await $fetch("/user/delete", {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       idUser: selectedUsers.value.map((user: AccountData) => user.id),
     },
@@ -127,21 +123,17 @@ const removeUsers = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const usersData: AccountData[] = response._data?.data?.users || [];
+useFetch(classId !== "undefined" ? `/api/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/api/user/get/noClass`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const usersData: AccountData[] = response._data?.data?.users || [];
 
-      users.value = usersData;
-      searchedUsers.value = [...usersData];
-    },
-  });
+    users.value = usersData;
+    searchedUsers.value = [...usersData];
+  },
 });
 
 watchEffect((): void => {

@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import Loading from "~/components/ui/Loading.vue";
 import { ref } from "vue";
-import apiFetch from "../componsables/apiFetch";
-import { navigateTo } from "nuxt/app";
 import type { AccountData } from "~/types/account";
 import Checkbox from "~/components/ui/Checkbox.vue";
 import Input from "~/components/ui/Input.vue";

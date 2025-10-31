@@ -16,11 +16,8 @@ const numberOfUsers = ref<number>(-1);
 const allRoles = ref<string[] | undefined>(undefined);
 
 
-await useFetch("/api/user/get/number", {
+useFetch("/api/user/get/number", {
   method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
   server: false,
   credentials: "include",
   ignoreResponseError: true,
@@ -31,11 +28,8 @@ await useFetch("/api/user/get/number", {
   },
 });
 
-await useFetch("/api/user/get/roles", {
+useFetch("/api/user/get/roles", {
   method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
   credentials: "include",
   server: false,
   ignoreResponseError: true,

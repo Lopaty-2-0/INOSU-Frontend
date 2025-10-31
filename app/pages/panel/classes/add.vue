@@ -133,7 +133,6 @@ const addClass = async (): Promise<void> => {
 
   await $fetch("/api/class/add", {
     method: "post",
-    headers: { "Content-Type": "application/json" },
     body: {
       name: classData.value.name,
       grade: classData.value.grade,
@@ -196,9 +195,6 @@ const addClass = async (): Promise<void> => {
 
 useFetch("/api/specialization/get", {
   method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
   credentials: "include",
   server: false,
   ignoreResponseError: true,

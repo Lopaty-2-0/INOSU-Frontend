@@ -3,7 +3,6 @@ import Navbar from "~/components/layout/Navbar.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
 import {ref, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
@@ -51,11 +50,8 @@ const onCheckboxSelect = (): void => {
 const removeSpecializations = async (): Promise<void> => {
   loading.value = true;
 
-  await apiFetch("/specialization/delete", {
+  await $fetch("/api/specialization/delete", {
     method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       idSpecialization: selectedSpecializations.value.map((specialization: SpecializationData) => specialization.id),
     },
@@ -100,9 +96,6 @@ const removeSpecializations = async (): Promise<void> => {
 
 useFetch("/api/specialization/get", {
   method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
   server: false,
   credentials: "include",
   ignoreResponseError: true,

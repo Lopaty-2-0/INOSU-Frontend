@@ -28,9 +28,7 @@ const searchInput = ref<string>("");
 
 useFetch("/api/class/get", {
   method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
+  server: false,
   credentials: "include",
   ignoreResponseError: true,
   onResponse({ response }: any) {

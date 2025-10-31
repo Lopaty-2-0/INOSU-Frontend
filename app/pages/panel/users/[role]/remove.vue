@@ -3,7 +3,6 @@ import { useRoute } from "vue-router";
 import Navbar from "../../../../components/layout/Navbar.vue";
 import type { AccountData } from "~/types/account";
 import {ref, onMounted, watchEffect} from "vue";
-import apiFetch from "../../../../componsables/apiFetch";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import UsersGrid from "../../../../components/users/Grid.vue";
 import Pagination from "../../../../components/ui/Pagination.vue";
@@ -72,11 +71,8 @@ const removeUsers = async (): Promise<void> => {
 
   loading.value = true;
 
-  await apiFetch("/user/delete", {
+  await $fetch("/api/user/delete", {
     method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       idUser: selectedUsers.value.map((user: AccountData) => user.id),
     },
@@ -124,21 +120,17 @@ const removeUsers = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const usersData: AccountData[] = response._data?.data?.users || [];
+useFetch(`/api/user/get/role?role=${encodeURIComponent(role)}`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const usersData: AccountData[] = response._data?.data?.users || [];
 
-      users.value = usersData;
-      searchedUsers.value = [...usersData];
-    },
-  });
+    users.value = usersData;
+    searchedUsers.value = [...usersData];
+  },
 });
 
 watchEffect((): void => {

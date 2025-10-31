@@ -1,8 +1,6 @@
 import { useAccountStore } from "~/stores/account";
 import type {AccountData, AccountTheme, LocalAccountData} from "~/types/account";
-import apiUseFetch from "../componsables/apiUseFetch";
 import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
-import apiFetch from "~/componsables/apiFetch";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 
@@ -12,9 +10,6 @@ export default defineNuxtRouteMiddleware(async () => {
     try {
         const { data }: { data: any } = await useFetch("/api/auth/verify", {
             method: "get",
-            headers: {
-                "Content-Type": "application/json"
-            },
             credentials: "include",
         });
 
@@ -41,11 +36,8 @@ export default defineNuxtRouteMiddleware(async () => {
         let accountData: LocalAccountData | null = accountDataString ? decodeData(accountDataString) as LocalAccountData : null;
 
         if (!accountData || (data.value.data.updatedAt !== accountData.updatedAt)) {
-            await apiFetch("/user/logged/data", {
+            await $fetch("/api/user/logged/data", {
                 method: "get",
-                headers: {
-                    "Content-Type": "application/json"
-                },
                 credentials: "include",
                 ignoreResponseError: true,
                 async onResponse({ response }: any): Promise<any> {

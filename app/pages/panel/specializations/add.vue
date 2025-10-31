@@ -77,9 +77,6 @@ const addSpecialization = async (): Promise<void> => {
 
   await $fetch("/api/specialization/add", {
     method: "post",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       name: specializationData.value.name,
       lengthOfStudy: specializationData.value.lengthOfStudy,

@@ -8,11 +8,9 @@ import EditPassword from "../../../components/manage/Password.vue";
 import EditRole from "../../../components/manage/Role.vue";
 import EditAbbreviation from "../../../components/manage/Abbreviation.vue";
 import EditClass from "../../../components/manage/Class.vue";
-import apiFetch from "../../../componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
-import {useLoadingStore} from "~/stores/loading";
 
 definePageMeta({
   roles: ["admin"],
@@ -107,11 +105,8 @@ const createNewUser = async (): Promise<void> => {
 
   submitLoading.value = true;
 
-  $fetch("/api/user/add", {
+  await $fetch("/api/user/add", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       name: newUserData.value.name,
       surname: newUserData.value.surname,
@@ -186,20 +181,16 @@ const createNewUser = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/class/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const classes: ClassData[] = response._data.data.classes;
+useFetch("/api/class/get", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const classes: ClassData[] = response._data.data.classes;
 
-      allClasses.value = classes || [];
-    },
-  });
+    allClasses.value = classes || [];
+  },
 });
 </script>
 

@@ -74,9 +74,6 @@ const updateUserData = async (): Promise<void> => {
   if (userData.value.passwords.old && userData.value.passwords.new) {
     await $fetch("/api/user/update/password", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: {
         oldPassword: userData.value.passwords.old,
         newPassword: userData.value.passwords.new

@@ -2,7 +2,6 @@
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import { ref } from "vue";
-import apiFetch from "~/componsables/apiFetch";
 import EditFullName from "~/components/manage/FullName.vue";
 import EditEmail from "~/components/manage/Email.vue";
 import EditPassword from "~/components/manage/Password.vue";
@@ -131,7 +130,7 @@ const updateUser = async (): Promise<void> => {
   if (newUserData.value.classes) updateUserForm.append("idClass", JSON.stringify(newUserData.value.classes));
   updateUserForm.append("idUser", id);
 
-  await apiFetch("/user/update", {
+  await $fetch("/api/user/update", {
     method: "PUT",
     body: updateUserForm,
     credentials: "include",
@@ -195,48 +194,42 @@ const updateUser = async (): Promise<void> => {
   });
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/class/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const classes: ClassData[] = response._data.data.classes;
+useFetch("/api/class/get", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const classes: ClassData[] = response._data.data.classes;
 
-      allClasses.value = classes || [];
-    },
-  });
+    allClasses.value = classes || [];
+  },
+});
 
-  await apiFetch(`/user/get/id?id=${encodeURIComponent(id)}`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    async onResponse({ response }: any) {
-      const user: AccountData = response._data.data.user;
+useFetch(`/api/user/get/id?id=${encodeURIComponent(id)}`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  async onResponse({ response }: any) {
+    const user: AccountData = response._data.data.user;
 
-      if (user) {
-        oldUserData.value.name = user.name;
-        oldUserData.value.surname = user.surname;
-        oldUserData.value.email = user.email;
-        oldUserData.value.password = "";
-        oldUserData.value.abbreviation = user.abbreviation || "";
-        oldUserData.value.role = user.role;
-        oldUserData.value.classes = user.idClass;
-        oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
-      } else {
-        await router.push(`/panel/users/${role}/edit`);
-        return;
-      }
+    if (user) {
+      oldUserData.value.name = user.name;
+      oldUserData.value.surname = user.surname;
+      oldUserData.value.email = user.email;
+      oldUserData.value.password = "";
+      oldUserData.value.abbreviation = user.abbreviation || "";
+      oldUserData.value.role = user.role;
+      oldUserData.value.classes = user.idClass;
+      oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
+    } else {
+      await router.push(`/panel/users/${role}/edit`);
+      return;
+    }
 
-      oldUserData.value.loaded = true;
-    },
-  });
+    oldUserData.value.loaded = true;
+  },
 });
 </script>
 

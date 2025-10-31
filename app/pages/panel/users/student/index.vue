@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import apiFetch from "~/componsables/apiFetch";
 import type {ClassData} from "~/types/classes";
 import Navbar from "~/components/layout/Navbar.vue";
 import Card from "~/components/ui/Card.vue";
@@ -16,20 +15,16 @@ useHead({
 
 const allClasses = ref<ClassData[] | undefined>(undefined);
 
-onMounted(async (): Promise<void> => {
-  await apiFetch("/class/get", {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const classes: ClassData[] = response._data.data.classes;
+useFetch("/api/class/get", {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const classes: ClassData[] = response._data.data.classes;
 
-      allClasses.value = classes || [];
-    },
-  });
+    allClasses.value = classes || [];
+  },
 });
 
 watchEffect((): void => {

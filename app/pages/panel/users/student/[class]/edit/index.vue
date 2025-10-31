@@ -5,7 +5,6 @@ import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
 import Pagination from "~/components/ui/Pagination.vue";
-import apiFetch from "~/componsables/apiFetch";
 import type { AccountData } from "~/types/account";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
@@ -57,21 +56,17 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch(classId !== "undefined" ? `/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/user/get/noClass`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const usersData: AccountData[] = response._data?.data?.users || [];
+useFetch(classId !== "undefined" ? `/api/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/api/user/get/noClass`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const usersData: AccountData[] = response._data?.data?.users || [];
 
-      users.value = usersData;
-      searchedUsers.value = [...usersData];
-    },
-  });
+    users.value = usersData;
+    searchedUsers.value = [...usersData];
+  },
 });
 
 watchEffect((): void => {

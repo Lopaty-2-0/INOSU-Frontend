@@ -4,7 +4,6 @@ import {onMounted, ref, watchEffect} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
-import apiFetch from "~/componsables/apiFetch";
 import type { AccountData } from "~/types/account";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Pagination from "~/components/ui/Pagination.vue";
@@ -57,21 +56,17 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch(`/user/get/role?role=${encodeURIComponent(role)}`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const usersData: AccountData[] = response._data?.data?.users || [];
+useFetch(`/api/user/get/role?role=${encodeURIComponent(role)}`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const usersData: AccountData[] = response._data?.data?.users || [];
 
-      users.value = usersData;
-      searchedUsers.value = [...usersData];
-    },
-  });
+    users.value = usersData;
+    searchedUsers.value = [...usersData];
+  },
 });
 
 watchEffect((): void => {

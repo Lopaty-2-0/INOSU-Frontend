@@ -53,9 +53,6 @@ const removeClasses = async (): Promise<void> => {
 
   await $fetch("/api/class/delete", {
     method: "delete",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       idClass : selectedClasses.value.map((oneClass: ClassData) => oneClass.id),
     },
@@ -99,9 +96,6 @@ const removeClasses = async (): Promise<void> => {
 }
 useFetch("/api/class/get", {
   method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
   server: false,
   credentials: "include",
   ignoreResponseError: true,

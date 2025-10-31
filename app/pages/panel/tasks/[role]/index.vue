@@ -3,7 +3,6 @@ import Navbar from "~/components/layout/Navbar.vue";
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import apiFetch from "~/componsables/apiFetch";
 import {ref, onMounted} from "vue";
 import {useAccountStore} from "~/stores/account";
 import type {TaskData} from "~/types/tasks";
@@ -50,20 +49,16 @@ const openTask = async (id: number): Promise<void> => {
   await navigateTo(`/panel/tasks/${role}/${id}`);
 };
 
-onMounted(async (): Promise<void> => {
-  await apiFetch(`/task/get/guarantor?idUser=${userId.value}`, {
-    method: "get",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const tasks: TaskData[] = response._data.data.tasks || [];
+useFetch(`/api/task/get/guarantor?idUser=${userId.value}`, {
+  method: "get",
+  server: false,
+  credentials: "include",
+  ignoreResponseError: true,
+  onResponse({ response }: any) {
+    const tasks: TaskData[] = response._data.data.tasks || [];
 
-      allTasks.value = tasks || [];
-    },
-  });
+    allTasks.value = tasks || [];
+  },
 });
 </script>
 
