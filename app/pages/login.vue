@@ -46,9 +46,6 @@ const submitLoginForm = async (): Promise<void> => {
 
   await $fetch("/api/auth/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: {
       login: loginData.value.login,
       password: loginData.value.password,

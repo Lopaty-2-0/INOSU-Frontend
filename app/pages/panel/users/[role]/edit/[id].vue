@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import { ref } from "vue";
+import {ref, watchEffect} from "vue";
 import EditFullName from "~/components/manage/FullName.vue";
 import EditEmail from "~/components/manage/Email.vue";
 import EditPassword from "~/components/manage/Password.vue";
@@ -14,6 +14,7 @@ import {useRoute, useRouter} from "#app";
 import type {AccountData} from "~/types/account";
 import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useLoadingStore} from "~/stores/loading";
 
 definePageMeta({
   roles: ["admin"],
@@ -32,7 +33,6 @@ useHead({
 });
 
 const alertsStore = useAlertsStore();
-const config = useRuntimeConfig();
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
 const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
@@ -231,10 +231,14 @@ useFetch(`/api/user/get/id?id=${encodeURIComponent(id)}`, {
     oldUserData.value.loaded = true;
   },
 });
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !oldUserData.value.loaded);
+});
 </script>
 
 <template>
-  <NuxtLayout name="panel" :loading="!allRoles || !oldUserData.loaded">
+  <NuxtLayout name="panel">
     <template #header>
       <Navbar>
         <template #left>
