@@ -63,6 +63,10 @@
   }
 }
 
+::v-deep(.bh-bg-blue-light\/50) {
+  background-color: rgba(var(--main-background), 0.7) !important;
+}
+
 ::v-deep(.bh-table-responsive table.bh-table-striped tbody tr) {
   color: rgba(var(--description-color), 1);
   background: transparent;

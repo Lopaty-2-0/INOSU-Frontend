@@ -151,11 +151,7 @@ onMounted((): void => {
         </div>
 
         <div class="custom-item">
-          <Checkbox
-            id="stayLogged"
-            name="stayLogged"
-            @change="() => (loginData.stayLogged = !loginData.stayLogged)"
-          />
+          <Checkbox id="stayLogged" name="stayLogged" v-model="loginData.stayLogged"/>
           <label for="stayLogged">{{ t("login.form.remember.label") }}</label>
         </div>
 

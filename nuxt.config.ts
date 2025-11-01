@@ -8,6 +8,10 @@ export default defineNuxtConfig({
     pages: true,
     ssr: true,
 
+    experimental: {
+        crossOriginPrefetch: true,
+    },
+
     app: {
         head: {
             htmlAttrs: {

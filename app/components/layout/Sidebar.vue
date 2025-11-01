@@ -178,9 +178,7 @@ if (!["admin", "teacher"].includes(role.value)) {
                 v-if="!link.notify"
                 :href="link.href"
                 :class="{
-                  active: checkIfLinkIsActive(
-                    link.activeHrefs ? link.activeHrefs : link.href
-                  ),
+                  active: checkIfLinkIsActive(link.activeHrefs ? link.activeHrefs : link.href),
                   link: true
                 }"
               >
@@ -191,9 +189,7 @@ if (!["admin", "teacher"].includes(role.value)) {
                 v-else
                 :href="link.href"
                 :class="{
-                  active: checkIfLinkIsActive(
-                    link.activeHrefs ? link.activeHrefs : link.href
-                  ),
+                  active: checkIfLinkIsActive(link.activeHrefs ? link.activeHrefs : link.href),
                   link: true,
                   notify: true
                 }"

@@ -130,7 +130,7 @@ const updateUserData = async (): Promise<void> => {
     <template #content>
       <div id="settings">
         <Navigation class="navigation" title="Nastavení" :active-link-id="1" :links="[
-          { name: 'Profil', path: '/panel/settings' },
+          { name: 'Údaje', path: '/panel/settings' },
           { name: 'Zabezpečení', path: '/panel/settings/security' },
           { name: 'Přizpůsobení', path: '/panel/settings/customization' },
         ]" />

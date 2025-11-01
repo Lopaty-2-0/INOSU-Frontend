@@ -14,6 +14,7 @@ export const useAccountStore = defineStore("account", {
         idClass: [] as number[],
         createdAt: new Date() as Date,
         updatedAt: new Date() as Date,
+        reminders: true as boolean,
         links: [] as AccountLink[],
         theme: "" as AccountTheme,
     }),
@@ -29,7 +30,8 @@ export const useAccountStore = defineStore("account", {
                 profilePicture: this.profilePicture,
                 idClass: this.idClass,
                 createdAt: this.createdAt,
-                updatedAt: this.updatedAt
+                updatedAt: this.updatedAt,
+                reminders: this.reminders
             };
         },
         getLocalAccountData(): LocalAccountData {
@@ -41,6 +43,7 @@ export const useAccountStore = defineStore("account", {
                 idClass: this.idClass,
                 abbreviation: this.abbreviation,
                 createdAt: this.createdAt,
+                reminders: this.reminders,
                 updatedAt: this.updatedAt,
             }
         },
@@ -67,6 +70,7 @@ export const useAccountStore = defineStore("account", {
             this.idClass = accountData.idClass;
             this.createdAt = accountData.createdAt;
             this.updatedAt = accountData.updatedAt;
+            this.reminders = accountData.reminders;
         },
         setId(id: string): void {
             this.id = id;
@@ -81,6 +85,7 @@ export const useAccountStore = defineStore("account", {
                 idClass: this.idClass,
                 createdAt: this.createdAt,
                 updatedAt: this.updatedAt,
+                reminders: this.reminders
             }));
         },
         updateProfilePicture(profilePicture: string): void {

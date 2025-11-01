@@ -9,6 +9,7 @@ type AccountData = {
     idClass: number[];
     createdAt: Date;
     updatedAt: Date;
+    reminders: boolean;
 }
 
 type AccountLink = {
