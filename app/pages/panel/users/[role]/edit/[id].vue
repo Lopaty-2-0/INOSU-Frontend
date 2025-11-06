@@ -55,7 +55,6 @@ const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string,
   role: "",
   classes: [],
 });
-
 const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[] | undefined}>({
   profilePicture: undefined,
   name: undefined,
@@ -66,6 +65,7 @@ const newUserData = ref<{ profilePicture: File | undefined; name: string | undef
   role: undefined,
   classes: undefined,
 });
+
 const onFullNameUpdate = (fullName: { name: string | undefined, surname: string | undefined }): void => {
   newUserData.value.name = fullName.name;
   newUserData.value.surname = fullName.surname;
@@ -93,6 +93,17 @@ const onClassUpdate = (data: { classes: number[] | undefined }): void => {
 
 const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefined }): void => {
   newUserData.value.profilePicture = updatedUserData.profilePicture;
+};
+
+const isEqual = (arr1: number[] | undefined, arr2: number[] | undefined): boolean => {
+  if (!arr1 && !arr2) return true;
+  if (!arr1 || !arr2) return false;
+  if (arr1.length !== arr2.length) return false;
+
+  const sortedArr1 = [...arr1].sort();
+  const sortedArr2 = [...arr2].sort();
+
+  return JSON.stringify(sortedArr1) === JSON.stringify(sortedArr2);
 };
 
 const resetUserData = (): void => {
@@ -175,9 +186,7 @@ const updateUser = async (): Promise<void> => {
           if (newUserData.value.abbreviation) oldUserData.value.abbreviation = newUserData.value.abbreviation;
           if (newUserData.value.role) oldUserData.value.role = newUserData.value.role;
           if (newUserData.value.classes) oldUserData.value.classes = newUserData.value.classes;
-          if (newUserData.value.profilePicture) {
-            oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
-          }
+          if (newUserData.value.profilePicture) oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
 
           resetUserData();
           break;
@@ -222,6 +231,7 @@ useFetch(`/api/user/get/id?id=${encodeURIComponent(id)}`, {
       oldUserData.value.abbreviation = user.abbreviation || "";
       oldUserData.value.role = user.role;
       oldUserData.value.classes = user.idClass;
+      newUserData.value.classes = user.idClass;
       oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
     } else {
       await router.push(`/panel/users/${role}/edit`);
@@ -245,7 +255,7 @@ watchEffect((): void => {
           <Breadcrumb :items="[
             { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
             { label: role, to: '/panel/users/' + role },
-            { label: 'Upravení', to: '/panel/users/' + role + '/edit' },
+            { label: 'Upravení', to: role === 'student' ? '/panel/users/' + role : '/panel/users/' + role + '/edit' },
             { label: id, to: '/panel/users/' + role + '/edit' + '/' + id, active: true }
           ]"/>
         </template>
@@ -314,7 +324,7 @@ watchEffect((): void => {
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Třída <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
+              <h3>Třída <span class="update" v-show="!isEqual(newUserData.classes, oldUserData.classes)">(aktualizováno)</span></h3>
               <p>Vyberte třídu nebo více tříd, které chcete uživateli přiřadit.</p>
             </div>
 

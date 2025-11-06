@@ -72,7 +72,6 @@ export default defineNuxtConfig({
         "@nuxtjs/i18n",
         "@nuxt/icon",
         "nuxt-security",
-        "@nuxtjs/tailwindcss",
         "@yuta-inoue-ph/nuxt-vcalendar",
     ],
 

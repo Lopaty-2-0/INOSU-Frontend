@@ -266,6 +266,7 @@ defineExpose({ reset })
             a {
               flex: 1;
               color: rgba(var(--description-color), 1);
+              text-decoration: none;
               transition: 0.2s;
               font-size: 16px;
               overflow: hidden;

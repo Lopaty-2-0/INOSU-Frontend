@@ -22,7 +22,7 @@ useFetch("/api/user/get/number", {
   credentials: "include",
   ignoreResponseError: true,
   onResponse({response}: any) {
-    const users: number = response._data.data.users;
+    const users: number = response._data.data.count;
 
     numberOfUsers.value = users || 0;
   },
@@ -162,6 +162,7 @@ watchEffect((): void => {
           .role {
             border-radius: var(--normal-border-radius);
             display: flex;
+            text-decoration: none;
             flex: 1;
             gap: 30px;
             flex-direction: column;

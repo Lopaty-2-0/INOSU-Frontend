@@ -31,7 +31,7 @@ const oldUserData = computed<{ profilePicture: string, reminders: boolean }>(() 
 
 const newUserData = ref<{ profilePicture: File | undefined, reminders: boolean }>({
   profilePicture: undefined,
-  reminders: accountData.value.reminders,
+  reminders: oldUserData.value.reminders,
 });
 
 const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefined }): void => {
