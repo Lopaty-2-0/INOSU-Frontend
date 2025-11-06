@@ -287,6 +287,7 @@ watchEffect((): void => {
       background: var(--btn-2-background);
       color: var(--btn-2-color);
       border: var(--border-width) solid rgba(var(--border-color), 0.5);
+      cursor: pointer;
 
       &:hover {
         background: var(--btn-2-hover-background);

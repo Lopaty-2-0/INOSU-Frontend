@@ -211,6 +211,7 @@ watchEffect((): void => {
       border-radius: var(--small-border-radius);
       transition: 0.2s;
       font-size: 16px;
+      cursor: pointer;
 
       &.remove {
         color: var(--actionBar-actions-remove-color);
