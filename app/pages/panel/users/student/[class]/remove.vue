@@ -24,13 +24,13 @@ useHead({
   meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
+const usersGrid = ref<InstanceType<typeof UsersGrid> | null>(null);
 const loading = ref<boolean>(false);
 const alertsStore = useAlertsStore();
 const users = ref<AccountData[] | null>(null);
 const numberOfPages = ref<number>(0);
 const activePage = ref<number>(0);
 const selectedUsers = ref<AccountData[]>([]);
-const resetSelectedUsers = ref<boolean>(false);
 const searchInput = ref<string>("");
 const searchedUsers = ref<AccountData[]>([]);
 
@@ -62,12 +62,8 @@ const searchUsers = (): void => {
   searchedUsers.value = allSearchedUsers;
 };
 
-const pingResetSelectedUsers = (): void => {
-  resetSelectedUsers.value = false;
-
-  setTimeout((): void => {
-    resetSelectedUsers.value = true;
-  }, 10);
+const resetSelectedUsers = (): void => {
+  if (usersGrid.value) usersGrid.value.reset();
 };
 
 const removeUsers = async (): Promise<void> => {
@@ -107,7 +103,7 @@ const removeUsers = async (): Promise<void> => {
               );
             });
             searchedUsers.value = [...users.value];
-            pingResetSelectedUsers();
+            resetSelectedUsers();
           }
           break;
         default:
@@ -197,13 +193,14 @@ watchEffect((): void => {
                 color="var(--actionBar-actions-remove-color)"
               />
             </button>
-            <button class="reset" @click="pingResetSelectedUsers">
+            <button class="reset" @click="resetSelectedUsers">
               Zrušit vše
             </button>
           </div>
 
           <div class="users">
             <UsersGrid
+              ref="usersGrid"
               :users="searchedUsers"
               :users-per-page="12"
               :action="'remove'"
@@ -258,6 +255,7 @@ watchEffect((): void => {
     .buttons {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
 
       button {
         display: flex;
@@ -270,6 +268,7 @@ watchEffect((): void => {
         border: var(--border-width) solid transparent;
         transition: 0.2s;
         font-size: 16px;
+        cursor: pointer;
 
         &.remove {
           color: var(--actionBar-actions-remove-color);

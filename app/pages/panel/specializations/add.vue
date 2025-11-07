@@ -7,6 +7,7 @@ import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Input from "~/components/ui/Input.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import NumberInput from "~/components/ui/NumberInput.vue";
 
 useHead({
   title: "Panel | Zaměření - Přidání",
@@ -35,7 +36,7 @@ const checkForErrors = (): void => {
   errors.value.lengthOfStudy = "";
   errors.value.abbreviation = "";
 
-  if (specializationData.value.name.length < 1) {
+  if (!specializationData.value.name) {
     errors.value.name = "Název třídy je povinný.";
   }
 
@@ -45,7 +46,7 @@ const checkForErrors = (): void => {
     errors.value.lengthOfStudy = "Délka studia musí být větší než 0.";
   }
 
-  if (specializationData.value.abbreviation.length < 1) {
+  if (!specializationData.value.abbreviation) {
     errors.value.abbreviation = "Zkratka zaměření je povinná.";
   } else if (specializationData.value.abbreviation.length > 1) {
     errors.value.abbreviation = "Zkratka zaměření může mít maximálně 1 znak.";
@@ -63,12 +64,12 @@ const resetInputs = (): void => {
 };
 
 const addSpecialization = async (): Promise<void> => {
-  if (specializationData.value.name.length < 1 || specializationData.value.lengthOfStudy === null || specializationData.value.abbreviation.length < 1) {
+  if (!specializationData.value.name || specializationData.value.lengthOfStudy === null || !specializationData.value.abbreviation) {
     alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
     return;
   }
 
-  if (errors.value.name.length > 0 || errors.value.lengthOfStudy.length > 0 || errors.value.abbreviation.length > 0) {
+  if (errors.value.name || errors.value.lengthOfStudy || errors.value.abbreviation) {
     alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Opravte chyby ve formuláři." });
     return;
   }
@@ -183,7 +184,7 @@ const addSpecialization = async (): Promise<void> => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Zkratka * <span class="update" v-show="specializationData.abbreviation">(aktualizováno)</span></h3>
+                <h3>Zkratka * <span class="update" v-show="specializationData.abbreviation && specializationData.abbreviation.length === 1">(aktualizováno)</span></h3>
                 <p>Zadejte jednopísmennou zkratku zaměření. Zkratka musí být unikátní.</p>
               </div>
 
@@ -203,7 +204,7 @@ const addSpecialization = async (): Promise<void> => {
 
               <div class="content">
                 <label for="lengthOfStudy">Délka studia</label>
-                <Input type="number" id="lengthOfStudy" placeholder="1" min="1" v-model="specializationData.lengthOfStudy" @input="checkForErrors" />
+                <NumberInput v-model="specializationData.lengthOfStudy" :min="1" placeholder="1" id="lengthOfStudy" @update:model-value="checkForErrors" />
 
                 <p class="input-error" v-if="errors.lengthOfStudy.length > 0">{{ errors.lengthOfStudy }}</p>
               </div>
@@ -249,115 +250,6 @@ const addSpecialization = async (): Promise<void> => {
       flex-direction: column;
       gap: 35px;
       width: 100%;
-    }
-
-    .dropdown {
-      position: relative;
-      display: flex;
-      width: 100%;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      flex-direction: column;
-
-      &.error {
-        .title input {
-          border: var(--border-width) solid rgba(var(--error-color), 1);
-        }
-      }
-
-      .title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: 0.2s;
-        width: 100%;
-        gap: 10px;
-        padding: 15px;
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        color: var(--btn-2-color);
-        background: var(--btn-2-background);
-        border-radius: var(--normal-border-radius);
-        cursor: pointer;
-        line-height: 0;
-
-        .icon {
-          font-size: 16px;
-        }
-      }
-
-      .dropdown-content {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        transition: 0.2s;
-        margin-top: 10px;
-        border-radius: var(--normal-border-radius);
-        font-size: 16px;
-        outline: none;
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        background: var(--input-background);
-        color: var(--input-color);
-        width: 100%;
-        word-break: break-word;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 5;
-
-        &::-webkit-scrollbar {
-          width: 5px;
-        }
-
-        .item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 15px;
-          transition: 0.2s;
-          cursor: pointer;
-
-          span {
-            text-transform: uppercase;
-          }
-
-          .name {
-            text-transform: none;
-          }
-
-          .icon {
-            font-size: 16px;
-            color: rgba(var(--description-color), 1);
-          }
-
-          &.selected {
-            .icon, span {
-              color: rgba(var(--main-color), 1);
-            }
-          }
-
-          &.error {
-            color: rgba(var(--error-color), 1);
-          }
-
-          &:hover {
-            background: var(--input-background-hover);
-          }
-
-          &:last-child {
-            border-bottom-left-radius: var(--normal-border-radius);
-            border-bottom-right-radius: var(--normal-border-radius);
-          }
-
-          &:first-child {
-            border-top-left-radius: var(--normal-border-radius);
-            border-top-right-radius: var(--normal-border-radius);
-          }
-
-          &:not(:last-child) {
-            border-bottom: var(--border-width) solid rgba(var(--border-color), 1);
-          }
-        }
-      }
     }
 
     .section {
@@ -476,12 +368,16 @@ const addSpecialization = async (): Promise<void> => {
     .buttons {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
 
       button {
         padding: 10px 15px;
         border-radius: var(--small-border-radius);
         transition: 0.2s;
         font-size: 16px;
+        cursor: pointer;
+        border: none;
+
 
         &[type="submit"] {
           display: flex;

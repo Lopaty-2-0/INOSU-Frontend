@@ -286,6 +286,8 @@ onMounted((): void => {
           font-weight: var(--btn-1-font-weight);
           font-size: 16px;
           width: 100%;
+          border: none;
+          cursor: pointer;
 
           &:hover {
             background: var(--btn-1-hover-background);
@@ -298,6 +300,7 @@ onMounted((): void => {
         font-size: 16px;
         transition: 0.2s;
         width: fit-content;
+        text-decoration: none;
 
         &:hover {
           color: var(--mini-title-color);

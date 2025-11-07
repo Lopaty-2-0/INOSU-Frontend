@@ -11,6 +11,7 @@ import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
+import NumberInput from "~/components/ui/NumberInput.vue";
 
 useHead({
   title: "Panel | Třídy - Přidání",
@@ -97,7 +98,7 @@ const checkForErrors = (): void => {
   errors.value.group = "";
   errors.value.specialization = "";
 
-  if (classData.value.name && classData.value.name.length < 1) {
+  if (!classData.value.name) {
     errors.value.name = "Název třídy je povinný.";
   }
 
@@ -107,9 +108,9 @@ const checkForErrors = (): void => {
     errors.value.grade = "Ročník třídy musí být větší než 0.";
   }
 
-  if (classData.value.group && classData.value.group.length < 1) {
+  if (!classData.value.group) {
     errors.value.group = "Skupina třídy je povinná.";
-  } else if (classData.value.group && classData.value.group.length > 1) {
+  } else if (classData.value.group.length > 1) {
     errors.value.group = "Skupina třídy musí být maximálně 1 znak.";
   }
 
@@ -124,7 +125,7 @@ const addClass = async (): Promise<void> => {
     return;
   }
 
-  if (errors.value.name.length > 0 || errors.value.grade.length > 0 || errors.value.group.length > 0 || errors.value.specialization.length > 0) {
+  if (errors.value.name || errors.value.grade || errors.value.group || errors.value.specialization) {
     alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Některá pole obsahují chyby." });
     return;
   }
@@ -304,7 +305,7 @@ watchEffect((): void => {
 
               <div class="content">
                 <label for="grade">Ročník</label>
-                <Input type="number" id="grade" placeholder="1" min="1" v-model="classData.grade" @input="checkForErrors" />
+                <NumberInput v-model="classData.grade" :min="1" placeholder="1" id="grade" @update:model-value="checkForErrors" />
 
                 <p class="input-error" v-if="errors.grade.length > 0">{{ errors.grade }}</p>
               </div>
@@ -312,7 +313,7 @@ watchEffect((): void => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Skupina * <span class="update" v-show="classData.group">(aktualizováno)</span></h3>
+                <h3>Skupina * <span class="update" v-show="classData.group && classData.group.length === 1">(aktualizováno)</span></h3>
                 <p>Zadejte označení skupiny, například písmeno A. Skupina musí být tvořena právě jedním znakem.</p>
               </div>
 
@@ -376,115 +377,6 @@ watchEffect((): void => {
         flex-direction: column;
         gap: 10px;
         flex: 1;
-      }
-    }
-
-    .dropdown {
-      position: relative;
-      display: flex;
-      width: 100%;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      flex-direction: column;
-
-      &.error {
-        .title input {
-          border: var(--border-width) solid rgba(var(--error-color), 1);
-        }
-      }
-
-      .title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: 0.2s;
-        width: 100%;
-        gap: 10px;
-        padding: 15px;
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        color: var(--btn-2-color);
-        background: var(--btn-2-background);
-        border-radius: var(--normal-border-radius);
-        cursor: pointer;
-        line-height: 0;
-
-        .icon {
-          font-size: 16px;
-        }
-      }
-
-      .dropdown-content {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        transition: 0.2s;
-        margin-top: 10px;
-        border-radius: var(--normal-border-radius);
-        font-size: 16px;
-        outline: none;
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        background: var(--input-background);
-        color: var(--input-color);
-        width: 100%;
-        word-break: break-word;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 5;
-
-        &::-webkit-scrollbar {
-          width: 5px;
-        }
-
-        .item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 15px;
-          transition: 0.2s;
-          cursor: pointer;
-
-          .uppercase {
-            text-transform: uppercase;
-          }
-
-          .name {
-            text-transform: none;
-          }
-
-          .icon {
-            font-size: 16px;
-            color: rgba(var(--description-color), 1);
-          }
-
-          &.selected {
-            .icon, span {
-              color: rgba(var(--main-color), 1);
-            }
-          }
-
-          &.error {
-            color: rgba(var(--error-color), 1);
-          }
-
-          &:hover {
-            background: var(--input-background-hover);
-          }
-
-          &:last-child {
-            border-bottom-left-radius: var(--normal-border-radius);
-            border-bottom-right-radius: var(--normal-border-radius);
-          }
-
-          &:first-child {
-            border-top-left-radius: var(--normal-border-radius);
-            border-top-right-radius: var(--normal-border-radius);
-          }
-
-          &:not(:last-child) {
-            border-bottom: var(--border-width) solid rgba(var(--border-color), 1);
-          }
-        }
       }
     }
 
@@ -604,12 +496,15 @@ watchEffect((): void => {
     .buttons {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
 
       button {
         padding: 10px 15px;
         border-radius: var(--small-border-radius);
         transition: 0.2s;
         font-size: 16px;
+        cursor: pointer;
+        border: none;
 
         &[type="submit"] {
           display: flex;

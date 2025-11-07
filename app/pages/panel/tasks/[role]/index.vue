@@ -158,6 +158,7 @@ watchEffect((): void => {
       background: var(--btn-2-background);
       color: var(--btn-2-color);
       border: var(--border-width) solid rgba(var(--border-color), 0.5);
+      cursor: pointer;
 
       &:hover {
         background: var(--btn-2-hover-background);
@@ -211,6 +212,7 @@ watchEffect((): void => {
         border: var(--border-width) solid transparent;
         transition: 0.2s;
         font-size: 16px;
+        cursor: pointer;
 
         &.remove {
           color: var(--actionBar-actions-remove-color);

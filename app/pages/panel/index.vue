@@ -15,6 +15,7 @@ import Editor from "~/components/ui/Editor.vue";
 import Card from "~/components/ui/Card.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import { useLoadingStore } from "~/stores/loading";
+import NumberInput from "~/components/ui/NumberInput.vue";
 
 useHead({
   title: "Panel | Domů",
