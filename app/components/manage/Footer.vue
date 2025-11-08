@@ -84,6 +84,8 @@ const props = defineProps({
     border-radius: var(--small-border-radius);
     transition: 0.2s;
     font-size: 16px;
+    border: none;
+    cursor: pointer;
 
     &[type="submit"] {
       display: flex;

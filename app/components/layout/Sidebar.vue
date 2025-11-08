@@ -178,9 +178,7 @@ if (!["admin", "teacher"].includes(role.value)) {
                 v-if="!link.notify"
                 :href="link.href"
                 :class="{
-                  active: checkIfLinkIsActive(
-                    link.activeHrefs ? link.activeHrefs : link.href
-                  ),
+                  active: checkIfLinkIsActive(link.activeHrefs ? link.activeHrefs : link.href),
                   link: true
                 }"
               >
@@ -191,9 +189,7 @@ if (!["admin", "teacher"].includes(role.value)) {
                 v-else
                 :href="link.href"
                 :class="{
-                  active: checkIfLinkIsActive(
-                    link.activeHrefs ? link.activeHrefs : link.href
-                  ),
+                  active: checkIfLinkIsActive(link.activeHrefs ? link.activeHrefs : link.href),
                   link: true,
                   notify: true
                 }"
@@ -282,10 +278,14 @@ if (!["admin", "teacher"].includes(role.value)) {
   .items {
     margin-left: 30px;
 
-    .links .link {
-      margin-left: -10px;
-      display: flex;
-      align-items: center;
+    .links {
+      list-style-type: none;
+
+      .link {
+        margin-left: -10px;
+        display: flex;
+        align-items: center;
+      }
     }
 
     .notify .number {
@@ -358,6 +358,8 @@ if (!["admin", "teacher"].includes(role.value)) {
 
     button {
       color: rgba(var(--description-color), 1);
+      background: none;
+      border: none;
       font-size: 16px;
       transition: 0.2s;
       display: flex;

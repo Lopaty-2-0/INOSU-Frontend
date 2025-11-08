@@ -27,7 +27,7 @@ const userData = ref<{ passwords: { old: string, new: string } }>({
 });
 
 const checkPasswordRules = (): void => {
-  passwordRulesCheck.value[0] = userData.value.passwords.new.length >= 5; // Check if password length is at least 5 characters
+  passwordRulesCheck.value[0] = (userData.value.passwords.new || "").length >= 5; // Check if password length is at least 5 characters
 
   // Reset password rules check if password length is less than 6 characters
   if (!passwordRulesCheck.value[0]) {
@@ -44,6 +44,9 @@ const onPasswordsUpdate = (passwordsInputs: { old: string | undefined, new: stri
   if (!passwordsInputs.old || !passwordsInputs.new) {
     userData.value.passwords.old = "";
     userData.value.passwords.new = "";
+
+    checkPasswordRules();
+
     return;
   }
 
@@ -130,7 +133,7 @@ const updateUserData = async (): Promise<void> => {
     <template #content>
       <div id="settings">
         <Navigation class="navigation" title="Nastavení" :active-link-id="1" :links="[
-          { name: 'Profil', path: '/panel/settings' },
+          { name: 'Údaje', path: '/panel/settings' },
           { name: 'Zabezpečení', path: '/panel/settings/security' },
           { name: 'Přizpůsobení', path: '/panel/settings/customization' },
         ]" />

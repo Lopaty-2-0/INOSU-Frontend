@@ -424,6 +424,8 @@ onMounted((): void => {
           justify-content: center;
           align-items: center;
           gap: 15px;
+          border: none;
+          cursor: pointer;
 
           &:hover {
             background: var(--btn-1-hover-background);
@@ -436,6 +438,7 @@ onMounted((): void => {
         font-size: 16px;
         transition: 0.2s;
         width: fit-content;
+        text-decoration: none;
 
         &:hover {
           color: var(--mini-title-color);

@@ -65,13 +65,14 @@ const clickAction = (link: { name: string; path?: string; action?: Function; }):
       flex-direction: row;
       align-items: center;
       gap: 10px;
-      color: rgba(var(--description-color), 1);
       transition: 0.2s;
+      color: rgba(var(--description-color), 1);
       cursor: pointer;
       font-size: 16px;
 
       a {
         text-decoration: none;
+        color: inherit;
         width: 100%;
       }
 

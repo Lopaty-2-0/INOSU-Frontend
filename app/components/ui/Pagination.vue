@@ -137,6 +137,8 @@ watch([() => props.numberOfPages, () => props.chunkSize], ([newCount, newChunk]:
     font-weight: 500;
     color: rgba(var(--description-color), 1);
     cursor: pointer;
+    background: none;
+    border: none;
 
     .icon {
       font-size: 16px;

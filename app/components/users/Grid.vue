@@ -4,6 +4,7 @@ import { ref, watch } from "vue";
 import useArrayChunks from "../../componsables/useArrayChunks";
 import type { AccountData } from "~/types/account";
 import Card from "~/components/ui/Card.vue";
+import Image from "~/components/ui/Image.vue";
 
 const props = defineProps({
   users: {
@@ -26,6 +27,7 @@ const props = defineProps({
   },
 });
 const emits = defineEmits(["get:numberOfPages", "get:selectedUsers"]);
+const config = useRuntimeConfig();
 
 const numberOfPages = ref<number>(0);
 const allUsersPages = ref<AccountData[][]>([]);
@@ -78,7 +80,7 @@ defineExpose({ reset });
       >
         <div class="user">
           <div class="head">
-            <img :src="'/api/file/pfp/' + user.profilePicture" alt="User profile photo" loading="lazy"/>
+            <Image :src="config.public.originUrl + '/api/file/pfp/' + user.profilePicture" alt="User profile photo"/>
             <h3>{{ user.name }} {{ user.surname }}</h3>
           </div>
 
@@ -129,7 +131,7 @@ defineExpose({ reset });
           gap: 10px;
           flex-wrap: wrap;
 
-          img {
+          ::v-deep(img) {
             width: 45px;
             height: 45px;
             border-radius: var(--small-border-radius);

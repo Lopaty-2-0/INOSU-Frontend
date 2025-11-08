@@ -6,7 +6,7 @@
 }
 
 [data-theme="light"] {
-  --main-background: #E8EEF2;
+  --main-background: 232, 238, 242;
   --main-color: 21, 23, 162;
   --default-line-height: 1.2;
   --title-color: #000000;
@@ -89,10 +89,13 @@
   --input-background-hover: #e3e7ec;
   --input-placeholder-color: rgba(var(--description-color), 0.8);
   --input-color: rgba(var(--description-color), 1);
+  --input-checkbox-background: transparent;
+  --input-checkbox-checkmark-color: rgba(var(--main-color), 1);
+  --input-checkbox-checked-background: rgba(var(--main-color), 1);
 }
 
 [data-theme="dark"] {
-  --main-background: #1C1E26;
+  --main-background: 28, 30, 38;
   --main-color: 131, 142, 255;
   --default-line-height: 1.2;
   --title-color: #ffffff;
@@ -175,4 +178,7 @@
   --input-background-hover: #3a3d45;
   --input-placeholder-color: rgba(var(--description-color), 0.8);
   --input-color: rgba(var(--description-color), 1);
+  --input-checkbox-background: transparent;
+  --input-checkbox-checkmark-color: #ffffff;
+  --input-checkbox-checked-background: rgba(var(--main-color), 1);
 }

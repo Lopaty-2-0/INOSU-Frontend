@@ -173,6 +173,7 @@ watchEffect((): void => {
           flex: 1;
           cursor: pointer;
           min-width: 200px;
+          text-decoration: none;
 
           .card {
             width: 100%;

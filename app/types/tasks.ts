@@ -3,9 +3,11 @@ interface TaskData {
     name: string;
     startDate: Date;
     endDate: Date;
+    deadline?: Date | null;
     task: string;
     guarantor: number;
-    approve: boolean;
+    type: "maturita" | "task";
+    points: number;
 }
 
 interface User_Task {

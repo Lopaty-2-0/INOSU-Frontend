@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
-import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import type {ClassData} from "~/types/classes";
@@ -9,20 +8,13 @@ import checkPermissions from "~/componsables/checkPermissions";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
+import ClassesTable from "~/components/tables/Classes.vue";
 
 useHead({
   title: "Panel | Třídy",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
-const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "class", title: "Třída", type: "string" },
-  { field: "grade", title: "Ročník", type: "number" },
-  { field: "group", title: "Skupina", type: "string" },
-  { field: "specialization", title: "Zaměření (zkratka)", type: "string" },
-]);
 const allClasses = ref<ClassData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
@@ -55,7 +47,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content>
+    <template #content v-if="allClasses">
       <div id="classes">
         <div class="content">
           <ActionBar
@@ -82,34 +74,16 @@ watchEffect((): void => {
 
             <div class="search">
               <input
-                  type="text"
-                  name="searchInput"
-                  placeholder="Hledat třídy"
-                  v-model="searchInput"
+                type="text"
+                name="searchInput"
+                placeholder="Hledat třídy"
+                v-model="searchInput"
               />
               <Icon class="icon" name="material-symbols:search-rounded"></Icon>
             </div>
           </div>
 
-          <Vue3Datatable :rows="allClasses" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput" no-data-content="Žádná data k dispozici">
-            <template #group="data">
-              <p>
-                {{ data.value.group }}
-              </p>
-            </template>
-
-            <template #specialization="data">
-              <p>
-                {{ data.value.specialization }}
-              </p>
-            </template>
-
-            <template #class="data">
-              <p>
-                {{ data.value.specialization }}{{ data.value.grade }}{{ data.value.group }}
-              </p>
-            </template>
-          </Vue3Datatable>
+          <ClassesTable :classes="allClasses" :search="searchInput" />
         </div>
       </div>
     </template>
@@ -117,12 +91,6 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-@use "../../../assets/style/datatable";
-
-::v-deep(.bh-datatable .bh-table-responsive tr td p) {
-  text-transform: uppercase;
-}
-
 #classes {
   display: flex;
   flex-direction: row;

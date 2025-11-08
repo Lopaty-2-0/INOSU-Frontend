@@ -2,10 +2,7 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import {ref, watchEffect} from "vue";
-import moment from "moment";
 import Navigation from "~/components/ui/Navigation.vue";
-import Vue3Datatable from "@bhplugin/vue3-datatable";
-import "@bhplugin/vue3-datatable/dist/style.css";
 import type {TaskData} from "~/types/tasks";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
@@ -14,6 +11,7 @@ import {useFetch} from "nuxt/app";
 import Editor from "~/components/ui/Editor.vue";
 import Card from "~/components/ui/Card.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import TasksTable from "~/components/tables/Tasks.vue";
 import { useLoadingStore } from "~/stores/loading";
 
 useHead({
@@ -23,14 +21,6 @@ useHead({
 
 const accountStore = useAccountStore();
 const { getRole: role, getId: userId } = storeToRefs(accountStore);
-const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "startDate", title: "Začátek", type: "date" },
-  { field: "endDate", title: "Konec", type: "date" },
-  { field: "task", title: "Zadání", type: "string" },
-  { field: "actions", title: "Akce" },
-]);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const numbers = ref<{ students: number | null; classes: number | null; teachers: number | null }>({
@@ -80,14 +70,14 @@ const infoCards = computed<{ title: string; icon: string; value: string | number
   },
 ]);
 
-const updateContent = (newContent: { html: string }) => {
-  console.log(newContent);
-};
-
 const openTask = async (id: number): Promise<void> => {
   if (!id) return;
 
   await navigateTo(`/panel/tasks/${role.value}/${id}`);
+};
+
+const updateContent = (newContent: { html: string }) => {
+  console.log(newContent);
 };
 
 useFetch("/api/user/get/count/by-role?role=student", {
@@ -151,7 +141,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content>
+    <template #content v-if="allTasks">
       <div id="home">
         <div class="info">
           <div class="line">
@@ -176,17 +166,18 @@ watchEffect((): void => {
           </ul>
         </div>
 
+        <Editor
+          @update:content="updateContent"
+          :content="editorContent"
+          :focus="editorFocus"
+          :enable="editorEnable"
+          placeholder="Vyberte textový element na stránce"
+        />
+
         <div class="line">
-          <Editor
-            @update:content="updateContent"
-            :content="editorContent"
-            :focus="editorFocus"
-            :enable="editorEnable"
-            placeholder="Vyberte textový element na stránce"
-          />
           <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />
 
-          <div class="line">
+          <div class="column tasks">
             <div class="line">
               <div class="section-head">
                 <h3>{{ ["admin", "teacher"].includes(role) ? "Vytvořené úkoly" : "Rozpracované úkoly" }}</h3>
@@ -200,31 +191,13 @@ watchEffect((): void => {
               />
             </div>
 
-            <Vue3Datatable :pageSize="5" :sortable="true" :search="searchInput" :pagination="false" :rows="allTasks" :columns="cols" no-data-content="Žádná data k dispozici">
-              <template #task="data">
-                <a :href="`http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`" class="link" download target="_blank">
-                  {{ data.value.task }}
-                </a>
-              </template>
-
-              <template #startDate="data">
-                <p>{{ moment(data.value.startDate).format("DD.MM. YYYY HH:MM") }}</p>
-              </template>
-
-              <template #endDate="data">
-                <p>{{ moment(data.value.endDate).format("DD.MM. YYYY HH:MM") }}</p>
-              </template>
-
-              <template #approve="data">
-                <p>{{ data.value.approve ? "Ano" : "Ne" }}</p>
-              </template>
-
+            <TasksTable :tasks="allTasks" :search="searchInput" :page-size="5" :pagination="false">
               <template #actions="data">
                 <div class="actions">
-                  <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>
+                  <button type="button" class="default" @click="openTask(data.row.id)">Otevřít</button>
                 </div>
               </template>
-            </Vue3Datatable>
+            </TasksTable>
           </div>
         </div>
       </div>
@@ -233,8 +206,6 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-@use "../../assets/style/datatable";
-
 #home {
   width: 100%;
   display: flex;
@@ -287,6 +258,7 @@ watchEffect((): void => {
       background: var(--btn-2-background);
       color: var(--btn-2-color);
       border: var(--border-width) solid rgba(var(--border-color), 0.5);
+      cursor: pointer;
 
       &:hover {
         background: var(--btn-2-hover-background);
@@ -316,6 +288,21 @@ watchEffect((): void => {
     gap: 30px;
     width: 100%;
     flex: 1;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    width: 100%;
+    flex: 1;
+  }
+
+  .tasks {
+    min-width: 400px;
   }
 
   .info {
@@ -394,8 +381,14 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1250px) {
-  #home .navigation {
-    flex: 1;
+  #home {
+    .navigation {
+      flex: 1;
+    }
+
+    .tasks {
+      min-width: 100%;
+    }
   }
 }
 

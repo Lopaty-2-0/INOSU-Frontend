@@ -21,10 +21,12 @@
   font-size: 16px;
   outline: none;
   box-shadow: none;
+  background: transparent;
+  transition: 0.2s;
 
   &:hover {
-    color: var(--title-color);
-    background: transparent;
+    color: rgba(var(--main-color), 1);
+    opacity: 1;
   }
 }
 
@@ -40,20 +42,22 @@
   transition: 0.2s;
   outline: none;
   box-shadow: none;
+  background: var(--card-2-background);
+  border: var(--border-width) solid rgba(var(--border-color), 0.5);
 
   &:hover {
-    background: var(--card-1-hover-background);
+    background: var(--card-2-hover-background);
     color: var(--title-color);
   }
 
   &.is-active {
-    background: var(--card-1-hover-background);
+    background: var(--card-2-hover-background);
     color: var(--title-color);
     box-shadow: none;
   }
 
   &.is-current {
-    color: rgba(var(--main-color), 1);
+    color: var(--title-color);
   }
 }
 
@@ -62,10 +66,12 @@
   transition: 0.2s;
   outline: none;
   box-shadow: none;
+  background: transparent;
 
   &:hover {
-    color: var(--title-color);
+    color: rgba(var(--main-color), 1);
     background: transparent;
+    opacity: 1;
   }
 }
 
@@ -82,6 +88,12 @@
   outline: none;
   box-shadow: none;
   transition: 0.2s;
+  background: transparent;
+
+  &:hover {
+    color: rgba(var(--main-color), 1);
+    opacity: 1;
+  }
 }
 
 ::v-deep(.vc-weekday) {
@@ -135,9 +147,8 @@
 }
 
 ::v-deep(.vc-base-select) {
-  font-size: 16px;
-
   select {
+    font-size: 16px;
     border-radius: var(--small-border-radius);
     color: rgba(var(--description-color), 1);
 

@@ -3,28 +3,22 @@ import {ref, watch} from "vue";
 import Checkbox from "~/components/ui/Checkbox.vue";
 
 const props = defineProps({
-  oldCheck: {
+  oldRemindersValue: {
     type: [Boolean, null] as PropType<boolean | null>,
     required: false,
   }
 });
 
 const emits = defineEmits(["update"]);
-const check = ref<{ input: boolean, updated: boolean }>({
-  input: props.oldCheck ? props.oldCheck : false,
-  updated: false
-});
-
-const onInput = () => {
-  check.value.updated = props.oldCheck === null ? true : check.value.input !== props.oldCheck;
-
-  emits("update", check.value.updated ? check.value.input : undefined);
-};
+const reminder = ref<boolean>(props.oldRemindersValue ? props.oldRemindersValue : false);
 
 const reset = (): void => {
-  check.value.updated = false;
-  check.value.input = props.oldCheck ? props.oldCheck : false;
+  reminder.value = props.oldRemindersValue ? props.oldRemindersValue : true;
 };
+
+watch(reminder, (value: boolean): void => {
+  emits("update", value);
+});
 
 defineExpose({ reset });
 </script>
@@ -33,11 +27,11 @@ defineExpose({ reset });
   <div class="section">
     <slot />
 
-    <div class="items needApprove">
+    <div class="items reminder">
       <div class="section">
         <div class="content">
-          <Checkbox type="checkbox" id="needApprove" name="needApprove" :value="props.oldCheck" v-model="check.input" @change="onInput" />
-          <label for="needApprove">Nutné schválení</label>
+          <Checkbox type="checkbox" id="reminder" name="reminder" :value="props.oldRemindersValue" v-model="reminder" />
+          <label for="reminder">Dostávat připomínky</label>
         </div>
       </div>
     </div>

@@ -27,9 +27,9 @@ const resetErrors = (): void => {
 const onInput = (): void => {
   resetErrors();
 
-  if (props.type === "new" && passwords.value.old.input.length < 5 && passwords.value.old.input)
+  if (props.type === "new" && (passwords.value.old.input || "").length < 5 && passwords.value.old.input)
     passwords.value.old.error = "Heslo musí mít alespoň 5 znaků.";
-  else if (passwords.value.new.input.length < 5 && passwords.value.new.input)
+  else if ((passwords.value.new.input || "").length < 5 && passwords.value.new.input)
     passwords.value.new.error = "Heslo musí mít alespoň 5 znaků.";
   else passwords.value.old.error = "";
 

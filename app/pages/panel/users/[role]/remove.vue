@@ -253,6 +253,7 @@ watchEffect((): void => {
     .buttons {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
 
       button {
         display: flex;
@@ -265,6 +266,7 @@ watchEffect((): void => {
         border: var(--border-width) solid transparent;
         transition: 0.2s;
         font-size: 16px;
+        cursor: pointer;
 
         &.remove {
           color: var(--actionBar-actions-remove-color);

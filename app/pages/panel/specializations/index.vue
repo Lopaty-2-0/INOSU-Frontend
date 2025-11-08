@@ -1,27 +1,20 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
-import Vue3Datatable from "@bhplugin/vue3-datatable";
-import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {ref, computed, watch, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import type {SpecializationData} from "~/types/specialization";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import { useLoadingStore } from "~/stores/loading";
+import SpecializationsTable from "~/components/tables/Specializations.vue";
 
 useHead({
   title: "Panel | Zaměření",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
-const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "abbreviation", title: "Zkratka", type: "string" },
-  { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number" },
-]);
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 
@@ -54,7 +47,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content>
+    <template #content v-if="allSpecializations">
       <div id="specializations">
         <div class="content">
           <ActionBar
@@ -82,11 +75,7 @@ watchEffect((): void => {
             <SearchInput v-model="searchInput" placeholder="Hledat zaměření" />
           </div>
 
-          <Vue3Datatable :rows="allSpecializations" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput" no-data-content="Žádná data k dispozici">
-            <template #abbreviation="data">
-              <p>{{ data.value.abbreviation }}</p>
-            </template>
-          </Vue3Datatable>
+          <SpecializationsTable :specializations="allSpecializations" :search="searchInput" />
         </div>
       </div>
     </template>
@@ -94,12 +83,6 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-@use "../../../assets/style/datatable";
-
-::v-deep(.bh-datatable .bh-table-responsive tr td p) {
-  text-transform: uppercase;
-}
-
 #specializations {
   display: flex;
   flex-direction: row;

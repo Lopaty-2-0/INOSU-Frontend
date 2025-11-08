@@ -12,10 +12,11 @@
   },
   "dependencies": {
     "@iconify-json/material-symbols": "^1.2.15",
+    "@iconify-json/uil": "^1.2.3",
     "@nuxt/eslint": "1.1.0",
     "@nuxt/icon": "1.10.3",
+    "@nuxt/image": "2.0.0",
     "@nuxtjs/i18n": "^10.1.0",
-    "@nuxtjs/tailwindcss": "6.13.1",
     "@oxc-parser/binding-linux-x64-gnu": "^0.95.0",
     "@vueup/vue-quill": "^1.2.0",
     "nitropack": "^2.12.7",
@@ -42,6 +43,7 @@
       "esbuild"
     ],
     "onlyBuiltDependencies": [
+      "sharp",
       "unrs-resolver"
     ]
   }

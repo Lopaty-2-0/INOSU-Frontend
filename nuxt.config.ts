@@ -8,6 +8,10 @@ export default defineNuxtConfig({
     pages: true,
     ssr: true,
 
+    experimental: {
+        crossOriginPrefetch: true,
+    },
+
     app: {
         head: {
             htmlAttrs: {
@@ -64,12 +68,12 @@ export default defineNuxtConfig({
     sourcemap: process.env.NODE_ENV === "production",
 
     modules: [
-        "@nuxt/eslint",
-        "@nuxtjs/i18n",
-        "@nuxt/icon",
-        "nuxt-security",
-        "@nuxtjs/tailwindcss",
-        "@yuta-inoue-ph/nuxt-vcalendar",
+      "@nuxt/eslint",
+      "@nuxtjs/i18n",
+      "@nuxt/icon",
+      "nuxt-security",
+      "@yuta-inoue-ph/nuxt-vcalendar",
+      "@nuxt/image"
     ],
 
     icon: {
@@ -87,23 +91,27 @@ export default defineNuxtConfig({
         ],
     },
 
-  security: {
-    enabled: process.env.NODE_ENV === "production",
-    hidePoweredBy: true,
-    corsHandler: {
-      origin: process.env.SERVER_URL,
-      methods: ["GET", "POST", "PUT", "DELETE"],
-      credentials: false,
+    security: {
+        enabled: process.env.NODE_ENV === "production",
+        hidePoweredBy: true,
+        corsHandler: {
+            origin: process.env.SERVER_URL,
+            methods: ["GET", "POST", "PUT", "DELETE"],
+            credentials: false,
+        },
+        xssValidator: false,
+        headers: {
+            crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
+            referrerPolicy: "origin",
+            contentSecurityPolicy: {
+                "img-src": ["self", "https:", "data:", "blob:", process.env.SERVER_URL],
+            }
+        }
     },
-    xssValidator: false,
-    headers: {
-      crossOriginEmbedderPolicy: process.env.NODE_ENV === "development" ? "unsafe-none" : "require-corp",
-      referrerPolicy: "origin",
-      contentSecurityPolicy: {
-        "img-src": ["self", "https:", "data:", "blob:", process.env.SERVER_URL],
-      }
-    }
-  },
+
+    image: {
+        domains: ["localhost", "100.114.228.127"],
+    },
 
     routeRules: {
         "/**": {
@@ -121,6 +129,7 @@ export default defineNuxtConfig({
         public: {
             serverUrl: process.env.SERVER_URL || null,
             apiUrl: process.env.API_URL || null,
+            originUrl: process.env.ORIGIN_URL || null,
             production: process.env.NODE_ENV === "production",
         },
     }

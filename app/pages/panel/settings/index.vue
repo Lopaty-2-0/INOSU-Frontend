@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 import EditFormFooter from "~/components/manage/Footer.vue";
+import EditReminders from "~/components/manage/Reminders.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import { ref, computed } from "vue";
@@ -10,7 +11,7 @@ import {useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
 useHead({
-  title: "Panel | Nastavení - Profil",
+  title: "Panel | Nastavení - Údaje",
   meta: [
     { name: "description", content: "Panel Settings User Information" }
   ],
@@ -18,70 +19,85 @@ useHead({
 
 const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();
+const config = useRuntimeConfig();
 const { getAccountData: accountData } = storeToRefs(accountStore);
 
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
-const oldUserData = computed<{ profilePicture: string}>(() => ({
-  profilePicture: "/api/file/pfp/" + accountData.value.profilePicture,
+const editReminders = ref<InstanceType<typeof EditReminders> | null>(null);
+const oldUserData = computed<{ profilePicture: string, reminders: boolean }>(() => ({
+  profilePicture: `${config.public.originUrl}/api/file/pfp/${accountData.value.profilePicture}`,
+  reminders: accountData.value.reminders,
 }));
 
-const newUserData = ref<{ profilePicture: File | undefined }>({
+const newUserData = ref<{ profilePicture: File | undefined, reminders: boolean }>({
   profilePicture: undefined,
+  reminders: oldUserData.value.reminders,
 });
 
 const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefined }): void => {
   newUserData.value.profilePicture = updatedUserData.profilePicture;
 };
 
+const onRemindersUpdate = (remindersValue: boolean): void => {
+  newUserData.value.reminders = remindersValue;
+};
+
 const resetUserData = (): void => {
   newUserData.value = {
     profilePicture: undefined,
+    reminders: oldUserData.value.reminders,
   };
 
+  if (editReminders.value) editReminders.value.reset();
   if (editProfilePicture.value) editProfilePicture.value.reset();
 };
 
 const updateUserData = async (): Promise<void> => {
   submitLoading.value = true;
 
-  if (newUserData.value.profilePicture) {
-    const updateProfileForm: FormData = new FormData();
-
-    updateProfileForm.append("profilePicture", newUserData.value.profilePicture);
-
-    await $fetch("/api/user/update", {
-      method: "PUT",
-      body: updateProfileForm,
-      credentials: "include",
-      ignoreResponseError: true,
-      async onResponse({ response }: any) {
-        const resCode: string = response._data.resCode.toString();
-        const data: any = response._data.data;
-
-        switch (resCode) {
-          case "2010":
-            alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Profilová fotka nebyla zadána." });
-            break;
-          case "2020":
-            alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nepodporovaný formát obrázku." });
-            break;
-          case "2031":
-            alertsStore.addAlert({ type: "success", title: "Změna profilu", message: "Profilový obrázek byl aktualizován." });
-            accountStore.updateProfilePicture(data.user.profilePicture);
-            accountStore.updateAccountDataSessionStorage();
-            newUserData.value.profilePicture = undefined;
-            break;
-          default:
-            alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nastala neznámá chyba." });
-            break;
-        }
-      },
-      async onRequestError() {
-        alertsStore.addAlert({ type: "error", title: "Změna profilu", message: "Nastala neznámá chyba." });
-      }
-    });
+  if (!newUserData.value.profilePicture && oldUserData.value.reminders === newUserData.value.reminders) {
+    submitLoading.value = false;
+    return;
   }
+
+  const updateProfileForm: FormData = new FormData();
+
+  if (newUserData.value.profilePicture) updateProfileForm.append("profilePicture", newUserData.value.profilePicture);
+  if (oldUserData.value.reminders !== newUserData.value.reminders) updateProfileForm.append("reminders", newUserData.value.reminders.toString());
+
+  await $fetch("/api/user/update", {
+    method: "PUT",
+    body: updateProfileForm,
+    credentials: "include",
+    ignoreResponseError: true,
+    async onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+      const data: any = response._data.data;
+
+      switch (resCode) {
+        case "2010":
+          alertsStore.addAlert({ type: "warning", title: "Změna údajů", message: "Nic nebylo zadáno k úpravě." });
+          break;
+        case "2020":
+          alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nepodporovaný formát obrázku." });
+          break;
+        case "2031":
+          alertsStore.addAlert({ type: "success", title: "Změna údajů", message: "Údaje byly úspěšně aktualizovány." });
+          accountStore.updateProfilePicture(data.user.profilePicture);
+          accountStore.updateAccountDataSessionStorage();
+          newUserData.value.profilePicture = undefined;
+          oldUserData.value.reminders = data.user.reminders;
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    async onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nastala neznámá chyba." });
+    }
+  });
 
   submitLoading.value = false;
 };
@@ -94,7 +110,7 @@ const updateUserData = async (): Promise<void> => {
         <template #left>
           <Breadcrumb :items="[
             { label: 'Nastavení', to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
-            { label: 'Profil', to: '/panel/settings', active: true }
+            { label: 'Údaje', to: '/panel/settings', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -103,7 +119,7 @@ const updateUserData = async (): Promise<void> => {
     <template #content>
       <div id="settings">
         <Navigation class="navigation" title="Nastavení" :active-link-id="0" :links="[
-          { name: 'Profil', path: '/panel/settings' },
+          { name: 'Údaje', path: '/panel/settings' },
           { name: 'Zabezpečení', path: '/panel/settings/security' },
           { name: 'Přizpůsobení', path: '/panel/settings/customization' },
         ]" />
@@ -118,6 +134,18 @@ const updateUserData = async (): Promise<void> => {
               <p>Zde můžete změnit svou profilovou fotku. Nahrajte nový obrázek, pokud si přejete aktualizovat stávající profilovou fotografii.</p>
             </div>
           </EditProfilePicture>
+
+          <EditReminders ref="editReminders" class="page-section" :old-reminders-value="oldUserData.reminders" @update="onRemindersUpdate">
+            <div class="section-head">
+              <h3>
+                Připomínky
+                <span class="update" v-show="newUserData.reminders !== oldUserData.reminders">(aktualizováno)</span>
+              </h3>
+              <p>
+                Zde můžete zapnout nebo vypnout připomínky na úkoly. Pokud je povolíte, budete dostávat do e-mailu upozornění na nadcházející úkoly a termíny.
+              </p>
+            </div>
+          </EditReminders>
 
           <EditFormFooter :submit-function="updateUserData" :reset-function="resetUserData" :is-loading="submitLoading" />
         </div>
