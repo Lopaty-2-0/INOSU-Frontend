@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
+import "../../assets/style/datatable.scss";
 import moment from "moment";
 import type { TaskData } from "~/types/tasks";
+import {computed, ref} from "vue";
 
 const props = defineProps({
   tasks: {
@@ -28,9 +30,15 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  pagination: {
+    type: Boolean,
+    required: false,
+    default: true,
+  }
 });
+const emits = defineEmits(["checkboxSelect"]);
 
-const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; }[] = [
+const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string", width: "30%" },
   { field: "startDate", title: "Začátek", type: "date" },
@@ -40,14 +48,39 @@ const cols: { field: string; title: string; type?: string; width?: string; filte
   { field: "task", title: "Zadání", type: "string", width: "30%" },
   { field: "actions", title: "Akce" },
 ];
+const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
+const rows = computed<TaskData[]>((): TaskData[] => {
+  if (!props.pageSize) {
+    return props.tasks;
+  }
+
+  return props.tasks.slice(0, props.pageSize);
+});
+
 
 const downloadTask = (id: number, task: string): void => {
   window.open(`/api/file/task/${id}/${task}`, "_blank");
 };
+
+const onInput = (): void => {
+  if (!datatable.value) return;
+
+  setTimeout((): void => {
+    emits("checkboxSelect", datatable.value.getSelectedRows() as TaskData[]);
+  }, 0);
+};
+
+const clearSelection = (): void => {
+  if (!datatable.value) return;
+
+  datatable.value.clearSelectedRows();
+};
+
+defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable :rows="props.tasks" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" no-data-content="Žádná data k dispozici">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="20" :sortable="true" :search="props.searchInput" no-data-content="Žádná data k dispozici" @input="onInput">
     <template #name="data">
       <span class="limit">{{ data.value.name }}</span>
     </template>
@@ -81,26 +114,36 @@ const downloadTask = (id: number, task: string): void => {
 </template>
 
 <style scoped lang="scss">
-.limit {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+@use "../../assets/style/datatable";
+
+::v-deep(.bh-datatable .bh-table-responsive tr td p) {
+  text-transform: uppercase;
 }
 
-.no-wrap {
-  white-space: nowrap;
-}
+.datatable {
+  width: 100%;
 
-.link {
-  color: rgba(var(--main-color), 1);
-  text-decoration: none;
-  transition: 0.2s;
-  cursor: pointer;
+  .limit {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
 
-  &:hover {
-    color: rgba(var(--main-color), 0.8);
+  .no-wrap {
+    white-space: nowrap;
+  }
+
+  .link {
+    color: rgba(var(--main-color), 1);
+    text-decoration: none;
+    transition: 0.2s;
+    cursor: pointer;
+
+    &:hover {
+      color: rgba(var(--main-color), 0.8);
+    }
   }
 }
 </style>

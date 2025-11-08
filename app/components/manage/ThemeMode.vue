@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import type { AccountTheme } from "~/types/account";
 import Card from "~/components/ui/Card.vue";
+import Image from "~/components/ui/Image.vue";
+import themeSystem from "~/assets/images/theme-system.svg?url";
+import themeDark from "~/assets/images/theme-dark.svg?url";
+import themeLight from "~/assets/images/theme-light.svg?url";
 
 const props = defineProps({
   oldTheme: {
@@ -37,7 +41,7 @@ defineExpose({ reset });
             <h4>Světlý</h4>
             <p>Váš panel bude mít světlý motiv</p>
           </div>
-          <img src="../../assets/images/theme-light.svg" alt="Světlý režim" />
+          <Image :src="themeLight" alt="Světlý režim" />
         </div>
       </Card>
 
@@ -47,7 +51,7 @@ defineExpose({ reset });
             <h4>Tmavý</h4>
             <p>Váš panel bude mít tmavý motiv</p>
           </div>
-          <img src="../../assets/images/theme-dark.svg" alt="Tmavý režim" />
+          <Image :src="themeDark" alt="Tmavý režim" />
         </div>
       </Card>
 
@@ -57,7 +61,7 @@ defineExpose({ reset });
             <h4>Systém</h4>
             <p>Motiv bude podle systému vašeho zařízení</p>
           </div>
-          <img src="../../assets/images/theme-system.svg" alt="Systémový režim"/>
+          <Image :src="themeSystem" alt="Systémový režim"/>
         </div>
       </Card>
     </div>
@@ -89,7 +93,6 @@ defineExpose({ reset });
         display: flex;
         flex-direction: column;
         gap: 20px;
-        flex-wrap: wrap;
         justify-content: space-between;
         height: 100%;
       }
@@ -123,7 +126,7 @@ defineExpose({ reset });
         }
       }
 
-      img {
+      ::v-deep(img) {
         width: 100%;
         min-width: 150px;
         max-height: 300px;

@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import Vue3Datatable from "@bhplugin/vue3-datatable";
-import "@bhplugin/vue3-datatable/dist/style.css";
 import {ref, watchEffect} from "vue";
-import moment from "moment/moment";
 import { storeToRefs } from "pinia";
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
-import type { TaskData } from "~/types/task";
+import type { TaskData } from "~/types/tasks";
 import { useAccountStore } from "~/stores/account";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
@@ -127,12 +124,6 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-@use "../../../../assets/style/datatable";
-
-::v-deep(.bh-datatable .bh-table-responsive tr td p) {
-  text-transform: uppercase;
-}
-
 #tasks {
   display: flex;
   flex-direction: row;

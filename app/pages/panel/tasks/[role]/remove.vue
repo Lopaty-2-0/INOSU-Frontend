@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
-import Vue3Datatable from "@bhplugin/vue3-datatable";
-import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {onMounted, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {useAccountStore} from "~/stores/account";
 import { storeToRefs } from "pinia";
 import { useAlertsStore } from "~/stores/alerts";
 import type { TaskData } from "~/types/tasks";
-import moment from "moment";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import TasksTable from "~/components/tables/Tasks.vue";
 
 useHead({
   title: "Panel | Úkoly - Odstranění",
@@ -146,31 +144,13 @@ watchEffect((): void => {
             <SearchInput v-model="searchInput" placeholder="Hledat úkol" />
           </div>
 
-          <Vue3Datatable :loading="loading" :rows="allTasks" :columns="cols" :pageSize="10" :sortable="true" :search="searchInput" no-data-content="Žádná data k dispozici">
-            <template #task="data">
-              <a :href="`http://89.203.248.163/uploads/tasks/${data.value.id}/${data.value.task}`" class="link" download target="_blank">
-                {{ data.value.task }}
-              </a>
-            </template>
-
-            <template #startDate="data">
-              <p>{{ moment(data.value.startDate).format("DD.MM. YYYY HH:MM") }}</p>
-            </template>
-
-            <template #endDate="data">
-              <p>{{ moment(data.value.endDate).format("DD.MM. YYYY HH:MM") }}</p>
-            </template>
-
-            <template #approve="data">
-              <p>{{ data.value.approve ? "Ano" : "Ne" }}</p>
-            </template>
-
+          <TasksTable :tasks="allTasks" :search="searchInput" :page-size="10" :loading="loading" :has-checkbox="true">
             <template #actions="data">
               <div class="actions">
-                <button type="button" class="remove" @click="removeTask(data.value.id)">Odebrat</button>
+                <button type="button" class="remove" @click="removeTask(data.row.id)">Odebrat</button>
               </div>
             </template>
-          </Vue3Datatable>
+          </TasksTable>
         </div>
       </div>
     </template>
@@ -178,12 +158,6 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-@use "../../../../assets/style/datatable";
-
-::v-deep(.bh-datatable .bh-table-responsive tr td p) {
-  text-transform: uppercase;
-}
-
 #tasks {
   display: flex;
   flex-direction: row;

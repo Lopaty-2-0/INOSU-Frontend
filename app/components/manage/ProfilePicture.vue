@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Input from "~/components/ui/Input.vue";
 import FileInput from "~/components/ui/FileInput.vue";
+import Image from "~/components/ui/Image.vue";
 
 const props = defineProps({
   oldProfilePicture: {
@@ -148,9 +149,9 @@ defineExpose({ reset });
     <div class="items">
       <div class="section">
         <div class="content image">
-          <img
-            loading="lazy"
+          <Image
             :src="profilePictureUrlImage"
+            class-name="img"
             alt="Profile photo"
           />
 
@@ -262,7 +263,7 @@ defineExpose({ reset });
           flex-direction: row;
           gap: 30px;
 
-          img {
+          ::v-deep(.img) {
             width: 300px;
             height: 300px;
             object-fit: cover;
@@ -311,7 +312,7 @@ defineExpose({ reset });
       height: 150px;
     }
 
-    img {
+    ::v-deep(.img) {
       height: 150px;
     }
   }
@@ -325,7 +326,7 @@ defineExpose({ reset });
       height: 150px;
     }
 
-    img {
+    ::v-deep(.img) {
       width: 100%;
     }
   }

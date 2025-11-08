@@ -40,6 +40,7 @@ export default defineNuxtRouteMiddleware(async () => {
                 method: "get",
                 credentials: "include",
                 ignoreResponseError: true,
+                cache: "no-cache",
                 async onResponse({ response }: any): Promise<any> {
                     const resCode: string = response._data.resCode.toString();
 

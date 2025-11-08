@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
-import Vue3Datatable from "@bhplugin/vue3-datatable";
-import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import {ref, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
@@ -11,6 +9,7 @@ import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useLoadingStore} from "~/stores/loading";
 import {useFetch} from "nuxt/app";
+import SpecializationsTable from "~/components/tables/Specializations.vue";
 
 useHead({
   title: "Panel | Zaměření - Odstranění",
@@ -22,29 +21,23 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
-const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "abbreviation", title: "Zkratka", type: "string" },
-  { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number" },
-]);
-const datatable = ref<any>(null);
+const datatable = ref<InstanceType<typeof SpecializationsTable> | null>(null);
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
 const selectedSpecializations = ref<SpecializationData[]>([]);
 const loading = ref<boolean>(false);
 const searchInput = ref<string>("");
 
-const pingResetSelectedSpecializations = (): void => {
-  datatable.value.clearSelectedRows();
+const resetSelectedSpecializations = (): void => {
+  if (!datatable.value) return;
+
+  datatable.value.clearSelection();
   selectedSpecializations.value = [];
 };
 
-const onCheckboxSelect = (): void => {
+const onCheckboxSelect = (specializations: SpecializationData[]): void => {
   if (!datatable.value) return;
 
-  setTimeout((): void => {
-    selectedSpecializations.value = datatable.value.getSelectedRows() as SpecializationData[];
-  }, 0);
+  selectedSpecializations.value = specializations;
 };
 
 const removeSpecializations = async (): Promise<void> => {
@@ -79,7 +72,7 @@ const removeSpecializations = async (): Promise<void> => {
 
           allSpecializations.value = allSpecializations.value?.filter((specialization: SpecializationData) => !response._data.data.goodIds.includes(specialization.id));
 
-          pingResetSelectedSpecializations();
+          resetSelectedSpecializations();
           break;
         default:
           alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nastala neznámá chyba." });
@@ -156,21 +149,17 @@ watchEffect((): void => {
             <button class="remove" @click="removeSpecializations">
               Odstranit
               <Loading
-                  v-show="loading"
-                  size="5px"
-                  color="var(--actionBar-actions-remove-color)"
+                v-show="loading"
+                size="5px"
+                color="var(--actionBar-actions-remove-color)"
               />
             </button>
-            <button class="reset" @click="pingResetSelectedSpecializations">
+            <button class="reset" @click="resetSelectedSpecializations">
               Zrušit vše
             </button>
           </div>
 
-          <Vue3Datatable ref="datatable" :rows="allSpecializations" :columns="cols" :hasCheckbox="true" :pageSize="10" :sortable="true" :search="searchInput" @input="onCheckboxSelect" no-data-content="Žádná data k dispozici">
-            <template #abbreviation="data">
-              <p>{{ data.value.abbreviation }}</p>
-            </template>
-          </Vue3Datatable>
+          <SpecializationsTable ref="datatable" :specializations="allSpecializations" :search="searchInput" :has-checkbox="true" @checkbox-select="onCheckboxSelect" />
         </div>
       </div>
     </template>
@@ -178,12 +167,6 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-@use "../../../assets/style/datatable";
-
-::v-deep(.bh-datatable .bh-table-responsive tr td p) {
-  text-transform: uppercase;
-}
-
 #specializations {
   display: flex;
   flex-direction: row;

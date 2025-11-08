@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
-import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import type {ClassData} from "~/types/classes";
@@ -10,6 +9,7 @@ import { useAlertsStore } from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
+import ClassesTable from "~/components/tables/Classes.vue";
 
 useHead({
   title: "Panel | Třídy - Odstranění",
@@ -21,31 +21,23 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
-const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "class", title: "Třída", type: "string" },
-  { field: "grade", title: "Ročník", type: "number" },
-  { field: "group", title: "Skupina", type: "string" },
-  { field: "specialization", title: "Zaměření", type: "string" },
-]);
-const datatable = ref<any>(null);
+const datatable = ref<InstanceType<typeof ClassesTable> | null>(null);
 const allClasses = ref<ClassData[] | undefined>(undefined);
 const selectedClasses = ref<ClassData[]>([]);
 const loading = ref<boolean>(false);
 const searchInput = ref<string>("");
 
-const pingResetSelectedClasses = (): void => {
-  datatable.value.clearSelectedRows();
+const resetSelectedClasses = (): void => {
+  if (!datatable.value) return;
+
+  datatable.value.clearSelection();
   selectedClasses.value = [];
 };
 
-const onCheckboxSelect = (): void => {
+const onCheckboxSelect = (classes: ClassData[]): void => {
   if (!datatable.value) return;
 
-  setTimeout((): void => {
-    selectedClasses.value = datatable.value.getSelectedRows() as ClassData[];
-  }, 0);
+  selectedClasses.value = classes;
 };
 
 const removeClasses = async (): Promise<void> => {
@@ -80,7 +72,7 @@ const removeClasses = async (): Promise<void> => {
 
           allClasses.value = allClasses.value?.filter((oneClass: ClassData) => !response._data.data.goodIds.includes(oneClass.id));
 
-          pingResetSelectedClasses();
+          resetSelectedClasses();
           break;
         default:
           alertsStore.addAlert({type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba.",});
@@ -169,30 +161,12 @@ watchEffect((): void => {
                 color="var(--actionBar-actions-remove-color)"
               />
             </button>
-            <button class="reset" @click="pingResetSelectedClasses">
+            <button class="reset" @click="resetSelectedClasses">
               Zrušit vše
             </button>
           </div>
 
-          <Vue3Datatable ref="datatable" :rows="allClasses" :columns="cols" :hasCheckbox="true" :pageSize="10" :sortable="true" :search="searchInput" @input="onCheckboxSelect">
-            <template #group="data">
-              <p>
-                {{ data.value.group }}
-              </p>
-            </template>
-
-            <template #specialization="data">
-              <p>
-                {{ data.value.specialization }}
-              </p>
-            </template>
-
-            <template #class="data">
-              <p>
-                {{ data.value.specialization }}{{ data.value.grade }}{{ data.value.group }}
-              </p>
-            </template>
-          </Vue3Datatable>
+          <ClassesTable ref="datatable" :classes="allClasses" :search="searchInput" :has-checkbox="true" @checkbox-select="onCheckboxSelect" />
         </div>
       </div>
     </template>
@@ -200,12 +174,6 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-@use "../../../assets/style/datatable";
-
-::v-deep(.bh-datatable .bh-table-responsive tr td p) {
-  text-transform: uppercase;
-}
-
 #classes {
   display: flex;
   flex-direction: row;

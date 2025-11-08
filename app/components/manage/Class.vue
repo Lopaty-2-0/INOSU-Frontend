@@ -2,6 +2,7 @@
 import {ref, watch} from "vue";
 import type {ClassData} from "../../types/classes";
 import Input from "~/components/ui/Input.vue";
+import NumberInput from "~/components/ui/NumberInput.vue";
 
 const props = defineProps({
   classes: {
@@ -88,7 +89,7 @@ defineExpose({ reset });
           </label>
           <label for="searchGrade">
             Ročník
-            <Input id="searchGrade" min="1" max="10" placeholder="3" type="number" v-model="searchGrade" />
+            <NumberInput v-model="searchGrade" :min="1" :max="10"  placeholder="3" id="searchGrade" />
           </label>
           <label for="searchGroup">
             Skupina

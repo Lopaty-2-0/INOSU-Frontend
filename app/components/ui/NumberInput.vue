@@ -42,34 +42,6 @@ const emits = defineEmits(["update:modelValue"]);
 const currentValue = ref<number | null>(props.modelValue);
 const step = computed<number>(() => props.step || 1);
 
-const increaseValue = (): void => {
-  if (props.disabled) return;
-
-  const value: number = !currentValue.value ? props.min ? props.min - 1 : -1 : currentValue.value;
-
-  if (props.max && value + step.value <= props.max) {
-    currentValue.value = value + step.value;
-    emits("update:modelValue", currentValue.value);
-  } else if (!props.max) {
-    currentValue.value = value + step.value;
-    emits("update:modelValue", currentValue.value);
-  }
-};
-
-const decreaseValue = (): void => {
-  if (props.disabled) return;
-
-  const value: number = !currentValue.value ? props.min ? props.min - 1 : -1 : currentValue.value;
-
-  if (props.min && value - step.value >= props.min) {
-    currentValue.value = value - step.value;
-    emits("update:modelValue", currentValue.value);
-  } else if (!props.min) {
-    currentValue.value = value - step.value;
-    emits("update:modelValue", currentValue.value);
-  }
-};
-
 const handleInput = (event: Event): void => {
   if (props.disabled) {
     currentValue.value = props.modelValue;
@@ -77,6 +49,13 @@ const handleInput = (event: Event): void => {
   }
 
   const target = event.target as HTMLInputElement;
+
+  if (target.value === "") {
+    currentValue.value = null;
+    emits("update:modelValue", currentValue.value);
+    return;
+  }
+
   let newValue: number = parseFloat(target.value);
 
   if (isNaN(newValue)) {
@@ -88,19 +67,52 @@ const handleInput = (event: Event): void => {
   emits("update:modelValue", currentValue.value);
 };
 
+
+const increaseValue = (): void => {
+  if (props.disabled) return;
+
+  const value: number = currentValue.value === null ? (typeof props.min === "number" ? props.min - 1 : -1) : currentValue.value;
+
+  if (typeof props.max === "number") {
+    if (value + step.value <= props.max) {
+      currentValue.value = value + step.value;
+      emits("update:modelValue", currentValue.value);
+    }
+  } else {
+    currentValue.value = value + step.value;
+    emits("update:modelValue", currentValue.value);
+  }
+};
+
+const decreaseValue = (): void => {
+  if (props.disabled) return;
+
+  const value: number = currentValue.value === null ? (typeof props.min === "number" ? props.min - 1 : -1) : currentValue.value;
+
+  if (typeof props.min === "number") {
+    if (value - step.value >= props.min) {
+      currentValue.value = value - step.value;
+      emits("update:modelValue", currentValue.value);
+    }
+  } else {
+    currentValue.value = value - step.value;
+    emits("update:modelValue", currentValue.value);
+  }
+};
+
 watch(() => props.modelValue, (newValue: number | null): void => {
   if (newValue === null) {
     currentValue.value = null;
     return;
   }
 
-  if (props.min && newValue < props.min) {
+  if (typeof props.min === "number" && newValue < props.min) {
     currentValue.value = props.min;
     emits("update:modelValue", currentValue.value);
     return;
   }
 
-  if (props.max && newValue > props.max) {
+  if (typeof props.max === "number" && newValue > props.max) {
     currentValue.value = props.max;
     emits("update:modelValue", currentValue.value);
     return;

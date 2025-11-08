@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import Loading from "~/components/ui/Loading.vue";
 import { ref, onMounted } from "vue";
 import { useState } from "nuxt/app";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
-import type {RuntimeConfig} from "nuxt/schema";
+import Image from "~/components/ui/Image.vue";
 
 const slots = useSlots();
+const config = useRuntimeConfig();
 const { getAccountData: accountData } = storeToRefs(useAccountStore());
 
 // global state for hamburger click event
@@ -20,7 +20,7 @@ const clickHamburger = (): void => {
 const profileData = computed<{ name: string; surname: string; profilePhoto: string; }>(() => ({
   name: accountData.value.name,
   surname: accountData.value.surname,
-  profilePhoto: "/api/file/pfp/" + accountData.value.profilePicture,
+  profilePhoto: config.public.originUrl + "/api/file/pfp/" + accountData.value.profilePicture,
 }));
 
 onMounted((): void => {
@@ -46,17 +46,11 @@ onMounted((): void => {
 
     <div class="right">
       <div class="account">
-        <Loading
-          v-if="loading"
-          color="rgba(var(--description-color), 1)"
-          size="8px"
-        />
-        <img
-          v-else
+
+        <Image
           :src="profileData.profilePhoto"
           alt="profile-photo"
           draggable="false"
-          loading="lazy"
         />
 
         <div class="name">
@@ -126,7 +120,7 @@ onMounted((): void => {
       }
     }
 
-    img {
+    ::v-deep(img) {
       width: 45px;
       height: 45px;
       border-radius: var(--small-border-radius);

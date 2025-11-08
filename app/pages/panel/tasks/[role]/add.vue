@@ -9,6 +9,7 @@ import ActionBar from "~/components/ui/ActionBar.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import {useAccountStore} from "~/stores/account";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import NumberInput from "~/components/ui/NumberInput.vue";
 
 useHead({
   title: "Panel | Úkol - Přidání",
@@ -27,22 +28,24 @@ const role = route.params.role as string;
 const alertsStore = useAlertsStore();
 const editName = ref<InstanceType<typeof EditName> | null>(null);
 const editTaskFile = ref<InstanceType<typeof EditTaskFile> | null>(null);
-const editStartDate = ref<InstanceType<typeof EditDateTime> | null>(null);
+const editDeadlineDate = ref<InstanceType<typeof EditDateTime> | null>(null);
 const editEndDate = ref<InstanceType<typeof EditDateTime> | null>(null);
 const loading = ref<boolean>(false);
-const oldData = computed<{ name: string, needApprove: boolean | null, taskFile: string, startDate: Date | null, endDate: Date | null }>(() => ({
+const oldData = computed<{ name: string, needApprove: boolean | null, taskFile: string, endDate: Date | null, deadline: Date | null, maxPoints: number | null }>(() => ({
   name: "",
   needApprove: null,
   taskFile: "",
-  startDate: null,
-  endDate: null
+  endDate: null,
+  deadline: null,
+  maxPoints: null,
 }));
-const newData = ref<{ name: string | undefined, needApprove: boolean | undefined, taskFile: File | undefined, startDate: Date | undefined, endDate: Date | undefined }>({
+const newData = ref<{ name: string | undefined, needApprove: boolean | undefined, taskFile: File | undefined, endDate: Date | undefined, deadline: Date | undefined, maxPoints: number | null }>({
   name: undefined,
   needApprove: undefined,
   taskFile: undefined,
-  startDate: undefined,
   endDate: undefined,
+  deadline: undefined,
+  maxPoints: null,
 });
 
 const onNameUpdate = (name: string): void => {
@@ -53,8 +56,8 @@ const onTaskFileUpdate = (taskFile: File | undefined): void => {
   newData.value.taskFile = taskFile;
 };
 
-const onStartDateUpdate = (startDate: Date | undefined): void => {
-  newData.value.startDate = startDate;
+const onDeadlineDateUpdate = (deadlineDate: Date | undefined): void => {
+  newData.value.deadline = deadlineDate;
 };
 
 const onEndDateUpdate = (endDate: Date | undefined): void => {
@@ -66,18 +69,20 @@ const resetUserData = (): void => {
     name: undefined,
     needApprove: undefined,
     taskFile: undefined,
-    startDate: undefined,
+    deadline: undefined,
     endDate: undefined,
+    maxPoints: null,
   };
 
   if (editName.value) editName.value.reset();
   if (editTaskFile.value) editTaskFile.value.reset();
-  if (editStartDate.value) editStartDate.value.reset();
+  if (editDeadlineDate.value) editDeadlineDate.value.reset();
   if (editEndDate.value) editEndDate.value.reset();
+  if (newData.value.maxPoints !== null) newData.value.maxPoints = null;
 };
 
 const addTask = async (): Promise<void> => {
-  if (!newData.value.name || !newData.value.startDate || !newData.value.endDate || !newData.value.taskFile || newData.value.needApprove === undefined) {
+  if (!newData.value.name || !newData.value.endDate || !newData.value.taskFile) {
     alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Vyplňte všechna povinná pole." });
     return;
   }
@@ -86,11 +91,11 @@ const addTask = async (): Promise<void> => {
 
   const formData = new FormData();
   formData.append("name", newData.value.name || "");
-  formData.append("startDate", newData.value.startDate?.getTime().toString() || "");
+  formData.append("deadline", newData.value.deadline?.getTime().toString() || "");
   formData.append("endDate", newData.value.endDate?.getTime().toString() || "");
   formData.append("task", newData.value.taskFile || "");
   formData.append("guarantor", useAccountStore().getId || "");
-  formData.append("approve", newData.value.needApprove ? "true" : "false");
+  if (newData.value.maxPoints) formData.append("points", newData.value.maxPoints.toString());
 
   await $fetch("/api/task/add", {
     method: "post",
@@ -101,35 +106,47 @@ const addTask = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "26091":
+        case "26131":
           alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
 
           resetUserData();
 
           break;
         case "26010":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Studenti nemohou vytvářet úkoly." });
-          break;
-        case "26020":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu nebyl zadán." });
           break;
-        case "26030":
+        case "26020":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení nebylo zadáno." });
           break;
-        case "26040":
+        case "26030":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je neplatné." });
           break;
-        case "26050":
+        case "26040":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je před datem začátku." });
           break;
-        case "26060":
+        case "26050":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor úkolu nebyl zadán." });
           break;
-        case "26070":
+        case "26060":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Neplatný formát souboru." });
           break;
+        case "26070":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Garant úkolu nebyl zadán." });
+          break;
         case "26080":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nebyla zadána hodnota schválení." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Garant úkolu neexistuje nebo nemůže být garant." });
+          break;
+        case "26090":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem začátku." });
+          break;
+        case "26100":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem ukončení." });
+          break;
+        case "26110":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je neplatná." });
+          break;
+        case "26120":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Maximální počet bodů je neplatný." });
           break;
         default:
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba." });
@@ -162,16 +179,16 @@ const addTask = async (): Promise<void> => {
       <div id="tasks">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa úkolů"
-              :texts="['Přidat', 'Odebrat']"
-              :actions="['add', 'remove']"
-              :icons="[
+            class="action-bar"
+            description="Správa úkolů"
+            :texts="['Přidat', 'Odebrat']"
+            :actions="['add', 'remove']"
+            :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
-              :active="0"
-              :navigate-to="[
+            :active="0"
+            :navigate-to="[
               `/panel/tasks/admin/add`,
               `/panel/tasks/admin/remove`,
             ]"
@@ -197,14 +214,23 @@ const addTask = async (): Promise<void> => {
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Časové rozmezí úkolu *</h3>
-              <p>Zadejte časové rozmezí, ve kterém bude úkol aktivní. Studenti budou moci úkol odevzdávat pouze v tomto období.</p>
+              <h3>Časové rozmezí úkolu</h3>
+              <p>Zadejte časové rozmezí, ve kterém bude úkol aktivní. Studenti budou moci úkol odevzdávat pouze v tomto období. Uzávěrka určuje termín, do kterého lze přiložit vypracování úkolu.</p>
             </div>
 
             <div class="line">
-              <EditDateTime ref="editStartDate" @update="onStartDateUpdate" :old-date="oldData.startDate" label="Začátek úkolu" />
-              <EditDateTime ref="editStartDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec úkolu" />
+              <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec úkolu *" />
+              <EditDateTime ref="editDeadlineDate" @update="onDeadlineDateUpdate" :old-date="oldData.deadline" label="Uzávěrka" />
             </div>
+          </div>
+
+          <div class="line page-section">
+            <div class="section-head">
+              <h3>Maximální počet bodů <span class="update" v-show="newData.maxPoints">(aktualizováno)</span></h3>
+              <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
+            </div>
+
+            <NumberInput v-model="newData.maxPoints" :min="1" placeholder="Bez bodů" />
           </div>
 
           <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="addTask">
