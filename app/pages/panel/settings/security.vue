@@ -26,8 +26,6 @@ const userData = ref<{ passwords: { old: string, new: string } }>({
   }
 });
 
-
-
 const checkPasswordRules = (): void => {
   passwordRulesCheck.value[0] = (userData.value.passwords.new || "").length >= 5; // Check if password length is at least 5 characters
 
@@ -43,7 +41,6 @@ const checkPasswordRules = (): void => {
 };
 
 const onPasswordsUpdate = (passwordsInputs: { old: string | undefined, new: string | undefined }): void => {
-  console.log(passwordsInputs);
   if (!passwordsInputs.old || !passwordsInputs.new) {
     userData.value.passwords.old = "";
     userData.value.passwords.new = "";

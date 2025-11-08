@@ -100,11 +100,11 @@ defineExpose({ clearSelection });
     </template>
 
     <template #deadline="data">
-      {{ data.value.deadline ? moment(data.value.deadline).format("DD.MM.YYYYHH:MM") : "Neurčeno" }}
+      {{ data.value.deadline ? moment(data.value.deadline).format("DD.MM.YYYY HH:MM") : "Neurčeno" }}
     </template>
 
     <template #points="data">
-      {{ data.value.points || "Neurčeno" }}
+      {{ data.value.points ?? "Neurčeno" }}
     </template>
 
     <template #actions="data">

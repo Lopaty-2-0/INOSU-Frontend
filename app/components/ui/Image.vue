@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Loading from "~/components/ui/Loading.vue";
-import {watch} from "vue";
+import {watch, ref} from "vue";
 
 const props = defineProps({
   src: {
