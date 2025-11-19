@@ -80,7 +80,7 @@ const updateContent = (newContent: { html: string }) => {
   console.log(newContent);
 };
 
-useFetch("/api/user/get/count/by-role?role=student", {
+useFetch("/api/user/get/count/byRole?role=student", {
   method: "get",
   server: false,
   credentials: "include",
@@ -90,7 +90,7 @@ useFetch("/api/user/get/count/by-role?role=student", {
   },
 });
 
-useFetch("/api/user/get/count/by-role?role=teacher", {
+useFetch("/api/user/get/count/byRole?role=teacher", {
   method: "get",
   credentials: "include",
   server: false,
@@ -111,7 +111,12 @@ useFetch("/api/class/count", {
 });
 
 if (["admin", "teacher"].includes(role.value)) {
-  useFetch(`/api/task/get/guarantor?idUser=${userId.value}`, {
+  useFetch(`/api/task/get/guarantor`, {
+    query: {
+      idUser: userId.value,
+      amountForPaging: 5,
+      pageNumber: 1,
+    },
     method: "get",
     server: false,
     credentials: "include",

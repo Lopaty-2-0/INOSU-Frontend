@@ -9,6 +9,7 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import { useLoadingStore } from "~/stores/loading";
 import SpecializationsTable from "~/components/tables/Specializations.vue";
+import Pagination from "~/components/ui/Pagination.vue";
 
 useHead({
   title: "Panel | Zaměření",
@@ -16,22 +17,36 @@ useHead({
 });
 
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
+const numberOfPages = ref<number>(0);
 const searchInput = ref<string>("");
+const amountForPaging = 1;
+const currentPage = ref<number>(1);
 
-useFetch("/api/specialization/get", {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const specializations: SpecializationData[] = response._data.data.specializations;
+const updateActivePage = (pageNumber: number): void => {
+  currentPage.value = pageNumber + 1;
+};
 
-    allSpecializations.value = specializations || [];
-  },
+const { data: specializationData, pending: specializationTablePending } = await useFetch("/api/specialization/get", {
+    query: {
+      amountForPaging: amountForPaging,
+      pageNumber: currentPage,
+    },
+    method: "get",
+    server: true,
+    watch: [currentPage],
+    credentials: "include",
+    ignoreResponseError: true,
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", allSpecializations.value === undefined);
+  if (!specializationData.value) return;
+
+  allSpecializations.value = specializationData.value.data.specializations;
+  numberOfPages.value = Math.ceil(specializationData.value.data.count / amountForPaging);
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", specializationData.value === undefined);
 });
 </script>
 
@@ -75,7 +90,9 @@ watchEffect((): void => {
             <SearchInput v-model="searchInput" placeholder="Hledat zaměření" />
           </div>
 
-          <SpecializationsTable :specializations="allSpecializations" :search="searchInput" />
+          <SpecializationsTable :loading="specializationTablePending" :specializations="allSpecializations" :search="searchInput" />
+
+          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
         </div>
       </div>
     </template>

@@ -26,9 +26,14 @@
   background-color: transparent !important;
 }
 
+::v-deep(.bh-pagination) {
+  display: none;
+}
+
 ::v-deep(.bh-table-responsive) {
   width: 100%;
   font-size: 16px;
+  min-height: 0;
   border-radius: var(--normal-border-radius);
   border: var(--border-width) solid rgba(var(--border-color), 0.5);
 
