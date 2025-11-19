@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
-import {ref, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import type {TaskData} from "~/types/tasks";
 import {useAccountStore} from "~/stores/account";
@@ -80,58 +80,53 @@ const updateContent = (newContent: { html: string }) => {
   console.log(newContent);
 };
 
-useFetch("/api/user/get/count/byRole?role=student", {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    numbers.value.students = response._data.data.count;
-  },
-});
-
-useFetch("/api/user/get/count/byRole?role=teacher", {
-  method: "get",
-  credentials: "include",
-  server: false,
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    numbers.value.teachers = response._data.data.count;
-  },
-});
-
-useFetch("/api/class/count", {
+const {data: studentsCount} = await useFetch("/api/user/get/count/byRole?role=student", {
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
-  server: false,
-  onResponse({ response }: any) {
-    numbers.value.classes = response._data.data.count;
-  },
 });
 
-if (["admin", "teacher"].includes(role.value)) {
-  useFetch(`/api/task/get/guarantor`, {
-    query: {
-      idUser: userId.value,
-      amountForPaging: 5,
-      pageNumber: 1,
-    },
-    method: "get",
-    server: false,
-    credentials: "include",
-    ignoreResponseError: true,
-    onResponse({ response }: any) {
-      const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
+const {data: teachersCount} = await useFetch("/api/user/get/count/byRole?role=teacher", {
+  method: "get",
+  credentials: "include",
+  ignoreResponseError: true,
+});
 
-      allTasks.value = tasks || [];
-    },
-  });
-}
+const {data: classesCount} = await useFetch("/api/class/count", {
+  method: "get",
+  credentials: "include",
+  ignoreResponseError: true,
+});
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", numbers.value.students === null || numbers.value.classes === null || numbers.value.teachers === null || !allTasks.value);
+  numbers.value = {
+    students: studentsCount.value?.data.count ?? null,
+    classes: classesCount.value?.data.count ?? null,
+    teachers: teachersCount.value?.data.count ?? null,
+  };
+
+  useLoadingStore().setLoading("dataLoading", numbers.value.students === null || numbers.value.classes === null || numbers.value.teachers === null);
 });
+
+onMounted(async (): Promise<void> => {
+  if (["admin", "teacher"].includes(role.value)) {
+    await $fetch(`/api/task/get/guarantor`, {
+      query: {
+        idUser: userId.value,
+        amountForPaging: 5,
+        pageNumber: 1,
+      },
+      method: "get",
+      credentials: "include",
+      ignoreResponseError: true,
+      onResponse({ response }: any) {
+        const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
+
+        allTasks.value = tasks || [];
+      },
+    });
+  }
+})
 </script>
 
 <template>
@@ -196,7 +191,7 @@ watchEffect((): void => {
               />
             </div>
 
-            <TasksTable :tasks="allTasks" :search="searchInput" :page-size="5" :pagination="false">
+            <TasksTable :tasks="allTasks" :loading="!allTasks" :search="searchInput" :page-size="5" :pagination="false">
               <template #actions="data">
                 <div class="actions">
                   <button type="button" class="default" @click="openTask(data.row.id)">Otevřít</button>

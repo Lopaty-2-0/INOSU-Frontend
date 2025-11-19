@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {ref, watchEffect} from "vue";
+import {computed, nextTick, ref, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
@@ -10,6 +10,7 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useLoadingStore} from "~/stores/loading";
 import {useFetch} from "nuxt/app";
 import SpecializationsTable from "~/components/tables/Specializations.vue";
+import Pagination from "~/components/ui/Pagination.vue";
 
 useHead({
   title: "Panel | Zaměření - Odstranění",
@@ -23,21 +24,31 @@ definePageMeta({
 const alertsStore = useAlertsStore();
 const datatable = ref<InstanceType<typeof SpecializationsTable> | null>(null);
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
-const selectedSpecializations = ref<SpecializationData[]>([]);
+const selectedSpecializationIds = ref<number[]>([]);
 const loading = ref<boolean>(false);
 const searchInput = ref<string>("");
+const specializationsCount = ref<number>(0);
+const amountForPaging = 1;
+const currentPage = ref<number>(1);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(specializationsCount.value / amountForPaging);
+});
 
 const resetSelectedSpecializations = (): void => {
   if (!datatable.value) return;
 
   datatable.value.clearSelection();
-  selectedSpecializations.value = [];
+  selectedSpecializationIds.value = [];
 };
 
-const onCheckboxSelect = (specializations: SpecializationData[]): void => {
+const onRowClicked = (specializations: SpecializationData): void => {
   if (!datatable.value) return;
 
-  selectedSpecializations.value = specializations;
+  if (!selectedSpecializationIds.value.includes(specializations.id)) {
+    selectedSpecializationIds.value.push(specializations.id);
+  } else {
+    selectedSpecializationIds.value = selectedSpecializationIds.value.filter((id: number) => id !== specializations.id);
+  }
 };
 
 const removeSpecializations = async (): Promise<void> => {
@@ -46,7 +57,7 @@ const removeSpecializations = async (): Promise<void> => {
   await $fetch("/api/specialization/delete", {
     method: "delete",
     body: {
-      idSpecialization: selectedSpecializations.value.map((specialization: SpecializationData) => specialization.id),
+      idSpecialization: selectedSpecializationIds.value,
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -67,7 +78,7 @@ const removeSpecializations = async (): Promise<void> => {
           if ((response._data.data.classIds || []).length >= 1) {
             alertsStore.addAlert({type: "warning", title: "Odstranění zaměření", message: `Některé zaměření nebyly odstraněny. Tyto zaměření používají některé třídy: ${response._data.data.classIds.join(", ")}`});
           } else {
-            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${selectedSpecializations.value.length})`});
+            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${specializationsCount.value})`});
           }
 
           allSpecializations.value = allSpecializations.value?.filter((specialization: SpecializationData) => !response._data.data.goodIds.includes(specialization.id));
@@ -87,20 +98,31 @@ const removeSpecializations = async (): Promise<void> => {
   });
 };
 
-useFetch("/api/specialization/get", {
+const updateActivePage = async (pageNumber: number): Promise<void> => {
+  currentPage.value = pageNumber + 1;
+};
+
+const { data: specializationData, pending: specializationTablePending } = await useFetch("/api/specialization/get", {
+  query: {
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+  },
   method: "get",
-  server: false,
+  server: true,
+  watch: [currentPage],
   credentials: "include",
   ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const specializations: SpecializationData[] = response._data.data.specializations;
-
-    allSpecializations.value = specializations || [];
-  },
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !allSpecializations.value);
+  if (!specializationData.value) return;
+
+  allSpecializations.value = specializationData.value.data.specializations;
+  specializationsCount.value = specializationData.value.data.count;
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", specializationData.value === undefined);
 });
 </script>
 
@@ -138,7 +160,7 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Zaměření: {{ selectedSpecializations.length }} / {{ allSpecializations.length }}</h3>
+              <h3>Zaměření: {{ selectedSpecializationIds.length }} / {{ specializationsCount }}</h3>
               <p>Vyberte zaměření, která chcete odstranit ze systému. Po potvrzení budou vybraná zaměření trvale smazána.</p>
             </div>
 
@@ -159,7 +181,9 @@ watchEffect((): void => {
             </button>
           </div>
 
-          <SpecializationsTable ref="datatable" :specializations="allSpecializations" :search="searchInput" :has-checkbox="true" @checkbox-select="onCheckboxSelect" />
+          <SpecializationsTable :selected-ids="selectedSpecializationIds" :loading="specializationTablePending" ref="datatable" :specializations="allSpecializations" :search="searchInput" :has-checkbox="true" @row-clicked="onRowClicked" />
+
+          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
         </div>
       </div>
     </template>

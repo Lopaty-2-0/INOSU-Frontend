@@ -47,6 +47,10 @@
   }
 }
 
+::v-deep(.bh-checkbox input[type=checkbox]) {
+  pointer-events: none;
+}
+
 ::v-deep(.bh-table-responsive table thead tr) {
   background: var(--card-1-background);
   color: var(--title-color);
@@ -124,7 +128,7 @@
 }
 
 ::v-deep(.bh-table-responsive input[type=checkbox]) {
-  cursor: pointer;
+  pointer-events: none;
 
   &+div {
     border-color: rgba(var(--border-color), 0.5);

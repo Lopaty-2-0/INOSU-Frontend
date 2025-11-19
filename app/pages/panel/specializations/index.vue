@@ -27,15 +27,15 @@ const updateActivePage = (pageNumber: number): void => {
 };
 
 const { data: specializationData, pending: specializationTablePending } = await useFetch("/api/specialization/get", {
-    query: {
-      amountForPaging: amountForPaging,
-      pageNumber: currentPage,
-    },
-    method: "get",
-    server: true,
-    watch: [currentPage],
-    credentials: "include",
-    ignoreResponseError: true,
+  query: {
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+  },
+  method: "get",
+  server: true,
+  watch: [currentPage],
+  credentials: "include",
+  ignoreResponseError: true,
 });
 
 watchEffect((): void => {
