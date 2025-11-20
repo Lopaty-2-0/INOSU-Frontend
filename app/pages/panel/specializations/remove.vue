@@ -22,13 +22,13 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
+const amountForPaging: number = 10;
 const datatable = ref<InstanceType<typeof SpecializationsTable> | null>(null);
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
 const selectedSpecializationIds = ref<number[]>([]);
 const loading = ref<boolean>(false);
 const searchInput = ref<string>("");
 const specializationsCount = ref<number>(0);
-const amountForPaging = 1;
 const currentPage = ref<number>(1);
 const numberOfPages = computed<number>((): number => {
   return Math.ceil(specializationsCount.value / amountForPaging);
@@ -37,8 +37,8 @@ const numberOfPages = computed<number>((): number => {
 const resetSelectedSpecializations = (): void => {
   if (!datatable.value) return;
 
-  datatable.value.clearSelection();
   selectedSpecializationIds.value = [];
+  datatable.value.clearSelection();
 };
 
 const onRowClicked = (specializations: SpecializationData): void => {
@@ -72,13 +72,13 @@ const removeSpecializations = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Chybí ID zaměření." });
           break;
         case "5030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Neproběhlo žádné odstranění." });
+          alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Neproběhlo žádné odstranění." });
           break;
         case "5041":
           if ((response._data.data.classIds || []).length >= 1) {
             alertsStore.addAlert({type: "warning", title: "Odstranění zaměření", message: `Některé zaměření nebyly odstraněny. Tyto zaměření používají některé třídy: ${response._data.data.classIds.join(", ")}`});
           } else {
-            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${specializationsCount.value})`});
+            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length})`});
           }
 
           allSpecializations.value = allSpecializations.value?.filter((specialization: SpecializationData) => !response._data.data.goodIds.includes(specialization.id));
@@ -98,14 +98,21 @@ const removeSpecializations = async (): Promise<void> => {
   });
 };
 
-const updateActivePage = async (pageNumber: number): Promise<void> => {
+const updateActivePage = (pageNumber: number): void => {
   currentPage.value = pageNumber + 1;
+};
+
+const onSearchInputChange = (input: string): void => {
+  currentPage.value = 1;
+
+  searchInput.value = input;
 };
 
 const { data: specializationData, pending: specializationTablePending } = await useFetch("/api/specialization/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
+    searchQuery: searchInput,
   },
   method: "get",
   server: true,
@@ -164,7 +171,7 @@ watchEffect((): void => {
               <p>Vyberte zaměření, která chcete odstranit ze systému. Po potvrzení budou vybraná zaměření trvale smazána.</p>
             </div>
 
-            <SearchInput v-model="searchInput" placeholder="Hledat zaměření" />
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat zaměření" />
           </div>
 
           <div class="buttons">

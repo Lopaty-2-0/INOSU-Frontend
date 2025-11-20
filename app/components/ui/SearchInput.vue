@@ -20,9 +20,13 @@ const props = defineProps({
     default: "material-symbols:search-rounded",
   },
 });
-const emits = defineEmits(["update:modelValue"]);
+const emits = defineEmits(["update:modelValue", "change"]);
 
 const searchInput = ref<string>(props.modelValue);
+
+const onChange = (): void => {
+  emits("change", searchInput.value);
+};
 
 watch(() => searchInput.value, (newValue: string) => {
   emits("update:modelValue", newValue || "");
@@ -31,7 +35,7 @@ watch(() => searchInput.value, (newValue: string) => {
 
 <template>
   <div class="search" :class="{ disabled: props.disabled }">
-    <Input type="text" name="searchInput" :placeholder="props.placeholder" v-model="searchInput" :disabled="props.disabled" />
+    <Input type="text" name="searchInput" :placeholder="props.placeholder" v-model="searchInput" :disabled="props.disabled" @change="onChange" />
 
     <Icon class="icon" :name="props.icon"></Icon>
   </div>
