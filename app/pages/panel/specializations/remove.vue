@@ -167,7 +167,7 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Zaměření: {{ selectedSpecializationIds.length }} / {{ specializationsCount }}</h3>
+              <h3>Vybraná zaměření: {{ selectedSpecializationIds.length }}</h3>
               <p>Vyberte zaměření, která chcete odstranit ze systému. Po potvrzení budou vybraná zaměření trvale smazána.</p>
             </div>
 

@@ -19,8 +19,8 @@ useHead({
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
 const numberOfPages = ref<number>(0);
 const searchInput = ref<string>("");
-const amountForPaging = 1;
 const currentPage = ref<number>(1);
+const amountForPaging: number = 10;
 
 const updateActivePage = (pageNumber: number): void => {
   currentPage.value = pageNumber + 1;
