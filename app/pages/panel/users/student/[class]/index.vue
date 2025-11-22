@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useRoute} from "#app";
-import {ref, watchEffect} from "vue";
+import {useFetch} from "nuxt/app";
+import {computed, ref, watchEffect} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
@@ -19,51 +20,62 @@ useHead({
   meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
-const users = ref<AccountData[] | null>(null);
-const numberOfPages = ref<number>(0);
-const activePage = ref<number>(0);
+const amountForPaging: number = 12;
+const currentPage = ref<number>(1);
+const users = ref<AccountData[] | undefined>(undefined);
 const searchInput = ref<string>("");
-const searchedUsers = ref<AccountData[]>([]);
+const usersCount = ref<number>(0);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(usersCount.value / amountForPaging);
+});
+const requests = computed<{ url: string, query: Record<string, any> }>(() => {
+  if (classId !== "undefined") {
+    return {
+      url: "/api/user_class/get/users",
+      query: {
+        idClass: classId,
+      }
+    }
+  } else {
+    return {
+      url: "/api/user/get/noClass",
+      query: {}
+    };
+  }
+});
 
-const searchUsers = (): void => {
-  const inputToArray: string[] = searchInput.value.split(" ");
-  const allSearchedUsers: AccountData[] = [];
+const onSearchInputChange = (input: string): void => {
+  currentPage.value = 1;
 
-  if (!users.value) return;
-
-  users.value.forEach((user: AccountData) => {
-    const searchResult = [
-      user.name,
-      user.surname,
-      user.email,
-      user.abbreviation || "",
-    ].some((word: string) => {
-      let result: boolean = false;
-
-      inputToArray.forEach((inputWord: string) => {
-        result = word.toLowerCase().includes(inputWord.toLowerCase());
-      });
-
-      return result;
-    });
-
-    if (searchResult) allSearchedUsers.push(user);
-  });
-
-  searchedUsers.value = allSearchedUsers;
+  searchInput.value = input;
 };
 
-useFetch(classId !== "undefined" ? `/api/user_class/get/users?idClass=${encodeURIComponent(classId)}` : `/api/user/get/noClass`, {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const usersData: AccountData[] = response._data?.data?.users || [];
+const updateActivePage = (pageNumber: number): void => {
+  currentPage.value = pageNumber + 1;
+};
 
-    users.value = usersData;
-    searchedUsers.value = [...usersData];
+const { data: usersData, error: usersError, pending: usersPending } = await useFetch(requests.value.url, {
+  query: {
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+    searchQuery: searchInput,
+    ...requests.value.query
   },
+  method: "get",
+  server: true,
+  credentials: "include",
+});
+
+watchEffect((): void => {
+  if ((usersError.value?.data.resCode || "").toString() === "23070") {
+    users.value = undefined;
+    return;
+  }
+
+  if (!usersData.value) return;
+
+  users.value = usersData.value.data.users;
+  usersCount.value = usersData.value.data.count;
 });
 
 watchEffect((): void => {
@@ -107,26 +119,23 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Celkem uživatelů: {{ searchedUsers.length }}</h3>
+              <h3>Celkem uživatelů: {{ usersCount }}</h3>
               <p>Zde vidíte uživatele dané role a třídě. Použijte vyhledávání pro rychlé filtrování seznamu.</p>
             </div>
 
-            <SearchInput v-model="searchInput" @input="searchUsers" placeholder="Hledat uživatele" />
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat uživatele" />
           </div>
 
           <div class="users">
             <UsersGrid
-              :users="searchedUsers"
-              :users-per-page="12"
+              :users="users"
               :action="'list'"
-              :active-page="activePage"
-              @get:number-of-pages="(value: number) => (numberOfPages = value)"
+              :loading="usersPending"
             />
             <Pagination
               class="users-navigation"
               :number-of-pages="numberOfPages"
-              :chunk-size="3"
-              @get:active-page="(value: number) => (activePage = value)"
+              @get:active-page="updateActivePage"
             />
           </div>
         </div>

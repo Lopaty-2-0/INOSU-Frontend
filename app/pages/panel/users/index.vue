@@ -15,34 +15,27 @@ useHead({
 const numberOfUsers = ref<number>(-1);
 const allRoles = ref<string[] | undefined>(undefined);
 
-
-useFetch("/api/user/get/number", {
+const {data: usersData} = await useFetch("/api/user/get/number", {
   method: "get",
-  server: false,
+  server: true,
   credentials: "include",
-  ignoreResponseError: true,
-  onResponse({response}: any) {
-    const users: number = response._data.data.count;
-
-    numberOfUsers.value = users || 0;
-  },
 });
 
-useFetch("/api/user/get/roles", {
+const {data: rolesData} = await useFetch("/api/user/get/roles", {
   method: "get",
   credentials: "include",
-  server: false,
-  ignoreResponseError: true,
-  onResponse({response}: any) {
-    const roles: string[] = response._data.data.roles;
-
-    allRoles.value = roles || [];
-  },
+  server: true,
 });
 
 watchEffect((): void => {
+  if (!rolesData.value) return;
+  allRoles.value = rolesData.value.data.roles || [];
+
+  if (!usersData.value) return;
+  numberOfUsers.value = usersData.value.data.count || 0;
+
   useLoadingStore().setLoading("dataLoading", numberOfUsers.value < 0 || !allRoles.value)
-})
+});
 </script>
 
 <template>
@@ -61,10 +54,10 @@ watchEffect((): void => {
       <div id="users">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa uživatelů"
-              :texts="['Přidat']"
-              :icons="[
+            class="action-bar"
+            description="Správa uživatelů"
+            :texts="['Přidat']"
+            :icons="[
               'material-symbols:add-rounded',
             ]"
               :navigate-to="[
@@ -75,7 +68,7 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Celkem uživatelů: {{ numberOfUsers }}</h3>
+              <h3>Celkem uživatelů: {{ numberOfUsers < 0 ? "nenačteno" : numberOfUsers }}</h3>
               <p>Zde najdete souhrn všech registrovaných uživatelů v systému.</p>
             </div>
           </div>
@@ -93,9 +86,11 @@ watchEffect((): void => {
                 :to="`/panel/users/${role}`"
               >
                 <div class="section-head">
-                  <span>{{
-                    role === "admin" ? "Administrátoři" : role === "teacher" ? "Učitelé" : role === "student" ? "Studenti" : role.charAt(0).toUpperCase() + role.slice(1)
-                  }}</span>
+                  <span>
+                    {{
+                        role === "admin" ? "Administrátoři" : role === "teacher" ? "Učitelé" : role === "student" ? "Studenti" : role.charAt(0).toUpperCase() + role.slice(1)
+                    }}
+                  </span>
                 </div>
               </NuxtLink>
             </div>

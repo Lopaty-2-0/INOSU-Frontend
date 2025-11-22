@@ -11,6 +11,8 @@ import EditClass from "../../../components/manage/Class.vue";
 import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useFetch} from "nuxt/app";
+import {useLoadingStore} from "~/stores/loading";
 
 definePageMeta({
   roles: ["admin"],
@@ -25,7 +27,6 @@ useHead({
 
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
-const allClasses = ref<ClassData[] | undefined>(undefined);
 const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
 const editEmail = ref<InstanceType<typeof EditEmail> | null>(null);
 const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
@@ -44,15 +45,16 @@ const oldUserData = computed<{ name: string, surname: string, email: string, pas
   classes: [],
 }));
 
-const newUserData = ref<{ name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[] | undefined}>({
+const newUserData = ref<{ name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[]}>({
   name: undefined,
   surname: undefined,
   email: undefined,
   password: undefined,
   abbreviation: undefined,
   role: undefined,
-  classes: undefined,
+  classes: [],
 });
+
 const onFullNameUpdate = (fullName: { name: string | undefined, surname: string | undefined }): void => {
   newUserData.value.name = fullName.name;
   newUserData.value.surname = fullName.surname;
@@ -74,7 +76,7 @@ const onRoleUpdate = (data: { role: string | undefined }): void => {
   newUserData.value.role = data.role;
 };
 
-const onClassUpdate = (data: { classes: number[] | undefined }): void => {
+const onClassUpdate = (data: { classes: number[] }): void => {
   newUserData.value.classes = data.classes;
 };
 
@@ -86,7 +88,7 @@ const resetUserData = (): void => {
     password: undefined,
     abbreviation: undefined,
     role: undefined,
-    classes: undefined,
+    classes: [],
   };
 
   if (editFullName.value) editFullName.value.reset();
@@ -180,18 +182,6 @@ const createNewUser = async (): Promise<void> => {
     submitLoading.value = false;
   });
 };
-
-useFetch("/api/class/get", {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const classes: ClassData[] = response._data.data.classes;
-
-    allClasses.value = classes || [];
-  },
-});
 </script>
 
 <template>
@@ -257,11 +247,11 @@ useFetch("/api/class/get", {
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Třídy <span class="update" v-show="newUserData.classes">(aktualizováno)</span></h3>
+              <h3>Třídy ({{ newUserData.classes.length }}) <span class="update" v-show="newUserData.classes.length > 0">(aktualizováno)</span></h3>
               <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
             </div>
 
-            <EditClass ref="editClass" :old-class-ids="oldUserData.classes" :classes="allClasses || []" @update="onClassUpdate" v-if="newUserData.role === 'student'" />
+            <EditClass ref="editClass" :old-class-ids="oldUserData.classes" @update="onClassUpdate" v-if="newUserData.role === 'student'" />
             <p class="error" v-else>
               Třídy můžete vybírat pouze pokud role uživatele je <strong>student</strong>.
             </p>

@@ -22,7 +22,6 @@ useHead({
 const accountStore = useAccountStore();
 const { getRole: role, getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<TaskData[] | undefined>(undefined);
-const searchInput = ref<string>("");
 const numbers = ref<{ students: number | null; classes: number | null; teachers: number | null }>({
   students: null,
   classes: null,
@@ -126,7 +125,7 @@ onMounted(async (): Promise<void> => {
       },
     });
   }
-})
+});
 </script>
 
 <template>
@@ -183,15 +182,9 @@ onMounted(async (): Promise<void> => {
                 <h3>{{ ["admin", "teacher"].includes(role) ? "Vytvořené úkoly" : "Rozpracované úkoly" }}</h3>
                 <p>{{ ["admin", "teacher"].includes(role) ? "Rychlý přístup do vašich vytvořených úkolů." : "Rychlý přístup do vašich rozpracovaných úkolů." }}</p>
               </div>
-
-              <SearchInput
-                v-model="searchInput"
-                placeholder="Hledat úkol"
-                name="searchInput"
-              />
             </div>
 
-            <TasksTable :tasks="allTasks" :loading="!allTasks" :search="searchInput" :page-size="5" :pagination="false">
+            <TasksTable :tasks="allTasks" :loading="!allTasks" :page-size="5" :pagination="false">
               <template #actions="data">
                 <div class="actions">
                   <button type="button" class="default" @click="openTask(data.row.id)">Otevřít</button>

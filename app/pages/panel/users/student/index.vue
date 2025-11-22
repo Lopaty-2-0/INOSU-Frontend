@@ -5,26 +5,49 @@ import Card from "~/components/ui/Card.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {watchEffect} from "vue";
+import {computed, watchEffect} from "vue";
 import {useLoadingStore} from "~/stores/loading";
+import {useFetch} from "nuxt/app";
+import Pagination from "~/components/ui/Pagination.vue";
 
 useHead({
   title: "Panel | Uživatelé - student",
   meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
+const amountForPaging: number = 6;
 const allClasses = ref<ClassData[] | undefined>(undefined);
+const currentPage = ref<number>(1);
+const classesCount = ref<number>(0);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(classesCount.value / amountForPaging);
+});
 
-useFetch("/api/class/get", {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const classes: ClassData[] = response._data.data.classes;
+const updateActivePage = (pageNumber: number): void => {
+  currentPage.value = pageNumber + 1;
+};
 
-    allClasses.value = classes || [];
+const { data: classesData, error: classesError } = await useFetch("/api/class/get", {
+  query: {
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
   },
+  method: "get",
+  server: true,
+  credentials: "include",
+});
+
+watchEffect((): void => {
+  if ((classesError.value?.data.resCode || "").toString() === "23070") {
+    allClasses.value = [];
+    classesCount.value = 0;
+    return;
+  }
+
+  if (!classesData.value) return;
+
+  allClasses.value = classesData.value.data.classes;
+  classesCount.value = classesData.value.data.count;
 });
 
 watchEffect((): void => {
@@ -49,10 +72,10 @@ watchEffect((): void => {
       <div id="specializations">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa uživatelů"
-              :texts="['Přidat']"
-              :icons="[
+            class="action-bar"
+            description="Správa uživatelů"
+            :texts="['Přidat']"
+            :icons="[
               'material-symbols:add-rounded',
             ]"
               :navigate-to="[
@@ -63,7 +86,7 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Celkem tříd: {{ allClasses.length }}</h3>
+              <h3>Celkem tříd: {{ classesCount }}</h3>
               <p>Zde vidíte všechny studenty, které můžete filtrovat podle třídy.</p>
             </div>
           </div>
@@ -88,7 +111,7 @@ watchEffect((): void => {
                 </Card>
               </NuxtLink>
 
-              <NuxtLink class="class" :to="`/panel/users/student/undefined`">
+              <NuxtLink class="class" :to="`/panel/users/student/undefined`" v-show="currentPage === numberOfPages">
                 <Card class="card">
                   <div class="section-head">
                     <span>Nezařazené</span>
@@ -96,6 +119,8 @@ watchEffect((): void => {
                 </Card>
               </NuxtLink>
             </div>
+
+            <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
           </div>
         </div>
       </div>

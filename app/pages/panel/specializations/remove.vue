@@ -108,7 +108,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const { data: specializationData, pending: specializationTablePending } = await useFetch("/api/specialization/get", {
+const { data: specializationData, pending: specializationTablePending, error: specializationError } = await useFetch("/api/specialization/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -116,12 +116,16 @@ const { data: specializationData, pending: specializationTablePending } = await 
   },
   method: "get",
   server: true,
-  watch: [currentPage],
   credentials: "include",
-  ignoreResponseError: true,
 });
 
 watchEffect((): void => {
+  if ((specializationError.value?.data.resCode || "").toString() === "23070") {
+    allSpecializations.value = [];
+    specializationsCount.value = 0;
+    return;
+  }
+
   if (!specializationData.value) return;
 
   allSpecializations.value = specializationData.value.data.specializations;

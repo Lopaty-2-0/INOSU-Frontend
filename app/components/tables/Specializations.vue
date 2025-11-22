@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
-import {computed, nextTick, ref, watch, watchEffect} from "vue";
+import {computed, nextTick, ref, watch} from "vue";
 import type {SpecializationData} from "~/types/specialization";
 
 const props = defineProps({
@@ -55,6 +55,7 @@ const rows = computed<SpecializationData[]>((): SpecializationData[] => {
 
   return props.specializations.slice(0, props.pageSize);
 });
+const selectRowOnClick = computed<boolean>((): boolean => props.hasCheckbox);
 
 const clearSelection = (): void => {
   if (!datatable.value) return;
@@ -92,7 +93,7 @@ defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable class="datatable" ref="datatable" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :pagination="props.pagination" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="true" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable class="datatable" ref="datatable" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :pagination="props.pagination" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
     <template #abbreviation="data">
       <p>{{ data.value.abbreviation }}</p>
     </template>

@@ -92,7 +92,7 @@ watch([() => props.numberOfPages, () => props.chunkSize], ([newCount, newChunk]:
 </script>
 
 <template>
-  <div class="navigation">
+  <div class="navigation" v-if="props.numberOfPages > 1">
     <button class="back" @click="previousPage">
       <Icon class="icon" name="material-symbols:arrow-left-alt-rounded" />
       Zpět

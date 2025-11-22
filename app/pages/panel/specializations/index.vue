@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import type {SpecializationData} from "~/types/specialization";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
@@ -17,32 +17,46 @@ useHead({
 });
 
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
-const numberOfPages = ref<number>(0);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
+const specializationsCount = ref<number>(0);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(specializationsCount.value / amountForPaging);
+});
 
 const updateActivePage = (pageNumber: number): void => {
   currentPage.value = pageNumber + 1;
 };
 
-const { data: specializationData, pending: specializationTablePending } = await useFetch("/api/specialization/get", {
+const onSearchInputChange = (input: string): void => {
+  currentPage.value = 1;
+
+  searchInput.value = input;
+};
+
+const { data: specializationData, pending: specializationTablePending, error: specializationError } = await useFetch("/api/specialization/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
+    searchQuery: searchInput,
   },
   method: "get",
   server: true,
-  watch: [currentPage],
   credentials: "include",
-  ignoreResponseError: true,
 });
 
 watchEffect((): void => {
+  if ((specializationError.value?.data.resCode || "").toString() === "23070") {
+    allSpecializations.value = [];
+    specializationsCount.value = 0;
+    return;
+  }
+
   if (!specializationData.value) return;
 
   allSpecializations.value = specializationData.value.data.specializations;
-  numberOfPages.value = Math.ceil(specializationData.value.data.count / amountForPaging);
+  specializationsCount.value = specializationData.value.data.count;
 });
 
 watchEffect((): void => {
@@ -87,7 +101,7 @@ watchEffect((): void => {
               <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
             </div>
 
-            <SearchInput v-model="searchInput" placeholder="Hledat zaměření" />
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat zaměření" />
           </div>
 
           <SpecializationsTable :loading="specializationTablePending" :specializations="allSpecializations" :search="searchInput" />

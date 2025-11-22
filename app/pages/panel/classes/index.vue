@@ -3,35 +3,65 @@ import Navbar from "~/components/layout/Navbar.vue";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import type {ClassData} from "~/types/classes";
-import {ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import ClassesTable from "~/components/tables/Classes.vue";
+import Pagination from "~/components/ui/Pagination.vue";
+import SearchInput from "~/components/ui/SearchInput.vue";
 
 useHead({
   title: "Panel | Třídy",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
+const amountForPaging: number = 10;
 const allClasses = ref<ClassData[] | undefined>(undefined);
 const searchInput = ref<string>("");
+const currentPage = ref<number>(1);
+const classesCount = ref<number>(0);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(classesCount.value / amountForPaging);
+});
 
-useFetch("/api/class/get", {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const classes: ClassData[] = response._data.data.classes;
+const updateActivePage = (pageNumber: number): void => {
+  currentPage.value = pageNumber + 1;
+};
 
-    allClasses.value = classes || [];
+const onSearchInputChange = (input: string): void => {
+  currentPage.value = 1;
+
+  searchInput.value = input;
+};
+
+const { data: classesData, pending: classesTablePending, error: classesError } = await useFetch("/api/class/get", {
+  query: {
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+    searchQuery: searchInput,
   },
+  method: "get",
+  server: true,
+  credentials: "include",
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !allClasses.value);
+  if ((classesError.value?.data.resCode || "").toString() === "23070") {
+    allClasses.value = [];
+    classesCount.value = 0;
+    return;
+  }
+
+  if (!classesData.value) return;
+
+  allClasses.value = classesData.value.data.classes;
+  classesCount.value = classesData.value.data.count;
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", allClasses.value === undefined);
 });
 </script>
 
@@ -72,18 +102,12 @@ watchEffect((): void => {
               <p>Zde najdete seznam všech tříd v systému.</p>
             </div>
 
-            <div class="search">
-              <input
-                type="text"
-                name="searchInput"
-                placeholder="Hledat třídy"
-                v-model="searchInput"
-              />
-              <Icon class="icon" name="material-symbols:search-rounded"></Icon>
-            </div>
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat třídy" />
           </div>
 
-          <ClassesTable :classes="allClasses" :search="searchInput" />
+          <ClassesTable :classes="allClasses" :search="searchInput" :loading="classesTablePending" />
+
+          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
         </div>
       </div>
     </template>
@@ -112,39 +136,6 @@ watchEffect((): void => {
       flex-wrap: wrap;
       gap: 30px;
       width: 100%;
-    }
-
-    .search {
-      min-width: 150px;
-      display: flex;
-      align-items: center;
-
-      input {
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        border-radius: var(--normal-border-radius);
-        font-size: 16px;
-        outline: none;
-        padding: 15px 40px 15px 15px;
-        width: 100%;
-        background: var(--input-background);
-        color: var(--input-color);
-
-        &:focus {
-          border-color: rgba(var(--main-color), 1);
-        }
-      }
-
-      .icon {
-        margin-left: -30px;
-        cursor: pointer;
-        color: rgba(var(--description-color), 1);
-        transition: 0.2s;
-        font-size: 16px;
-
-        &:hover {
-          color: var(--mini-title-color);
-        }
-      }
     }
 
     .buttons {
