@@ -17,10 +17,12 @@ const emits = defineEmits(["update"]);
 const abbreviation = ref<{ input: string, error: string }>({ input: props.oldAbbreviation, error: "" });
 
 const onInput = (): void => {
+  if (!abbreviation.value.input) abbreviation.value.input = "";
+
   if (abbreviation.value.input.length > 4) abbreviation.value.error = "Délka přezdívky může být max 4 znaky.";
   else abbreviation.value.error = "";
 
-  const isUpdated: boolean = abbreviation.value.input !== "" && abbreviation.value.input.toLowerCase() !== props.oldAbbreviation.toLowerCase() && abbreviation.value.error === "";
+  const isUpdated: boolean = abbreviation.value.input.toLowerCase() !== props.oldAbbreviation.toLowerCase() && abbreviation.value.error === "";
 
   emits("update", { abbreviation: isUpdated ? abbreviation.value.input : undefined });
 };

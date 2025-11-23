@@ -8,7 +8,6 @@ import EditPassword from "~/components/manage/Password.vue";
 import EditRole from "~/components/manage/Role.vue";
 import EditAbbreviation from "~/components/manage/Abbreviation.vue";
 import EditClass from "~/components/manage/Class.vue";
-import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 import {useRoute, useRouter} from "#app";
 import type {AccountData} from "~/types/account";
@@ -306,7 +305,7 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditAbbreviation ref="editAbbreviation" :full-name="{ name: newUserData.name ? newUserData.name : oldUserData.name, surname: newUserData.surname ? newUserData.surname : oldUserData.surname }" :old-abbreviation="oldUserData.abbreviation" @update="onAbbreviationUpdate">
               <div class="section-head">
-                <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
+                <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation !== undefined && newUserData.abbreviation !== oldUserData.abbreviation">(aktualizováno)</span></h3>
                 <p>Zadejte novou přezdívku uživatele, pokud ji chcete změnit. Přezdívka slouží jako zkratka jména například pro rychlou identifikaci.</p>
               </div>
             </EditAbbreviation>
