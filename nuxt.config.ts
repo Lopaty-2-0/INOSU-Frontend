@@ -110,6 +110,7 @@ export default defineNuxtConfig({
     },
 
     image: {
+        provider: "ipx",
         domains: ["localhost", "100.114.228.127"],
     },
 

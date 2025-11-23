@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import moment from "moment";
-import { ref, watch } from "vue";
-import useArrayChunks from "../../componsables/useArrayChunks";
+import {ref, watch} from "vue";
 import type { AccountData } from "~/types/account";
 import Card from "~/components/ui/Card.vue";
 import Image from "~/components/ui/Image.vue";
+import Loading from "~/components/ui/Loading.vue";
 
 const props = defineProps({
   users: {
@@ -15,23 +15,19 @@ const props = defineProps({
     type: String as () => "list" | "edit" | "remove",
     default: "list",
   },
-  activePage: {
-    type: Number,
-    default: 0,
-    required: true,
+  loading: {
+    type: Boolean,
+    default: false,
   },
-  usersPerPage: {
-    type: Number,
-    default: 12,
-    required: true,
-  },
+  selectedUsers: {
+    type: Array as () => AccountData[],
+    default: () => [],
+  }
 });
 const emits = defineEmits(["get:numberOfPages", "get:selectedUsers"]);
 const config = useRuntimeConfig();
 
-const numberOfPages = ref<number>(0);
-const allUsersPages = ref<AccountData[][]>([]);
-const selectedUsers = ref<AccountData[]>([]);
+const localSelectedUsers = ref<AccountData[]>([...(props.selectedUsers || [])]);
 
 const onUserClick = (user: AccountData): void => {
   switch (props.action) {
@@ -42,39 +38,50 @@ const onUserClick = (user: AccountData): void => {
       navigateTo(`/panel/users/${user.role}/edit/${user.id}`);
       break;
     case "remove":
-      selectedUsers.value = selectedUsers.value.includes(user)
-        ? selectedUsers.value.filter((u: AccountData) => u.id !== user.id)
-        : [...selectedUsers.value, user];
-      emits("get:selectedUsers", selectedUsers.value);
+      localSelectedUsers.value = localSelectedUsers.value.includes(user)
+        ? localSelectedUsers.value.filter((u: AccountData) => u.id !== user.id)
+        : [...localSelectedUsers.value, user];
+      emits("get:selectedUsers", localSelectedUsers.value);
       break;
   }
 };
 
-const reset = (): void => {
-  selectedUsers.value = [];
-  emits("get:selectedUsers", selectedUsers.value);
+const isSelected = (user: AccountData): boolean => {
+  return localSelectedUsers.value.some((u: AccountData) => u.id === user.id);
 };
 
-watch(() => props.users, (newValue: AccountData[]): void => {
-  allUsersPages.value = useArrayChunks(newValue, props.usersPerPage);
-  numberOfPages.value = Math.ceil(newValue.length / props.usersPerPage);
+const reset = (): void => {
+  localSelectedUsers.value = [];
+  emits("get:selectedUsers", localSelectedUsers.value);
+};
 
-  emits("get:numberOfPages", numberOfPages.value);
-}, { immediate: true });
+const updateSelectedUsers = (users: AccountData[]): void => {
+  localSelectedUsers.value = users;
 
-defineExpose({ reset });
+  console.log(localSelectedUsers.value);
+};
+
+watch(() => props.selectedUsers, (value: AccountData[]): void => {
+  localSelectedUsers.value = value ? [...value] : [];
+});
+
+defineExpose({ reset, updateSelectedUsers });
 </script>
 
 <template>
   <div class="users-grid">
-    <div class="all-users" v-if="users.length > 0">
+    <div class="loading" v-if="props.loading">
+      <Loading color="rgba(var(--description-color), 1)" />
+    </div>
+
+    <div class="all-users" v-else-if="users.length > 0">
       <Card
-        v-for="user in (allUsersPages[props.activePage] as AccountData[])"
+        v-for="user in props.users"
         :key="user.id"
         class="card"
         :class="{
           [props.action]: true,
-          selected: selectedUsers.includes(user),
+          selected: isSelected(user),
         }"
         @click="onUserClick(user)"
       >
@@ -109,6 +116,15 @@ defineExpose({ reset });
   display: flex;
   flex-direction: column;
   gap: 30px;
+  flex: 1;
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
 
   .all-users {
     display: grid;

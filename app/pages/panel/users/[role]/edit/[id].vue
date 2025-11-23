@@ -8,13 +8,13 @@ import EditPassword from "~/components/manage/Password.vue";
 import EditRole from "~/components/manage/Role.vue";
 import EditAbbreviation from "~/components/manage/Abbreviation.vue";
 import EditClass from "~/components/manage/Class.vue";
-import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 import {useRoute, useRouter} from "#app";
 import type {AccountData} from "~/types/account";
 import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useLoadingStore} from "~/stores/loading";
+import {useFetch} from "nuxt/app";
 
 definePageMeta({
   roles: ["admin"],
@@ -41,7 +41,6 @@ const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
 const editRole = ref<InstanceType<typeof EditRole> | null>(null);
 const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
 const editClass = ref<InstanceType<typeof EditClass> | null>(null);
-const allClasses = ref<ClassData[] | undefined>(undefined);
 const allRoles: string[] = ["admin", "teacher", "student"];
 
 const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>( {
@@ -55,7 +54,7 @@ const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string,
   role: "",
   classes: [],
 });
-const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[] | undefined}>({
+const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[]}>({
   profilePicture: undefined,
   name: undefined,
   surname: undefined,
@@ -63,7 +62,7 @@ const newUserData = ref<{ profilePicture: File | undefined; name: string | undef
   password: undefined,
   abbreviation: undefined,
   role: undefined,
-  classes: undefined,
+  classes: [],
 });
 
 const onFullNameUpdate = (fullName: { name: string | undefined, surname: string | undefined }): void => {
@@ -87,7 +86,7 @@ const onRoleUpdate = (data: { role: string | undefined }): void => {
   newUserData.value.role = data.role;
 };
 
-const onClassUpdate = (data: { classes: number[] | undefined }): void => {
+const onClassUpdate = (data: { classes: number[] }): void => {
   newUserData.value.classes = data.classes;
 };
 
@@ -115,7 +114,7 @@ const resetUserData = (): void => {
     password: undefined,
     abbreviation: undefined,
     role: undefined,
-    classes: undefined,
+    classes: [],
   };
 
   if (editProfilePicture.value) editProfilePicture.value.reset();
@@ -203,43 +202,33 @@ const updateUser = async (): Promise<void> => {
   });
 };
 
-useFetch("/api/class/get", {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const classes: ClassData[] = response._data.data.classes;
-
-    allClasses.value = classes || [];
+const { data: userData, error: userError } = await useFetch("/api/user/get/id", {
+  query: {
+    id: id,
   },
+  method: "get",
+  server: true,
+  credentials: "include",
 });
 
-useFetch(`/api/user/get/id?id=${encodeURIComponent(id)}`, {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  async onResponse({ response }: any) {
-    const user: AccountData = response._data.data.user;
+watchEffect((): void => {
+  if (userError.value || !userData.value) {
+    router.push(`/panel/users/${role}/edit`);
+    return;
+  }
 
-    if (user) {
-      oldUserData.value.name = user.name;
-      oldUserData.value.surname = user.surname;
-      oldUserData.value.email = user.email;
-      oldUserData.value.password = "";
-      oldUserData.value.abbreviation = user.abbreviation || "";
-      oldUserData.value.role = user.role;
-      oldUserData.value.classes = user.idClass;
-      newUserData.value.classes = user.idClass;
-      oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
-    } else {
-      await router.push(`/panel/users/${role}/edit`);
-      return;
-    }
+  const user: AccountData = userData.value.data.user;
 
-    oldUserData.value.loaded = true;
-  },
+  oldUserData.value.name = user.name;
+  oldUserData.value.surname = user.surname;
+  oldUserData.value.email = user.email;
+  oldUserData.value.password = "";
+  oldUserData.value.abbreviation = user.abbreviation || "";
+  oldUserData.value.role = user.role;
+  oldUserData.value.classes = user.idClass;
+  newUserData.value.classes = user.idClass;
+  oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
+  oldUserData.value.loaded = true;
 });
 
 watchEffect((): void => {
@@ -316,7 +305,7 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditAbbreviation ref="editAbbreviation" :full-name="{ name: newUserData.name ? newUserData.name : oldUserData.name, surname: newUserData.surname ? newUserData.surname : oldUserData.surname }" :old-abbreviation="oldUserData.abbreviation" @update="onAbbreviationUpdate">
               <div class="section-head">
-                <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
+                <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation !== undefined && newUserData.abbreviation !== oldUserData.abbreviation">(aktualizováno)</span></h3>
                 <p>Zadejte novou přezdívku uživatele, pokud ji chcete změnit. Přezdívka slouží jako zkratka jména například pro rychlou identifikaci.</p>
               </div>
             </EditAbbreviation>
@@ -324,11 +313,11 @@ watchEffect((): void => {
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Třída <span class="update" v-show="!isEqual(newUserData.classes, oldUserData.classes)">(aktualizováno)</span></h3>
+              <h3>Třídy ({{ newUserData.classes.length }}) <span class="update" v-show="!isEqual(newUserData.classes, oldUserData.classes)">(aktualizováno)</span></h3>
               <p>Vyberte třídu nebo více tříd, které chcete uživateli přiřadit.</p>
             </div>
 
-            <EditClass ref="editClass" :old-class-ids="oldUserData.classes" :classes="allClasses || []" @update="onClassUpdate" v-if="newUserData.role ? newUserData.role === 'student' : oldUserData.role === 'student'" />
+            <EditClass ref="editClass" :old-class-ids="oldUserData.classes" @update="onClassUpdate" v-if="newUserData.role ? newUserData.role === 'student' : oldUserData.role === 'student'" />
             <p class="error" v-else>
               Třídy můžete vybírat pouze pokud role uživatele je <strong>student</strong>.
             </p>

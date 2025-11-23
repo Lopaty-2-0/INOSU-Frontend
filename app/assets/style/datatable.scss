@@ -26,9 +26,14 @@
   background-color: transparent !important;
 }
 
+::v-deep(.bh-pagination) {
+  display: none;
+}
+
 ::v-deep(.bh-table-responsive) {
   width: 100%;
   font-size: 16px;
+  min-height: 0;
   border-radius: var(--normal-border-radius);
   border: var(--border-width) solid rgba(var(--border-color), 0.5);
 
@@ -42,10 +47,15 @@
   }
 }
 
+
 ::v-deep(.bh-table-responsive table thead tr) {
   background: var(--card-1-background);
   color: var(--title-color);
   border-bottom: var(--border-width) solid rgba(var(--border-color), 0.5);
+
+  .bh-checkbox {
+    display: none;
+  }
 }
 
 ::v-deep(.\!bh-text-primary) {
@@ -119,7 +129,7 @@
 }
 
 ::v-deep(.bh-table-responsive input[type=checkbox]) {
-  cursor: pointer;
+  pointer-events: none;
 
   &+div {
     border-color: rgba(var(--border-color), 0.5);

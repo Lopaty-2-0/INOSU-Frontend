@@ -4,7 +4,8 @@ import "@bhplugin/vue3-datatable/dist/style.css";
 import "../../assets/style/datatable.scss";
 import moment from "moment";
 import type { TaskData } from "~/types/tasks";
-import {computed, ref} from "vue";
+import {computed, nextTick, ref, watch} from "vue";
+import type {SpecializationData} from "~/types/specialization";
 
 const props = defineProps({
   tasks: {
@@ -34,9 +35,14 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: true,
+  },
+  selectedIds: {
+    type: Array as () => number[],
+    required: false,
+    default: () => [],
   }
 });
-const emits = defineEmits(["checkboxSelect"]);
+const emits = defineEmits(["rowClicked"]);
 
 const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
   { field: "id", title: "ID", width: "90px", type: "number" },
@@ -56,18 +62,10 @@ const rows = computed<TaskData[]>((): TaskData[] => {
 
   return props.tasks.slice(0, props.pageSize);
 });
-
+const selectRowOnClick = computed<boolean>((): boolean => props.hasCheckbox);
 
 const downloadTask = (id: number, task: string): void => {
   window.open(`/api/file/task/${id}/${task}`, "_blank");
-};
-
-const onInput = (): void => {
-  if (!datatable.value) return;
-
-  setTimeout((): void => {
-    emits("checkboxSelect", datatable.value.getSelectedRows() as TaskData[]);
-  }, 0);
 };
 
 const clearSelection = (): void => {
@@ -76,11 +74,37 @@ const clearSelection = (): void => {
   datatable.value.clearSelectedRows();
 };
 
+const onRowClick = (rowData: any): void => {
+  if (!datatable.value) return;
+
+  emits("rowClicked", rowData as TaskData[]);
+};
+
+const updateSelection = async (): Promise<void> => {
+  await nextTick();
+
+  if (!datatable.value) return;
+
+  const visibleRows = datatable.value.getVisibleRows();
+
+  clearSelection();
+
+  visibleRows.forEach((row: any, index: number) => {
+    if (props.selectedIds.includes(row.id as number)) {
+      datatable.value?.selectRow(index);
+    }
+  });
+};
+
+watch([() => rows.value, () => props.selectedIds], async (): Promise<void> => {
+  await updateSelection();
+}, { immediate: true });
+
 defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="20" :sortable="true" :search="props.searchInput" no-data-content="Žádná data k dispozici" @input="onInput">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="20" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
     <template #name="data">
       <span class="limit">{{ data.value.name }}</span>
     </template>

@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import Navbar from "../../../../components/layout/Navbar.vue";
 import type { AccountData } from "~/types/account";
-import {ref, onMounted, watchEffect} from "vue";
+import {ref, onMounted, watchEffect, computed} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import UsersGrid from "../../../../components/users/Grid.vue";
 import Pagination from "../../../../components/ui/Pagination.vue";
@@ -11,6 +11,7 @@ import Loading from "~/components/ui/Loading.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useLoadingStore} from "~/stores/loading";
+import {useFetch} from "nuxt/app";
 
 definePageMeta({
   roles: ["admin"],
@@ -26,41 +27,16 @@ useHead({
 
 const loading = ref<boolean>(false);
 const alertsStore = useAlertsStore();
-const users = ref<AccountData[] | null>(null);
-const numberOfPages = ref<number>(0);
-const activePage = ref<number>(0);
 const selectedUsers = ref<AccountData[]>([]);
 const usersGrid = ref<InstanceType<typeof UsersGrid> | null>(null);
+const amountForPaging: number = 12;
+const currentPage = ref<number>(1);
+const users = ref<AccountData[] | undefined>(undefined);
 const searchInput = ref<string>("");
-const searchedUsers = ref<AccountData[]>([]);
-
-const searchUsers = (): void => {
-  const inputToArray: string[] = searchInput.value.split(" ");
-  const allSearchedUsers: AccountData[] = [];
-
-  if (!users.value) return;
-
-  users.value.forEach((user: AccountData) => {
-    const searchResult = [
-      user.name,
-      user.surname,
-      user.email,
-      user.abbreviation || "",
-    ].some((word: string) => {
-      let result: boolean = false;
-
-      inputToArray.forEach((inputWord: string) => {
-        result = word.toLowerCase().includes(inputWord.toLowerCase());
-      });
-
-      return result;
-    });
-
-    if (searchResult) allSearchedUsers.push(user);
-  });
-
-  searchedUsers.value = allSearchedUsers;
-};
+const usersCount = ref<number>(0);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(usersCount.value / amountForPaging);
+});
 
 const resetSelectedUsers = (): void => {
   if (usersGrid.value) usersGrid.value.reset();
@@ -103,7 +79,6 @@ const removeUsers = async (): Promise<void> => {
               );
             });
 
-            searchedUsers.value = [...users.value];
             resetSelectedUsers();
           }
           break;
@@ -120,17 +95,44 @@ const removeUsers = async (): Promise<void> => {
   });
 };
 
-useFetch(`/api/user/get/role?role=${encodeURIComponent(role)}`, {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const usersData: AccountData[] = response._data?.data?.users || [];
+const onSearchInputChange = (input: string): void => {
+  currentPage.value = 1;
 
-    users.value = usersData;
-    searchedUsers.value = [...usersData];
+  searchInput.value = input;
+};
+
+const onUsersSelect = (usersList: AccountData[]): void => {
+  selectedUsers.value = usersList;
+};
+
+const updateActivePage = (pageNumber: number): void => {
+  currentPage.value = pageNumber + 1;
+
+  if (usersGrid.value) usersGrid.value.updateSelectedUsers(selectedUsers.value);
+};
+
+const { data: usersData, error: usersError, pending: usersPending } = await useFetch("/api/user/get/role", {
+  query: {
+    role: role,
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+    searchQuery: searchInput,
   },
+  method: "get",
+  server: true,
+  credentials: "include",
+});
+
+watchEffect((): void => {
+  if ((usersError.value?.data.resCode || "").toString() === "23070") {
+    users.value = undefined;
+    return;
+  }
+
+  if (!usersData.value) return;
+
+  users.value = usersData.value.data.users;
+  usersCount.value = usersData.value.data.count;
 });
 
 watchEffect((): void => {
@@ -175,12 +177,12 @@ watchEffect((): void => {
           <div class="line">
             <div class="section-head">
               <h3>
-                Uživatelé: {{ selectedUsers.length }} / {{ searchedUsers.length }}
+                Vybraní uživatelé: {{ selectedUsers.length }}
               </h3>
               <p>Vyberte uživatele, které chcete odstranit, nebo použijte vyhledávání pro zúžení výběru.</p>
             </div>
 
-            <SearchInput v-model="searchInput" @input="searchUsers" placeholder="Hledat uživatele" />
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat uživatele" />
           </div>
 
           <div class="buttons">
@@ -200,18 +202,17 @@ watchEffect((): void => {
           <div class="users">
             <UsersGrid
               ref="usersGrid"
-              :users="searchedUsers"
-              :users-per-page="12"
+              :users="users"
               :action="'remove'"
-              :active-page="activePage"
-              @get:number-of-pages="(value: number) => (numberOfPages = value)"
-              @get:selected-users="(value: AccountData[]) => (selectedUsers = value)"
+              :loading="usersPending"
+              :reset="resetSelectedUsers"
+              :selected-users="selectedUsers"
+              @get:selected-users="onUsersSelect"
             />
             <Pagination
               class="users-navigation"
               :number-of-pages="numberOfPages"
-              :chunk-size="3"
-              @get:active-page="(value: number) => (activePage = value)"
+              @get:active-page="updateActivePage"
             />
           </div>
         </div>

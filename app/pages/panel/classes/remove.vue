@@ -3,13 +3,15 @@ import Navbar from "~/components/layout/Navbar.vue";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import type {ClassData} from "~/types/classes";
-import {ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import ClassesTable from "~/components/tables/Classes.vue";
+import SearchInput from "~/components/ui/SearchInput.vue";
+import Pagination from "~/components/ui/Pagination.vue";
 
 useHead({
   title: "Panel | Třídy - Odstranění",
@@ -21,23 +23,43 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
+const amountForPaging: number = 10;
 const datatable = ref<InstanceType<typeof ClassesTable> | null>(null);
 const allClasses = ref<ClassData[] | undefined>(undefined);
-const selectedClasses = ref<ClassData[]>([]);
+const selectedClasses = ref<number[]>([]);
 const loading = ref<boolean>(false);
 const searchInput = ref<string>("");
+const currentPage = ref<number>(1);
+const classesCount = ref<number>(0);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(classesCount.value / amountForPaging);
+});
+
+const onRowClicked = (classes: ClassData): void => {
+  if (!datatable.value) return;
+
+  if (!selectedClasses.value.includes(classes.id)) {
+    selectedClasses.value.push(classes.id);
+  } else {
+    selectedClasses.value = selectedClasses.value.filter((id: number) => id !== classes.id);
+  }
+};
 
 const resetSelectedClasses = (): void => {
   if (!datatable.value) return;
 
-  datatable.value.clearSelection();
   selectedClasses.value = [];
+  datatable.value.clearSelection();
 };
 
-const onCheckboxSelect = (classes: ClassData[]): void => {
-  if (!datatable.value) return;
+const updateActivePage = (pageNumber: number): void => {
+  currentPage.value = pageNumber + 1;
+};
 
-  selectedClasses.value = classes;
+const onSearchInputChange = (input: string): void => {
+  currentPage.value = 1;
+
+  searchInput.value = input;
 };
 
 const removeClasses = async (): Promise<void> => {
@@ -46,13 +68,12 @@ const removeClasses = async (): Promise<void> => {
   await $fetch("/api/class/delete", {
     method: "delete",
     body: {
-      idClass : selectedClasses.value.map((oneClass: ClassData) => oneClass.id),
+      idClass : selectedClasses.value,
     },
     ignoreResponseError: true,
     credentials: "include",
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
-
 
       switch (resCode) {
         case "9010":
@@ -86,20 +107,33 @@ const removeClasses = async (): Promise<void> => {
     loading.value = false;
   });
 }
-useFetch("/api/class/get", {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const classes: ClassData[] = response._data.data.classes;
 
-    allClasses.value = classes || [];
+const { data: classesData, pending: classesTablePending, error: classesError } = await useFetch("/api/class/get", {
+  query: {
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+    searchQuery: searchInput,
   },
+  method: "get",
+  server: true,
+  credentials: "include",
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !allClasses.value);
+  if ((classesError.value?.data.resCode || "").toString() === "23070") {
+    allClasses.value = [];
+    classesCount.value = 0;
+    return;
+  }
+
+  if (!classesData.value) return;
+
+  allClasses.value = classesData.value.data.classes;
+  classesCount.value = classesData.value.data.count;
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", allClasses.value === undefined);
 });
 </script>
 
@@ -137,19 +171,11 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Třídy: {{ selectedClasses.length }} / {{ allClasses.length }}</h3>
+              <h3>Vybrané třídy: {{ selectedClasses.length }}</h3>
               <p>Vyberte třídy, které chcete trvale odstranit ze systému.</p>
             </div>
 
-            <div class="search">
-              <input
-                type="text"
-                name="searchInput"
-                placeholder="Hledat třídy"
-                v-model="searchInput"
-              />
-              <Icon class="icon" name="material-symbols:search-rounded"></Icon>
-            </div>
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat třídy" />
           </div>
 
           <div class="buttons">
@@ -166,7 +192,9 @@ watchEffect((): void => {
             </button>
           </div>
 
-          <ClassesTable ref="datatable" :classes="allClasses" :search="searchInput" :has-checkbox="true" @checkbox-select="onCheckboxSelect" />
+          <ClassesTable :selected-ids="selectedClasses" :loading="classesTablePending" ref="datatable" :classes="allClasses" :has-checkbox="true" @row-clicked="onRowClicked" />
+
+          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
         </div>
       </div>
     </template>
@@ -200,39 +228,6 @@ watchEffect((): void => {
       flex-wrap: wrap;
       gap: 30px;
       width: 100%;
-    }
-
-    .search {
-      min-width: 150px;
-      display: flex;
-      align-items: center;
-
-      input {
-        border: var(--border-width) solid rgba(var(--border-color), 0.5);
-        border-radius: var(--normal-border-radius);
-        font-size: 16px;
-        outline: none;
-        padding: 15px 40px 15px 15px;
-        width: 100%;
-        background: var(--input-background);
-        color: var(--input-color);
-
-        &:focus {
-          border-color: rgba(var(--main-color), 1);
-        }
-      }
-
-      .icon {
-        margin-left: -30px;
-        cursor: pointer;
-        color: rgba(var(--description-color), 1);
-        transition: 0.2s;
-        font-size: 16px;
-
-        &:hover {
-          color: var(--mini-title-color);
-        }
-      }
     }
 
     .buttons {
