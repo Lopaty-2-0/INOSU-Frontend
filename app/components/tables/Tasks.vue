@@ -77,7 +77,7 @@ const clearSelection = (): void => {
 const onRowClick = (rowData: any): void => {
   if (!datatable.value) return;
 
-  emits("rowClicked", rowData as SpecializationData[]);
+  emits("rowClicked", rowData as TaskData[]);
 };
 
 const updateSelection = async (): Promise<void> => {

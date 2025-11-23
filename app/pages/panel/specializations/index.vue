@@ -104,7 +104,7 @@ watchEffect((): void => {
             <SearchInput @change="onSearchInputChange" placeholder="Hledat zaměření" />
           </div>
 
-          <SpecializationsTable :loading="specializationTablePending" :specializations="allSpecializations" :search="searchInput" />
+          <SpecializationsTable :loading="specializationTablePending" :specializations="allSpecializations" />
 
           <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
         </div>

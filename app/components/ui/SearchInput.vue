@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import Input from "~/components/ui/Input.vue";
 
 const props = defineProps({

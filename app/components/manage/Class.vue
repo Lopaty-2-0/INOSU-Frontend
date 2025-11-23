@@ -22,7 +22,6 @@ const amountForPaging: number = 5;
 const datatable = ref<InstanceType<typeof ClassesTable> | null>(null);
 const classes = ref<ClassData[] | undefined>(undefined);
 const selectedClasses = ref<number[]>([...props.oldClassIds]);
-const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const classesCount = ref<number>(0);
 const numberOfPages = computed<number>((): number => {
@@ -87,7 +86,7 @@ defineExpose({ reset });
     <slot />
 
     <div class="section">
-      <ClassesTable ref="datatable" :classes="classes || []" :selected-ids="selectedClasses" :page-size="amountForPaging" :search="searchInput" :loading="classesTablePending" :has-checkbox="true" @row-clicked="onRowClicked" />
+      <ClassesTable ref="datatable" :classes="classes || []" :selected-ids="selectedClasses" :page-size="amountForPaging" :loading="classesTablePending" :has-checkbox="true" @row-clicked="onRowClicked" />
 
       <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
     </div>

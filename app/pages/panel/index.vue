@@ -76,7 +76,7 @@ const openTask = async (id: number): Promise<void> => {
 };
 
 const updateContent = (newContent: { html: string }) => {
-  console.log(newContent);
+  //console.log(newContent);
 };
 
 const {data: studentsCount} = await useFetch("/api/user/get/count/byRole?role=student", {

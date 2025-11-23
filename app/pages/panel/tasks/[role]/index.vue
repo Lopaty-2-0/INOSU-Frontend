@@ -24,16 +24,6 @@ const role = route.params.role as string;
 
 const accountStore = useAccountStore();
 const { getId: userId } = storeToRefs(accountStore);
-
-const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "startDate", title: "Začátek", type: "date" },
-  { field: "endDate", title: "Konec", type: "date" },
-  { field: "approve", title: "Nutné potvrzení", type: "boolean" },
-  { field: "task", title: "Zadání", type: "string" },
-  { field: "actions", title: "Akce" },
-]);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 

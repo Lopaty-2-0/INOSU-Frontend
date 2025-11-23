@@ -105,7 +105,7 @@ watchEffect((): void => {
             <SearchInput @change="onSearchInputChange" placeholder="Hledat třídy" />
           </div>
 
-          <ClassesTable :classes="allClasses" :search="searchInput" :loading="classesTablePending" />
+          <ClassesTable :classes="allClasses" :loading="classesTablePending" />
 
           <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
         </div>

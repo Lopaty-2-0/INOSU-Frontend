@@ -192,7 +192,7 @@ watchEffect((): void => {
             </button>
           </div>
 
-          <SpecializationsTable :selected-ids="selectedSpecializationIds" :loading="specializationTablePending" ref="datatable" :specializations="allSpecializations" :search="searchInput" :has-checkbox="true" @row-clicked="onRowClicked" />
+          <SpecializationsTable :selected-ids="selectedSpecializationIds" :loading="specializationTablePending" ref="datatable" :specializations="allSpecializations" :has-checkbox="true" @row-clicked="onRowClicked" />
 
           <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
         </div>
