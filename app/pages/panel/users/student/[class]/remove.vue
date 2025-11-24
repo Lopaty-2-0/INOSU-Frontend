@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "#app";
-import {computed, ref, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watchEffect} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import UsersGrid from "~/components/users/Grid.vue";
@@ -25,7 +25,7 @@ useHead({
   meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
-const usersGrid = ref<InstanceType<typeof UsersGrid> | null>(null);
+const usersGrid = useTemplateRef<InstanceType<typeof UsersGrid>>("usersGrid");
 const loading = ref<boolean>(false);
 const alertsStore = useAlertsStore();
 const selectedUsers = ref<AccountData[]>([]);

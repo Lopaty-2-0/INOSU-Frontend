@@ -3,7 +3,7 @@ import Navbar from "~/components/layout/Navbar.vue";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import type {ClassData} from "~/types/classes";
-import {computed, ref, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
@@ -24,7 +24,7 @@ definePageMeta({
 
 const alertsStore = useAlertsStore();
 const amountForPaging: number = 10;
-const datatable = ref<InstanceType<typeof ClassesTable> | null>(null);
+const datatable = useTemplateRef<InstanceType<typeof ClassesTable>>("datatable");
 const allClasses = ref<ClassData[] | undefined>(undefined);
 const selectedClasses = ref<number[]>([]);
 const loading = ref<boolean>(false);

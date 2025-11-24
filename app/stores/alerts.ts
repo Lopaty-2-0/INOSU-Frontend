@@ -70,14 +70,12 @@ export const useAlertsStore = defineStore("alerts", {
             }, alert.remainingTime);
         },
         removeAlert(alertIndex: number): void {
-            const index: number | undefined = this.alerts.findIndex((a: Alert) => a.index === alertIndex);
+            const alert: Alert | undefined = this.alerts.find((a: Alert) => a.index === alertIndex);
 
-            if (index !== -1) {
-                const alert = this.alerts[index];
+            if (alert) {
+                if (alert.timeoutId) window.clearTimeout(alert.timeoutId);
 
-                if (alert && alert.timeoutId) window.clearTimeout(alert.timeoutId);
-
-                this.alerts.splice(index, 1);
+                this.alerts = this.alerts.filter((a: Alert) => a.index !== alertIndex);
             }
         },
     },

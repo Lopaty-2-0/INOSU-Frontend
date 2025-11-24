@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import {type Quill, QuillEditor} from "@vueup/vue-quill";
+import {ref, useTemplateRef, watch} from "vue";
+import {QuillEditor} from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
 type Tool = {
@@ -60,7 +60,7 @@ const props = defineProps({
 });
 
 const localContent = ref<string>(props.content);
-const editor = ref<typeof Quill | null>(null);
+const editor = useTemplateRef<InstanceType<typeof QuillEditor>>("editor");
 const emits = defineEmits(["update:content"]);
 
 const toolbarSections: ToolbarSection[] = [
@@ -228,7 +228,7 @@ watch(() => props.enable, (newVal: boolean): void => {
 });
 
 watch(() => props.focus, (newVal: boolean): void => {
-  if (newVal) editor.value.getQuill().focus();
+  if (newVal && editor.value) editor.value.getQuill().focus();
 });
 </script>
 

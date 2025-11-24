@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watch, watchEffect} from "vue";
 import type {ClassData} from "~/types/classes";
 import {useFetch} from "nuxt/app";
 import ClassesTable from "~/components/tables/Classes.vue";
@@ -19,7 +19,7 @@ const props = defineProps({
 
 const emits = defineEmits(["update"]);
 const amountForPaging: number = 5;
-const datatable = ref<InstanceType<typeof ClassesTable> | null>(null);
+const datatable = useTemplateRef<InstanceType<typeof ClassesTable>>("datatable");
 const classes = ref<ClassData[] | undefined>(undefined);
 const selectedClasses = ref<number[]>([...props.oldClassIds]);
 const currentPage = ref<number>(1);

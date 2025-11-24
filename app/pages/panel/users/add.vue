@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import {ref, computed, watchEffect} from "vue";
+import {ref, computed, watchEffect, useTemplateRef} from "vue";
 import EditFullName from "../../../components/manage/FullName.vue";
 import EditEmail from "../../../components/manage/Email.vue";
 import EditPassword from "../../../components/manage/Password.vue";
@@ -13,6 +13,7 @@ import {useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
+import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -27,12 +28,12 @@ useHead({
 
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
-const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
-const editEmail = ref<InstanceType<typeof EditEmail> | null>(null);
-const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
-const editRole = ref<InstanceType<typeof EditRole> | null>(null);
-const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
-const editClass = ref<InstanceType<typeof EditClass> | null>(null);
+const editFullName = useTemplateRef<InstanceType<typeof EditFullName>>("editFullName");
+const editEmail = useTemplateRef<InstanceType<typeof EditEmail>>("editEmail");
+const editPassword = useTemplateRef<InstanceType<typeof EditPassword>>("editPassword");
+const editRole = useTemplateRef<InstanceType<typeof EditRole>>("editRole");
+const editAbbreviation = useTemplateRef<InstanceType<typeof EditAbbreviation>>("editAbbreviation");
+const editClass = useTemplateRef<InstanceType<typeof EditClass>>("editClass");
 const allRoles: string[] = ["admin", "teacher", "student"];
 
 const oldUserData = computed<{ name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>(() => ({

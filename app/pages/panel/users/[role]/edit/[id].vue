@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import {ref, watchEffect} from "vue";
+import {ref, useTemplateRef, watchEffect} from "vue";
 import EditFullName from "~/components/manage/FullName.vue";
 import EditEmail from "~/components/manage/Email.vue";
 import EditPassword from "~/components/manage/Password.vue";
@@ -34,13 +34,13 @@ useHead({
 
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
-const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
-const editFullName = ref<InstanceType<typeof EditFullName> | null>(null);
-const editMail = ref<InstanceType<typeof EditEmail> | null>(null);
-const editPassword = ref<InstanceType<typeof EditPassword> | null>(null);
-const editRole = ref<InstanceType<typeof EditRole> | null>(null);
-const editAbbreviation = ref<InstanceType<typeof EditAbbreviation> | null>(null);
-const editClass = ref<InstanceType<typeof EditClass> | null>(null);
+const editProfilePicture = useTemplateRef<InstanceType<typeof EditProfilePicture>>("editProfilePicture");
+const editFullName = useTemplateRef<InstanceType<typeof EditFullName>>("editFullName");
+const editEmail = useTemplateRef<InstanceType<typeof EditEmail>>("editEmail");
+const editPassword = useTemplateRef<InstanceType<typeof EditPassword>>("editPassword");
+const editRole = useTemplateRef<InstanceType<typeof EditRole>>("editRole");
+const editAbbreviation = useTemplateRef<InstanceType<typeof EditAbbreviation>>("editAbbreviation");
+const editClass = useTemplateRef<InstanceType<typeof EditClass>>("editClass");
 const allRoles: string[] = ["admin", "teacher", "student"];
 
 const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>( {
@@ -119,7 +119,7 @@ const resetUserData = (): void => {
 
   if (editProfilePicture.value) editProfilePicture.value.reset();
   if (editFullName.value) editFullName.value.reset();
-  if (editMail.value) editMail.value.reset();
+  if (editEmail.value) editEmail.value.reset();
   if (editPassword.value) editPassword.value.reset();
   if (editRole.value) editRole.value.reset();
   if (editAbbreviation.value) editAbbreviation.value.reset();
@@ -276,7 +276,7 @@ watchEffect((): void => {
           </div>
 
           <div class="line page-section">
-            <EditEmail ref="editMail" :old-email="oldUserData.email" @update="onEmailUpdate">
+            <EditEmail ref="editEmail" :old-email="oldUserData.email" @update="onEmailUpdate">
               <div class="section-head">
                 <h3>E-mail <span class="update" v-show="newUserData.email">(aktualizováno)</span></h3>
                 <p>Zadejte novou e-mailovou adresu uživatele, pokud ji chcete změnit.</p>
