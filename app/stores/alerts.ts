@@ -73,7 +73,7 @@ export const useAlertsStore = defineStore("alerts", {
             const index: number | undefined = this.alerts.findIndex((a: Alert) => a.index === alertIndex);
 
             if (index !== -1) {
-                const alert = this.alerts[index];
+                const alert: Alert | undefined = this.alerts[index];
 
                 if (alert && alert.timeoutId) window.clearTimeout(alert.timeoutId);
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import {ref, useTemplateRef, watch} from "vue";
 import {type Quill, QuillEditor} from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
@@ -60,7 +60,7 @@ const props = defineProps({
 });
 
 const localContent = ref<string>(props.content);
-const editor = ref<typeof Quill | null>(null);
+const editor = useTemplateRef<InstanceType<typeof Quill>>("editor");
 const emits = defineEmits(["update:content"]);
 
 const toolbarSections: ToolbarSection[] = [

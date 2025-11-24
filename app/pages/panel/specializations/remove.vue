@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {computed, nextTick, ref, watchEffect} from "vue";
+import {computed, nextTick, ref, useTemplateRef, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
@@ -23,7 +23,7 @@ definePageMeta({
 
 const alertsStore = useAlertsStore();
 const amountForPaging: number = 10;
-const datatable = ref<InstanceType<typeof SpecializationsTable> | null>(null);
+const datatable = useTemplateRef<InstanceType<typeof SpecializationsTable>>("datatable");
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
 const selectedSpecializationIds = ref<number[]>([]);
 const loading = ref<boolean>(false);

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
-import SearchInput from "~/components/ui/SearchInput.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import type {TaskData} from "~/types/tasks";

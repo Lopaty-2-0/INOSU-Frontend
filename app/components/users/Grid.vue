@@ -57,8 +57,6 @@ const reset = (): void => {
 
 const updateSelectedUsers = (users: AccountData[]): void => {
   localSelectedUsers.value = users;
-
-  console.log(localSelectedUsers.value);
 };
 
 watch(() => props.selectedUsers, (value: AccountData[]): void => {

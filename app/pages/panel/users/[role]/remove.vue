@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import Navbar from "../../../../components/layout/Navbar.vue";
 import type { AccountData } from "~/types/account";
-import {ref, onMounted, watchEffect, computed} from "vue";
+import {ref, onMounted, watchEffect, computed, useTemplateRef} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import UsersGrid from "../../../../components/users/Grid.vue";
 import Pagination from "../../../../components/ui/Pagination.vue";
@@ -28,7 +28,7 @@ useHead({
 const loading = ref<boolean>(false);
 const alertsStore = useAlertsStore();
 const selectedUsers = ref<AccountData[]>([]);
-const usersGrid = ref<InstanceType<typeof UsersGrid> | null>(null);
+const usersGrid = useTemplateRef<InstanceType<typeof UsersGrid>>("usersGrid");
 const amountForPaging: number = 12;
 const currentPage = ref<number>(1);
 const users = ref<AccountData[] | undefined>(undefined);
