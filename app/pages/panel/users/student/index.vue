@@ -38,7 +38,7 @@ const { data: classesData, error: classesError } = await useFetch("/api/class/ge
 });
 
 watchEffect((): void => {
-  if ((classesError.value?.data.resCode || "").toString() === "23070") {
+  if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
     return;
@@ -51,7 +51,7 @@ watchEffect((): void => {
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !allClasses.value);
+  useLoadingStore().setLoading("dataLoading", !allClasses.value && !classesError.value);
 });
 </script>
 

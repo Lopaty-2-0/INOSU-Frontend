@@ -70,7 +70,7 @@ const { data: usersData, error: usersError, pending: usersPending } = await useF
 });
 
 watchEffect((): void => {
-  if ((usersError.value?.data.resCode || "").toString() === "23070") {
+  if (usersError.value) {
     users.value = undefined;
     return;
   }
@@ -82,7 +82,7 @@ watchEffect((): void => {
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !users.value);
+  useLoadingStore().setLoading("dataLoading", !users.value && !usersError.value);
 });
 </script>
 

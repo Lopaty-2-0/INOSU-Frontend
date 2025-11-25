@@ -21,7 +21,7 @@ const {data: usersData} = await useFetch("/api/user/get/number", {
   credentials: "include",
 });
 
-const {data: rolesData} = await useFetch("/api/user/get/roles", {
+const {data: rolesData, error: rolesError} = await useFetch("/api/user/get/roles", {
   method: "get",
   credentials: "include",
   server: true,
@@ -34,7 +34,7 @@ watchEffect((): void => {
   if (!usersData.value) return;
   numberOfUsers.value = usersData.value.data.count || 0;
 
-  useLoadingStore().setLoading("dataLoading", numberOfUsers.value < 0 || !allRoles.value)
+  useLoadingStore().setLoading("dataLoading", !allRoles.value && !rolesError.value);
 });
 </script>
 

@@ -120,7 +120,7 @@ const { data: specializationData, pending: specializationTablePending, error: sp
 });
 
 watchEffect((): void => {
-  if ((specializationError.value?.data.resCode || "").toString() === "23070") {
+  if (specializationError.value) {
     allSpecializations.value = [];
     specializationsCount.value = 0;
     return;

@@ -48,7 +48,7 @@ const { data: classesData, pending: classesTablePending, error: classesError } =
 });
 
 watchEffect((): void => {
-  if ((classesError.value?.data.resCode || "").toString() === "23070") {
+  if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
     return;
