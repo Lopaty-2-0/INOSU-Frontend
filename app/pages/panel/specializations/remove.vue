@@ -69,7 +69,7 @@ const removeSpecializations = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nemáte oprávnění k této akci." });
           break;
         case "5020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Chybí ID zaměření." });
+          alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Chybí ID zaměření." });
           break;
         case "5030":
           alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Neproběhlo žádné odstranění." });
