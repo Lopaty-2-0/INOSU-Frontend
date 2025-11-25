@@ -34,10 +34,6 @@ const reset = (): void => {
   emits("update", { classes: selectedClasses.value });
 };
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onRowClicked = (selectedClassData: ClassData): void => {
   if (!datatable.value) return;
 
@@ -88,7 +84,7 @@ defineExpose({ reset });
     <div class="section">
       <ClassesTable ref="datatable" :classes="classes || []" :selected-ids="selectedClasses" :page-size="amountForPaging" :loading="classesTablePending" :has-checkbox="true" @row-clicked="onRowClicked" />
 
-      <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+      <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
     </div>
   </div>
 </template>

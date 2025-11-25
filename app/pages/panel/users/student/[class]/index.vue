@@ -50,10 +50,6 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const { data: usersData, error: usersError, pending: usersPending } = await useFetch(requests.value.url, {
   query: {
     amountForPaging: amountForPaging,
@@ -135,7 +131,7 @@ watchEffect((): void => {
             <Pagination
               class="users-navigation"
               :number-of-pages="numberOfPages"
-              @get:active-page="updateActivePage"
+              v-model="currentPage"
             />
           </div>
         </div>

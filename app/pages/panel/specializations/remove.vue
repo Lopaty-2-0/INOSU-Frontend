@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {computed, nextTick, ref, useTemplateRef, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
@@ -98,10 +98,6 @@ const removeSpecializations = async (): Promise<void> => {
   });
 };
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
 
@@ -194,7 +190,7 @@ watchEffect((): void => {
 
           <SpecializationsTable :selected-ids="selectedSpecializationIds" :loading="specializationTablePending" ref="datatable" :specializations="allSpecializations" :has-checkbox="true" @row-clicked="onRowClicked" />
 
-          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>

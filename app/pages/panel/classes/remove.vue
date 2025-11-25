@@ -52,10 +52,6 @@ const resetSelectedClasses = (): void => {
   datatable.value.clearSelection();
 };
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
 
@@ -194,7 +190,7 @@ watchEffect((): void => {
 
           <ClassesTable :selected-ids="selectedClasses" :loading="classesTablePending" ref="datatable" :classes="allClasses" :has-checkbox="true" @row-clicked="onRowClicked" />
 
-          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>

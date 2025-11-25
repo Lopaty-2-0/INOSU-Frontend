@@ -26,10 +26,6 @@ const numberOfPages = computed<number>((): number => {
   return Math.ceil(classesCount.value / amountForPaging);
 });
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
 
@@ -107,7 +103,7 @@ watchEffect((): void => {
 
           <ClassesTable :classes="allClasses" :loading="classesTablePending" />
 
-          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>

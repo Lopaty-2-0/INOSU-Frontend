@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import { storeToRefs } from "pinia";
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
@@ -9,6 +9,7 @@ import { useAccountStore } from "~/stores/account";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import TasksTable from "~/components/tables/Tasks.vue";
+import Pagination from "~/components/ui/Pagination.vue";
 
 useHead({
   title: "Panel | Úkoly",
@@ -26,6 +27,22 @@ const accountStore = useAccountStore();
 const { getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
+const currentPage = ref<number>(1);
+const amountForPaging: number = 10;
+const tasksCount = ref<number>(0);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(tasksCount.value / amountForPaging);
+});
+
+const updateActivePage = (pageNumber: number): void => {
+  currentPage.value = pageNumber + 1;
+};
+
+const onSearchInputChange = (input: string): void => {
+  currentPage.value = 1;
+
+  searchInput.value = input;
+};
 
 const assignTask = async (id: number): Promise<void> => {
   if (!id) return;
@@ -39,21 +56,33 @@ const openTask = async (id: number): Promise<void> => {
   await navigateTo(`/panel/tasks/admin/${id}`);
 };
 
-useFetch(`/api/task/get/guarantor?idUser=${userId.value}`, {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const tasks: TaskData[] = response._data.data.tasks || [];
-
-    allTasks.value = tasks || [];
+const { data: tasksData, error: tasksError, pending: tasksPending } = await useFetch("/api/task/get/guarantor", {
+  query: {
+    idUser: userId,
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+    searchQuery: searchInput,
   },
+  method: "get",
+  server: true,
+  credentials: "include",
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !allTasks.value);
-})
+  if (tasksError.value) {
+    allTasks.value = [];
+    return;
+  }
+
+  if (!tasksData.value) return;
+
+  allTasks.value = tasksData.value.data.tasks;
+  tasksCount.value = tasksData.value.data.count;
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value);
+});
 </script>
 
 <template>
@@ -72,11 +101,11 @@ watchEffect((): void => {
       <div id="tasks">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa úkolů"
-              :texts="['Přidat', 'Odebrat']"
-              :actions="['add', 'remove']"
-              :icons="[
+            class="action-bar"
+            description="Správa úkolů"
+            :texts="['Přidat', 'Odebrat']"
+            :actions="['add', 'remove']"
+            :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
@@ -94,10 +123,10 @@ watchEffect((): void => {
                   <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
                 </div>
 
-                <SearchInput v-model="searchInput" placeholder="Hledat úkol" />
+                <SearchInput @change="onSearchInputChange" placeholder="Hledat úkol" />
               </div>
 
-              <TasksTable :tasks="allTasks" :search="searchInput" :page-size="10">
+              <TasksTable :tasks="allTasks" :loading="tasksPending">
                 <template #actions="data">
                   <div class="actions">
                     <button type="button" class="default" @click="openTask(data.row.id)">Otevřít</button>
@@ -105,6 +134,8 @@ watchEffect((): void => {
                   </div>
                 </template>
               </TasksTable>
+
+              <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
             </div>
           </div>
         </div>

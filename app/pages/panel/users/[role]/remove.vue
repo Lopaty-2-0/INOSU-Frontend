@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import Navbar from "../../../../components/layout/Navbar.vue";
 import type { AccountData } from "~/types/account";
-import {ref, onMounted, watchEffect, computed, useTemplateRef} from "vue";
+import {ref, watchEffect, computed, useTemplateRef} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import UsersGrid from "../../../../components/users/Grid.vue";
 import Pagination from "../../../../components/ui/Pagination.vue";
@@ -105,9 +105,7 @@ const onUsersSelect = (usersList: AccountData[]): void => {
   selectedUsers.value = usersList;
 };
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-
+const updateActivePage = (): void => {
   if (usersGrid.value) usersGrid.value.updateSelectedUsers(selectedUsers.value);
 };
 
@@ -212,7 +210,8 @@ watchEffect((): void => {
             <Pagination
               class="users-navigation"
               :number-of-pages="numberOfPages"
-              @get:active-page="updateActivePage"
+              @update:model-value="updateActivePage"
+              v-model="currentPage"
             />
           </div>
         </div>

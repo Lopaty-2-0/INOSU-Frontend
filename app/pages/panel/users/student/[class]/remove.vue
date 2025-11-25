@@ -115,9 +115,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-
+const updateActivePage = (): void => {
   if (usersGrid.value) usersGrid.value.updateSelectedUsers(selectedUsers.value);
 };
 
@@ -227,7 +225,8 @@ watchEffect((): void => {
             <Pagination
               class="users-navigation"
               :number-of-pages="numberOfPages"
-              @get:active-page="updateActivePage"
+              @update:model-value="updateActivePage"
+              v-model="currentPage"
             />
           </div>
         </div>

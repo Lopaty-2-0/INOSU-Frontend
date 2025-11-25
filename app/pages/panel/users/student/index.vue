@@ -23,10 +23,6 @@ const numberOfPages = computed<number>((): number => {
   return Math.ceil(classesCount.value / amountForPaging);
 });
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const { data: classesData, error: classesError } = await useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
@@ -120,7 +116,7 @@ watchEffect((): void => {
               </NuxtLink>
             </div>
 
-            <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+            <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
           </div>
         </div>
       </div>

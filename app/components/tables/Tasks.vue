@@ -4,8 +4,7 @@ import "@bhplugin/vue3-datatable/dist/style.css";
 import "../../assets/style/datatable.scss";
 import moment from "moment";
 import type { TaskData } from "~/types/tasks";
-import {computed, nextTick, ref, watch} from "vue";
-import type {SpecializationData} from "~/types/specialization";
+import {computed, nextTick, ref, useSlots, watch} from "vue";
 
 const props = defineProps({
   tasks: {
@@ -43,6 +42,7 @@ const props = defineProps({
   }
 });
 const emits = defineEmits(["rowClicked"]);
+const slots = useSlots();
 
 const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
   { field: "id", title: "ID", width: "90px", type: "number" },
@@ -52,7 +52,7 @@ const cols: { field: string; title: string; type?: string; width?: string; filte
   { field: "deadline", title: "Uzávěrka", type: "date" },
   { field: "points", title: "Max bodů", type: "number" },
   { field: "task", title: "Zadání", type: "string", width: "30%" },
-  { field: "actions", title: "Akce" },
+  ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
 ];
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
 const rows = computed<TaskData[]>((): TaskData[] => {
@@ -104,7 +104,7 @@ defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="20" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
     <template #name="data">
       <span class="limit">{{ data.value.name }}</span>
     </template>
@@ -124,7 +124,7 @@ defineExpose({ clearSelection });
     </template>
 
     <template #deadline="data">
-      {{ data.value.deadline ? moment(data.value.deadline).format("DD.MM.YYYY HH:MM") : "Neurčeno" }}
+      <span class="no-wrap">{{ data.value.deadline ? moment(data.value.deadline).format("DD.MM.YYYY HH:MM") : "Neurčeno" }}</span>
     </template>
 
     <template #points="data">

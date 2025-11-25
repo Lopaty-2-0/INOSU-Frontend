@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
-import {computed, nextTick, ref, watch} from "vue";
+import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {SpecializationData} from "~/types/specialization";
 
 const props = defineProps({
@@ -40,12 +40,14 @@ const props = defineProps({
   }
 });
 const emits = defineEmits(["rowClicked"]);
+const slots = useSlots();
 
 const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
   { field: "id", title: "ID", width: "90px", type: "number" },
   { field: "name", title: "Název", type: "string" },
   { field: "abbreviation", title: "Zkratka", type: "string" },
   { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number" },
+  ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
 ];
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
 const rows = computed<SpecializationData[]>((): SpecializationData[] => {

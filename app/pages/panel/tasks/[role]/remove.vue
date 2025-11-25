@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {ref, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watchEffect} from "vue";
 import {useAccountStore} from "~/stores/account";
 import { storeToRefs } from "pinia";
 import { useAlertsStore } from "~/stores/alerts";
@@ -11,6 +11,8 @@ import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import TasksTable from "~/components/tables/Tasks.vue";
+import Loading from "~/components/ui/Loading.vue";
+import Pagination from "~/components/ui/Pagination.vue";
 
 useHead({
   title: "Panel | Úkoly - Odstranění",
@@ -27,29 +29,48 @@ const role = route.params.role as string;
 const accountStore = useAccountStore();
 const alertsStore = useAlertsStore();
 const { getId: userId } = storeToRefs(accountStore);
-
-const cols = ref<{ field: string; title: string; type?: string; width?: string; filter?: boolean; }[]>([
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "startDate", title: "Začátek", type: "date" },
-  { field: "endDate", title: "Konec", type: "date" },
-  { field: "approve", title: "Nutné potvrzení", type: "boolean" },
-  { field: "task", title: "Zadání", type: "string" },
-  { field: "actions", title: "Akce" },
-]);
+const datatable = useTemplateRef<InstanceType<typeof TasksTable>>("datatable");
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
+const currentPage = ref<number>(1);
+const amountForPaging: number = 10;
+const tasksCount = ref<number>(0);
 const loading = ref<boolean>(false);
+const selectedTaskIds = ref<number[]>([]);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(tasksCount.value / amountForPaging);
+});
 
-const removeTask = async (id: number): Promise<void> => {
-  if (!id) return;
+const onSearchInputChange = (input: string): void => {
+  currentPage.value = 1;
 
+  searchInput.value = input;
+};
+
+const resetSelectedTasks = (): void => {
+  if (!datatable.value) return;
+
+  selectedTaskIds.value = [];
+  datatable.value.clearSelection();
+};
+
+const onRowClicked = (tasks: TaskData): void => {
+  if (!datatable.value) return;
+
+  if (!selectedTaskIds.value.includes(tasks.id)) {
+    selectedTaskIds.value.push(tasks.id);
+  } else {
+    selectedTaskIds.value = selectedTaskIds.value.filter((id: number) => id !== tasks.id);
+  }
+};
+
+const removeTasks = async (): Promise<void> => {
   loading.value = true;
 
   await $fetch("/api/task/delete", {
     method: "delete",
     body: {
-      id: id,
+      id: selectedTaskIds.value,
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -71,7 +92,8 @@ const removeTask = async (id: number): Promise<void> => {
           break;
         case "28051":
           alertsStore.addAlert({ type: "success", title: "Odstranění úkolu", message: "Úkol byl úspěšně odstraněn." });
-          allTasks.value = allTasks.value?.filter((task: TaskData) => task.id !== id);
+          allTasks.value = allTasks.value?.filter((task: TaskData) => !selectedTaskIds.value.includes(task.id));
+          resetSelectedTasks();
           break;
         default:
           alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nastala neznámá chyba." });
@@ -86,21 +108,33 @@ const removeTask = async (id: number): Promise<void> => {
   });
 };
 
-useFetch(`/api/task/get/guarantor?idUser=${userId.value}`, {
-  method: "get",
-  server: false,
-  credentials: "include",
-  ignoreResponseError: true,
-  onResponse({ response }: any) {
-    const tasks: TaskData[] = response._data.data.tasks || [];
-
-    allTasks.value = tasks || [];
+const { data: tasksData, error: tasksError, pending: tasksPending } = await useFetch("/api/task/get/guarantor", {
+  query: {
+    idUser: userId,
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+    searchQuery: searchInput,
   },
+  method: "get",
+  server: true,
+  credentials: "include",
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !allTasks.value);
-})
+  if (tasksError.value) {
+    allTasks.value = [];
+    return;
+  }
+
+  if (!tasksData.value) return;
+
+  allTasks.value = tasksData.value.data.tasks;
+  tasksCount.value = tasksData.value.data.count;
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value);
+});
 </script>
 
 <template>
@@ -120,11 +154,11 @@ watchEffect((): void => {
       <div id="tasks">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa úkolů"
-              :texts="['Přidat', 'Odebrat']"
-              :actions="['add', 'remove']"
-              :icons="[
+            class="action-bar"
+            description="Správa úkolů"
+            :texts="['Přidat', 'Odebrat']"
+            :actions="['add', 'remove']"
+            :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
@@ -137,20 +171,27 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Odstranění vašich úkolů</h3>
+              <h3>Vybrané úkoly: {{ selectedTaskIds.length }}</h3>
               <p>Zde můžete odstranit úkoly, které jste vytvořili. Vyberte úkol ze seznamu a klikněte na tlačítko Odebrat.</p>
             </div>
 
-            <SearchInput v-model="searchInput" placeholder="Hledat úkol" />
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat úkol" />
           </div>
 
-          <TasksTable :tasks="allTasks" :search="searchInput" :page-size="10" :loading="loading" :has-checkbox="true">
-            <template #actions="data">
-              <div class="actions">
-                <button type="button" class="remove" @click="removeTask(data.row.id)">Odebrat</button>
-              </div>
-            </template>
-          </TasksTable>
+
+          <div class="buttons">
+            <button class="remove" @click="removeTasks">
+              Odstranit
+              <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
+            </button>
+            <button class="reset" @click="resetSelectedTasks">
+              Zrušit vše
+            </button>
+          </div>
+
+          <TasksTable ref="datatable" :selected-ids="selectedTaskIds" :tasks="allTasks" :loading="tasksPending" :has-checkbox="true"  @row-clicked="onRowClicked" />
+
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>
@@ -219,6 +260,7 @@ watchEffect((): void => {
     .buttons {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
 
       button {
         display: flex;
@@ -231,6 +273,7 @@ watchEffect((): void => {
         border: var(--border-width) solid transparent;
         transition: 0.2s;
         font-size: 16px;
+        cursor: pointer;
 
         &.remove {
           color: var(--actionBar-actions-remove-color);
