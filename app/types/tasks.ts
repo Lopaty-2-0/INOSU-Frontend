@@ -1,3 +1,5 @@
+import type {AccountData} from "~/types/account";
+
 interface TaskData {
     id: number;
     name: string;
@@ -5,9 +7,9 @@ interface TaskData {
     endDate: Date;
     deadline?: Date | null;
     task: string;
-    guarantor: number;
+    guarantor: AccountData;
     type: "maturita" | "task";
-    points: number;
+    points: number | null;
 }
 
 interface User_Task {
