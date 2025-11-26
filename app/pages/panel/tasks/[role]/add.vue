@@ -91,7 +91,7 @@ const addTask = async (): Promise<void> => {
 
   const formData = new FormData();
   formData.append("name", newData.value.name || "");
-  formData.append("deadline", newData.value.deadline?.getTime().toString() || "");
+  if (newData.value.deadline) formData.append("deadline", newData.value.deadline.getTime().toString());
   formData.append("endDate", newData.value.endDate?.getTime().toString() || "");
   formData.append("task", newData.value.taskFile || "");
   formData.append("guarantor", useAccountStore().getId || "");

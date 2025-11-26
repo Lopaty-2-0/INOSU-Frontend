@@ -70,12 +70,14 @@ const removeTasks = async (): Promise<void> => {
   await $fetch("/api/task/delete", {
     method: "delete",
     body: {
-      id: selectedTaskIds.value,
+      idTask: selectedTaskIds.value,
     },
     ignoreResponseError: true,
     credentials: "include",
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode?.toString();
+      const goodIds: number[] = response._data.data?.goodIds || [];
+      const badIds: any[] = response._data.data?.badIds || [];
 
       switch (resCode) {
         case "28010":
@@ -84,15 +86,13 @@ const removeTasks = async (): Promise<void> => {
         case "28020":
           alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Chybí ID úkolu." });
           break;
-        case "28030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nemáte oprávnění k této akci." });
-          break;
-        case "28040":
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Úkol nebyl nalezen." });
-          break;
-        case "28051":
-          alertsStore.addAlert({ type: "success", title: "Odstranění úkolu", message: "Úkol byl úspěšně odstraněn." });
-          allTasks.value = allTasks.value?.filter((task: TaskData) => !selectedTaskIds.value.includes(task.id));
+        case "28031":
+          if (badIds.length > 0) {
+            alertsStore.addAlert({ type: "warning", title: "Odstranění úkolu", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
+          }
+
+          alertsStore.addAlert({ type: "success", title: "Odstranění úkolu", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
+          allTasks.value = allTasks.value?.filter((task: TaskData) => !goodIds.includes(task.id));
           resetSelectedTasks();
           break;
         default:
