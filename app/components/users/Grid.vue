@@ -22,6 +22,10 @@ const props = defineProps({
   selectedUsers: {
     type: Array as () => AccountData[],
     default: () => [],
+  },
+  enableSelection: {
+    type: Boolean,
+    default: false,
   }
 });
 const emits = defineEmits(["get:numberOfPages", "get:selectedUsers"]);
@@ -32,17 +36,21 @@ const localSelectedUsers = ref<AccountData[]>([...(props.selectedUsers || [])]);
 const onUserClick = (user: AccountData): void => {
   switch (props.action) {
     case "list":
-      navigateTo(`mailto:${user.email}`, { external: true });
+      //navigateTo(`mailto:${user.email}`, { external: true });
       break;
     case "edit":
       navigateTo(`/panel/users/${user.role}/edit/${user.id}`);
       break;
     case "remove":
-      localSelectedUsers.value = localSelectedUsers.value.includes(user)
+      break;
+  }
+
+  if (props.enableSelection) {
+    localSelectedUsers.value = localSelectedUsers.value.includes(user)
         ? localSelectedUsers.value.filter((u: AccountData) => u.id !== user.id)
         : [...localSelectedUsers.value, user];
-      emits("get:selectedUsers", localSelectedUsers.value);
-      break;
+
+    emits("get:selectedUsers", localSelectedUsers.value);
   }
 };
 
@@ -83,6 +91,8 @@ defineExpose({ reset, updateSelectedUsers });
         }"
         @click="onUserClick(user)"
       >
+
+        <slot name="content" :data="user" />
         <div class="user">
           <div class="head">
             <Image :src="config.public.originUrl + '/api/file/pfp/' + user.profilePicture" alt="User profile photo"/>
@@ -183,6 +193,11 @@ defineExpose({ reset, updateSelectedUsers });
 
       &:hover {
         background: var(--card-1-hover-background);
+      }
+
+      &.selected {
+        border: var(--border-width) solid rgba(var(--main-color), 0.5);
+        background: rgba(var(--main-color), 0.1);
       }
 
       &.remove {
