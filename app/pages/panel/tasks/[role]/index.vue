@@ -56,7 +56,7 @@ const openTask = async (id: number): Promise<void> => {
   await navigateTo(`/panel/tasks/admin/${id}`);
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending } = await useFetch("/api/task/get/guarantor", {
+const { data: tasksData, error: tasksError, pending: tasksPending } = await useFetch("/api/task/get", {
   query: {
     idUser: userId,
     amountForPaging: amountForPaging,

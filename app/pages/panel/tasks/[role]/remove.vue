@@ -108,7 +108,7 @@ const removeTasks = async (): Promise<void> => {
   });
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending } = await useFetch("/api/task/get/guarantor", {
+const { data: tasksData, error: tasksError, pending: tasksPending } = await useFetch("/api/task/get", {
   query: {
     idUser: userId,
     amountForPaging: amountForPaging,

@@ -12,6 +12,19 @@ interface TaskData {
     points: number | null;
 }
 
+interface Task_Team_Solo_Table {
+    idTeam: number;
+    points: number | null;
+    userData: AccountData;
+}
+
+interface Task_Team_Table {
+    idTeam: number;
+    name: string | null;
+    count: number;
+    points: number | null;
+}
+
 interface User_Task {
     idUser: number;
     idTask: number;
@@ -28,5 +41,7 @@ interface Task_Class {
 export type {
     TaskData,
     User_Task,
-    Task_Class
+    Task_Class,
+    Task_Team_Solo_Table,
+    Task_Team_Table
 }

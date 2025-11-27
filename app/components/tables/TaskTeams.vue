@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
-import type { ClassData } from "~/types/classes";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
-import type {SpecializationData} from "~/types/specialization";
+import type {TaskTeam} from "~/types/team";
 
 const props = defineProps({
-  classes: {
-    type: Array as () => ClassData[],
+  teams: {
+    type: Array as () => TaskTeam[],
     required: true,
   },
   searchInput: {
@@ -44,25 +43,18 @@ const emits = defineEmits(["rowClicked"]);
 const slots = useSlots();
 
 const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string", width: "40%" },
-  {
-    field: "class", title: "Třída", type: "string", width: "30%", cellRenderer: (item: ClassData) => {
-      return `${item.specialization}${item.grade}${item.group}`.toUpperCase();
-    }
-  },
-  { field: "grade", title: "Ročník", type: "number", width: "10%" },
-  { field: "group", title: "Skupina", type: "string", width: "10%" },
-  { field: "specialization", title: "Zaměření (zkratka)", type: "string", width: "10%" },
+  { field: "idTeam", title: "ID", width: "90px", type: "number" },
+  { field: "name", title: "Název", type: "string", width: "80%" },
+  { field: "count", title: "Počet členů", type: "string", width: "20%" },
   ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
 ];
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
-const rows = computed<ClassData[]>((): ClassData[] => {
+const rows = computed<TaskTeam[]>((): TaskTeam[] => {
   if (!props.pageSize) {
-    return props.classes;
+    return props.teams;
   }
 
-  return props.classes.slice(0, props.pageSize);
+  return props.teams.slice(0, props.pageSize);
 });
 const selectRowOnClick = computed<boolean>((): boolean => props.hasCheckbox);
 
@@ -75,7 +67,7 @@ const clearSelection = (): void => {
 const onRowClick = (rowData: any): void => {
   if (!datatable.value) return;
 
-  emits("rowClicked", rowData as ClassData[]);
+  emits("rowClicked", rowData as TaskTeam[]);
 };
 
 const updateSelection = async (): Promise<void> => {
@@ -103,16 +95,8 @@ defineExpose({ clearSelection, updateSelection });
 
 <template>
   <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
-    <template #group="data">
-      <p>
-        {{ data.value.group }}
-      </p>
-    </template>
-
-    <template #specialization="data">
-      <p>
-        {{ data.value.specialization }}
-      </p>
+    <template #name="data">
+      <span class="limit">{{ data.value.name || "Není" }}</span>
     </template>
 
     <template #actions="data">
@@ -130,5 +114,19 @@ defineExpose({ clearSelection, updateSelection });
 
 .datatable {
   width: 100%;
+
+  .no-wrap {
+    white-space: nowrap;
+  }
+
+
+  .limit {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
 }
 </style>

@@ -46,12 +46,12 @@ const slots = useSlots();
 
 const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
   { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string", width: "30%" },
+  { field: "name", title: "Název", type: "string", width: "50%" },
   { field: "startDate", title: "Začátek", type: "date" },
   { field: "endDate", title: "Konec", type: "date" },
   { field: "deadline", title: "Uzávěrka", type: "date" },
   { field: "points", title: "Max bodů", type: "number" },
-  { field: "task", title: "Zadání", type: "string", width: "30%" },
+  { field: "task", title: "Zadání", type: "string", width: "50%" },
   ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
 ];
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
@@ -116,15 +116,15 @@ defineExpose({ clearSelection });
     </template>
 
     <template #startDate="data">
-      <span class="no-wrap">{{ moment(data.value.startDate).format("DD.MM.YYYY HH:MM") }}</span>
+      <span class="no-wrap">{{ moment(data.value.startDate).format("DD.MM. YYYY HH:MM") }}</span>
     </template>
 
     <template #endDate="data">
-      <span class="no-wrap">{{ moment(data.value.endDate).format("DD.MM.YYYY HH:MM") }}</span>
+      <span class="no-wrap">{{ moment(data.value.endDate).format("DD.MM. YYYY HH:MM") }}</span>
     </template>
 
     <template #deadline="data">
-      <span class="no-wrap">{{ data.value.deadline ? moment(data.value.deadline).format("DD.MM.YYYY HH:MM") : "Neurčeno" }}</span>
+      <span class="no-wrap">{{ data.value.deadline ? moment(data.value.deadline).format("DD.MM. YYYY HH:MM") : "Neurčeno" }}</span>
     </template>
 
     <template #points="data">

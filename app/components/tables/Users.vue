@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
-import type { ClassData } from "~/types/classes";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
-import type {SpecializationData} from "~/types/specialization";
+import type {AccountData} from "~/types/account";
+import Image from "~/components/ui/Image.vue";
+import moment from "moment/moment";
 
 const props = defineProps({
-  classes: {
-    type: Array as () => ClassData[],
+  users: {
+    type: Array as () => AccountData[],
     required: true,
   },
   searchInput: {
@@ -42,27 +43,23 @@ const props = defineProps({
 });
 const emits = defineEmits(["rowClicked"]);
 const slots = useSlots();
+const config = useRuntimeConfig();
 
 const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
   { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string", width: "40%" },
-  {
-    field: "class", title: "Třída", type: "string", width: "30%", cellRenderer: (item: ClassData) => {
-      return `${item.specialization}${item.grade}${item.group}`.toUpperCase();
-    }
-  },
-  { field: "grade", title: "Ročník", type: "number", width: "10%" },
-  { field: "group", title: "Skupina", type: "string", width: "10%" },
-  { field: "specialization", title: "Zaměření (zkratka)", type: "string", width: "10%" },
+  { field: "profile", title: "Jméno a příjmení", type: "string", width: "50%" },
+  { field: "email", title: "E-mail", type: "string", width: "50%" },
+  { field: "abbreviation", title: "Zkratka", type: "string" },
+  { field: "createdAt", title: "Vytvořen", type: "string" },
   ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
 ];
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
-const rows = computed<ClassData[]>((): ClassData[] => {
+const rows = computed<AccountData[]>((): AccountData[] => {
   if (!props.pageSize) {
-    return props.classes;
+    return props.users;
   }
 
-  return props.classes.slice(0, props.pageSize);
+  return props.users.slice(0, props.pageSize);
 });
 const selectRowOnClick = computed<boolean>((): boolean => props.hasCheckbox);
 
@@ -75,7 +72,7 @@ const clearSelection = (): void => {
 const onRowClick = (rowData: any): void => {
   if (!datatable.value) return;
 
-  emits("rowClicked", rowData as ClassData[]);
+  emits("rowClicked", rowData as AccountData[]);
 };
 
 const updateSelection = async (): Promise<void> => {
@@ -103,16 +100,26 @@ defineExpose({ clearSelection, updateSelection });
 
 <template>
   <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
-    <template #group="data">
-      <p>
-        {{ data.value.group }}
-      </p>
+    <template #profile="data">
+      <div class="profile">
+        <Image
+          :src="config.public.originUrl + '/api/file/pfp/' + data.value.profilePicture"
+          alt="profile-photo"
+          draggable="false"
+        />
+
+        <p class="account-name">
+          {{ data.value.name + " " + data.value.surname }}
+        </p>
+      </div>
     </template>
 
-    <template #specialization="data">
-      <p>
-        {{ data.value.specialization }}
-      </p>
+    <template #abbreviation="data">
+      {{ data.value.abbreviation || "Není" }}
+    </template>
+
+    <template #createdAt="data">
+      <span class="no-wrap">{{ moment(data.value.createdAt).format("DD.MM. YYYY") }}</span>
     </template>
 
     <template #actions="data">
@@ -130,5 +137,27 @@ defineExpose({ clearSelection, updateSelection });
 
 .datatable {
   width: 100%;
+
+  .no-wrap {
+    white-space: nowrap;
+  }
+
+  .profile {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    .account-name {
+      color: var(--mini-title-color);
+      font-size: 16px;
+    }
+
+    ::v-deep(img) {
+      width: 45px;
+      height: 45px;
+      border-radius: var(--small-border-radius);
+      object-fit: cover;
+    }
+  }
 }
 </style>

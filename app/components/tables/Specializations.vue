@@ -44,9 +44,9 @@ const slots = useSlots();
 
 const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
   { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "abbreviation", title: "Zkratka", type: "string" },
-  { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number" },
+  { field: "name", title: "Název", type: "string", width: "60%" },
+  { field: "abbreviation", title: "Zkratka", type: "string", width: "20%" },
+  { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number", width: "20%" },
   ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
 ];
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
