@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import {useRoute} from "#app";
-import {useFetch} from "nuxt/app";
+import moment from "moment";
+import {useFetch, navigateTo} from "nuxt/app";
 import {computed, ref, watchEffect} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import UsersGrid from "~/components/users/Grid.vue";
+import UsersCardsGrid from "~/components/ui/CardsGrid.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import type {AccountData} from "~/types/account";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useLoadingStore} from "~/stores/loading";
+import Image from "~/components/ui/Image.vue";
 
 const route = useRoute();
 const classId = route.params.class as string;
@@ -20,6 +22,7 @@ useHead({
   meta: [{ name: "description", content: "Panel Settings User Information" }],
 });
 
+const config = useRuntimeConfig();
 const amountForPaging: number = 12;
 const currentPage = ref<number>(1);
 const users = ref<AccountData[] | undefined>(undefined);
@@ -43,6 +46,10 @@ const requests = computed<{ url: string, query: Record<string, any> }>(() => {
     };
   }
 });
+
+const onItemGridClick = (item: AccountData): void => {
+  navigateTo(`mailto:${item.email}`, { external: true });
+};
 
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
@@ -123,11 +130,34 @@ watchEffect((): void => {
           </div>
 
           <div class="users">
-            <UsersGrid
-              :users="users"
-              :action="'list'"
+            <UsersCardsGrid
+              :items="users"
+              action="select"
               :loading="usersPending"
-            />
+              @on-item-click="onItemGridClick"
+            >
+              <template #content="item">
+                <div class="user">
+                  <div class="head">
+                    <Image :src="config.public.originUrl + '/api/file/pfp/' + item.data.profilePicture" alt="User profile photo"/>
+                    <h3>{{ item.data.name }} {{ item.data.surname }}</h3>
+                  </div>
+
+                  <div class="info">
+                    <p>
+                      E-mail: <span>{{ item.data.email }}</span>
+                    </p>
+                    <p>
+                      Přezdívka: <span>{{ item.data.abbreviation || "Není" }}</span>
+                    </p>
+                    <p>
+                      Vytvořen:
+                      <span>{{ moment(item.data.createdAt).format("DD. MM. YYYY") }}</span>
+                    </p>
+                  </div>
+                </div>
+              </template>
+            </UsersCardsGrid>
             <Pagination
               class="users-navigation"
               :number-of-pages="numberOfPages"
@@ -176,6 +206,55 @@ watchEffect((): void => {
       gap: 30px;
       justify-content: space-between;
       height: 100%;
+
+      .user {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 30px;
+
+        .head {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+
+          ::v-deep(img) {
+            width: 45px;
+            height: 45px;
+            border-radius: var(--small-border-radius);
+            object-fit: cover;
+          }
+
+          h3 {
+            color: var(--title-color);
+            font-size: 16px;
+            font-weight: 600;
+            flex: 1;
+            min-width: 100px;
+            word-break: break-all;
+          }
+        }
+
+        .info {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          p {
+            color: var(--mini-title-color);
+            font-size: 16px;
+            font-weight: 500;
+            word-break: break-all;
+
+            span {
+              font-weight: 400;
+              color: rgba(var(--description-color), 1);
+            }
+          }
+        }
+      }
     }
 
     .page-section {

@@ -235,6 +235,7 @@ onMounted(async (): Promise<void> => {
   .navigation {
     height: fit-content;
     min-width: 250px;
+    padding: 30px;
   }
 
   .actions {
@@ -315,6 +316,7 @@ onMounted(async (): Promise<void> => {
         transition: 0.2s;
         cursor: pointer;
         min-width: 200px;
+        padding: 30px;
 
         .body {
           width: 100%;

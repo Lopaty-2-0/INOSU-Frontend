@@ -9,6 +9,7 @@ import {computed, watchEffect} from "vue";
 import {useLoadingStore} from "~/stores/loading";
 import {useFetch} from "nuxt/app";
 import Pagination from "~/components/ui/Pagination.vue";
+import CardsGrid from "~/components/ui/CardsGrid.vue";
 
 useHead({
   title: "Panel | Uživatelé - student",
@@ -34,6 +35,7 @@ const { data: classesData, error: classesError } = await useFetch("/api/class/ge
 });
 
 watchEffect((): void => {
+  console.log(classesError.value)
   if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
@@ -44,6 +46,7 @@ watchEffect((): void => {
 
   allClasses.value = classesData.value.data.classes;
   classesCount.value = classesData.value.data.count;
+
 });
 
 watchEffect((): void => {
@@ -90,30 +93,31 @@ watchEffect((): void => {
           <div class="classes-section">
             <div class="section-head">
               <h4>Třídy</h4>
-              <p class="error message" v-if="allClasses.length <= 0">Žádná třída nebyla nalezena!</p>
             </div>
 
             <div class="classes">
-              <NuxtLink
-                class="class"
-                v-for="oneClass in allClasses"
-                :key="oneClass.id"
-                :to="`/panel/users/student/${oneClass.id}`"
-              >
-                <Card class="card">
-                  <div class="section-head">
-                    <span><span class="name" v-if="oneClass.name">{{ oneClass.name + " - " }}</span>{{ oneClass.specialization }}{{ oneClass.grade }}{{ oneClass.group }}</span>
-                  </div>
-                </Card>
-              </NuxtLink>
+              <CardsGrid :items="allClasses">
+                <template #content="item">
+                  <NuxtLink
+                      class="class"
+                      :to="`/panel/users/student/${item.data.id}`"
+                  >
+                    <div class="section-head">
+                      <span><span class="name" v-if="item.data.name">{{ item.data.name + " - " }}</span>{{ item.data.specialization }}{{ item.data.grade }}{{ item.data.group }}</span>
+                    </div>
+                  </NuxtLink>
+                </template>
 
-              <NuxtLink class="class" :to="`/panel/users/student/undefined`" v-show="currentPage === numberOfPages">
-                <Card class="card">
-                  <div class="section-head">
-                    <span>Nezařazené</span>
-                  </div>
-                </Card>
-              </NuxtLink>
+                <template #additional>
+                  <Card class="card">
+                    <NuxtLink class="class" :to="`/panel/users/student/undefined`" v-show="currentPage === numberOfPages">
+                      <div class="section-head">
+                        <span>Nezařazené</span>
+                      </div>
+                    </NuxtLink>
+                    </Card>
+                </template>
+              </CardsGrid>
             </div>
 
             <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
@@ -195,15 +199,12 @@ watchEffect((): void => {
           cursor: pointer;
           min-width: 200px;
           text-decoration: none;
-
-          .card {
-            width: 100%;
-            padding: 30px 0;
-            display: flex;
-            align-items: center;
-            transition: 0.2s;
-            justify-content: center;
-          }
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          width: 100%;
+          padding: 60px 30px;
+          transition: 0.2s;
 
           span {
             font-weight: 600;
@@ -218,9 +219,7 @@ watchEffect((): void => {
 
           &:hover,
           &.active {
-            .card {
-              background: var(--card-1-hover-background);
-            }
+            background: var(--card-1-hover-background);
           }
         }
       }

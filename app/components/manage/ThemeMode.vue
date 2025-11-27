@@ -88,6 +88,7 @@ defineExpose({ reset });
       flex: 1;
       transition: 0.2s;
       cursor: pointer;
+      padding: 30px;
 
       .body {
         display: flex;
