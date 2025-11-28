@@ -6,6 +6,8 @@ import moment from "moment";
 import type { TaskData } from "~/types/tasks";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 
+type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
+
 const props = defineProps({
   tasks: {
     type: Array as () => TaskData[],
@@ -39,21 +41,35 @@ const props = defineProps({
     type: Array as () => number[],
     required: false,
     default: () => [],
-  }
+  },
+  extraColumns: {
+    type: Array as () => Column[],
+    required: false,
+    default: () => [],
+  },
 });
 const emits = defineEmits(["rowClicked"]);
 const slots = useSlots();
 
-const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string", width: "50%" },
-  { field: "startDate", title: "Začátek", type: "date" },
-  { field: "endDate", title: "Konec", type: "date" },
-  { field: "deadline", title: "Uzávěrka", type: "date" },
-  { field: "points", title: "Max bodů", type: "number" },
-  { field: "task", title: "Zadání", type: "string", width: "50%" },
-  ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
-];
+const cols = computed<Column[]>(() => {
+  const base: Column[] = [
+    { field: "id", title: "ID", width: "90px", type: "number" },
+    { field: "name", title: "Název", type: "string", width: "50%" },
+    { field: "startDate", title: "Začátek", type: "date" },
+    { field: "endDate", title: "Konec", type: "date" },
+    { field: "deadline", title: "Uzávěrka", type: "date" },
+    { field: "points", title: "Max bodů", type: "number" },
+    { field: "task", title: "Zadání", type: "string", width: "50%" },
+  ];
+
+  const merged: Column[] = [...base, ...(props.extraColumns || [])];
+
+  if (slots.actions) {
+    merged.push({ field: "actions", title: "Akce" });
+  }
+
+  return merged;
+});
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
 const rows = computed<TaskData[]>((): TaskData[] => {
   if (!props.pageSize) {

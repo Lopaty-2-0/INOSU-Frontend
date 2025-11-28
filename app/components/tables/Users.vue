@@ -6,6 +6,8 @@ import type {AccountData} from "~/types/account";
 import Image from "~/components/ui/Image.vue";
 import moment from "moment/moment";
 
+type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
+
 const props = defineProps({
   users: {
     type: Array as () => AccountData[],
@@ -39,20 +41,34 @@ const props = defineProps({
     type: Array as () => number[],
     required: false,
     default: () => [],
-  }
+  },
+  extraColumns: {
+    type: Array as () => Column[],
+    required: false,
+    default: () => [],
+  },
 });
 const emits = defineEmits(["rowClicked"]);
 const slots = useSlots();
 const config = useRuntimeConfig();
 
-const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "profile", title: "Jméno a příjmení", type: "string", width: "50%" },
-  { field: "email", title: "E-mail", type: "string", width: "50%" },
-  { field: "abbreviation", title: "Zkratka", type: "string" },
-  { field: "createdAt", title: "Vytvořen", type: "string" },
-  ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
-];
+const cols = computed<Column[]>(() => {
+  const base: Column[] = [
+    { field: "id", title: "ID", width: "90px", type: "number" },
+    { field: "profile", title: "Jméno a příjmení", type: "string", width: "50%" },
+    { field: "email", title: "E-mail", type: "string", width: "50%" },
+    { field: "abbreviation", title: "Zkratka", type: "string" },
+    { field: "createdAt", title: "Vytvořen", type: "string" },
+  ];
+
+  const merged: Column[] = [...base, ...(props.extraColumns || [])];
+
+  if (slots.actions) {
+    merged.push({ field: "actions", title: "Akce" });
+  }
+
+  return merged;
+});
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
 const rows = computed<AccountData[]>((): AccountData[] => {
   if (!props.pageSize) {

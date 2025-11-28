@@ -5,6 +5,8 @@ import type { ClassData } from "~/types/classes";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {SpecializationData} from "~/types/specialization";
 
+type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
+
 const props = defineProps({
   classes: {
     type: Array as () => ClassData[],
@@ -38,24 +40,38 @@ const props = defineProps({
     type: Array as () => number[],
     required: false,
     default: () => [],
-  }
+  },
+  extraColumns: {
+    type: Array as () => Column[],
+    required: false,
+    default: () => [],
+  },
 });
 const emits = defineEmits(["rowClicked"]);
 const slots = useSlots();
 
-const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string", width: "40%" },
-  {
-    field: "class", title: "Třída", type: "string", width: "30%", cellRenderer: (item: ClassData) => {
-      return `${item.specialization}${item.grade}${item.group}`.toUpperCase();
-    }
-  },
-  { field: "grade", title: "Ročník", type: "number", width: "10%" },
-  { field: "group", title: "Skupina", type: "string", width: "10%" },
-  { field: "specialization", title: "Zaměření (zkratka)", type: "string", width: "10%" },
-  ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
-];
+const cols = computed<Column[]>(() => {
+  const base: Column[] = [
+    { field: "id", title: "ID", width: "90px", type: "number" },
+    { field: "name", title: "Název", type: "string", width: "40%" },
+    {
+      field: "class", title: "Třída", type: "string", width: "30%", cellRenderer: (item: ClassData) => {
+        return `${item.specialization}${item.grade}${item.group}`.toUpperCase();
+      }
+    },
+    { field: "grade", title: "Ročník", type: "number", width: "10%" },
+    { field: "group", title: "Skupina", type: "string", width: "10%" },
+    { field: "specialization", title: "Zaměření (zkratka)", type: "string", width: "10%" },
+  ];
+
+  const merged: Column[] = [...base, ...(props.extraColumns || [])];
+
+  if (slots.actions) {
+    merged.push({ field: "actions", title: "Akce" });
+  }
+
+  return merged;
+});
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
 const rows = computed<ClassData[]>((): ClassData[] => {
   if (!props.pageSize) {

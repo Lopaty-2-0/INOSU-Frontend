@@ -4,6 +4,8 @@ import "@bhplugin/vue3-datatable/dist/style.css";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {TaskTeam} from "~/types/team";
 
+type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
+
 const props = defineProps({
   teams: {
     type: Array as () => TaskTeam[],
@@ -37,17 +39,31 @@ const props = defineProps({
     type: Array as () => number[],
     required: false,
     default: () => [],
-  }
+  },
+  extraColumns: {
+    type: Array as () => Column[],
+    required: false,
+    default: () => [],
+  },
 });
 const emits = defineEmits(["rowClicked"]);
 const slots = useSlots();
 
-const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
-  { field: "idTeam", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string", width: "80%" },
-  { field: "count", title: "Počet členů", type: "string", width: "20%" },
-  ...(slots.actions ? [{ field: "actions", title: "Akce" }] : []),
-];
+const cols = computed<Column[]>(() => {
+  const base: Column[] = [
+    { field: "idTeam", title: "ID", width: "90px", type: "number" },
+    { field: "name", title: "Název", type: "string", width: "80%" },
+    { field: "count", title: "Počet členů", type: "string", width: "20%" },
+  ];
+
+  const merged: Column[] = [...base, ...(props.extraColumns || [])];
+
+  if (slots.actions) {
+    merged.push({ field: "actions", title: "Akce" });
+  }
+
+  return merged;
+});
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
 const rows = computed<TaskTeam[]>((): TaskTeam[] => {
   if (!props.pageSize) {
