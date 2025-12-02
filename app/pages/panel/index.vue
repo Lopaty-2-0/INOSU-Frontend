@@ -18,6 +18,7 @@ useHead({
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
+const router = useRouter();
 const accountStore = useAccountStore();
 const { getRole: role, getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<TaskData[] | undefined>(undefined);
@@ -71,7 +72,7 @@ const infoCards = computed<{ title: string; icon: string; value: string | number
 const openTask = async (id: number): Promise<void> => {
   if (!id) return;
 
-  await navigateTo(`/panel/tasks/${role.value}/${id}`);
+  await router.push(`/panel/tasks/${role.value}/${id}`);
 };
 
 const updateContent = (newContent: { html: string }) => {

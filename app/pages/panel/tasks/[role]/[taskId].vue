@@ -11,9 +11,9 @@ import TaskTeamsTable from "~/components/tables/TaskTeams.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import type {AccountData} from "~/types/account";
 import type {TaskTeam} from "~/types/team";
+import {navigateTo} from "nuxt/app";
 
 const route = useRoute();
-const router = useRouter();
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
@@ -60,13 +60,13 @@ const openUserTask = async (id: number): Promise<void> => {
 
   if (!teamId) return;
 
-  await router.push(`/panel/tasks/${role}/${taskId}/${teamId}`);
+  await navigateTo(`/panel/tasks/${role}/${taskId}/${teamId}`);
 };
 
 const openTeamTask = async (id: number): Promise<void> => {
   if (!id) return;
 
-  await router.push(`/panel/tasks/${role}/${taskId}/${id}`);
+  await navigateTo(`/panel/tasks/${role}/${taskId}/${id}`);
 };
 
 const { data: usersData, error: usersError, pending: usersPending } = await useFetch("/api/team/get/users", {
@@ -76,6 +76,7 @@ const { data: usersData, error: usersError, pending: usersPending } = await useF
     pageNumber: currentUsersPage,
     searchQuery: userSearchInput,
   },
+  lazy: true,
   method: "get",
   server: true,
   credentials: "include",
@@ -88,6 +89,7 @@ const { data: teamsData, error: teamsError, pending: teamsPending } = await useF
     pageNumber: currentTeamsPage,
     searchQuery: teamSearchInput,
   },
+  lazy: true,
   method: "get",
   server: true,
   credentials: "include",
@@ -104,7 +106,7 @@ const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", 
 
 watchEffect((): void => {
   if (taskError.value || !taskData.value) {
-    router.push(`/panel/tasks/${role}`);
+    navigateTo(`/panel/tasks/${role}`);
     return;
   }
 
