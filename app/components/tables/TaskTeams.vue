@@ -112,7 +112,7 @@ defineExpose({ clearSelection, updateSelection });
 <template>
   <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
     <template #name="data">
-      <span class="limit">{{ data.value.name || "Není" }}</span>
+      <span class="limit">{{ data.value.name || "Neurčeno" }}</span>
     </template>
 
     <template #actions="data">

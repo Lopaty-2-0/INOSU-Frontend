@@ -149,23 +149,25 @@ watchEffect((): void => {
 
     <template #content v-if="task">
       <div id="task">
-        <div class="section-head">
-          <h3>{{ task.name }}</h3>
-          <p>Úkol ID: {{ task.id }}</p>
-          <p>Garant ID: {{ task.guarantor.id }}</p>
-          <p>Začátek: {{ moment(task.startDate).format("DD.MM. YYYY HH:MM") }}</p>
-          <p>Konec: {{ moment(task.endDate).format("DD.MM. YYYY HH:MM") }}</p>
-          <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("DD.MM. YYYY HH:MM") }}</p>
-          <p>Max bodů: {{ task.points || "neurčeno" }}</p>
-          <p>
-            Zadání:
-            <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
-              {{ task.task }}
-            </a>
-          </p>
-        </div>
-
         <div class="content">
+          <div class="page-section head">
+            <div class="section-head">
+              <h3>{{ task.name }}</h3>
+              <p>Úkol ID: {{ task.id }}</p>
+              <p>Garant ID: {{ task.guarantor.id }}</p>
+              <p>Začátek: {{ moment(task.startDate).format("DD.MM. YYYY HH:MM") }}</p>
+              <p>Konec: {{ moment(task.endDate).format("DD.MM. YYYY HH:MM") }}</p>
+              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("DD.MM. YYYY HH:MM") }}</p>
+              <p>Max bodů: {{ task.points || "neurčeno" }}</p>
+              <p>
+                Zadání:
+                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
+                  {{ task.task }}
+                </a>
+              </p>
+            </div>
+          </div>
+
           <div class="page-section" v-if="users">
             <div class="section-head">
               <h3>Žáci</h3>
@@ -182,9 +184,9 @@ watchEffect((): void => {
             </UsersTable>
 
             <Pagination
-              class="users-navigation"
-              :number-of-pages="numberOfUsersPages"
-              v-model="currentUsersPage"
+                class="users-navigation"
+                :number-of-pages="numberOfUsersPages"
+                v-model="currentUsersPage"
             />
           </div>
 
@@ -204,9 +206,9 @@ watchEffect((): void => {
             </TaskTeamsTable>
 
             <Pagination
-              class="users-navigation"
-              :number-of-pages="numberOfTeamsPages"
-              v-model="currentTeamsPage"
+                class="users-navigation"
+                :number-of-pages="numberOfTeamsPages"
+                v-model="currentTeamsPage"
             />
           </div>
         </div>
@@ -270,7 +272,7 @@ watchEffect((): void => {
         border-bottom: none;
       }
 
-      .section-head {
+      &:not(.head) .section-head {
         display: flex;
         flex-direction: row;
         justify-content: space-between;

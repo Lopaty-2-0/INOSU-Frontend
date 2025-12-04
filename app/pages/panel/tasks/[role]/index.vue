@@ -201,7 +201,7 @@ watchEffect((): void => {
     .line {
       display: flex;
       flex-direction: row;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 30px;

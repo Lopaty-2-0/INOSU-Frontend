@@ -245,6 +245,7 @@ defineExpose({ reset })
 
       .link {
         width: 100%;
+        padding: 20px;
 
         .body {
           display: flex;
