@@ -35,7 +35,6 @@ const { data: classesData, error: classesError } = await useFetch("/api/class/ge
 });
 
 watchEffect((): void => {
-  console.log(classesError.value)
   if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;

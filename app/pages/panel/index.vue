@@ -187,7 +187,7 @@ onMounted(async (): Promise<void> => {
             <TasksTable :tasks="allTasks" :loading="!allTasks" :page-size="5" :pagination="false">
               <template #actions="data">
                 <div class="actions">
-                  <button type="button" class="default" @click="openTask(data.row.id)">Otevřít</button>
+                  <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>
                 </div>
               </template>
             </TasksTable>

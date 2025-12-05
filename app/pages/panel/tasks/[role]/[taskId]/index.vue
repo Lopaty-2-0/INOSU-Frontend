@@ -12,6 +12,7 @@ import Pagination from "~/components/ui/Pagination.vue";
 import type {AccountData} from "~/types/account";
 import type {TaskTeam} from "~/types/team";
 import {navigateTo} from "nuxt/app";
+import TasksTable from "~/components/tables/Tasks.vue";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -27,6 +28,7 @@ definePageMeta({
 });
 
 const task = ref<TaskData | undefined>(undefined);
+const usersTeam = ref<Task_Team_Solo_Table[] | undefined>(undefined);
 const userSearchInput = ref<string>("");
 const currentUsersPage = ref<number>(1);
 const amountOfUsersForPaging: number = 5;
@@ -124,6 +126,7 @@ watchEffect((): void => {
 
   task.value = taskData.value.data.task;
   users.value = usersData.value.data.users.map((data: any) => data.userData);
+  usersTeam.value = usersData.value.data.users;
   usersCount.value = usersData.value.data.count;
   teams.value = teamsData.value.data.teams;
   teamsCount.value = teamsData.value.data.count;
@@ -175,10 +178,16 @@ watchEffect((): void => {
               <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
             </div>
 
-            <UsersTable :users="users" :loading="usersPending">
+            <UsersTable :users="users" :loading="usersPending" :extra-columns="[
+              { field: 'points', title: 'Počet bodů' }
+            ]">
+              <template #points="data">
+                <span>{{ usersTeam?.filter((soloTeam: Task_Team_Solo_Table) => soloTeam.userData.id === data.value.id)?.[0]?.points || "Neurčeno" }}</span>
+              </template>
+
               <template #actions="data">
                 <div class="actions">
-                  <button type="button" class="primary" @click="openUserTask(data.row.id)">Otevřít</button>
+                  <button type="button" class="primary" @click="openUserTask(data.value.id)">Otevřít</button>
                 </div>
               </template>
             </UsersTable>
@@ -197,10 +206,16 @@ watchEffect((): void => {
               <SearchInput @change="onTeamSearchInputChange" placeholder="Hledat týmy" />
             </div>
 
-            <TaskTeamsTable :teams="teams" :loading="teamsPending">
+            <TaskTeamsTable :teams="teams" :loading="teamsPending" :extra-columns="[
+              { field: 'points', title: 'Počet bodů' }
+            ]">
+              <template #points="data">
+                <span>{{ data.value.points || "Neurčeno" }}</span>
+              </template>
+
               <template #actions="data">
                 <div class="actions">
-                  <button type="button" class="primary" @click="openTeamTask(data.row.idTeam)">Otevřít</button>
+                  <button type="button" class="primary" @click="openTeamTask(data.value.idTeam)">Otevřít</button>
                 </div>
               </template>
             </TaskTeamsTable>

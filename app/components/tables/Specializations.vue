@@ -112,12 +112,16 @@ defineExpose({ clearSelection });
 
 <template>
   <Vue3Datatable class="datatable" ref="datatable" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :pagination="props.pagination" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+    <template v-for="(_, name) in $slots" v-slot:[name]="slotProps">
+      <slot :name="name" v-bind="slotProps" />
+    </template>
+
     <template #abbreviation="data">
       <p>{{ data.value.abbreviation }}</p>
     </template>
 
     <template #actions="data">
-      <slot name="actions" :row="data.value" />
+      <slot name="actions" :value="data" />
     </template>
   </Vue3Datatable>
 </template>

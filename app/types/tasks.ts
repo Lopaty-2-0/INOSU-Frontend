@@ -15,33 +15,14 @@ interface TaskData {
 interface Task_Team_Solo_Table {
     idTeam: number;
     points: number | null;
-    userData: AccountData;
-}
-
-interface Task_Team_Table {
-    idTeam: number;
     name: string | null;
-    count: number;
-    points: number | null;
-}
-
-interface User_Task {
-    idUser: number;
-    idTask: number;
-    elaboration: string;
-    review: string;
-    status: "pending" | "approved" | "rejected" | "waiting";
-}
-
-interface Task_Class {
-    idTask: number;
-    idClass: number;
+    status: string;
+    elaboration: string | null;
+    review: string | null;
+    userData: AccountData;
 }
 
 export type {
     TaskData,
-    User_Task,
-    Task_Class,
     Task_Team_Solo_Table,
-    Task_Team_Table
 }

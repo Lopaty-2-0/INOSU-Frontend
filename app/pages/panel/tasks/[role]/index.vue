@@ -129,8 +129,8 @@ watchEffect((): void => {
               <TasksTable :tasks="allTasks" :loading="tasksPending">
                 <template #actions="data">
                   <div class="actions">
-                    <button type="button" class="default" @click="openTask(data.row.id)">Otevřít</button>
-                    <button type="button" class="assign" @click="assignTask(data.row.id)">Přiřadit</button>
+                    <button type="button" class="default" @click="openTask(data.value.id)">Otevřít</button>
+                    <button type="button" class="assign" @click="assignTask(data.value.id)">Přiřadit</button>
                   </div>
                 </template>
               </TasksTable>

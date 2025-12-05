@@ -49,8 +49,8 @@ const props = defineProps({
   },
 });
 const emits = defineEmits(["rowClicked"]);
-const slots = useSlots();
 const config = useRuntimeConfig();
+const slots = useSlots();
 
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
@@ -116,6 +116,10 @@ defineExpose({ clearSelection, updateSelection });
 
 <template>
   <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+    <template v-for="(_, name) in $slots" v-slot:[name]="slotProps">
+      <slot :name="name" v-bind="slotProps" />
+    </template>
+
     <template #profile="data">
       <div class="profile">
         <Image
@@ -131,7 +135,7 @@ defineExpose({ clearSelection, updateSelection });
     </template>
 
     <template #abbreviation="data">
-      {{ data.value.abbreviation || "Není" }}
+      {{ data.value.abbreviation || "Neurčeno" }}
     </template>
 
     <template #createdAt="data">
@@ -139,7 +143,7 @@ defineExpose({ clearSelection, updateSelection });
     </template>
 
     <template #actions="data">
-      <slot name="actions" :row="data.value" />
+      <slot name="actions" :value="data.value" />
     </template>
   </Vue3Datatable>
 </template>
