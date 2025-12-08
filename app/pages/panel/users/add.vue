@@ -125,6 +125,9 @@ const createNewUser = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
+        case "1010":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nemáte oprávnění k této akci." });
+          break;
         case "1020":
           alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Jméno nebylo zadáno." });
           break;
@@ -141,7 +144,7 @@ const createNewUser = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role nebyla zadána." });
           break;
         case "1070":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role je příliš dlouhá." });
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role je neplatná." });
           break;
         case "1080":
           alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Heslo nebylo zadáno." });

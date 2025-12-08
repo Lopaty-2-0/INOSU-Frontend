@@ -106,7 +106,7 @@ const addTask = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "26131":
+        case "26161":
           alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
 
           resetUserData();
@@ -119,33 +119,40 @@ const addTask = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení nebylo zadáno." });
           break;
         case "26030":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je neplatné." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název je příliš dlouhý." });
           break;
         case "26040":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je před datem začátku." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je neplatné." });
           break;
         case "26050":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor úkolu nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je před datem začátku." });
           break;
         case "26060":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Neplatný formát souboru." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor úkolu nebyl zadán." });
           break;
         case "26070":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Garant úkolu nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Neplatný formát souboru nebo je příliš veliký." });
           break;
         case "26080":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Garant úkolu neexistuje nebo nemůže být garant." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Garant úkolu nebyl zadán." });
           break;
         case "26090":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem začátku." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Garant úkolu neexistuje." });
           break;
         case "26100":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem ukončení." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uživatel nemůže být garantem." });
           break;
         case "26110":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je neplatná." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem začátku." });
           break;
         case "26120":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem ukončení." });
+          break;
+        case "26130":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je neplatná." });
+          break;
+        case "26140":
+        case "26150":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Maximální počet bodů je neplatný." });
           break;
         default:

@@ -165,17 +165,25 @@ const addClass = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník musí být celé číslo." });
           break;
         case "8070":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina může mít maximálně 1 znak." }); break;
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník je moc velké číslo." });
+          break;
         case "8080":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Neplatné zaměření." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina může mít maximálně 1 znak." });
           break;
         case "8090":
+        case "8100":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Neplatné zaměření." });
+          break;
+        case "8110":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník přesahuje délku studia zaměření." });
           break;
-        case "8100":
+        case "8120":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je moc dlouhý." });
+          break;
+        case "8130":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je již používán." });
           break;
-        case "8111":
+        case "8141":
           alertsStore.addAlert({ type: "success", title: "Vytvoření třídy", message: "Třída byla úspěšně vytvořena." });
 
           resetSelectedClasses();

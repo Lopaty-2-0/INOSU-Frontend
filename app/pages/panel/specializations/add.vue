@@ -96,27 +96,30 @@ const addSpecialization = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia chybí." });
           break;
         case "4030":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být celé číslo." });
-          break;
-        case "4040":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření chybí." });
           break;
-        case "4050":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je příliš dlouhá." });
-          break;
-        case "4060":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je již používána." });
-          break;
-        case "4070":
+        case "4040":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření chybí." });
           break;
+        case "4050":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být celé číslo." });
+          break;
+        case "4060":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia je moc velká." });
+          break;
+        case "4070":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je příliš dlouhá." });
+          break;
         case "4080":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je již používána." });
           break;
         case "4090":
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je příliš dlouhý." });
+          break;
+        case "4100":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je již používán." });
           break;
-        case "4101":
+        case "4111":
           alertsStore.addAlert({ type: "success", title: "Přidání zaměření", message: "Zaměření bylo úspěšně vytvořeno." });
 
           resetInputs();

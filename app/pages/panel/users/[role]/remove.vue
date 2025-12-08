@@ -62,7 +62,7 @@ const removeUsers = async (): Promise<void> => {
 
       switch (resCode) {
         case "3010":
-          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nedostatečné oprávnění pro odstranění uživatelů."});
+          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nemáte oprávnění k této akci." });
           break;
         case "3020":
           alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Žádný uživatel nebyl vybrán."});

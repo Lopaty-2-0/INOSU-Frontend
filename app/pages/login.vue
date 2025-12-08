@@ -51,6 +51,7 @@ const submitLoginForm = async (): Promise<void> => {
       password: loginData.value.password,
       stayLogged: loginData.value.stayLogged,
     },
+    server: true,
     credentials: "include",
     ignoreResponseError: true,
     async onResponse({ response }: any) {
