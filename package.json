@@ -20,7 +20,7 @@
     "@oxc-parser/binding-linux-x64-gnu": "^0.95.0",
     "@vueup/vue-quill": "^1.2.0",
     "nitropack": "^2.12.7",
-    "nuxt": "^4.2.0",
+    "nuxt": "^4.2.2",
     "nuxt-security": "2.2.0",
     "ohmyfetch": "^0.4.21",
     "pinia": "^3.0.1",

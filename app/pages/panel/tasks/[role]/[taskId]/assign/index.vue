@@ -7,6 +7,7 @@ import type {TaskData} from "~/types/tasks";
 import {computed, ref, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
+import { useAlertsStore } from "~/stores/alerts";
 import type {ClassData} from "~/types/classes";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Pagination from "~/components/ui/Pagination.vue";
@@ -26,6 +27,7 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const alertsStore = useAlertsStore();
 const amountForPaging: number = 6;
 const task = ref<TaskData | undefined>(undefined);
 const allClasses = ref<ClassData[] | undefined>(undefined);
@@ -53,6 +55,58 @@ const resetSelection = (): void => {
 };
 
 const assignToClasses = async (): Promise<void> => {
+  if (!selectedClasses.value) {
+    alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
+    return;
+  }
+
+  submitLoading.value = true;
+
+  await $fetch("/api/user_team/add", {
+    method: "post",
+    body: {
+      idTask: taskId,
+      idClass: selectedClasses.value.map((classData: ClassData) => classData.id)
+    },
+    ignoreResponseError: true,
+    credentials: "include",
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "36010":
+        case "36030":
+        case "36040":
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je špatné." });
+          break;
+        case "36020":
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Žádná třída nebyla vybrána." });
+          break;
+        case "36050":
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Zadaný úkol neexistuje." });
+          break;
+        case "36060":
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Uživatel není garant úkolu." });
+          break;
+        case "36070":
+          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádnému žákovi nebyl přidělen tento úkol." });
+          break;
+        case "36081":
+          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Úkol byl přidělen ${response._data.data.goodIds.length} žákům.` });
+
+          resetSelection();
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala neznámá chyba." });
+    },
+  }).finally((): void => {
+    submitLoading.value = false;
+  });
 };
 
 const { data: classesData, pending: classesPending, error: classesError } = await useFetch("/api/class/get", {

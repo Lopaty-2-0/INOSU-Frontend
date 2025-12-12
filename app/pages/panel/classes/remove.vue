@@ -84,7 +84,7 @@ const removeClasses = async (): Promise<void> => {
           } else if ((response._data.data.userIds || []).length >= 1) {
             alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tyto třídy obsahují nějaké uživatele: ${response._data.data.userIds.join(", ")}`});
           } else {
-            alertsStore.addAlert({type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${selectedClasses.value.length})`});
+            alertsStore.addAlert({type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${response._data.data.goodIds.length})`});
           }
 
           allClasses.value = allClasses.value?.filter((oneClass: ClassData) => !response._data.data.goodIds.includes(oneClass.id));

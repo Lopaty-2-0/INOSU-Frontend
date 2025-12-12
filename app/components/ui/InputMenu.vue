@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import {ref, computed, watch, useSlots} from "vue";
 import Input from "~/components/ui/Input.vue";
 
 export type InputMenuItem = {
@@ -57,6 +57,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  disableItemFiltering: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const icons = {
@@ -66,7 +70,8 @@ const icons = {
   close: "material-symbols:arrow-upward-rounded",
 };
 
-const emit = defineEmits(["update:modelValue", "create"]);
+const slots = useSlots();
+const emits = defineEmits(["update:modelValue", "create", "search:change", "search:input"]);
 
 const open = ref<boolean>(false);
 const input = ref<string>("");
@@ -77,7 +82,7 @@ const normalizedItems = computed<InputMenuItem[]>(() => {
       typeof i === "string" ? { name: i, label: i } : i
   );
 });
-const placeholder = computed(() => {
+const placeholder = computed<string>(() => {
   if (props.multiple) {
     return selectedItems.value.length > 0 ? `Vybráno: ${selectedItems.value.length}` : props.title || props.placeholder;
   } else {
@@ -90,14 +95,16 @@ const placeholder = computed(() => {
     return text;
   }
 });
-const filteredItems = computed(() => {
+const filteredItems = computed<InputMenuItem[]>(() => {
+  if (props.disableItemFiltering) return normalizedItems.value;
+
   if (!input.value) return normalizedItems.value;
 
   return normalizedItems.value.filter((item) =>
       item.label.toLowerCase().includes(input.value.toLowerCase())
   );
 });
-const canCreateItem = computed(() => {
+const canCreateItem = computed<boolean>(() => {
   return (
     props.items.length > 0 && typeof props.items[0] !== "object" &&
     props.createItem && !!input.value &&
@@ -105,7 +112,7 @@ const canCreateItem = computed(() => {
   );
 });
 
-const toggleDropdown = () => {
+const toggleDropdown = (): void => {
   if (props.disabled) return;
 
   open.value = !open.value;
@@ -113,43 +120,45 @@ const toggleDropdown = () => {
   if (open.value) input.value = "";
 };
 
-const selectItem = (item: InputMenuItem) => {
+const selectItem = (item: InputMenuItem): void => {
   if (props.multiple) {
     selectedItems.value = selectedItems.value.includes(item.name) ? selectedItems.value.filter((n) => n !== item.name) : [...selectedItems.value, item.name];
 
-    emit("update:modelValue", selectedItems.value);
+    emits("update:modelValue", selectedItems.value);
   } else {
     if (props.deselect && selectedItems.value[0] === item.name) {
       selectedItems.value = [];
-      emit("update:modelValue", []);
+      emits("update:modelValue", []);
     } else {
       selectedItems.value = [item.name];
-      emit("update:modelValue", [item.name]);
+      emits("update:modelValue", [item.name]);
     }
 
     open.value = false;
   }
 };
 
-const createItem = () => {
+const createItem = (): void => {
   const newItem: InputMenuItem = { name: input.value, label: input.value };
 
   selectItem(newItem);
-  emit("create", newItem);
+  emits("create", newItem);
 
   input.value = "";
   open.value = false;
 };
 
-const onInput = () => {
+const onInput = (): void => {
+  emits("search:input", input)
+
   if (!open.value) open.value = true;
 
   if (props.multiple) {
-    emit("update:modelValue", selectedItems.value);
+    emits("update:modelValue", selectedItems.value);
   }
 };
 
-watch(() => props.modelValue, (newValue: string[]) => {
+watch(() => props.modelValue, (newValue: string[]): void => {
   selectedItems.value = newValue;
 });
 </script>
@@ -161,6 +170,7 @@ watch(() => props.modelValue, (newValue: string[]) => {
         id="roleInput"
         :placeholder="placeholder"
         @input="onInput"
+        @change="emits('search:change', input)"
         v-model="input"
         :disabled="props.disabled"
       />
@@ -184,6 +194,10 @@ watch(() => props.modelValue, (newValue: string[]) => {
       <div v-if="canCreateItem" class="section" @click="createItem">
         <span>Přidat "{{ input }}"</span>
       </div>
+
+      <span class="section no-hover" v-if="slots['row-extra']">
+        <slot name="row-extra"></slot>
+      </span>
 
       <div v-if="filteredItems.length <= 0 && !canCreateItem" class="section no-hover">
         <span class="no-data-text">{{ props.noDataText }}</span>
