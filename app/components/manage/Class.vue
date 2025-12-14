@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, useTemplateRef, watch, watchEffect} from "vue";
+import {computed, nextTick, ref, useTemplateRef, watch, watchEffect} from "vue";
 import type {ClassData} from "~/types/classes";
 import {useFetch} from "nuxt/app";
 import ClassesTable from "~/components/tables/Classes.vue";
@@ -29,9 +29,11 @@ const numberOfPages = computed<number>((): number => {
 });
 
 const reset = (): void => {
+  if (!datatable.value) return;
+
   selectedClasses.value = [...props.oldClassIds];
 
-  emits("update", { classes: selectedClasses.value });
+  emits("update", { classes: datatable.value.getSelectedRowIds() });
 };
 
 const onRowClicked = (selectedClassData: ClassData): void => {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import moment from "moment";
-import {computed, watchEffect} from "vue";
+import {computed, useTemplateRef, watchEffect} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import {useLoadingStore} from "~/stores/loading";
+import {useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import type {TaskData, Task_Team_Solo_Table} from "~/types/tasks";
 import SearchInput from "~/components/ui/SearchInput.vue";
@@ -12,15 +13,16 @@ import Pagination from "~/components/ui/Pagination.vue";
 import type {AccountData} from "~/types/account";
 import type {TaskTeam} from "~/types/team";
 import {navigateTo} from "nuxt/app";
-import TasksTable from "~/components/tables/Tasks.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
+import Loading from "~/components/ui/Loading.vue";
+import SpecializationsTable from "~/components/tables/Specializations.vue";
 
 const route = useRoute();
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Úkol - " + taskId,
+  title: "Panel | Úkol - " + taskId + " - Odstranění přiřazení",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -28,6 +30,7 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const alertsStore = useAlertsStore();
 const task = ref<TaskData | undefined>(undefined);
 const usersTeam = ref<Task_Team_Solo_Table[] | undefined>(undefined);
 const userSearchInput = ref<string>("");
@@ -48,6 +51,98 @@ const numberOfTeamsPages = computed<number>((): number => {
   return Math.ceil(teamsCount.value / amountOfTeamsForPaging);
 });
 
+const usersDatatable = useTemplateRef<InstanceType<typeof UsersTable>>("usersDatatable");
+const teamsDatatable = useTemplateRef<InstanceType<typeof TaskTeamsTable>>("teamsDatatable");
+const selectedTeams = ref<number[]>([]);
+const selectedUsers = ref<number[]>([]);
+const loading = ref<boolean>(false);
+
+const resetSelectedTeams = (): void => {
+  selectedTeams.value = [];
+  selectedUsers.value = [];
+
+  usersDatatable.value?.clearSelection();
+  teamsDatatable.value?.clearSelection();
+};
+
+const onUsersRowClicked = (user: AccountData): void => {
+  if (!usersDatatable.value) return;
+
+  const teamId: number | undefined = usersTeam.value?.filter((soloTeam: Task_Team_Solo_Table) => soloTeam.userData.id === user.id)?.[0]?.idTeam || undefined;
+
+  if (!teamId) return;
+
+  if (!selectedTeams.value.includes(teamId)) {
+    selectedTeams.value.push(teamId);
+    selectedUsers.value.push(user.id);
+  } else {
+    selectedTeams.value = selectedTeams.value.filter((id: number) => id !== teamId);
+    selectedUsers.value = selectedUsers.value.filter((id: number) => id !== user.id);
+  }
+};
+
+const onTeamsRowClicked = (team: TaskTeam): void => {
+  if (!teamsDatatable.value) return;
+
+  if (!selectedTeams.value.includes(team.idTeam)) {
+    selectedTeams.value.push(team.idTeam);
+  } else {
+    selectedTeams.value = selectedTeams.value.filter((id: number) => id !== team.idTeam);
+  }
+};
+
+const removeTeams = async (): Promise<void> => {
+  loading.value = true;
+
+  await $fetch("/api/team/delete", {
+    method: "delete",
+    body: {
+      idTask: taskId,
+      idTeam: selectedTeams.value,
+    },
+    ignoreResponseError: true,
+    credentials: "include",
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "31010":
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Chybí ID daného úkolu." });
+          break;
+        case "31020":
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Chybí ID vybraných přiřazení." });
+          break;
+        case "31030":
+        case "31040":
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "ID úkolu je neplatné." });
+          break;
+        case "31050":
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Zadaný úkol neexistuje." });
+          break;
+        case "31060":
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Uživatel není garantem úkolu." });
+          break;
+        case "31071":
+          const goodIds: number[] = response._data.data.goodIds;
+          alertsStore.addAlert({ type: "success", title: "Odstranění přiřazení", message: `Úkol byl odstraněn u ${goodIds.length} přiřazení.` });
+
+          usersRefresh();
+          teamsRefresh();
+          resetSelectedTeams();
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Nastala neznámá chyba." });
+    },
+  }).finally((): void => {
+    loading.value = false;
+  });
+};
+
 const onUsersSearchInputChange = (input: string): void => {
   userSearchInput.value = input;
 };
@@ -56,23 +151,7 @@ const onTeamSearchInputChange = (input: string): void => {
   teamSearchInput.value = input;
 };
 
-const openUserTask = async (id: number): Promise<void> => {
-  if (!id) return;
-
-  const teamId: number | undefined = usersData.value.data.users.find((data: Task_Team_Solo_Table) => data.userData.id === id)?.idTeam;
-
-  if (!teamId) return;
-
-  await navigateTo(`/panel/tasks/${role}/${taskId}/${teamId}`);
-};
-
-const openTeamTask = async (id: number): Promise<void> => {
-  if (!id) return;
-
-  await navigateTo(`/panel/tasks/${role}/${taskId}/${id}`);
-};
-
-const { data: usersData, error: usersError, pending: usersPending } = await useFetch("/api/team/get/users", {
+const { data: usersData, error: usersError, pending: usersPending, refresh: usersRefresh } = await useFetch("/api/team/get/users", {
   query: {
     idTask: taskId,
     amountForPaging: amountOfUsersForPaging,
@@ -85,7 +164,7 @@ const { data: usersData, error: usersError, pending: usersPending } = await useF
   credentials: "include",
 });
 
-const { data: teamsData, error: teamsError, pending: teamsPending } = await useFetch("/api/team/get/teams", {
+const { data: teamsData, error: teamsError, pending: teamsPending, refresh: teamsRefresh } = await useFetch("/api/team/get/teams", {
   query: {
     idTask: taskId,
     amountForPaging: amountOfTeamsForPaging,
@@ -125,6 +204,7 @@ watchEffect((): void => {
 
   if (!usersData.value || !teamsData.value) return;
 
+
   task.value = taskData.value.data.task;
   users.value = usersData.value.data.users.map((data: any) => data.userData);
   usersTeam.value = usersData.value.data.users;
@@ -145,7 +225,8 @@ watchEffect((): void => {
         <template #left>
           <Breadcrumb :items="[
             { label: 'Úkoly', to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}`, active: true },
+            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
+            { label: `Odstranit přiřazené`, to: `/panel/tasks/${role}/${taskId}/assign/remove`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -158,6 +239,7 @@ watchEffect((): void => {
             class="action-bar"
             description="Správa uživatelů"
             :actions="['edit', 'remove']"
+            :active="1"
             :texts="['Přiřadit', 'Odstranit přiřazené']"
             :icons="[
               'material-symbols:edit-rounded',
@@ -165,7 +247,6 @@ watchEffect((): void => {
             ]"
                 :navigate-to="[
               `/panel/tasks/${role}/${taskId}/assign`,
-              `/panel/tasks/${role}/${taskId}/assign/remove`,
             ]"
           />
 
@@ -187,6 +268,25 @@ watchEffect((): void => {
             </div>
           </div>
 
+          <div class="section-head">
+            <h3>Vybrané přiřazení: {{ selectedTeams.length }}</h3>
+            <p>Vyberte třídy, které chcete trvale odstranit ze systému.</p>
+          </div>
+
+          <div class="buttons">
+            <button class="remove" @click="removeTeams">
+              Odstranit
+              <Loading
+                v-show="loading"
+                size="5px"
+                color="var(--actionBar-actions-remove-color)"
+              />
+            </button>
+            <button class="reset" @click="resetSelectedTeams">
+              Zrušit vše
+            </button>
+          </div>
+
           <div class="page-section" v-if="users">
             <div class="section-head">
               <h3>Žáci</h3>
@@ -194,24 +294,18 @@ watchEffect((): void => {
               <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
             </div>
 
-            <UsersTable :users="users" :loading="usersPending" :extra-columns="[
+            <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="selectedUsers" :users="users" :loading="usersPending" :extra-columns="[
               { field: 'points', title: 'Počet bodů' }
             ]">
               <template #points="data">
                 <span>{{ usersTeam?.filter((soloTeam: Task_Team_Solo_Table) => soloTeam.userData.id === data.value.id)?.[0]?.points || "Neurčeno" }}</span>
               </template>
-
-              <template #actions="data">
-                <div class="actions">
-                  <button type="button" class="primary" @click="openUserTask(data.value.id)">Otevřít</button>
-                </div>
-              </template>
             </UsersTable>
 
             <Pagination
-                class="users-navigation"
-                :number-of-pages="numberOfUsersPages"
-                v-model="currentUsersPage"
+              class="users-navigation"
+              :number-of-pages="numberOfUsersPages"
+              v-model="currentUsersPage"
             />
           </div>
 
@@ -222,17 +316,11 @@ watchEffect((): void => {
               <SearchInput @change="onTeamSearchInputChange" placeholder="Hledat týmy" />
             </div>
 
-            <TaskTeamsTable :teams="teams" :loading="teamsPending" :extra-columns="[
+            <TaskTeamsTable ref="teamsDatatable" @row-clicked="onTeamsRowClicked" :has-checkbox="true" :selected-ids="selectedTeams" :teams="teams" :loading="teamsPending" :extra-columns="[
               { field: 'points', title: 'Počet bodů' }
             ]">
               <template #points="data">
                 <span>{{ data.value.points || "Neurčeno" }}</span>
-              </template>
-
-              <template #actions="data">
-                <div class="actions">
-                  <button type="button" class="primary" @click="openTeamTask(data.value.idTeam)">Otevřít</button>
-                </div>
               </template>
             </TaskTeamsTable>
 
@@ -248,7 +336,7 @@ watchEffect((): void => {
   </NuxtLayout>
 </template>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 #task {
   display: flex;
   flex-direction: column;
@@ -261,6 +349,50 @@ watchEffect((): void => {
 
     &:hover {
       color: rgba(var(--main-color), 0.8);
+    }
+  }
+
+  .buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px 15px;
+      border-radius: var(--small-border-radius);
+      border: var(--border-width) solid transparent;
+      transition: 0.2s;
+      font-size: 16px;
+      cursor: pointer;
+
+      &.remove {
+        color: var(--actionBar-actions-remove-color);
+        background: rgba(var(--actionBar-actions-remove-background), 1);
+        border-color: rgba(var(--actionBar-actions-remove-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-remove-background), 0.8);
+        }
+      }
+
+      &.reset {
+        background: var(--btn-2-background);
+        color: var(--btn-2-color);
+        border-color: rgba(var(--border-color), 0.5);
+
+        &:hover {
+          background: var(--btn-2-hover-background);
+        }
+      }
+
+      .icon {
+        font-size: 16px;
+      }
     }
   }
 

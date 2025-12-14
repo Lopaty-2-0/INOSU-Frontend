@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import {ref, useTemplateRef, watchEffect} from "vue";
+import {nextTick, ref, useTemplateRef, watchEffect} from "vue";
 import EditFullName from "~/components/manage/FullName.vue";
 import EditEmail from "~/components/manage/Email.vue";
 import EditPassword from "~/components/manage/Password.vue";
@@ -15,6 +15,8 @@ import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useLoadingStore} from "~/stores/loading";
 import {useFetch} from "nuxt/app";
+import checkPermissions from "~/componsables/checkPermissions";
+import ActionBar from "~/components/ui/ActionBar.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -94,18 +96,15 @@ const onProfilePictureUpdate = (updatedUserData: { profilePicture: File | undefi
   newUserData.value.profilePicture = updatedUserData.profilePicture;
 };
 
-const isEqual = (arr1: number[] | undefined, arr2: number[] | undefined): boolean => {
-  if (!arr1 && !arr2) return true;
-  if (!arr1 || !arr2) return false;
-  if (arr1.length !== arr2.length) return false;
-
-  const sortedArr1 = [...arr1].sort();
-  const sortedArr2 = [...arr2].sort();
-
-  return JSON.stringify(sortedArr1) === JSON.stringify(sortedArr2);
-};
-
 const resetUserData = (): void => {
+  if (editProfilePicture.value) editProfilePicture.value.reset();
+  if (editFullName.value) editFullName.value.reset();
+  if (editEmail.value) editEmail.value.reset();
+  if (editPassword.value) editPassword.value.reset();
+  if (editRole.value) editRole.value.reset();
+  if (editAbbreviation.value) editAbbreviation.value.reset();
+  if (editClass.value) editClass.value.reset();
+
   newUserData.value = {
     profilePicture: undefined,
     name: undefined,
@@ -116,14 +115,6 @@ const resetUserData = (): void => {
     role: undefined,
     classes: [],
   };
-
-  if (editProfilePicture.value) editProfilePicture.value.reset();
-  if (editFullName.value) editFullName.value.reset();
-  if (editEmail.value) editEmail.value.reset();
-  if (editPassword.value) editPassword.value.reset();
-  if (editRole.value) editRole.value.reset();
-  if (editAbbreviation.value) editAbbreviation.value.reset();
-  if (editClass.value) editClass.value.reset();
 };
 
 const updateUser = async (): Promise<void> => {
@@ -149,34 +140,42 @@ const updateUser = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "2040":
+        case "2050":
           alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nemáte oprávnění k této akci." });
           break;
-        case "2050":
-          alertsStore.addAlert({ type: "warning", title: "Úprava uživatele", message: "Nic nebylo zadáno ke změně." });
-          break;
         case "2060":
+        case "2070":
+        case "2080":
           alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatné ID uživatele." });
           break;
-        case "2070":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je již používána." });
-          break;
-        case "2080":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je příliš dlouhá." });
-          break;
         case "2090":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát e-mailu." });
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Jméno je příliš dlouhé." });
           break;
         case "2100":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je již používán." });
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Příjmení je příliš dlouhé." });
           break;
         case "2110":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je již používána." });
           break;
         case "2120":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je příliš dlouhá." });
+          break;
+        case "2130":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát e-mailu." });
+          break;
+        case "2140":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je již používán." });
+          break;
+        case "2150":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je příliš dlouhý." });
+          break;
+        case "2160":
           alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát souboru." });
           break;
-        case "2131":
+        case "2170":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Soubor je příliš veliký." });
+          break;
+        case "2181":
           alertsStore.addAlert({ type: "success", title: "Úprava uživatele", message: "Uživatel byl úspěšně upraven." });
 
           if (newUserData.value.name) oldUserData.value.name = newUserData.value.name;
@@ -184,8 +183,8 @@ const updateUser = async (): Promise<void> => {
           if (newUserData.value.email) oldUserData.value.email = newUserData.value.email;
           if (newUserData.value.abbreviation) oldUserData.value.abbreviation = newUserData.value.abbreviation;
           if (newUserData.value.role) oldUserData.value.role = newUserData.value.role;
-          if (newUserData.value.classes) oldUserData.value.classes = newUserData.value.classes;
           if (newUserData.value.profilePicture) oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
+          oldUserData.value.classes = newUserData.value.classes;
 
           resetUserData();
           break;
@@ -211,7 +210,7 @@ const { data: userData, error: userError } = await useFetch("/api/user/get/id", 
   credentials: "include",
 });
 
-watchEffect((): void => {
+watch([userData, userError], (): void => {
   if (userError.value || !userData.value) {
     router.push(`/panel/users/${role}/edit`);
     return;
@@ -229,7 +228,7 @@ watchEffect((): void => {
   newUserData.value.classes = user.idClass;
   oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
   oldUserData.value.loaded = true;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !oldUserData.value.loaded);
@@ -313,7 +312,7 @@ watchEffect((): void => {
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Třídy ({{ newUserData.classes.length }}) <span class="update" v-show="!isEqual(newUserData.classes, oldUserData.classes)">(aktualizováno)</span></h3>
+              <h3>Třídy</h3>
               <p>Vyberte třídu nebo více tříd, které chcete uživateli přiřadit.</p>
             </div>
 

@@ -87,8 +87,7 @@ const removeClasses = async (): Promise<void> => {
             alertsStore.addAlert({type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${response._data.data.goodIds.length})`});
           }
 
-          allClasses.value = allClasses.value?.filter((oneClass: ClassData) => !response._data.data.goodIds.includes(oneClass.id));
-
+          classesRefresh();
           resetSelectedClasses();
           break;
         default:
@@ -104,7 +103,7 @@ const removeClasses = async (): Promise<void> => {
   });
 }
 
-const { data: classesData, pending: classesTablePending, error: classesError } = await useFetch("/api/class/get", {
+const { data: classesData, pending: classesTablePending, error: classesError, refresh: classesRefresh } = await useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,

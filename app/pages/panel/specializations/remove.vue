@@ -81,8 +81,7 @@ const removeSpecializations = async (): Promise<void> => {
             alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length})`});
           }
 
-          allSpecializations.value = allSpecializations.value?.filter((specialization: SpecializationData) => !response._data.data.goodIds.includes(specialization.id));
-
+          specializationRefresh();
           resetSelectedSpecializations();
           break;
         default:
@@ -104,7 +103,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const { data: specializationData, pending: specializationTablePending, error: specializationError } = await useFetch("/api/specialization/get", {
+const { data: specializationData, pending: specializationTablePending, error: specializationError, refresh: specializationRefresh } = await useFetch("/api/specialization/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,

@@ -92,7 +92,8 @@ const removeTasks = async (): Promise<void> => {
           }
 
           alertsStore.addAlert({ type: "success", title: "Odstranění úkolu", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
-          allTasks.value = allTasks.value?.filter((task: TaskData) => !goodIds.includes(task.id));
+
+          tasksRefresh();
           resetSelectedTasks();
           break;
         default:
@@ -108,7 +109,7 @@ const removeTasks = async (): Promise<void> => {
   });
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending } = await useFetch("/api/task/get", {
+const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = await useFetch("/api/task/get", {
   query: {
     idUser: userId,
     amountForPaging: amountForPaging,

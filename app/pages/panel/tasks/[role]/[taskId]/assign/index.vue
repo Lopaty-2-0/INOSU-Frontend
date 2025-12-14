@@ -19,7 +19,7 @@ const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Úkoly - " + taskId + " - Přiřazení",
+  title: "Panel | Úkol - " + taskId + " - Přiřazení",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -178,11 +178,11 @@ watchEffect((): void => {
         ]" />
 
         <div class="content">
-          <div class="page-section">
+          <div class="page-section head">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
-              <p>Garant ID: {{ task.guarantor.id }}</p>
+              <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
               <p>Začátek: {{ moment(task.startDate).format("DD.MM. YYYY HH:MM") }}</p>
               <p>Konec: {{ moment(task.endDate).format("DD.MM. YYYY HH:MM") }}</p>
               <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("DD.MM. YYYY HH:MM") }}</p>
@@ -301,14 +301,14 @@ watchEffect((): void => {
     }
 
     .page-section {
-      border-bottom: 1px solid rgba(var(--border-color), 0.5);
-      padding-bottom: 35px;
+      border-bottom: none;
       display: flex;
       flex-direction: column;
       gap: 30px;
 
-      &:last-child {
-        border-bottom: none;
+      &.head {
+        padding-bottom: 35px;
+        border-bottom: 1px solid rgba(var(--border-color), 0.5);
       }
     }
 

@@ -251,7 +251,7 @@ const createNewUser = async (): Promise<void> => {
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Třídy ({{ newUserData.classes.length }}) <span class="update" v-show="newUserData.classes.length > 0">(aktualizováno)</span></h3>
+              <h3>Třídy</h3>
               <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
             </div>
 
