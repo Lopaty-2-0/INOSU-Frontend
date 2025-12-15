@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import {nextTick, ref, useTemplateRef, watchEffect} from "vue";
+import {ref, useTemplateRef, watchEffect} from "vue";
 import EditFullName from "~/components/manage/FullName.vue";
 import EditEmail from "~/components/manage/Email.vue";
 import EditPassword from "~/components/manage/Password.vue";
@@ -15,8 +15,6 @@ import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useLoadingStore} from "~/stores/loading";
 import {useFetch} from "nuxt/app";
-import checkPermissions from "~/componsables/checkPermissions";
-import ActionBar from "~/components/ui/ActionBar.vue";
 
 definePageMeta({
   roles: ["admin"],
@@ -186,6 +184,8 @@ const updateUser = async (): Promise<void> => {
           if (newUserData.value.profilePicture) oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
           oldUserData.value.classes = newUserData.value.classes;
 
+          console.log(response._data)
+
           resetUserData();
           break;
         default:
@@ -310,7 +310,7 @@ watchEffect((): void => {
             </EditAbbreviation>
           </div>
 
-          <div class="line page-section">
+          <div class="line page-section class">
             <div class="section-head">
               <h3>Třídy</h3>
               <p>Vyberte třídu nebo více tříd, které chcete uživateli přiřadit.</p>

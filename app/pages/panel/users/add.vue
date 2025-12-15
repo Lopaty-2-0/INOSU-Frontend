@@ -249,7 +249,7 @@ const createNewUser = async (): Promise<void> => {
             </EditAbbreviation>
           </div>
 
-          <div class="line page-section">
+          <div class="line page-section class">
             <div class="section-head">
               <h3>Třídy</h3>
               <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
@@ -295,6 +295,10 @@ const createNewUser = async (): Promise<void> => {
       display: flex;
       flex-direction: column;
       gap: 20px;
+
+      &.class {
+        gap: 30px;
+      }
     }
 
     .section-head {

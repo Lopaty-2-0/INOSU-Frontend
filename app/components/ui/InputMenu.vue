@@ -167,7 +167,6 @@ watch(() => props.modelValue, (newValue: string[]): void => {
   <div class="input-menu" :class="{ open, error: props.error, disabled: props.disabled, uppercase: props.uppercase, lowercase: props.lowercase }">
     <div class="title">
       <Input
-        id="roleInput"
         :placeholder="placeholder"
         @input="onInput"
         @change="emits('search:change', input)"
