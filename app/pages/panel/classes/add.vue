@@ -49,7 +49,7 @@ const dropDownSpecializations = computed<InputMenuItem[]>((): InputMenuItem[] =>
   return allSpecializations.value.map((specialization: SpecializationData): InputMenuItem => {
     return {
       label: `${specialization.name} (${specialization.abbreviation}) - ${specialization.lengthOfStudy} roky`,
-      name: specialization.id.toString(),
+      value: specialization.id.toString(),
     };
   });
 });

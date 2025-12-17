@@ -3,23 +3,24 @@ import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import moment from "moment/moment";
-import type {TaskData} from "~/types/tasks";
-import {computed, ref, watchEffect} from "vue";
+import type {Task_Team_Solo_Table, TaskData} from "~/types/tasks";
+import {computed, ref, useTemplateRef, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
-import type {ClassData} from "~/types/classes";
-import SearchInput from "~/components/ui/SearchInput.vue";
-import Pagination from "~/components/ui/Pagination.vue";
-import CardsGrid from "~/components/ui/CardsGrid.vue";
 import ActionFooter from "~/components/manage/Footer.vue";
+import EditClass from "~/components/manage/Class.vue";
+import type {AccountData} from "~/types/account";
+import Pagination from "~/components/ui/Pagination.vue";
+import UsersTable from "~/components/tables/Users.vue";
+import SearchInput from "~/components/ui/SearchInput.vue";
 
 const route = useRoute();
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Přiřazení - Třídy",
+  title: "Panel | Úkol - " + taskId + " - Přiřazení - Jednotlivci",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -27,35 +28,31 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const amountForUsersPaging: number = 3;
 const alertsStore = useAlertsStore();
-const amountForPaging: number = 6;
+const usersDatatable = useTemplateRef<InstanceType<typeof UsersTable>>("usersDatatable");
 const task = ref<TaskData | undefined>(undefined);
-const allClasses = ref<ClassData[] | undefined>(undefined);
-const selectedClasses = ref<ClassData[]>([]);
-const searchInput = ref<string>("");
-const currentPage = ref<number>(1);
-const classesCount = ref<number>(0);
 const submitLoading = ref<boolean>(false);
-const numberOfPages = computed<number>((): number => {
-  return Math.ceil(classesCount.value / amountForPaging);
+const selectedClass = ref<number | undefined>(undefined);
+const selectedUsers = ref<number[]>([]);
+const currentUsersPage = ref<number>(1);
+const users = ref<AccountData[] | undefined>(undefined);
+const usersCount = ref<number>(0);
+const searchUsersInput = ref<string>("");
+const requestUrls = computed<string>(() => {
+  return selectedClass.value ? "/api/user_class/get/users" : "/api/user/get/noClass"
+});
+const numberOfUsersPages = computed<number>((): number => {
+  return Math.ceil(usersCount.value / amountForUsersPaging);
 });
 
-const onSearchInputChange = (input: string): void => {
-  currentPage.value = 1;
-
-  searchInput.value = input;
-};
-
-const onItemSelect = (items: ClassData[]): void => {
-  selectedClasses.value = items;
-};
-
 const resetSelection = (): void => {
-  selectedClasses.value = [];
+  selectedUsers.value = [];
+  if (usersDatatable.value) usersDatatable.value.clearSelection();
 };
 
 const assignToClasses = async (): Promise<void> => {
-  if (!selectedClasses.value) {
+  if (!selectedUsers.value) {
     alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
     return;
   }
@@ -66,7 +63,7 @@ const assignToClasses = async (): Promise<void> => {
     method: "post",
     body: {
       idTask: taskId,
-      idClass: selectedClasses.value.map((classData: ClassData) => classData.id)
+      idUser: selectedUsers.value
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -80,7 +77,7 @@ const assignToClasses = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je špatné." });
           break;
         case "36020":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádná třída nebyla vybrána." });
+          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádný žák nebyla vybrán." });
           break;
         case "36050":
           alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Zadaný úkol neexistuje." });
@@ -109,21 +106,39 @@ const assignToClasses = async (): Promise<void> => {
   });
 };
 
-const { data: classesData, pending: classesPending, error: classesError } = await useFetch("/api/class/get", {
-  query: {
-    amountForPaging: amountForPaging,
-    pageNumber: currentPage,
-    searchQuery: searchInput,
-  },
-  method: "get",
-  server: true,
-  credentials: "include",
-  lazy: true
-});
+const onClassUpdate = (payload: { classes: number[] }): void => {
+  selectedClass.value = payload.classes[0] || undefined;
+};
+
+const onUsersSearchInputChange = (input: string): void => {
+  currentUsersPage.value = 1;
+
+  searchUsersInput.value = input;
+};
+
+const onUsersRowClicked = (user: AccountData): void => {
+  if (!selectedUsers.value.includes(user.id)) {
+    selectedUsers.value.push(user.id);
+  } else {
+    selectedUsers.value = selectedUsers.value.filter((id: number) => id !== user.id);
+  }
+};
 
 const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
   query: {
     idTask: taskId,
+  },
+  method: "get",
+  server: true,
+  credentials: "include",
+});
+
+const { data: usersData, error: usersError, pending: usersPending } = await useFetch(requestUrls, {
+  query: {
+    amountForPaging: amountForUsersPaging,
+    pageNumber: currentUsersPage,
+    searchQuery: searchUsersInput,
+    idClass: selectedClass,
   },
   method: "get",
   server: true,
@@ -138,20 +153,19 @@ watchEffect((): void => {
 
   task.value = taskData.value.data.task;
 
-  if (classesError.value) {
-    allClasses.value = [];
-    classesCount.value = 0;
+  if (usersError.value) {
+    users.value = undefined;
     return;
   }
 
-  if (!classesData.value) return;
+  if (!usersData.value) return;
 
-  allClasses.value = classesData.value.data.classes;
-  classesCount.value = classesData.value.data.count;
+  users.value = usersData.value.data.users;
+  usersCount.value = usersData.value.data.count;
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !users.value && !usersError.value);
 });
 </script>
 
@@ -164,7 +178,7 @@ watchEffect((): void => {
             { label: 'Úkoly', to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
             { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
             { label: 'Přiřazení', to: `/panel/tasks/${role}/${taskId}/assign` },
-            { label: 'Třídy', to: `/panel/tasks/${role}/${taskId}/assign`, active: true },
+            { label: 'Jednotlivci', to: `/panel/tasks/${role}/${taskId}/assign/individuals`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -172,7 +186,7 @@ watchEffect((): void => {
 
     <template #content v-if="task">
       <div id="task-assign">
-        <Navigation class="page-navigation" title="Přiřazení" :active-link-id="0" :links="[
+        <Navigation class="page-navigation" title="Přiřazení" :active-link-id="1" :links="[
           { name: 'Třídy', path: `/panel/tasks/${role}/${taskId}/assign` },
           { name: 'Jednotlivci', path: `/panel/tasks/${role}/${taskId}/assign/individuals` },
           { name: 'Týmy', path: `/panel/tasks/${role}/${taskId}/assign/teams` },
@@ -198,34 +212,28 @@ watchEffect((): void => {
           </div>
 
           <div class="page-section">
-            <div class="line">
-              <div class="section-head">
-                <h3>Vybrané třídy: {{ selectedClasses.length }}</h3>
-                <p>Vyberte třídy, kterým chcete úkol přiřadit, a potvrďte změny.</p>
-              </div>
-
-              <SearchInput @change="onSearchInputChange" placeholder="Hledat třídy" />
+            <div class="section-head">
+              <h3>Filtrace třídy</h3>
+              <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
             </div>
 
-            <div class="classes">
-              <CardsGrid
-                  :items="allClasses || []"
-                  :selected-items="selectedClasses"
-                  :loading="classesPending"
-                  @get:selected-items="onItemSelect"
-                  :enable-selection="true"
-              >
-                <template #content="item">
-                  <div class="class">
-                    <div class="section-head">
-                      <span><span class="name" v-if="item.data.name">{{ item.data.name + " - " }}</span>{{ item.data.specialization }}{{ item.data.grade }}{{ item.data.group }}</span>
-                    </div>
-                  </div>
-                </template>
-              </CardsGrid>
+            <EditClass ref="editClass" :multiple="false" :old-class-ids="selectedClass ? [selectedClass] : []" @update="onClassUpdate" />
+          </div>
+
+          <div class="page-section">
+            <div class="section-head users">
+                <h3>Vybraní žáci: {{ selectedUsers.length }}</h3>
+
+              <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
             </div>
 
-            <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
+            <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="selectedUsers"  :users="users || []" :loading="usersPending" />
+
+            <Pagination
+                class="users-navigation"
+                :number-of-pages="numberOfUsersPages"
+                v-model="currentUsersPage"
+            />
           </div>
 
           <div class="page-section">
@@ -353,7 +361,7 @@ watchEffect((): void => {
   }
 }
 
-@media (max-width: 1055px) {
+@media (max-width: 1200px) {
   #task-assign {
     flex-direction: column;
     gap: 30px;

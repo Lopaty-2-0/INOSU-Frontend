@@ -11,10 +11,14 @@ const props = defineProps({
     type: Array as () => number[],
     required: true,
   },
+  multiple: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const emits = defineEmits(["update"]);
-const amountForPaging: number = 1;
+const amountForPaging: number = 4;
 const classes = ref<ClassData[] | undefined>(undefined);
 const selectedClasses = ref<string[]>([...props.oldClassIds?.map((id: number) => id.toString())]);
 const error = ref<string | null>(null);
@@ -27,7 +31,7 @@ const numberOfPages = computed<number>((): number => {
 const dropDownClasses = computed<InputMenuItem[]>(() => {
   return (classes.value || []).map((classData: ClassData) => ({
     label: classData.name,
-    name: classData.id.toString()
+    value: classData.id.toString()
   }));
 });
 
@@ -70,7 +74,7 @@ const onSelect = (selectedClassData: ClassData | string | string[] | undefined):
   emits("update", { classes: selectedClasses.value.map((id: string) => Number(id)) });
 };
 
-const { data: classesData, error: classesError } = useFetch("/api/class/get", {
+const { data: classesData, error: classesError, pending: classesPending } = useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -106,11 +110,11 @@ defineExpose({ reset });
     <slot />
 
     <div class="section content">
-      <label>Výběr zaměření</label>
+      <label>Výběr tříd</label>
 
       <InputMenu
           v-model="selectedClasses"
-          :multiple="true"
+          :multiple="props.multiple"
           :items="dropDownClasses"
           :create-item="false"
           placeholder="Vyberte třídu"
@@ -119,6 +123,7 @@ defineExpose({ reset });
           no-data-text="Žádná třída nebyla nalezena"
           @update:model-value="onSelect"
           @search:change="onSearchInputChange"
+          :loading="classesPending"
       >
         <template #row-extra v-if="numberOfPages > 1">
           <Pagination v-model="currentPage" :number-of-pages="numberOfPages" :chunk-size="2" />
