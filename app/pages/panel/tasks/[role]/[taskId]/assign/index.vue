@@ -77,7 +77,7 @@ const assignToClasses = async (): Promise<void> => {
         case "36010":
         case "36030":
         case "36040":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je špatné." });
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je neplatné." });
           break;
         case "36020":
           alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádná třída nebyla vybrána." });

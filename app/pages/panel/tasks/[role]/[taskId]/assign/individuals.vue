@@ -3,7 +3,7 @@ import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import moment from "moment/moment";
-import type {Task_Team_Solo_Table, TaskData} from "~/types/tasks";
+import type {TaskData} from "~/types/tasks";
 import {computed, ref, useTemplateRef, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
@@ -28,7 +28,7 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
-const amountForUsersPaging: number = 3;
+const amountForUsersPaging: number = 5;
 const alertsStore = useAlertsStore();
 const usersDatatable = useTemplateRef<InstanceType<typeof UsersTable>>("usersDatatable");
 const task = ref<TaskData | undefined>(undefined);
@@ -74,7 +74,7 @@ const assignToClasses = async (): Promise<void> => {
         case "36010":
         case "36030":
         case "36040":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je špatné." });
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je neplatné." });
           break;
         case "36020":
           alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádný žák nebyla vybrán." });
@@ -221,8 +221,10 @@ watchEffect((): void => {
           </div>
 
           <div class="page-section">
-            <div class="section-head users">
+            <div class="line">
+              <div class="section-head users">
                 <h3>Vybraní žáci: {{ selectedUsers.length }}</h3>
+              </div>
 
               <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
             </div>
