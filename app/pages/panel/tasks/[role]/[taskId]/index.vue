@@ -156,7 +156,7 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa uživatelů"
+            description="Správa úkolu"
             :actions="['edit', 'remove']"
             :texts="['Přiřadit', 'Odstranit přiřazené']"
             :icons="[

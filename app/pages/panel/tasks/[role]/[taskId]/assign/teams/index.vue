@@ -8,8 +8,6 @@ import {computed, ref, useTemplateRef, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
-import ActionFooter from "~/components/manage/Footer.vue";
-import type {AccountData} from "~/types/account";
 import Pagination from "~/components/ui/Pagination.vue";
 import TaskTeamsTable from "~/components/tables/TaskTeams.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
@@ -216,11 +214,11 @@ watchEffect((): void => {
               <label for="teamName">Název</label>
               <div class="line">
                 <Input
-                  type="text"
-                  id="teamName"
-                  name="teamName"
-                  placeholder="Zadejte název týmu pro vytvoření (nebo ponechte prázdný)"
-                  v-model="createTeamInput"
+                    type="text"
+                    id="teamName"
+                    name="teamName"
+                    placeholder="Zadejte název týmu pro vytvoření (nebo ponechte prázdný)"
+                    v-model="createTeamInput"
                 />
 
                 <div class="column">
@@ -248,9 +246,9 @@ watchEffect((): void => {
             </TaskTeamsTable>
 
             <Pagination
-              class="users-navigation"
-              :number-of-pages="numberOfTeamsPages"
-              v-model="currentTeamsPage"
+                class="users-navigation"
+                :number-of-pages="numberOfTeamsPages"
+                v-model="currentTeamsPage"
             />
           </div>
         </div>
