@@ -57,7 +57,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const { data: usersData, error: usersError, pending: usersPending } = await useFetch(requests.value.url, {
+const { data: usersData, error: usersError, pending: usersPending } = useFetch(requests.value.url, {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -67,6 +67,7 @@ const { data: usersData, error: usersError, pending: usersPending } = await useF
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {

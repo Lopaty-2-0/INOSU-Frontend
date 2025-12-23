@@ -24,7 +24,7 @@ const numberOfPages = computed<number>((): number => {
   return Math.ceil(classesCount.value / amountForPaging);
 });
 
-const { data: classesData, error: classesError } = await useFetch("/api/class/get", {
+const { data: classesData, error: classesError } = useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -32,6 +32,7 @@ const { data: classesData, error: classesError } = await useFetch("/api/class/ge
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {

@@ -109,7 +109,7 @@ const removeTasks = async (): Promise<void> => {
   });
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = await useFetch("/api/task/get", {
+const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = useFetch("/api/task/get", {
   query: {
     idUser: userId,
     amountForPaging: amountForPaging,
@@ -119,6 +119,7 @@ const { data: tasksData, error: tasksError, pending: tasksPending, refresh: task
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {

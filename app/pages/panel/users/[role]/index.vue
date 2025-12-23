@@ -42,7 +42,7 @@ const onItemGridClick = (item: AccountData): void => {
   navigateTo(`mailto:${item.email}`, { external: true });
 };
 
-const { data: usersData, error: usersError, pending: usersPending } = await useFetch("/api/user/get/role", {
+const { data: usersData, error: usersError, pending: usersPending } = useFetch("/api/user/get/role", {
   query: {
     role: role,
     amountForPaging: amountForPaging,
@@ -52,6 +52,7 @@ const { data: usersData, error: usersError, pending: usersPending } = await useF
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {

@@ -56,7 +56,7 @@ const openTask = async (id: number): Promise<void> => {
   await navigateTo(`/panel/tasks/admin/${id}`);
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending } = await useFetch("/api/task/get", {
+const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get", {
   query: {
     idUser: userId,
     amountForPaging: amountForPaging,
@@ -66,6 +66,7 @@ const { data: tasksData, error: tasksError, pending: tasksPending } = await useF
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {

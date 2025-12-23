@@ -16,16 +16,18 @@ useHead({
 const numberOfUsers = ref<number>(-1);
 const allRoles = ref<string[] | undefined>(undefined);
 
-const {data: usersData} = await useFetch("/api/user/get/number", {
+const {data: usersData} = useFetch("/api/user/get/number", {
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-const {data: rolesData, error: rolesError} = await useFetch("/api/user/get/roles", {
+const {data: rolesData, error: rolesError} = useFetch("/api/user/get/roles", {
   method: "get",
   credentials: "include",
   server: true,
+  lazy: true
 });
 
 watchEffect((): void => {

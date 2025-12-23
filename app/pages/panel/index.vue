@@ -79,22 +79,25 @@ const updateContent = (newContent: { html: string }) => {
   //console.log(newContent);
 };
 
-const {data: studentsCount} = await useFetch("/api/user/get/count/byRole?role=student", {
+const {data: studentsCount} = useFetch("/api/user/get/count/byRole?role=student", {
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  lazy: true
 });
 
-const {data: teachersCount} = await useFetch("/api/user/get/count/byRole?role=teacher", {
+const {data: teachersCount} = useFetch("/api/user/get/count/byRole?role=teacher", {
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  lazy: true
 });
 
-const {data: classesCount} = await useFetch("/api/class/count", {
+const {data: classesCount} = useFetch("/api/class/count", {
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  lazy: true
 });
 
 watchEffect((): void => {
@@ -109,7 +112,7 @@ watchEffect((): void => {
 
 onMounted(async (): Promise<void> => {
   if (["admin", "teacher"].includes(role.value)) {
-    await $fetch(`/api/task/get`, {
+    $fetch(`/api/task/get`, {
       query: {
         idUser: userId.value,
         amountForPaging: 5,
@@ -118,6 +121,7 @@ onMounted(async (): Promise<void> => {
       method: "get",
       credentials: "include",
       ignoreResponseError: true,
+      lazy: true,
       onResponse({ response }: any) {
         const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
 

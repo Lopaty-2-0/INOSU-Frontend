@@ -164,7 +164,7 @@ const { data: usersData, error: usersError, pending: usersPending, refresh: user
   credentials: "include",
 });
 
-const { data: teamsData, error: teamsError, pending: teamsPending, refresh: teamsRefresh } = await useFetch("/api/team/get/teams", {
+const { data: teamsData, error: teamsError, pending: teamsPending, refresh: teamsRefresh } = useFetch("/api/team/get/teams", {
   query: {
     idTask: taskId,
     amountForPaging: amountOfTeamsForPaging,
@@ -250,7 +250,7 @@ watchEffect((): void => {
             ]"
           />
 
-          <div class="page-section head">
+          <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
@@ -430,12 +430,12 @@ watchEffect((): void => {
       flex-direction: column;
       gap: 30px;
 
-      &.head {
+      &.bottom-line {
         padding-bottom: 35px;
         border-bottom: 1px solid rgba(var(--border-color), 0.5);
       }
 
-      &:not(.head) .section-head {
+      &:not(.bottom-line) .section-head {
         display: flex;
         flex-direction: row;
         justify-content: space-between;

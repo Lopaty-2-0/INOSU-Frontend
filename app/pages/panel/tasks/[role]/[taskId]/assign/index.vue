@@ -54,7 +54,7 @@ const resetSelection = (): void => {
   selectedClasses.value = [];
 };
 
-const assignToClasses = async (): Promise<void> => {
+const assignToTask = async (): Promise<void> => {
   if (!selectedClasses.value) {
     alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
     return;
@@ -109,7 +109,7 @@ const assignToClasses = async (): Promise<void> => {
   });
 };
 
-const { data: classesData, pending: classesPending, error: classesError } = await useFetch("/api/class/get", {
+const { data: classesData, pending: classesPending, error: classesError } = useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -179,7 +179,7 @@ watchEffect((): void => {
         ]" />
 
         <div class="content">
-          <div class="page-section head">
+          <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
@@ -197,7 +197,7 @@ watchEffect((): void => {
             </div>
           </div>
 
-          <div class="page-section">
+          <div class="page-section bottom-line">
             <div class="line">
               <div class="section-head">
                 <h3>Vybrané třídy: {{ selectedClasses.length }}</h3>
@@ -229,7 +229,7 @@ watchEffect((): void => {
           </div>
 
           <div class="page-section">
-            <ActionFooter :submit-function="assignToClasses" :reset-function="resetSelection" :is-loading="submitLoading" />
+            <ActionFooter :submit-function="assignToTask" :reset-function="resetSelection" :is-loading="submitLoading" />
           </div>
         </div>
       </div>
@@ -307,7 +307,7 @@ watchEffect((): void => {
       flex-direction: column;
       gap: 30px;
 
-      &.head {
+      &.bottom-line {
         padding-bottom: 35px;
         border-bottom: 1px solid rgba(var(--border-color), 0.5);
       }

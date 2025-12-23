@@ -83,6 +83,7 @@ const { data: classesData, error: classesError, pending: classesPending } = useF
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true,
 });
 
 watchEffect((): void => {

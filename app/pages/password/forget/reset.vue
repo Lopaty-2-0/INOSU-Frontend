@@ -136,6 +136,7 @@ useFetch("/api/user/password/verify", {
   server: false,
   credentials: "include",
   ignoreResponseError: true,
+  lazy: true,
   async onResponse({ response }: any) {
     const resCode: string = response._data.resCode.toString();
 

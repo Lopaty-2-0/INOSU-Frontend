@@ -5,6 +5,7 @@ interface TaskTeam {
     status: "",
     review: string | null;
     points: number | null;
+    users?: number[];
 }
 
 export type {

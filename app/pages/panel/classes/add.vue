@@ -206,6 +206,7 @@ const {data: specializationsData, error: specializationsError} = useFetch("/api/
   credentials: "include",
   server: true,
   ignoreResponseError: true,
+  lazy: true
 });
 
 watchEffect((): void => {

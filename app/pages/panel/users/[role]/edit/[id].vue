@@ -184,8 +184,6 @@ const updateUser = async (): Promise<void> => {
           if (newUserData.value.profilePicture) oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
           oldUserData.value.classes = newUserData.value.classes;
 
-          console.log(response._data)
-
           resetUserData();
           break;
         default:
@@ -201,13 +199,14 @@ const updateUser = async (): Promise<void> => {
   });
 };
 
-const { data: userData, error: userError } = await useFetch("/api/user/get/id", {
+const { data: userData, error: userError } = useFetch("/api/user/get/id", {
   query: {
     id: id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watch([userData, userError], (): void => {

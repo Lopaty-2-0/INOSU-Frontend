@@ -103,7 +103,7 @@ const removeClasses = async (): Promise<void> => {
   });
 }
 
-const { data: classesData, pending: classesTablePending, error: classesError, refresh: classesRefresh } = await useFetch("/api/class/get", {
+const { data: classesData, pending: classesTablePending, error: classesError, refresh: classesRefresh } = useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -112,6 +112,7 @@ const { data: classesData, pending: classesTablePending, error: classesError, re
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {

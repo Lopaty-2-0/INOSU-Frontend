@@ -31,7 +31,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const { data: specializationData, pending: specializationTablePending, error: specializationError } = await useFetch("/api/specialization/get", {
+const { data: specializationData, pending: specializationTablePending, error: specializationError } = useFetch("/api/specialization/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -40,6 +40,7 @@ const { data: specializationData, pending: specializationTablePending, error: sp
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {

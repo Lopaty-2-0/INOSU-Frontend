@@ -32,7 +32,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const { data: classesData, pending: classesTablePending, error: classesError } = await useFetch("/api/class/get", {
+const { data: classesData, pending: classesTablePending, error: classesError } = useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -41,6 +41,7 @@ const { data: classesData, pending: classesTablePending, error: classesError } =
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {

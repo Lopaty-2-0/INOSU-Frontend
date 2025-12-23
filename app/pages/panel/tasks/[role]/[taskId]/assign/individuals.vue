@@ -51,7 +51,7 @@ const resetSelection = (): void => {
   if (usersDatatable.value) usersDatatable.value.clearSelection();
 };
 
-const assignToClasses = async (): Promise<void> => {
+const assignToTask = async (): Promise<void> => {
   if (!selectedUsers.value) {
     alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
     return;
@@ -133,7 +133,7 @@ const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", 
   credentials: "include",
 });
 
-const { data: usersData, error: usersError, pending: usersPending } = await useFetch(requestUrls, {
+const { data: usersData, error: usersError, pending: usersPending } = useFetch(requestUrls, {
   query: {
     amountForPaging: amountForUsersPaging,
     pageNumber: currentUsersPage,
@@ -143,6 +143,7 @@ const { data: usersData, error: usersError, pending: usersPending } = await useF
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {
@@ -193,7 +194,7 @@ watchEffect((): void => {
         ]" />
 
         <div class="content">
-          <div class="page-section head">
+          <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
@@ -220,7 +221,7 @@ watchEffect((): void => {
             <EditClass ref="editClass" :multiple="false" :old-class-ids="selectedClass ? [selectedClass] : []" @update="onClassUpdate" />
           </div>
 
-          <div class="page-section">
+          <div class="page-section bottom-line">
             <div class="line">
               <div class="section-head users">
                 <h3>Vybraní žáci: {{ selectedUsers.length }}</h3>
@@ -239,7 +240,7 @@ watchEffect((): void => {
           </div>
 
           <div class="page-section">
-            <ActionFooter :submit-function="assignToClasses" :reset-function="resetSelection" :is-loading="submitLoading" />
+            <ActionFooter :submit-function="assignToTask" :reset-function="resetSelection" :is-loading="submitLoading" />
           </div>
         </div>
       </div>
@@ -317,7 +318,7 @@ watchEffect((): void => {
       flex-direction: column;
       gap: 30px;
 
-      &.head {
+      &.bottom-line {
         padding-bottom: 35px;
         border-bottom: 1px solid rgba(var(--border-color), 0.5);
       }
