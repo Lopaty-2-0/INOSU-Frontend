@@ -2,20 +2,17 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
-import moment from "moment/moment";
-import type {TaskData} from "~/types/tasks";
 import {computed, ref, useTemplateRef, watchEffect} from "vue";
-import {navigateTo, useFetch} from "nuxt/app";
+import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
 import ActionFooter from "~/components/manage/Footer.vue";
 import EditClass from "~/components/manage/Class.vue";
-import type {AccountData, AccountLink} from "~/types/account";
+import type {AccountData} from "~/types/account";
 import Pagination from "~/components/ui/Pagination.vue";
 import UsersTable from "~/components/tables/Users.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Input from "~/components/ui/Input.vue";
-import Card from "~/components/ui/Card.vue";
 import type {TaskTeam} from "~/types/team";
 import ActionBar from "~/components/ui/ActionBar.vue";
 
@@ -69,7 +66,7 @@ const isEqual = (array1: number[], array2: number[]): boolean => {
 };
 
 const checkForErrors = (): void => {
-  if (newTeamNameInput.value && newTeamNameInput.value.length > 5) {
+  if (newTeamNameInput.value && newTeamNameInput.value.length > 255) {
     newTeamNameInputError.value = "Název týmu nesmí být delší než 255 znaků.";
     return;
   }
@@ -86,30 +83,22 @@ const resetInputs = (): void => {
 const updateTeamData = async (): Promise<void> => {
   await updateTeamName();
   await assignToTeam();
+
+  await teamRefresh();
+  resetSelection();
 };
 
 const updateTeamName = async (): Promise<void> => {
-  if (newTeamNameInputError.value) return;
-
-  submitLoading.value = true;
-  console.log(newTeamNameInput.value);
-  submitLoading.value = false;
-};
-
-const assignToTeam = async (): Promise<void> => {
-  if (!selectedUsers.value) {
-    alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
-    return;
-  }
+  if (newTeamNameInputError.value || teamTaskData.value?.name === newTeamNameInput.value) return;
 
   submitLoading.value = true;
 
-  await $fetch("/api/user_team/add", {
-    method: "post",
+  await $fetch("/api/team/update", {
+    method: "put",
     body: {
       idTask: taskId,
       idTeam: teamId,
-      idUser: selectedUsers.value
+      name: newTeamNameInput.value,
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -117,31 +106,100 @@ const assignToTeam = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "36010":
-        case "36030":
-        case "36040":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je neplatné." });
+        case "32010":
+        case "32030":
+        case "32040":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "ID úkolu je neplatné." });
           break;
-        case "36020":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádný žák nebyla vybrán." });
+        case "32020":
+        case "32050":
+        case "32060":
+          alertsStore.addAlert({ type: "warning", title: "Upravení týmu", message: "ID týmu je neplatné." });
           break;
-        case "36050":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Zadaný úkol neexistuje." });
+        case "32070":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Zadaný úkol neexistuje." });
           break;
-        case "36060":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Uživatel není garant úkolu." });
+        case "32080":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Zadaný tým neexistuje." });
           break;
-        case "36070":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádný žák nebyl přidán do týmu." });
+        case "32090":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Uživatel není garant úkolu." });
           break;
-        case "36081":
-          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Do týmu bylo přidáno ${response._data.data.goodIds.length} žáků.` });
-
-          teamRefresh();
-          resetSelection();
+        case "32150":
+          alertsStore.addAlert({ type: "warning", title: "Upravení týmu", message: "Jméno je příliš dlouhé." });
+          break;
+        case "32161":
+          alertsStore.addAlert({ type: "success", title: "Upravení týmu", message: "Tým byl úspěšně upraven." });
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Nastala neznámá chyba." });
+    },
+  }).finally((): void => {
+    submitLoading.value = false;
+  });
+};
+
+const assignToTeam = async (): Promise<void> => {
+  if (isEqual(selectedUsers.value, teamTaskData.value?.users || [])) return;
+
+  submitLoading.value = true;
+
+  await $fetch("/api/user_team/change", {
+    method: "put",
+    body: {
+      idTask: taskId,
+      idTeam: teamId,
+      idUser: selectedUsers.value,
+    },
+    ignoreResponseError: true,
+    credentials: "include",
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "43010":
+        case "43040":
+        case "43050":
+          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "ID úkolu je neplatné." });
+          break;
+        case "43020":
+          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: "Žádný žák nebyla vybrán." });
+          break;
+        case "43030":
+        case "43060":
+        case "43070":
+        case "43090":
+          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: "ID týmu je neplatné." });
+          break;
+        case "43080":
+          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Zadaný úkol neexistuje." });
+          break;
+        case "43100":
+          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Uživatel není garant úkolu." });
+          break;
+        case "43110":
+          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: "Žádný žák nebyl přidán do týmu." });
+          break;
+        case "43121":
+          const differentTeamIds: number[] = response._data.data.differentTeam || [];
+          const goodIds: number[] = response._data.data.goodIds || [];
+
+          if (differentTeamIds.length > 0) {
+            alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Někteří žáci nebyli přidáni do týmu, protože již patří do jiného týmu. Počet žáků: ${differentTeamIds.length}` });
+          }
+
+          if (goodIds.length > 0) {
+            alertsStore.addAlert({ type: "success", title: "Přidání do týmu", message: `Do týmu bylo přidáno ${goodIds.length} žáků.` });
+          }
+
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Nastala neznámá chyba." });
           break;
       }
     },
