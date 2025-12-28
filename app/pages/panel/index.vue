@@ -27,9 +27,6 @@ const numbers = ref<{ students: number | null; classes: number | null; teachers:
   classes: null,
   teachers: null,
 });
-const editorContent = ref<string>("");
-const editorFocus = ref<boolean>(false);
-const editorEnable = ref<boolean>(true);
 
 const navigationLinks = computed<{
   name: string;
@@ -75,10 +72,6 @@ const openTask = async (id: number): Promise<void> => {
   await router.push(`/panel/tasks/${role.value}/${id}`);
 };
 
-const updateContent = (newContent: { html: string }) => {
-  //console.log(newContent);
-};
-
 const {data: studentsCount} = useFetch("/api/user/get/count/byRole?role=student", {
   method: "get",
   credentials: "include",
@@ -112,7 +105,7 @@ watchEffect((): void => {
 
 onMounted(async (): Promise<void> => {
   if (["admin", "teacher"].includes(role.value)) {
-    $fetch(`/api/task/get`, {
+    await $fetch(`/api/task/get`, {
       query: {
         idUser: userId.value,
         amountForPaging: 5,
@@ -122,7 +115,7 @@ onMounted(async (): Promise<void> => {
       credentials: "include",
       ignoreResponseError: true,
       lazy: true,
-      onResponse({ response }: any) {
+      onResponse({response}: any) {
         const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
 
         allTasks.value = tasks || [];
@@ -168,14 +161,6 @@ onMounted(async (): Promise<void> => {
             </Card>
           </ul>
         </div>
-
-        <Editor
-          @update:content="updateContent"
-          :content="editorContent"
-          :focus="editorFocus"
-          :enable="editorEnable"
-          placeholder="Vyberte textový element na stránce"
-        />
 
         <div class="line">
           <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />

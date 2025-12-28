@@ -163,29 +163,25 @@ const assignToTeam = async (): Promise<void> => {
 
       switch (resCode) {
         case "43010":
+        case "43030":
         case "43040":
-        case "43050":
           alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "ID úkolu je neplatné." });
           break;
-        case "43020":
-          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: "Žádný žák nebyla vybrán." });
-          break;
-        case "43030":
+        case "43050":
         case "43060":
-        case "43070":
-        case "43090":
+        case "43020":
           alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: "ID týmu je neplatné." });
           break;
-        case "43080":
+        case "43070":
           alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Zadaný úkol neexistuje." });
           break;
-        case "43100":
+        case "43080":
+          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Zadaný tým neexistuje." });
+          break;
+        case "43090":
           alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Uživatel není garant úkolu." });
           break;
-        case "43110":
-          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: "Žádný žák nebyl přidán do týmu." });
-          break;
-        case "43121":
+        case "43101":
           const differentTeamIds: number[] = response._data.data.differentTeam || [];
           const goodIds: number[] = response._data.data.goodIds || [];
 
