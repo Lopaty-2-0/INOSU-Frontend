@@ -66,12 +66,18 @@ const editorEnabledTools = ref<string[]>([
 const checkForErrors = (): void => {
 };
 
-const updateContent = (content: { html: string }): void => {
-  console.log(content.html);
-  guarantorComment.value = content.html;
-};
-
 const resetInputs = (): void => {
+  if (teamTaskData.value && typeof teamTaskData.value.points === "number") {
+    teamTaskPoints.value = teamTaskData.value.points;
+  } else {
+    teamTaskPoints.value = null;
+  }
+
+  if (teamTaskData.value && teamTaskData.value.review) {
+    guarantorComment.value = teamTaskData.value.review;
+  } else {
+    guarantorComment.value = "";
+  }
 };
 
 const toggleGuarantorCommentEnabled = (): void => {
@@ -197,7 +203,7 @@ watchEffect((): void => {
               </p>
             </div>
 
-            <Card class="team-card section-head" variant="outlined" v-if="!userData">
+            <Card class="team-card section-head" variant="outlined" v-if="teamTaskData.isTeam">
               <div class="content">
                 <p class="name"><span>{{ teamTaskData.name || "Neurčeno" }}</span></p>
                 <p><span>ID:</span> {{ teamTaskData.idTeam }}</p>
@@ -206,7 +212,7 @@ watchEffect((): void => {
               </div>
             </Card>
 
-            <div class="user section-head" v-else>
+            <div class="user section-head" v-else-if="userData">
               <span>Student:</span>
               <div class="profile">
                 <Image
@@ -294,9 +300,8 @@ watchEffect((): void => {
 
                 <div class="line">
                   <Editor
+                    v-model="guarantorComment"
                     class="editor"
-                    @update:content="updateContent"
-                    :content="guarantorComment"
                     :enable="isGuarantorCommentEnabled"
                     placeholder="Zadejte komentář garanta"
                     :enabled-tools="editorEnabledTools"

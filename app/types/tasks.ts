@@ -20,6 +20,7 @@ interface Task_Team_Solo_Table {
     elaboration: string | null;
     review: string | null;
     userData: AccountData;
+    isTeam: boolean;
 }
 
 export type {

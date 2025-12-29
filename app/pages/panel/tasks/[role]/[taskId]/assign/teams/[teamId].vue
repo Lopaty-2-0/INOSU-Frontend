@@ -181,7 +181,10 @@ const assignToTeam = async (): Promise<void> => {
         case "43090":
           alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Uživatel není garant úkolu." });
           break;
-        case "43101":
+        case "43100":
+          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Do tohoto týmu nelze přidat více uživatelů." });
+          break;
+        case "43111":
           const differentTeamIds: number[] = response._data.data.differentTeam || [];
           const goodIds: number[] = response._data.data.goodIds || [];
 

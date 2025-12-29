@@ -18,6 +18,10 @@ type ToolbarSection = {
 };
 
 const props = defineProps({
+  modelValue: {
+    type: String,
+    default: "",
+  },
   enabledTools: {
     type: Array<string>,
     default: [
@@ -41,10 +45,6 @@ const props = defineProps({
       "clean",
     ],
   },
-  content: {
-    type: String,
-    default: "",
-  },
   focus: {
     type: Boolean,
     default: false,
@@ -59,9 +59,9 @@ const props = defineProps({
   },
 });
 
-const localContent = ref<string>(props.content);
+const localContent = ref<string>(props.modelValue);
 const editor = useTemplateRef<InstanceType<typeof QuillEditor>>("editor");
-const emits = defineEmits(["update:content"]);
+const emits = defineEmits(["update:modelValue"]);
 
 const toolbarSections: ToolbarSection[] = [
   {
@@ -210,13 +210,8 @@ const checkIfToolIsEnabled = (tool: string): boolean => {
 const emitInputEvent = (value: string) => {
   localContent.value = value;
 
-  emits("update:content", { html: value });
+  emits("update:modelValue", value);
 };
-
-
-watch(() => props.content, (newVal: string) => {
-  localContent.value = newVal;
-});
 
 watch(() => props.enable, (newVal: boolean): void => {
   if (!editor.value) return;
@@ -225,6 +220,13 @@ watch(() => props.enable, (newVal: boolean): void => {
 
   if (newVal) quill.enable();
   else quill.disable();
+});
+
+watch(() => props.modelValue, (newVal: string): void => {
+  if (!editor.value || newVal === localContent.value) return;
+
+  localContent.value = newVal;
+  editor.value.setHTML(newVal);
 });
 
 watch(() => props.focus, (newVal: boolean): void => {
