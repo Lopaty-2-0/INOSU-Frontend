@@ -21,6 +21,9 @@ interface Task_Team_Solo_Table {
     review: string | null;
     userData: AccountData;
     isTeam: boolean;
+    teamUpdatedAt: Date | null;
+    reviewUpdatedAt: Date | null;
+    elaborationUpdatedAt: Date | null;
 }
 
 export type {

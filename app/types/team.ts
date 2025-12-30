@@ -7,6 +7,8 @@ interface TaskTeam {
     points: number | null;
     users?: number[];
     isTeam: boolean;
+    teamUpdatedAt: Date | null;
+    reviewUpdatedAt: Date | null;
 }
 
 export type {

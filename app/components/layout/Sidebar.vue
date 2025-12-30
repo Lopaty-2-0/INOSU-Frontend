@@ -369,6 +369,7 @@ if (!["admin", "teacher"].includes(role.value)) {
       gap: 10px;
       width: 100%;
       height: 100%;
+      cursor: pointer;
 
       &:not(.loading) {
         justify-content: flex-start;

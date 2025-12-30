@@ -4,12 +4,15 @@ import { storeToRefs } from "pinia";
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
-import type { TaskData } from "~/types/tasks";
+import type {Task_Team_Solo_Table, TaskData} from "~/types/tasks";
 import { useAccountStore } from "~/stores/account";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import TasksTable from "~/components/tables/Tasks.vue";
 import Pagination from "~/components/ui/Pagination.vue";
+import type {TaskTeam} from "~/types/team";
+import Image from "~/components/ui/Image.vue";
+import type {AccountData} from "~/types/account";
 
 useHead({
   title: "Panel | Úkoly",
@@ -17,15 +20,10 @@ useHead({
 });
 
 definePageMeta({
-  roles: ["admin", "teacher"],
 });
 
-const route = useRoute();
-const role = route.params.role as string;
-
-const accountStore = useAccountStore();
-const { getId: userId } = storeToRefs(accountStore);
-const allTasks = ref<TaskData[] | undefined>(undefined);
+const config = useRuntimeConfig();
+const allTasks = ref<(TaskData & { team: TaskTeam, guarantor: AccountData })[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
@@ -44,24 +42,18 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const assignTask = async (id: number): Promise<void> => {
-  if (!id) return;
+const openTask = async (taskId: number, teamId: number): Promise<void> => {
+  if (!taskId || !teamId) return;
 
-  await navigateTo(`/panel/tasks/${role}/${id}/assign`);
+  await navigateTo(`/panel/tasks/student/${taskId}/${teamId}`);
 };
 
-const openTask = async (id: number): Promise<void> => {
-  if (!id) return;
-
-  await navigateTo(`/panel/tasks/${role}/${id}`);
-};
-
-const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get", {
+const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/user_team/get/type", {
   query: {
-    idUser: userId,
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
     searchQuery: searchInput,
+    taskType: "task"
   },
   method: "get",
   server: true,
@@ -77,7 +69,13 @@ watchEffect((): void => {
 
   if (!tasksData.value) return;
 
-  allTasks.value = tasksData.value.data.tasks;
+  allTasks.value = tasksData.value.data.tasks.map((task: any) => {
+    return {
+      id: task.idTask,
+      ...task,
+    }
+  });
+
   tasksCount.value = tasksData.value.data.count;
 });
 
@@ -92,7 +90,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, active: true, icon: 'material-symbols:folder-copy-rounded' },
+            { label: 'Úkoly', to: `/panel/tasks/student`, active: true, icon: 'material-symbols:folder-copy-rounded' },
           ]"/>
         </template>
       </Navbar>
@@ -101,42 +99,46 @@ watchEffect((): void => {
     <template #content v-if="allTasks">
       <div id="tasks">
         <div class="content">
-          <ActionBar
-            class="action-bar"
-            description="Správa úkolů"
-            :texts="['Přidat', 'Odebrat']"
-            :actions="['add', 'remove']"
-            :icons="[
-              'material-symbols:add-rounded',
-              'material-symbols:delete-rounded',
-            ]"
-              :navigate-to="[
-              `/panel/tasks/${role}/add`,
-              `/panel/tasks/${role}/remove`,
-            ]"
-          />
-
           <div class="line">
             <div class="line">
               <div class="line">
                 <div class="section-head">
-                  <h3>Vytvořené úkoly</h3>
+                  <h3>Vaše úkoly</h3>
                   <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
                 </div>
 
                 <SearchInput @change="onSearchInputChange" placeholder="Hledat úkol" />
               </div>
 
-              <TasksTable :tasks="allTasks" :loading="tasksPending">
+              <TasksTable :tasks="allTasks" :loading="tasksPending" :extra-columns="[
+                  { field: 'guarantor', title: 'Garant' }
+              ]">
+                <template #points="data">
+                  {{ data.value.points ? `${data.value.team.points || "-"} / ${data.value.points}` : "Neurčeno" }}
+                </template>
+
+                <template #guarantor="data">
+                  <div class="profile">
+                    <Image
+                        :src="config.public.originUrl + '/api/file/pfp/' + data.value.guarantor.profilePicture"
+                        alt="profile-photo"
+                        draggable="false"
+                    />
+
+                    <p class="account-name">
+                      {{ data.value.guarantor.name }} {{ data.value.guarantor.surname }}
+                    </p>
+                  </div>
+                </template>
+
                 <template #actions="data">
                   <div class="actions">
-                    <button type="button" class="default" @click="openTask(data.value.id)">Otevřít</button>
-                    <button type="button" class="assign" @click="assignTask(data.value.id)">Přiřadit</button>
+                    <button type="button" class="primary" @click="openTask(data.value.id, data.value.team.idTeam)">Otevřít</button>
                   </div>
                 </template>
               </TasksTable>
 
-              <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+              <Pagination v-model="currentPage" :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
             </div>
           </div>
         </div>
@@ -158,6 +160,26 @@ watchEffect((): void => {
     min-width: 250px;
   }
 
+  .profile {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-direction: row;
+
+    .account-name {
+      color: var(--mini-title-color);
+      font-size: 16px;
+      text-wrap: nowrap;
+    }
+
+    ::v-deep(img) {
+      width: 45px;
+      height: 45px;
+      border-radius: var(--small-border-radius);
+      object-fit: cover;
+    }
+  }
+
   .actions {
     display: flex;
     flex-direction: row;
@@ -177,7 +199,7 @@ watchEffect((): void => {
         background: var(--btn-2-hover-background);
       }
 
-      &.assign {
+      &.primary {
         display: flex;
         flex-direction: column;
         gap: 10px;

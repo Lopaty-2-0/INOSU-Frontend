@@ -166,8 +166,8 @@ watchEffect((): void => {
             ]"
               :active="1"
               :navigate-to="[
-              `/panel/tasks/admin/add`,
-              `/panel/tasks/admin/remove`,
+              `/panel/tasks/${role}/add`,
+              `/panel/tasks/${role}/remove`,
             ]"
           />
 

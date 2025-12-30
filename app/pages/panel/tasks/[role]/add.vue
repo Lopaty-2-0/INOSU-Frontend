@@ -196,8 +196,8 @@ const addTask = async (): Promise<void> => {
             ]"
             :active="0"
             :navigate-to="[
-              `/panel/tasks/admin/add`,
-              `/panel/tasks/admin/remove`,
+              `/panel/tasks/${role}/add`,
+              `/panel/tasks/${role}/remove`,
             ]"
           />
 
