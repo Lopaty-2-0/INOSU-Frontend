@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
-import {computed, nextTick, ref, watch} from "vue";
+import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {SpecializationData} from "~/types/specialization";
+
+type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
 const props = defineProps({
   specializations: {
@@ -37,16 +39,32 @@ const props = defineProps({
     type: Array as () => number[],
     required: false,
     default: () => [],
-  }
+  },
+  extraColumns: {
+    type: Array as () => Column[],
+    required: false,
+    default: () => [],
+  },
 });
 const emits = defineEmits(["rowClicked"]);
+const slots = useSlots();
 
-const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string" },
-  { field: "abbreviation", title: "Zkratka", type: "string" },
-  { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number" },
-];
+const cols = computed<Column[]>(() => {
+  const base: Column[] = [
+    { field: "id", title: "ID", width: "90px", type: "number" },
+    { field: "name", title: "Název", type: "string", width: "60%" },
+    { field: "abbreviation", title: "Zkratka", type: "string", width: "20%" },
+    { field: "lengthOfStudy", title: "Délka studia (roky)", type: "number", width: "20%" },
+  ];
+
+  const merged: Column[] = [...base, ...(props.extraColumns || [])];
+
+  if (slots.actions) {
+    merged.push({ field: "actions", title: "Akce" });
+  }
+
+  return merged;
+});
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
 const rows = computed<SpecializationData[]>((): SpecializationData[] => {
   if (!props.pageSize) {
@@ -93,13 +111,17 @@ defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable class="datatable" ref="datatable" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :pagination="props.pagination" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable class="datatable" ref="datatable" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :pagination="props.pagination" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+    <template v-for="(_, name) in slots" v-slot:[name]="slotProps">
+      <slot :name="name" v-bind="slotProps" />
+    </template>
+
     <template #abbreviation="data">
       <p>{{ data.value.abbreviation }}</p>
     </template>
 
     <template #actions="data">
-      <slot name="actions" :row="data.value" />
+      <slot name="actions" :value="data" />
     </template>
   </Vue3Datatable>
 </template>

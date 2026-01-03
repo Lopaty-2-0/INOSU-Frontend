@@ -18,6 +18,7 @@ useHead({
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
+const router = useRouter();
 const accountStore = useAccountStore();
 const { getRole: role, getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<TaskData[] | undefined>(undefined);
@@ -26,9 +27,6 @@ const numbers = ref<{ students: number | null; classes: number | null; teachers:
   classes: null,
   teachers: null,
 });
-const editorContent = ref<string>("");
-const editorFocus = ref<boolean>(false);
-const editorEnable = ref<boolean>(true);
 
 const navigationLinks = computed<{
   name: string;
@@ -71,29 +69,28 @@ const infoCards = computed<{ title: string; icon: string; value: string | number
 const openTask = async (id: number): Promise<void> => {
   if (!id) return;
 
-  await navigateTo(`/panel/tasks/${role.value}/${id}`);
+  await router.push(`/panel/tasks/${role.value}/${id}`);
 };
 
-const updateContent = (newContent: { html: string }) => {
-  //console.log(newContent);
-};
-
-const {data: studentsCount} = await useFetch("/api/user/get/count/byRole?role=student", {
+const {data: studentsCount} = useFetch("/api/user/get/count/byRole?role=student", {
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  lazy: true
 });
 
-const {data: teachersCount} = await useFetch("/api/user/get/count/byRole?role=teacher", {
+const {data: teachersCount} = useFetch("/api/user/get/count/byRole?role=teacher", {
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  lazy: true
 });
 
-const {data: classesCount} = await useFetch("/api/class/count", {
+const {data: classesCount} = useFetch("/api/class/count", {
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  lazy: true
 });
 
 watchEffect((): void => {
@@ -108,7 +105,7 @@ watchEffect((): void => {
 
 onMounted(async (): Promise<void> => {
   if (["admin", "teacher"].includes(role.value)) {
-    await $fetch(`/api/task/get/guarantor`, {
+    await $fetch(`/api/task/get`, {
       query: {
         idUser: userId.value,
         amountForPaging: 5,
@@ -117,7 +114,8 @@ onMounted(async (): Promise<void> => {
       method: "get",
       credentials: "include",
       ignoreResponseError: true,
-      onResponse({ response }: any) {
+      lazy: true,
+      onResponse({response}: any) {
         const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
 
         allTasks.value = tasks || [];
@@ -164,14 +162,6 @@ onMounted(async (): Promise<void> => {
           </ul>
         </div>
 
-        <Editor
-          @update:content="updateContent"
-          :content="editorContent"
-          :focus="editorFocus"
-          :enable="editorEnable"
-          placeholder="Vyberte textový element na stránce"
-        />
-
         <div class="line">
           <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />
 
@@ -186,7 +176,7 @@ onMounted(async (): Promise<void> => {
             <TasksTable :tasks="allTasks" :loading="!allTasks" :page-size="5" :pagination="false">
               <template #actions="data">
                 <div class="actions">
-                  <button type="button" class="default" @click="openTask(data.row.id)">Otevřít</button>
+                  <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>
                 </div>
               </template>
             </TasksTable>
@@ -235,6 +225,7 @@ onMounted(async (): Promise<void> => {
   .navigation {
     height: fit-content;
     min-width: 250px;
+    padding: 30px;
   }
 
   .actions {
@@ -315,6 +306,7 @@ onMounted(async (): Promise<void> => {
         transition: 0.2s;
         cursor: pointer;
         min-width: 200px;
+        padding: 30px;
 
         .body {
           width: 100%;

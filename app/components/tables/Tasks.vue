@@ -4,8 +4,9 @@ import "@bhplugin/vue3-datatable/dist/style.css";
 import "../../assets/style/datatable.scss";
 import moment from "moment";
 import type { TaskData } from "~/types/tasks";
-import {computed, nextTick, ref, watch} from "vue";
-import type {SpecializationData} from "~/types/specialization";
+import {computed, nextTick, ref, useSlots, watch} from "vue";
+
+type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
 const props = defineProps({
   tasks: {
@@ -40,20 +41,35 @@ const props = defineProps({
     type: Array as () => number[],
     required: false,
     default: () => [],
-  }
+  },
+  extraColumns: {
+    type: Array as () => Column[],
+    required: false,
+    default: () => [],
+  },
 });
 const emits = defineEmits(["rowClicked"]);
+const slots = useSlots();
 
-const cols: { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function }[] = [
-  { field: "id", title: "ID", width: "90px", type: "number" },
-  { field: "name", title: "Název", type: "string", width: "30%" },
-  { field: "startDate", title: "Začátek", type: "date" },
-  { field: "endDate", title: "Konec", type: "date" },
-  { field: "deadline", title: "Uzávěrka", type: "date" },
-  { field: "points", title: "Max bodů", type: "number" },
-  { field: "task", title: "Zadání", type: "string", width: "30%" },
-  { field: "actions", title: "Akce" },
-];
+const cols = computed<Column[]>(() => {
+  const base: Column[] = [
+    { field: "id", title: "ID", width: "90px", type: "number" },
+    { field: "name", title: "Název", type: "string", width: "50%" },
+    { field: "startDate", title: "Začátek", type: "date" },
+    { field: "endDate", title: "Konec", type: "date" },
+    { field: "deadline", title: "Uzávěrka", type: "date" },
+    { field: "points", title: "Max bodů", type: "number" },
+    { field: "task", title: "Zadání", type: "string", width: "50%" },
+  ];
+
+  const merged: Column[] = [...base, ...(props.extraColumns || [])];
+
+  if (slots.actions) {
+    merged.push({ field: "actions", title: "Akce" });
+  }
+
+  return merged;
+});
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
 const rows = computed<TaskData[]>((): TaskData[] => {
   if (!props.pageSize) {
@@ -104,7 +120,11 @@ defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="20" :sortable="true" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+    <template v-for="(_, name) in slots" v-slot:[name]="slotProps">
+      <slot :name="name" v-bind="slotProps" />
+    </template>
+
     <template #name="data">
       <span class="limit">{{ data.value.name }}</span>
     </template>
@@ -116,15 +136,15 @@ defineExpose({ clearSelection });
     </template>
 
     <template #startDate="data">
-      <span class="no-wrap">{{ moment(data.value.startDate).format("DD.MM.YYYY HH:MM") }}</span>
+      <span class="no-wrap">{{ moment(data.value.startDate).format("HH:mm DD.MM. YYYY") }}</span>
     </template>
 
     <template #endDate="data">
-      <span class="no-wrap">{{ moment(data.value.endDate).format("DD.MM.YYYY HH:MM") }}</span>
+      <span class="no-wrap">{{ moment(data.value.endDate).format("HH:mm DD.MM. YYYY") }}</span>
     </template>
 
     <template #deadline="data">
-      {{ data.value.deadline ? moment(data.value.deadline).format("DD.MM.YYYY HH:MM") : "Neurčeno" }}
+      <span class="no-wrap">{{ data.value.deadline ? moment(data.value.deadline).format("HH:mm DD.MM. YYYY") : "Neurčeno" }}</span>
     </template>
 
     <template #points="data">
@@ -132,7 +152,7 @@ defineExpose({ clearSelection });
     </template>
 
     <template #actions="data">
-      <slot name="actions" :row="data.value" />
+      <slot name="actions" :value="data" />
     </template>
   </Vue3Datatable>
 </template>

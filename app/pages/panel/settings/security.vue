@@ -176,6 +176,7 @@ const updateUserData = async (): Promise<void> => {
     position: sticky;
     top: 110px;
     min-width: 300px;
+    padding: 30px;
   }
 
   .content {

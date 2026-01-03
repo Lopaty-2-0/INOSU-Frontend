@@ -18,6 +18,10 @@ type ToolbarSection = {
 };
 
 const props = defineProps({
+  modelValue: {
+    type: String,
+    default: "",
+  },
   enabledTools: {
     type: Array<string>,
     default: [
@@ -41,15 +45,15 @@ const props = defineProps({
       "clean",
     ],
   },
-  content: {
-    type: String,
-    default: "",
-  },
   focus: {
     type: Boolean,
     default: false,
   },
-  enable: {
+  enabled: {
+    type: Boolean,
+    default: true,
+  },
+  readOnly: {
     type: Boolean,
     default: false,
   },
@@ -59,9 +63,9 @@ const props = defineProps({
   },
 });
 
-const localContent = ref<string>(props.content);
+const localContent = ref<string>(props.modelValue);
 const editor = useTemplateRef<InstanceType<typeof QuillEditor>>("editor");
-const emits = defineEmits(["update:content"]);
+const emits = defineEmits(["update:modelValue"]);
 
 const toolbarSections: ToolbarSection[] = [
   {
@@ -210,21 +214,23 @@ const checkIfToolIsEnabled = (tool: string): boolean => {
 const emitInputEvent = (value: string) => {
   localContent.value = value;
 
-  emits("update:content", { html: value });
+  emits("update:modelValue", value);
 };
 
-
-watch(() => props.content, (newVal: string) => {
-  localContent.value = newVal;
-});
-
-watch(() => props.enable, (newVal: boolean): void => {
+watch(() => props.enabled, (newVal: boolean): void => {
   if (!editor.value) return;
 
   const quill = editor.value.getQuill();
 
   if (newVal) quill.enable();
   else quill.disable();
+});
+
+watch(() => props.modelValue, (newVal: string): void => {
+  if (!editor.value || newVal === localContent.value) return;
+
+  localContent.value = newVal;
+  editor.value.setHTML(newVal);
 });
 
 watch(() => props.focus, (newVal: boolean): void => {
@@ -234,8 +240,8 @@ watch(() => props.focus, (newVal: boolean): void => {
 
 <template>
   <ClientOnly>
-    <div id="editor">
-      <div id="toolbar">
+    <div id="editor" :enable="String(props.enabled)">
+      <div id="toolbar" v-show="props.enabledTools.length > 0">
         <div v-for="section in toolbarSections" class="ql-formats" :key="section.section" v-show="checkIfSectionIsEnabled(section)">
           <template v-for="item in section.tools" :key="item.tool">
             <template v-if="checkIfToolIsEnabled(item.tool)">
@@ -256,7 +262,7 @@ watch(() => props.focus, (newVal: boolean): void => {
           @update:content="emitInputEvent"
           v-model:content="localContent"
           :placeholder="props.placeholder"
-          :options="{ readOnly: !props.enable }"
+          :options="{ readOnly: props.readOnly || !props.enabled }"
           content-type="html"
           toolbar="#toolbar"
         />
@@ -274,5 +280,20 @@ watch(() => props.focus, (newVal: boolean): void => {
   height: 100%;
   width: 100%;
   position: relative;
+
+  &[enable="false"] {
+    pointer-events: none;
+    user-select: none;
+
+    ::v-deep(.ql-editor) {
+      pointer-events: none;
+      user-select: none;
+    }
+
+    ::v-deep(.ql-container) * {
+      opacity: var(--disabled-opacity);
+      cursor: not-allowed;
+    }
+  }
 }
 </style>

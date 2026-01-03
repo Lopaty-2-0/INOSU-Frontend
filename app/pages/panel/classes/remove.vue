@@ -52,10 +52,6 @@ const resetSelectedClasses = (): void => {
   datatable.value.clearSelection();
 };
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
 
@@ -88,11 +84,10 @@ const removeClasses = async (): Promise<void> => {
           } else if ((response._data.data.userIds || []).length >= 1) {
             alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tyto třídy obsahují nějaké uživatele: ${response._data.data.userIds.join(", ")}`});
           } else {
-            alertsStore.addAlert({type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${response._data.data.goodIds.length}/${selectedClasses.value.length})`});
+            alertsStore.addAlert({type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${response._data.data.goodIds.length})`});
           }
 
-          allClasses.value = allClasses.value?.filter((oneClass: ClassData) => !response._data.data.goodIds.includes(oneClass.id));
-
+          classesRefresh();
           resetSelectedClasses();
           break;
         default:
@@ -108,7 +103,7 @@ const removeClasses = async (): Promise<void> => {
   });
 }
 
-const { data: classesData, pending: classesTablePending, error: classesError } = await useFetch("/api/class/get", {
+const { data: classesData, pending: classesTablePending, error: classesError, refresh: classesRefresh } = useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -117,10 +112,11 @@ const { data: classesData, pending: classesTablePending, error: classesError } =
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {
-  if ((classesError.value?.data.resCode || "").toString() === "23070") {
+  if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
     return;
@@ -194,7 +190,7 @@ watchEffect((): void => {
 
           <ClassesTable :selected-ids="selectedClasses" :loading="classesTablePending" ref="datatable" :classes="allClasses" :has-checkbox="true" @row-clicked="onRowClicked" />
 
-          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>

@@ -42,8 +42,13 @@ const slots = useSlots();
   }
 
   .body {
-    padding: 30px;
-    height: 100%;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
   }
 
   .header {

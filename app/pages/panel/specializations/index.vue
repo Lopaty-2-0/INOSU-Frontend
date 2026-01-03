@@ -25,17 +25,13 @@ const numberOfPages = computed<number>((): number => {
   return Math.ceil(specializationsCount.value / amountForPaging);
 });
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
 
   searchInput.value = input;
 };
 
-const { data: specializationData, pending: specializationTablePending, error: specializationError } = await useFetch("/api/specialization/get", {
+const { data: specializationData, pending: specializationTablePending, error: specializationError } = useFetch("/api/specialization/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -44,10 +40,11 @@ const { data: specializationData, pending: specializationTablePending, error: sp
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {
-  if ((specializationError.value?.data.resCode || "").toString() === "23070") {
+  if (specializationError.value) {
     allSpecializations.value = [];
     specializationsCount.value = 0;
     return;
@@ -106,7 +103,7 @@ watchEffect((): void => {
 
           <SpecializationsTable :loading="specializationTablePending" :specializations="allSpecializations" />
 
-          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>

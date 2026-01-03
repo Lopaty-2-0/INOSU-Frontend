@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import {ref, computed, watch, useSlots} from "vue";
 import Input from "~/components/ui/Input.vue";
+import Loading from "~/components/ui/Loading.vue";
 
 export type InputMenuItem = {
-  name: string;
+  value: string;
   label: string;
 };
 
@@ -57,6 +58,14 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  disableItemFiltering: {
+    type: Boolean,
+    default: false,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const icons = {
@@ -66,7 +75,8 @@ const icons = {
   close: "material-symbols:arrow-upward-rounded",
 };
 
-const emit = defineEmits(["update:modelValue", "create"]);
+const slots = useSlots();
+const emits = defineEmits(["update:modelValue", "create", "search:change", "search:input"]);
 
 const open = ref<boolean>(false);
 const input = ref<string>("");
@@ -74,14 +84,14 @@ const selectedItems = ref<string[]>([...props.modelValue]);
 
 const normalizedItems = computed<InputMenuItem[]>(() => {
   return props.items.map((i: string | InputMenuItem) =>
-      typeof i === "string" ? { name: i, label: i } : i
+      typeof i === "string" ? { value: i, label: i } : i
   );
 });
-const placeholder = computed(() => {
+const placeholder = computed<string>(() => {
   if (props.multiple) {
     return selectedItems.value.length > 0 ? `Vybráno: ${selectedItems.value.length}` : props.title || props.placeholder;
   } else {
-    const selected: InputMenuItem | undefined = normalizedItems.value.find((i) => i.name === selectedItems.value[0]);
+    const selected: InputMenuItem | undefined = normalizedItems.value.find((i) => i.value === selectedItems.value[0]);
     let text: string = selected ? selected.label : props.title || props.placeholder;
 
     if (props.uppercase) text = text.toUpperCase();
@@ -90,14 +100,16 @@ const placeholder = computed(() => {
     return text;
   }
 });
-const filteredItems = computed(() => {
+const filteredItems = computed<InputMenuItem[]>(() => {
+  if (props.disableItemFiltering) return normalizedItems.value;
+
   if (!input.value) return normalizedItems.value;
 
   return normalizedItems.value.filter((item) =>
       item.label.toLowerCase().includes(input.value.toLowerCase())
   );
 });
-const canCreateItem = computed(() => {
+const canCreateItem = computed<boolean>(() => {
   return (
     props.items.length > 0 && typeof props.items[0] !== "object" &&
     props.createItem && !!input.value &&
@@ -105,7 +117,7 @@ const canCreateItem = computed(() => {
   );
 });
 
-const toggleDropdown = () => {
+const toggleDropdown = (): void => {
   if (props.disabled) return;
 
   open.value = !open.value;
@@ -113,43 +125,45 @@ const toggleDropdown = () => {
   if (open.value) input.value = "";
 };
 
-const selectItem = (item: InputMenuItem) => {
+const selectItem = (item: InputMenuItem): void => {
   if (props.multiple) {
-    selectedItems.value = selectedItems.value.includes(item.name) ? selectedItems.value.filter((n) => n !== item.name) : [...selectedItems.value, item.name];
+    selectedItems.value = selectedItems.value.includes(item.value) ? selectedItems.value.filter((n) => n !== item.value) : [...selectedItems.value, item.value];
 
-    emit("update:modelValue", selectedItems.value);
+    emits("update:modelValue", selectedItems.value);
   } else {
-    if (props.deselect && selectedItems.value[0] === item.name) {
+    if (props.deselect && selectedItems.value[0] === item.value) {
       selectedItems.value = [];
-      emit("update:modelValue", []);
+      emits("update:modelValue", []);
     } else {
-      selectedItems.value = [item.name];
-      emit("update:modelValue", [item.name]);
+      selectedItems.value = [item.value];
+      emits("update:modelValue", [item.value]);
     }
 
     open.value = false;
   }
 };
 
-const createItem = () => {
-  const newItem: InputMenuItem = { name: input.value, label: input.value };
+const createItem = (): void => {
+  const newItem: InputMenuItem = { value: input.value, label: input.value };
 
   selectItem(newItem);
-  emit("create", newItem);
+  emits("create", newItem);
 
   input.value = "";
   open.value = false;
 };
 
-const onInput = () => {
+const onInput = (): void => {
+  emits("search:input", input)
+
   if (!open.value) open.value = true;
 
   if (props.multiple) {
-    emit("update:modelValue", selectedItems.value);
+    emits("update:modelValue", selectedItems.value);
   }
 };
 
-watch(() => props.modelValue, (newValue: string[]) => {
+watch(() => props.modelValue, (newValue: string[]): void => {
   selectedItems.value = newValue;
 });
 </script>
@@ -158,9 +172,9 @@ watch(() => props.modelValue, (newValue: string[]) => {
   <div class="input-menu" :class="{ open, error: props.error, disabled: props.disabled, uppercase: props.uppercase, lowercase: props.lowercase }">
     <div class="title">
       <Input
-        id="roleInput"
         :placeholder="placeholder"
         @input="onInput"
+        @change="emits('search:change', input)"
         v-model="input"
         :disabled="props.disabled"
       />
@@ -171,19 +185,28 @@ watch(() => props.modelValue, (newValue: string[]) => {
 
     <div class="content" v-show="open">
       <div
+        v-if="!props.loading"
         v-for="(item, index) in filteredItems"
-        :key="item.name || index"
-        :class="{ selected: selectedItems.includes(item.name) }"
+        :key="item.value || index"
+        :class="{ selected: selectedItems.includes(item.value) }"
         class="section"
         @click="selectItem(item)"
       >
-        <Icon class="icon" :name="selectedItems.includes(item.name) ? icons.select : icons.selected"/>
+        <Icon class="icon" :name="selectedItems.includes(item.value) ? icons.select : icons.selected"/>
         <span>{{ item.label }}</span>
+      </div>
+
+      <div v-if="props.loading" class="section center no-hover">
+        <Loading color="rgba(var(--description-color), 1)" size="6px" />
       </div>
 
       <div v-if="canCreateItem" class="section" @click="createItem">
         <span>Přidat "{{ input }}"</span>
       </div>
+
+      <span class="section no-hover" v-if="slots['row-extra']">
+        <slot name="row-extra"></slot>
+      </span>
 
       <div v-if="filteredItems.length <= 0 && !canCreateItem" class="section no-hover">
         <span class="no-data-text">{{ props.noDataText }}</span>
@@ -287,6 +310,11 @@ watch(() => props.modelValue, (newValue: string[]) => {
         .icon, span {
           color: rgba(var(--main-color), 1);
         }
+      }
+
+      &.center {
+        justify-content: center;
+        align-items: center;
       }
 
       &:not(.no-hover):hover {

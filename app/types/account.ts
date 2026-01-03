@@ -1,5 +1,5 @@
 type AccountData = {
-    id: string;
+    id: number;
     name: string;
     surname: string;
     abbreviation: string | null;

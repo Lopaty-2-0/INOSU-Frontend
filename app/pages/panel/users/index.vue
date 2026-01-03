@@ -6,6 +6,7 @@ import ActionBar from "~/components/ui/ActionBar.vue";
 import {useFetch} from "nuxt/app";
 import {watchEffect} from "vue";
 import {useLoadingStore} from "~/stores/loading";
+import Card from "~/components/ui/Card.vue";
 
 useHead({
   title: "Panel | Uživatelé - role",
@@ -15,16 +16,18 @@ useHead({
 const numberOfUsers = ref<number>(-1);
 const allRoles = ref<string[] | undefined>(undefined);
 
-const {data: usersData} = await useFetch("/api/user/get/number", {
+const {data: usersData} = useFetch("/api/user/get/number", {
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-const {data: rolesData} = await useFetch("/api/user/get/roles", {
+const {data: rolesData, error: rolesError} = useFetch("/api/user/get/roles", {
   method: "get",
   credentials: "include",
   server: true,
+  lazy: true
 });
 
 watchEffect((): void => {
@@ -34,7 +37,7 @@ watchEffect((): void => {
   if (!usersData.value) return;
   numberOfUsers.value = usersData.value.data.count || 0;
 
-  useLoadingStore().setLoading("dataLoading", numberOfUsers.value < 0 || !allRoles.value)
+  useLoadingStore().setLoading("dataLoading", !allRoles.value && !rolesError.value);
 });
 </script>
 
@@ -79,20 +82,21 @@ watchEffect((): void => {
             </div>
 
             <div class="roles">
-              <NuxtLink
-                class="role"
-                v-for="role in allRoles"
-                :key="role"
-                :to="`/panel/users/${role}`"
+              <Card
+                  class="role"
+                  v-for="role in allRoles"
+                  :key="role"
               >
-                <div class="section-head">
+                <NuxtLink :to="`/panel/users/${role}`">
+                  <div class="section-head">
                   <span>
                     {{
-                        role === "admin" ? "Administrátoři" : role === "teacher" ? "Učitelé" : role === "student" ? "Studenti" : role.charAt(0).toUpperCase() + role.slice(1)
+                      role === "admin" ? "Administrátoři" : role === "teacher" ? "Učitelé" : role === "student" ? "Studenti" : role.charAt(0).toUpperCase() + role.slice(1)
                     }}
                   </span>
-                </div>
-              </NuxtLink>
+                  </div>
+                </NuxtLink>
+              </Card>
             </div>
           </div>
         </div>
@@ -155,20 +159,20 @@ watchEffect((): void => {
           gap: 30px;
 
           .role {
-            border-radius: var(--normal-border-radius);
-            display: flex;
-            text-decoration: none;
             flex: 1;
-            gap: 30px;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: var(--border-width) solid rgba(var(--border-color), 0.5);
-            padding: 60px 30px;
             transition: 0.2s;
             cursor: pointer;
             min-width: 200px;
-            background: var(--card-1-background);
+
+            a {
+              padding: 60px 30px;
+              display: flex;
+              text-decoration: none;
+              flex: 1;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            }
 
             span {
               font-weight: 600;

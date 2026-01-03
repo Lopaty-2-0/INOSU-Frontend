@@ -26,17 +26,13 @@ const numberOfPages = computed<number>((): number => {
   return Math.ceil(classesCount.value / amountForPaging);
 });
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
 
   searchInput.value = input;
 };
 
-const { data: classesData, pending: classesTablePending, error: classesError } = await useFetch("/api/class/get", {
+const { data: classesData, pending: classesTablePending, error: classesError } = useFetch("/api/class/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -45,10 +41,11 @@ const { data: classesData, pending: classesTablePending, error: classesError } =
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {
-  if ((classesError.value?.data.resCode || "").toString() === "23070") {
+  if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
     return;
@@ -107,7 +104,7 @@ watchEffect((): void => {
 
           <ClassesTable :classes="allClasses" :loading="classesTablePending" />
 
-          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>

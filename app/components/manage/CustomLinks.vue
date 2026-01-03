@@ -197,8 +197,7 @@ defineExpose({ reset })
         font-size: 18px;
         background: rgba(var(--actionBar-actions-add-background), 1);
         color: var(--actionBar-actions-add-color);
-        border: var(--border-width) solid
-          rgba(var(--actionBar-actions-add-border), 1);
+        border: var(--border-width) solid rgba(var(--actionBar-actions-add-border), 1);
         cursor: pointer;
         line-height: 0;
 
@@ -245,6 +244,7 @@ defineExpose({ reset })
 
       .link {
         width: 100%;
+        padding: 20px;
 
         .body {
           display: flex;

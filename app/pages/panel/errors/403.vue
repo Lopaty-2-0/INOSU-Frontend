@@ -97,6 +97,8 @@ useHead({
         border-radius: var(--normal-border-radius);
         transition: 0.2s;
         font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
 
         &.primary {
           background: var(--btn-1-background);

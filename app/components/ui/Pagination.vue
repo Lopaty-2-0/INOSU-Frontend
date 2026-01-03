@@ -3,6 +3,10 @@ import useArrayChunks from "../../componsables/useArrayChunks";
 import { ref, watch } from "vue";
 
 const props = defineProps({
+  modelValue: {
+    type: Number,
+    default: 1,
+  },
   numberOfPages: {
     type: Number,
     required: true,
@@ -14,54 +18,49 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["get:activePage"]);
+const emit = defineEmits(["update:modelValue"]);
 
-const activePage = ref<number>(0);
 const activePagesIndex = ref<number>(0);
 const pagesArray = ref<number[]>([]);
 const navigationPages = ref<number[][]>([]);
 
+const modelIndex = () => Math.max(0, (props.modelValue ?? 1) - 1);
+const toModelValue = (index: number) => index + 1;
+
+const setActivePage = (index: number): void => {
+  emit("update:modelValue", toModelValue(index));
+};
+
 const previousPage = (): void => {
-  if (navigationPages.value.length <= 0) return;
+  if (!navigationPages.value.length) return;
 
-  const firstActivePageIndex = navigationPages.value[activePagesIndex.value]?.[0];
+  const firstIndex = navigationPages.value[activePagesIndex.value]?.[0];
 
-  if (firstActivePageIndex !== undefined && activePage.value > firstActivePageIndex && activePage.value > 0) {
-    activePage.value--;
-    emits("get:activePage", activePage.value);
+  if (firstIndex !== undefined && modelIndex() > firstIndex && modelIndex() > 0) {
+    emit("update:modelValue", props.modelValue - 1);
   } else if (activePagesIndex.value > 0) {
     navigationPagesPrevious();
   }
 };
 
 const nextPage = (): void => {
-  if (navigationPages.value.length <= 0) return;
+  if (!navigationPages.value.length) return;
 
   const currentChunk = navigationPages.value[activePagesIndex.value];
-  const lastPageIndex = currentChunk?.[currentChunk.length - 1];
+  const lastIndex = currentChunk?.[currentChunk.length - 1];
 
-  if (lastPageIndex !== undefined && activePage.value < lastPageIndex) {
-    activePage.value++;
-    emits("get:activePage", activePage.value);
+  if (lastIndex !== undefined && modelIndex() < lastIndex) {
+    emit("update:modelValue", props.modelValue + 1);
   } else if (activePagesIndex.value < navigationPages.value.length - 1) {
     navigationPagesNext();
   }
 };
 
-const setActivePagesIndex = (index: number): void => {
-  activePagesIndex.value = index;
-};
-
-const setActivePage = (index: number): void => {
-  activePage.value = index ?? 0;
-  emits("get:activePage", activePage.value);
-};
-
 const navigationPagesNext = (): void => {
   if (activePagesIndex.value < navigationPages.value.length - 1) {
     activePagesIndex.value++;
-    activePage.value = navigationPages.value[activePagesIndex.value]?.[0] ?? 0;
-    emits("get:activePage", activePage.value);
+    const first = navigationPages.value[activePagesIndex.value]?.[0] ?? 0;
+    emit("update:modelValue", toModelValue(first));
   }
 };
 
@@ -69,24 +68,25 @@ const navigationPagesPrevious = (): void => {
   if (activePagesIndex.value > 0) {
     activePagesIndex.value--;
 
-    const pages: number[] | undefined = navigationPages.value[activePagesIndex.value];
+    const pages = navigationPages.value[activePagesIndex.value];
+    const last = pages?.[pages.length - 1] ?? 0;
 
-    activePage.value = pages?.[pages.length - 1] ?? 0;
-    emits("get:activePage", activePage.value);
+    emit("update:modelValue", toModelValue(last));
   }
 };
 
-watch([() => props.numberOfPages, () => props.chunkSize], ([newCount, newChunk]: [number, number]): void => {
+watch([() => props.numberOfPages, () => props.chunkSize], ([newCount, newChunk]): void => {
   if (newCount > 0) {
     pagesArray.value = Array.from({ length: Math.ceil(newCount) }, (_, index) => index);
     navigationPages.value = useArrayChunks(pagesArray.value, newChunk);
-    setActivePagesIndex(0);
-    setActivePage(0);
+
+    activePagesIndex.value = 0;
+    emit("update:modelValue", 1);
   } else {
     pagesArray.value = [];
     navigationPages.value = [];
-    activePage.value = 0;
     activePagesIndex.value = 0;
+    emit("update:modelValue", 1);
   }
 }, { immediate: true });
 </script>
@@ -104,13 +104,15 @@ watch([() => props.numberOfPages, () => props.chunkSize], ([newCount, newChunk]:
       <li
           v-for="pageNumber in navigationPages[activePagesIndex]"
           :key="pageNumber"
-          :class="{ page: true, active: pageNumber === activePage }"
+          :class="{ page: true, active: (pageNumber + 1) === props.modelValue }"
           @click="setActivePage(pageNumber)"
       >
         {{ pageNumber + 1 }}
       </li>
 
-      <li v-if="activePagesIndex < navigationPages.length - 1" class="page" @click="navigationPagesNext">...</li>
+      <li v-if="activePagesIndex < navigationPages.length - 1" class="page" @click="navigationPagesNext">
+        ...
+      </li>
     </ul>
 
     <button class="next" @click="nextPage">

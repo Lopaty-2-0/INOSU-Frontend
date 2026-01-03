@@ -12,6 +12,8 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import NumberInput from "~/components/ui/NumberInput.vue";
+import SearchInput from "~/components/ui/SearchInput.vue";
+import Pagination from "~/components/ui/Pagination.vue";
 
 useHead({
   title: "Panel | Třídy - Přidání",
@@ -23,6 +25,10 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
+const amountOfSpecializationsForPaging: number = 10;
+const currentSpecializationsPage = ref<number>(1);
+const specializationsPage = ref<number>(1);
+const numberOfSpecializations = ref<number>(1);
 const loading = ref<boolean>(false);
 const classData = ref<{ name: string; grade: number | null; group: string; specialization: number | null }>({
   name: "",
@@ -37,37 +43,22 @@ const errors = ref<{ name: string; grade: string; group: string; specialization:
   specialization: ""
 });
 const allSpecializations = ref<SpecializationData[]>([]);
-const selectedSpecialization = ref<number | null>(null);
-const searchName = ref<string>("");
-const searchLengthOfStudy = ref<number | null>(null);
-const searchAbbreviation = ref<string>("");
-const searchedSpecializations = computed<SpecializationData[]>((): SpecializationData[] => {
-  return allSpecializations.value.filter((item: SpecializationData): boolean => {
-    return (
-        (item.name ?? "").toLocaleLowerCase().includes((searchName.value ?? "").toLocaleLowerCase()) &&
-        (searchAbbreviation.value ? (item.abbreviation ?? "").toLocaleLowerCase() === (searchAbbreviation.value ?? "").toLocaleLowerCase() : true) &&
-        (searchLengthOfStudy.value ? item.lengthOfStudy === searchLengthOfStudy.value : true)
-    );
-  });
-});
-const dropdownItems = computed<InputMenuItem[]>(() => {
-  return searchedSpecializations.value.map((item: SpecializationData) => {
+const selectedSpecialization = ref<string[] | undefined>(undefined);
+const specializationsSearchInput = ref<string>("");
+const dropDownSpecializations = computed<InputMenuItem[]>((): InputMenuItem[] => {
+  return allSpecializations.value.map((specialization: SpecializationData): InputMenuItem => {
     return {
-      name: item.id.toString(),
-      label: `${item.name} - ${item.abbreviation.toUpperCase()} - Délka studia (roky): ${item.lengthOfStudy}`
+      label: `${specialization.name} (${specialization.abbreviation}) - ${specialization.lengthOfStudy} roky`,
+      value: specialization.id.toString(),
     };
   });
 });
-const selectedDropdownItem = ref<string[]>([]);
-const title = computed<string>(() => {
-  const specialization: SpecializationData | undefined = allSpecializations.value.find((item: SpecializationData) => item.id.toString() === selectedDropdownItem.value[0]);
-
-  return specialization ? `${specialization.name} - ${specialization.abbreviation.toUpperCase()} - Délka studia (roky): ${specialization.lengthOfStudy}` : "";
+const numberOfSpecializationsPages = computed(() => {
+  return Math.ceil(numberOfSpecializations.value / amountOfSpecializationsForPaging);
 });
 
 const resetSelectedClasses = (): void => {
-  selectedSpecialization.value = null;
-  selectedDropdownItem.value = [];
+  selectedSpecialization.value = undefined;
   classData.value = {
     name: "",
     grade: null,
@@ -80,13 +71,16 @@ const resetSelectedClasses = (): void => {
     group: "",
     specialization: ""
   };
-  searchAbbreviation.value = "";
-  searchLengthOfStudy.value = null;
-  searchName.value = "";
+  specializationsSearchInput.value = "";
+};
+
+const onSearchInputChange = (input: string): void => {
+  currentSpecializationsPage.value = 1;
+
+  specializationsSearchInput.value = input;
 };
 
 const onSpecializationSelect = (value: string[]): void => {
-  selectedSpecialization.value = value[0] ? parseInt(value[0]) : null;
   classData.value.specialization = value[0] ? parseInt(value[0]) : null;
 
   checkForErrors();
@@ -165,17 +159,25 @@ const addClass = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník musí být celé číslo." });
           break;
         case "8070":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina může mít maximálně 1 znak." }); break;
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník je moc velké číslo." });
+          break;
         case "8080":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Neplatné zaměření." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina může mít maximálně 1 znak." });
           break;
         case "8090":
+        case "8100":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Neplatné zaměření." });
+          break;
+        case "8110":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník přesahuje délku studia zaměření." });
           break;
-        case "8100":
+        case "8120":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je moc dlouhý." });
+          break;
+        case "8130":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je již používán." });
           break;
-        case "8111":
+        case "8141":
           alertsStore.addAlert({ type: "success", title: "Vytvoření třídy", message: "Třída byla úspěšně vytvořena." });
 
           resetSelectedClasses();
@@ -194,16 +196,29 @@ const addClass = async (): Promise<void> => {
   });
 };
 
-useFetch("/api/specialization/get", {
+const {data: specializationsData, error: specializationsError} = useFetch("/api/specialization/get", {
+  query: {
+    amountForPaging: amountOfSpecializationsForPaging,
+    pageNumber: currentSpecializationsPage,
+    searchQuery: specializationsSearchInput,
+  },
   method: "get",
   credentials: "include",
-  server: false,
+  server: true,
   ignoreResponseError: true,
-  onResponse({ response }) {
-    const specializations: SpecializationData[] = response._data.data.specializations;
+  lazy: true
+});
 
-    allSpecializations.value = specializations || [];
-  },
+watchEffect((): void => {
+  if (specializationsError.value) {
+    allSpecializations.value = [];
+    return;
+  }
+
+  if (!specializationsData.value) return;
+
+  allSpecializations.value = specializationsData.value.data.specializations;
+  numberOfSpecializations.value = specializationsData.value.data.count;
 });
 
 watchEffect((): void => {
@@ -265,34 +280,24 @@ watchEffect((): void => {
               </div>
 
               <div class="content">
-                <div class="search">
-                  <label for="searchName">
-                    Název
-                    <Input id="searchName" placeholder="Vyhledat název" v-model="searchName" />
-                  </label>
-                  <label for="searchAbbreviation">
-                    Zkratka
-                    <Input id="searchAbbreviation" placeholder="V" v-model="searchAbbreviation" />
-                  </label>
-                  <label for="searchLengthOfStudy">
-                    Délka studia
-                    <Input id="searchLengthOfStudy" min="1" max="10" placeholder="3" type="number" v-model="searchLengthOfStudy " />
-                  </label>
-                </div>
-
                 <label>Výběr zaměření</label>
 
                 <InputMenu
-                  v-model="selectedDropdownItem"
-                  :title="title"
+                  v-model="selectedSpecialization"
                   :multiple="false"
-                  :items="dropdownItems"
+                  :items="dropDownSpecializations"
                   :create-item="false"
                   placeholder="Vyberte zaměření"
                   :deselect="true"
+                  :disable-item-filtering="true"
                   no-data-text="Žádné zaměření nebylo nalezeno"
                   @update:model-value="onSpecializationSelect"
-                />
+                  @search:change="onSearchInputChange"
+                >
+                  <template #row-extra v-if="numberOfSpecializationsPages > 1">
+                    <Pagination v-model="specializationsPage" :number-of-pages="numberOfSpecializationsPages" :chunk-size="2" />
+                  </template>
+                </InputMenu>
                 <p class="input-error" v-if="errors.specialization.length > 0">{{ errors.specialization }}</p>
               </div>
             </div>

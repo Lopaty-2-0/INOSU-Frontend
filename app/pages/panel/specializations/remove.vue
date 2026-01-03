@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {computed, nextTick, ref, useTemplateRef, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watchEffect} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import type {SpecializationData} from "~/types/specialization";
@@ -69,7 +69,7 @@ const removeSpecializations = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nemáte oprávnění k této akci." });
           break;
         case "5020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Chybí ID zaměření." });
+          alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Chybí ID zaměření." });
           break;
         case "5030":
           alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Neproběhlo žádné odstranění." });
@@ -81,8 +81,7 @@ const removeSpecializations = async (): Promise<void> => {
             alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length})`});
           }
 
-          allSpecializations.value = allSpecializations.value?.filter((specialization: SpecializationData) => !response._data.data.goodIds.includes(specialization.id));
-
+          specializationRefresh();
           resetSelectedSpecializations();
           break;
         default:
@@ -98,17 +97,13 @@ const removeSpecializations = async (): Promise<void> => {
   });
 };
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
 
   searchInput.value = input;
 };
 
-const { data: specializationData, pending: specializationTablePending, error: specializationError } = await useFetch("/api/specialization/get", {
+const { data: specializationData, pending: specializationTablePending, error: specializationError, refresh: specializationRefresh } = useFetch("/api/specialization/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -117,10 +112,11 @@ const { data: specializationData, pending: specializationTablePending, error: sp
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {
-  if ((specializationError.value?.data.resCode || "").toString() === "23070") {
+  if (specializationError.value) {
     allSpecializations.value = [];
     specializationsCount.value = 0;
     return;
@@ -194,7 +190,7 @@ watchEffect((): void => {
 
           <SpecializationsTable :selected-ids="selectedSpecializationIds" :loading="specializationTablePending" ref="datatable" :specializations="allSpecializations" :has-checkbox="true" @row-clicked="onRowClicked" />
 
-          <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>

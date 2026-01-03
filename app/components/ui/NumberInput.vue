@@ -10,6 +10,11 @@ const props = defineProps({
     type: Number,
     required: false,
   },
+  enableNull: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   min: {
     type: Number,
     required: false,
@@ -51,8 +56,13 @@ const handleInput = (event: Event): void => {
   const target = event.target as HTMLInputElement;
 
   if (target.value === "") {
-    currentValue.value = null;
-    emits("update:modelValue", currentValue.value);
+    if (props.enableNull) {
+      currentValue.value = null;
+      emits("update:modelValue", currentValue.value);
+    } else {
+      currentValue.value = 0;
+      emits("update:modelValue", currentValue.value);
+    }
     return;
   }
 
@@ -63,23 +73,44 @@ const handleInput = (event: Event): void => {
     return;
   }
 
+  if (typeof props.min === "number" && newValue < props.min) {
+    currentValue.value = props.min;
+    emits("update:modelValue", currentValue.value);
+    return;
+  }
+
+  if (typeof props.max === "number" && newValue > props.max) {
+    currentValue.value = props.max;
+    emits("update:modelValue", currentValue.value);
+    return;
+  }
+
   currentValue.value = newValue;
   emits("update:modelValue", currentValue.value);
 };
 
-
 const increaseValue = (): void => {
   if (props.disabled) return;
 
-  const value: number = currentValue.value === null ? (typeof props.min === "number" ? props.min - 1 : -1) : currentValue.value;
+  if (currentValue.value === null) {
+    currentValue.value = 0;
+    emits("update:modelValue", currentValue.value);
+    return;
+  }
+
+  if (props.enableNull && currentValue.value === -1) {
+    currentValue.value = null;
+    emits("update:modelValue", currentValue.value);
+    return;
+  }
 
   if (typeof props.max === "number") {
-    if (value + step.value <= props.max) {
-      currentValue.value = value + step.value;
+    if (currentValue.value + step.value <= props.max) {
+      currentValue.value = currentValue.value + step.value;
       emits("update:modelValue", currentValue.value);
     }
   } else {
-    currentValue.value = value + step.value;
+    currentValue.value = currentValue.value + step.value;
     emits("update:modelValue", currentValue.value);
   }
 };
@@ -87,15 +118,28 @@ const increaseValue = (): void => {
 const decreaseValue = (): void => {
   if (props.disabled) return;
 
-  const value: number = currentValue.value === null ? (typeof props.min === "number" ? props.min - 1 : -1) : currentValue.value;
+  if (currentValue.value === null) {
+    if (typeof props.min === "number" && -step.value < props.min) {
+      return;
+    }
+    currentValue.value = -step.value;
+    emits("update:modelValue", currentValue.value);
+    return;
+  }
+
+  if (props.enableNull && currentValue.value === 0) {
+    currentValue.value = null;
+    emits("update:modelValue", currentValue.value);
+    return;
+  }
 
   if (typeof props.min === "number") {
-    if (value - step.value >= props.min) {
-      currentValue.value = value - step.value;
+    if (currentValue.value - step.value >= props.min) {
+      currentValue.value = currentValue.value - step.value;
       emits("update:modelValue", currentValue.value);
     }
   } else {
-    currentValue.value = value - step.value;
+    currentValue.value = currentValue.value - step.value;
     emits("update:modelValue", currentValue.value);
   }
 };

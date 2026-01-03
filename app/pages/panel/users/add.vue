@@ -125,6 +125,9 @@ const createNewUser = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
+        case "1010":
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nemáte oprávnění k této akci." });
+          break;
         case "1020":
           alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Jméno nebylo zadáno." });
           break;
@@ -141,7 +144,7 @@ const createNewUser = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role nebyla zadána." });
           break;
         case "1070":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role je příliš dlouhá." });
+          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role je neplatná." });
           break;
         case "1080":
           alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Heslo nebylo zadáno." });
@@ -246,9 +249,9 @@ const createNewUser = async (): Promise<void> => {
             </EditAbbreviation>
           </div>
 
-          <div class="line page-section">
+          <div class="line page-section class">
             <div class="section-head">
-              <h3>Třídy ({{ newUserData.classes.length }}) <span class="update" v-show="newUserData.classes.length > 0">(aktualizováno)</span></h3>
+              <h3>Třídy</h3>
               <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
             </div>
 
@@ -292,6 +295,10 @@ const createNewUser = async (): Promise<void> => {
       display: flex;
       flex-direction: column;
       gap: 20px;
+
+      &.class {
+        gap: 30px;
+      }
     }
 
     .section-head {
