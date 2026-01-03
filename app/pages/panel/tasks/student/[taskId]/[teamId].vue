@@ -64,11 +64,11 @@ const downloadMaterials = async (): Promise<void> => {
 
 const downloadVersion = async (version: Version): Promise<void> => {
   if (!version || !version.elaboration) {
-    alertsStore.addAlert({ type: "error", title: "Stahování verze", message: "Chyba při stahování verze vypracování." });
+    alertsStore.addAlert({ type: "warning", title: "Stahování verze", message: "Tato verze není dostupná." });
     return;
   }
 
-  await navigateTo(`${config.public.originUrl}/api/file/version_team/${version.idVersion}/${version.elaboration}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/tasks/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
 };
 
 const removeVersion = async (version: Version): Promise<void> => {
@@ -317,8 +317,7 @@ watchEffect((): void => {
         <template #left>
           <Breadcrumb :items="[
             { label: 'Úkoly', to: `/panel/tasks/student`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/student/${taskId}/${teamId}` },
-            { label: `${teamId}`, to: `/panel/tasks/student/${taskId}/${teamId}`, active: true },
+            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/student/${taskId}/${teamId}`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -337,7 +336,7 @@ watchEffect((): void => {
               <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.points">
                 <br>
-                Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }}
+                Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }} = {{ teamTaskData.points !== null && task.points ? ((teamTaskData.points / task.points) * 100).toFixed(2) : "0" }}%
               </p>
             </div>
 
@@ -411,10 +410,10 @@ watchEffect((): void => {
 
                       <p v-else>{{ version.elaboration || "Odstraněno" }}</p>
                     </div>
-                    <div class="icon-div" @click="downloadVersion(version)">
+                    <div class="icon-div" @click="downloadVersion(version)" v-if="version.elaboration">
                       <Icon class="icon" name="material-symbols:download"/>
                     </div>
-                    <div class="icon-div" @click="removeVersion(version)">
+                    <div class="icon-div" @click="removeVersion(version)" v-if="version.elaboration">
                       <Icon class="icon" name="material-symbols:delete-rounded"/>
                     </div>
                   </div>

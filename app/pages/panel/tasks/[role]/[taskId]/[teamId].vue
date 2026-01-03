@@ -338,7 +338,7 @@ watchEffect((): void => {
               <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.points">
                 <br>
-                Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }}
+                Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }} = {{ teamTaskData.points !== null && task.points ? ((teamTaskData.points / task.points) * 100).toFixed(2) : "0" }}%
               </p>
             </div>
 
@@ -400,7 +400,7 @@ watchEffect((): void => {
                     <div class="input">
                       {{ version.elaboration || "Odstraněno" }}
                     </div>
-                    <div class="icon-div" @click="downloadMaterials">
+                    <div class="icon-div" @click="downloadMaterials" v-if="version.elaboration">
                       <Icon class="icon" name="material-symbols:download"/>
                     </div>
                   </div>
