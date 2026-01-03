@@ -56,8 +56,13 @@ const handleInput = (event: Event): void => {
   const target = event.target as HTMLInputElement;
 
   if (target.value === "") {
-    currentValue.value = null;
-    emits("update:modelValue", currentValue.value);
+    if (props.enableNull) {
+      currentValue.value = null;
+      emits("update:modelValue", currentValue.value);
+    } else {
+      currentValue.value = 0;
+      emits("update:modelValue", currentValue.value);
+    }
     return;
   }
 
@@ -93,7 +98,7 @@ const increaseValue = (): void => {
     return;
   }
 
-  if (currentValue.value === -1) {
+  if (props.enableNull && currentValue.value === -1) {
     currentValue.value = null;
     emits("update:modelValue", currentValue.value);
     return;
@@ -122,7 +127,7 @@ const decreaseValue = (): void => {
     return;
   }
 
-  if (currentValue.value === 0) {
+  if (props.enableNull && currentValue.value === 0) {
     currentValue.value = null;
     emits("update:modelValue", currentValue.value);
     return;

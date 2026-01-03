@@ -98,7 +98,7 @@ const updateTeamName = async (): Promise<void> => {
     body: {
       idTask: taskId,
       idTeam: teamId,
-      name: newTeamNameInput.value,
+      name: newTeamNameInput.value || "",
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -107,11 +107,15 @@ const updateTeamName = async (): Promise<void> => {
 
       switch (resCode) {
         case "32010":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "ID úkolu nebylo zadáno." });
+          break;
+        case "32020":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "ID týmu nebylo zadáno." });
+          break;
         case "32030":
         case "32040":
           alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "ID úkolu je neplatné." });
           break;
-        case "32020":
         case "32050":
         case "32060":
           alertsStore.addAlert({ type: "warning", title: "Upravení týmu", message: "ID týmu je neplatné." });
@@ -125,8 +129,21 @@ const updateTeamName = async (): Promise<void> => {
         case "32090":
           alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Uživatel není garant úkolu." });
           break;
+        case "32100":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Neplatný typ statusu." });
+          break;
+        case "32110":
+        case "32120":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Počet bodů je neplatný." });
+          break;
+        case "32130":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Nelze udělit více bodů, než má úkol." });
+          break;
+        case "32140":
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Komentář je příliš dlouhý." });
+          break;
         case "32150":
-          alertsStore.addAlert({ type: "warning", title: "Upravení týmu", message: "Jméno je příliš dlouhé." });
+          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Název týmu je příliš dlouhý." });
           break;
         case "32161":
           alertsStore.addAlert({ type: "success", title: "Upravení týmu", message: "Tým byl úspěšně upraven." });

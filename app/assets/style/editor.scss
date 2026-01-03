@@ -19,11 +19,6 @@
     border-color: rgba(var(--main-color), 1);
   }
 
-  &.ql-disabled, &.ql-disabled * {
-    opacity: var(--disabled-opacity);
-    cursor: not-allowed;
-  }
-
   .ql-editor {
     line-height: normal;
     padding: 0 10px 0 0;

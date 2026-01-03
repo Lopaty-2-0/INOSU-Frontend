@@ -11,6 +11,13 @@ interface TaskTeam {
     reviewUpdatedAt: Date | null;
 }
 
+interface Version {
+    idVersion: number;
+    elaboration: string | null;
+    createdAt: Date;
+}
+
 export type {
-    TaskTeam
+    TaskTeam,
+    Version,
 }

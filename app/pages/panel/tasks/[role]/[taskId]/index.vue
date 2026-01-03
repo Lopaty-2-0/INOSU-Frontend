@@ -174,10 +174,10 @@ watchEffect((): void => {
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
               <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("DD.MM. YYYY HH:MM") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("DD.MM. YYYY HH:MM") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("DD.MM. YYYY HH:MM") }}</p>
-              <p>Max bodů: {{ task.points || "neurčeno" }}</p>
+              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
                 <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">

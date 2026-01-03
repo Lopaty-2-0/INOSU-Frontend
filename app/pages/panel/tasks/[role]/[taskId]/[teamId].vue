@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
-import {ref, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
@@ -12,12 +12,11 @@ import moment from "moment";
 import Card from "~/components/ui/Card.vue";
 import type {AccountData} from "~/types/account";
 import Image from "~/components/ui/Image.vue";
-import FileInput from "~/components/ui/FileInput.vue";
 import NumberInput from "~/components/ui/NumberInput.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import Loading from "~/components/ui/Loading.vue";
-import Textarea from "~/components/ui/Textarea.vue";
 import Editor from "~/components/ui/Editor.vue";
+import type {Version} from "~/types/team";
 
 const route = useRoute();
 const teamId = route.params.teamId as string;
@@ -43,7 +42,7 @@ const teamTaskPoints = ref<number | null>(null);
 const versionsLoading = ref<boolean>(false);
 const isGuarantorCommentEnabled = ref<boolean>(false);
 const guarantorComment = ref<string>("");
-const editorEnabledTools = ref<string[]>([
+const editorEnabledTools: string[] = [
   "bold",
   "underline",
   "strike",
@@ -61,9 +60,32 @@ const editorEnabledTools = ref<string[]>([
   "color",
   "background",
   "clean",
-]);
+];
+const versions = ref<Version[] | undefined>(undefined);
+const versionsPerPage = 3;
+const versionsActivePage = ref<number>(1);
+const versionsCount = ref<number>(0);
+const versionsNumberOfPages = computed<number>(() => {
+  return Math.ceil(versionsCount.value / versionsPerPage);
+});
+const errors = ref<{ points: string, review: string }>({
+  points: "",
+  review: "",
+});
 
 const checkForErrors = (): void => {
+  errors.value.points = "";
+  errors.value.review = "";
+
+  if (teamTaskPoints.value && task.value && teamTaskPoints.value > task.value.points!) {
+    errors.value.points = `Počet bodů nesmí být větší než maximální počet bodů: ${task.value.points}`;
+  } else if (teamTaskPoints.value && teamTaskPoints.value < 0) {
+    errors.value.points = "Počet bodů nesmí být menší než 0";
+  }
+
+  if (guarantorComment.value.length > 65535) {
+    errors.value.review = "Komentář je příliš dlouhý";
+  }
 };
 
 const resetInputs = (): void => {
@@ -111,7 +133,94 @@ const fetchUserData = async (userId: number): Promise<void> => {
   }
 };
 
-const { data: teamData, error: teamError } = await useFetch("/api/team/get/info", {
+const updateTeam = async (): Promise<void> => {
+  checkForErrors();
+
+  if (errors.value.points.length > 0 || errors.value.review.length > 0) {
+    alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Opravte chyby v formuláři a zkuste to znovu." });
+    return;
+  }
+
+  submitLoading.value = true;
+
+  await $fetch("/api/team/update", {
+    method: "put",
+    server: true,
+    credentials: "include",
+    body: {
+      idTask: taskId,
+      idTeam: teamId,
+      ...(guarantorComment.value !== teamTaskData.value?.review && { review: guarantorComment.value }),
+      ...(teamTaskPoints.value !== teamTaskData.value?.points && { points: teamTaskPoints.value }),
+    },
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "32010":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID úkolu nebylo zadáno." });
+          break;
+        case "32020":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID týmu nebylo zadáno." });
+          break;
+        case "32030":
+        case "32040":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID úkolu je neplatné." });
+          break;
+        case "32050":
+        case "32060":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID týmu je neplatné." });
+          break;
+        case "32070":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný úkol neexistuje." });
+          break;
+        case "32080":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný tým neexistuje." });
+          break;
+        case "32090":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Uživatel na toto nemá práva." });
+          break;
+        case "32100":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Neplatný typ statusu." });
+          break;
+        case "32110":
+        case "32120":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů je neplatný." });
+          break;
+        case "32130":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nelze udělit více bodů, než má úkol." });
+          break;
+        case "32140":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Komentář je příliš dlouhý." });
+          break;
+        case "32150":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Název týmu je příliš dlouhý." });
+          break;
+        case "32161":
+          alertsStore.addAlert({ type: "success", title: "Úprava týmu", message: "Tým byl úspěšně aktualizován." });
+
+          resetInputs();
+          refreshTeamData();
+          errors.value = {
+            points: "",
+            review: "",
+          };
+          break;
+        default:
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
+    },
+  }).finally((): void => {
+    submitLoading.value = false;
+  });
+};
+
+const { data: teamData, error: teamError, refresh: refreshTeamData } = await useFetch("/api/team/get/info", {
   query: {
     idTask: taskId,
     idTeam: teamId,
@@ -124,6 +233,18 @@ const { data: teamData, error: teamError } = await useFetch("/api/team/get/info"
 const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
   query: {
     idTask: taskId,
+  },
+  method: "get",
+  server: true,
+  credentials: "include",
+});
+
+const { data: versionsData, error: versionsError } = await useFetch("/api/version_team/get", {
+  query: {
+    idTask: taskId,
+    idTeam: teamId,
+    amountForPaging: versionsPerPage,
+    pageNumber: versionsActivePage,
   },
   method: "get",
   server: true,
@@ -144,6 +265,22 @@ watchEffect(async (): Promise<void> => {
   }
 });
 
+watch(versionsData, async (newValue: any): Promise<void> => {
+  if (!newValue) return;
+
+  if (versionsError.value || !newValue.data.versions) {
+    versions.value = undefined;
+    return;
+  }
+
+  versionsLoading.value = true;
+
+  versions.value = newValue.data.versions;
+  versionsCount.value = newValue.data.count;
+
+  versionsLoading.value = false;
+}, { immediate: true });
+
 watch(teamData, async (newValue: any): Promise<void> => {
   if (!newValue) return;
 
@@ -156,19 +293,21 @@ watch(teamData, async (newValue: any): Promise<void> => {
     await fetchUserData(newValue.data.users[0]);
   }
 
-  if (newValue && typeof newValue.points === "number") {
-    teamTaskPoints.value = newValue.points;
+  if (typeof newValue.data.team.points === "number") {
+    teamTaskPoints.value = newValue.data.team.points;
   } else {
     teamTaskPoints.value = null;
+  }
+
+  if (newValue.data.team.review) {
+    guarantorComment.value = newValue.data.team.review;
+  } else {
+    guarantorComment.value = "";
   }
 }, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamError.value && !teamTaskData.value);
-});
-
-watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", false);
 });
 </script>
 
@@ -194,12 +333,12 @@ watchEffect((): void => {
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
               <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("DD.MM. YYYY HH:MM") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("DD.MM. YYYY HH:MM") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("DD.MM. YYYY HH:MM") }}</p>
+              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.points">
                 <br>
-                Body: {{ teamTaskData.points || "-" }} / {{ task.points }}
+                Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }}
               </p>
             </div>
 
@@ -252,14 +391,14 @@ watchEffect((): void => {
               <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
             </div>
 
-            <div class="versions" v-show="!versionsLoading">
-              <div class="download-input" v-for="i in 3" :key="i">
+            <div class="versions" v-show="!versionsLoading && versionsCount > 0">
+              <div class="download-input" v-for="version in versions" :key="version.idVersion">
                 <div class="input-div">
-                  <span class="label">14:22 27. 10. 2025</span>
+                  <span class="label">{{ moment(version.createdAt).format("HH:mm DD.MM. YYYY") }}</span>
 
                   <div class="line">
                     <div class="input">
-                      {{ task.task }}
+                      {{ version.elaboration || "Odstraněno" }}
                     </div>
                     <div class="icon-div" @click="downloadMaterials">
                       <Icon class="icon" name="material-symbols:download"/>
@@ -273,10 +412,14 @@ watchEffect((): void => {
               <Loading color="rgba(var(--description-color), 1)" size="16px" />
             </div>
 
-            <Pagination :number-of-pages="3" />
+            <div class="versions" v-show="!versionsLoading && versionsCount === 0">
+              <p class="error message">Žádný záznam nebyl zobrazen!</p>
+            </div>
+
+            <Pagination :number-of-pages="versionsNumberOfPages" v-model="versionsActivePage" />
           </div>
 
-          <div class="page-section bottom-line">
+          <div class="page-section bottom-line" v-if="task.points">
             <div class="section-head">
               <h3>Počet bodů <span class="update" v-if="teamTaskData.points !== teamTaskPoints">(aktualizováno)</span></h3>
               <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
@@ -284,7 +427,8 @@ watchEffect((): void => {
 
             <div class="content">
               <label for="teamTaskPoints">{{ task.points ? `Maximální počet bodů: ${task.points}` : "Maximální počet bodů není určen." }}</label>
-              <NumberInput id="teamTaskPoints" :enable-null="true" placeholder="Zadejte počet bodů" v-model="teamTaskPoints" :min="0" :max="task.points || 0" :disabled="!task.points"  />
+              <NumberInput id="teamTaskPoints" :enable-null="false" placeholder="Zadejte počet bodů" v-model="teamTaskPoints" :min="0" :max="task.points || 0" :disabled="!task.points" @update:model-value="checkForErrors"  />
+              <p class="input-error" v-if="errors.points.length > 0">{{ errors.points }}</p>
             </div>
           </div>
 
@@ -296,7 +440,7 @@ watchEffect((): void => {
 
             <div class="guarantor-comment download-input">
               <div class="input-div">
-                <span class="label">Poslední úprava: 14:30 27. 10. 2025</span>
+                <span class="label">Poslední úprava: {{ teamTaskData.reviewUpdatedAt ? moment(teamTaskData.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") : "Neupraveno" }}</span>
 
                 <div class="line">
                   <Editor
@@ -305,6 +449,7 @@ watchEffect((): void => {
                     :enable="isGuarantorCommentEnabled"
                     placeholder="Zadejte komentář garanta"
                     :enabled-tools="editorEnabledTools"
+                    @update:model-value="checkForErrors"
                   />
                   <div class="icon-div" @click="toggleGuarantorCommentEnabled">
                     <Icon class="icon" name="material-symbols:edit"/>
@@ -315,7 +460,7 @@ watchEffect((): void => {
           </div>
 
           <div class="page-section">
-            <ActionFooter :submit-function="() => {}" :reset-function="resetInputs" :is-loading="submitLoading" />
+            <ActionFooter :submit-function="updateTeam" :reset-function="resetInputs" :is-loading="submitLoading" />
           </div>
         </div>
       </div>
@@ -349,6 +494,14 @@ watchEffect((): void => {
       display: flex;
       flex-direction: column;
       gap: 20px;
+
+      p {
+        font-size: 16px;
+
+        &.error {
+          color: rgba(var(--error-color), 1);
+        }
+      }
 
       &.loading {
         justify-content: center;

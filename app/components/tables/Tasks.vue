@@ -136,15 +136,15 @@ defineExpose({ clearSelection });
     </template>
 
     <template #startDate="data">
-      <span class="no-wrap">{{ moment(data.value.startDate).format("DD.MM. YYYY HH:MM") }}</span>
+      <span class="no-wrap">{{ moment(data.value.startDate).format("HH:mm DD.MM. YYYY") }}</span>
     </template>
 
     <template #endDate="data">
-      <span class="no-wrap">{{ moment(data.value.endDate).format("DD.MM. YYYY HH:MM") }}</span>
+      <span class="no-wrap">{{ moment(data.value.endDate).format("HH:mm DD.MM. YYYY") }}</span>
     </template>
 
     <template #deadline="data">
-      <span class="no-wrap">{{ data.value.deadline ? moment(data.value.deadline).format("DD.MM. YYYY HH:MM") : "Neurčeno" }}</span>
+      <span class="no-wrap">{{ data.value.deadline ? moment(data.value.deadline).format("HH:mm DD.MM. YYYY") : "Neurčeno" }}</span>
     </template>
 
     <template #points="data">

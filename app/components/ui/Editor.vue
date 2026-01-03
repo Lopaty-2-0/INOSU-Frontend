@@ -49,7 +49,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  enable: {
+  enabled: {
+    type: Boolean,
+    default: true,
+  },
+  readOnly: {
     type: Boolean,
     default: false,
   },
@@ -213,7 +217,7 @@ const emitInputEvent = (value: string) => {
   emits("update:modelValue", value);
 };
 
-watch(() => props.enable, (newVal: boolean): void => {
+watch(() => props.enabled, (newVal: boolean): void => {
   if (!editor.value) return;
 
   const quill = editor.value.getQuill();
@@ -236,8 +240,8 @@ watch(() => props.focus, (newVal: boolean): void => {
 
 <template>
   <ClientOnly>
-    <div id="editor">
-      <div id="toolbar">
+    <div id="editor" :enable="String(props.enabled)">
+      <div id="toolbar" v-show="props.enabledTools.length > 0">
         <div v-for="section in toolbarSections" class="ql-formats" :key="section.section" v-show="checkIfSectionIsEnabled(section)">
           <template v-for="item in section.tools" :key="item.tool">
             <template v-if="checkIfToolIsEnabled(item.tool)">
@@ -258,7 +262,7 @@ watch(() => props.focus, (newVal: boolean): void => {
           @update:content="emitInputEvent"
           v-model:content="localContent"
           :placeholder="props.placeholder"
-          :options="{ readOnly: !props.enable }"
+          :options="{ readOnly: props.readOnly || !props.enabled }"
           content-type="html"
           toolbar="#toolbar"
         />
@@ -276,5 +280,20 @@ watch(() => props.focus, (newVal: boolean): void => {
   height: 100%;
   width: 100%;
   position: relative;
+
+  &[enable="false"] {
+    pointer-events: none;
+    user-select: none;
+
+    ::v-deep(.ql-editor) {
+      pointer-events: none;
+      user-select: none;
+    }
+
+    ::v-deep(.ql-container) * {
+      opacity: var(--disabled-opacity);
+      cursor: not-allowed;
+    }
+  }
 }
 </style>

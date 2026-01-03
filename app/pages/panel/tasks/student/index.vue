@@ -114,7 +114,7 @@ watchEffect((): void => {
                   { field: 'guarantor', title: 'Garant' }
               ]">
                 <template #points="data">
-                  {{ data.value.points ? `${data.value.team.points || "-"} / ${data.value.points}` : "Neurčeno" }}
+                  {{ data.value.points ? `${data.value.team.points ?? "-"} / ${data.value.points}` : "Neurčeno" }}
                 </template>
 
                 <template #guarantor="data">
