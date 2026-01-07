@@ -4,8 +4,10 @@ import {navigateTo, useFetch, useRoute, useState} from "nuxt/app";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
 import Loading from "~/components/ui/Loading.vue";
+import {useAlertsStore} from "~/stores/alerts";
 
 const route = useRoute();
+const alertStore = useAlertsStore();
 const { getLinks: accountLinks, getRole: role } = storeToRefs(useAccountStore());
 
 const getStyledNumber = (number: number): string => {
@@ -122,7 +124,6 @@ const logOut = async (): Promise<void> => {
 
   await $fetch("/api/auth/logout", {
     method: "delete",
-    ignoreResponseError: true,
     credentials: "include",
     async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
@@ -132,6 +133,12 @@ const logOut = async (): Promise<void> => {
         await navigateTo("/login");
       }
     },
+    onResponseError() {
+      alertStore.addAlert({ type: "error", title: "Odhlášení", message: "Nastala neznámá chyba." });
+    },
+    onRequestError() {
+      alertStore.addAlert({ type: "error", title: "Odhlášení", message: "Nastala neznámá chyba." });
+    }
   }).finally((): void => {
     logoutLoading.value = false;
   });
