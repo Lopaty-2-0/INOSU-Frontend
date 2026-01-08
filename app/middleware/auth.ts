@@ -16,8 +16,6 @@ export default defineNuxtRouteMiddleware(async () => {
         const resCode: string = data.value.resCode.toString();
         const isLogged: boolean = data.value.data.logged;
 
-        console.log(data.value.data);
-
         if (resCode !== "17011" || !isLogged) {
             location.pathname = "/login";
             return;

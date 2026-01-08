@@ -32,6 +32,7 @@ useHead({
   ],
 });
 
+const config = useRuntimeConfig();
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = useTemplateRef<InstanceType<typeof EditProfilePicture>>("editProfilePicture");
@@ -199,7 +200,7 @@ const updateUser = async (): Promise<void> => {
   });
 };
 
-const { data: userData, error: userError } = useFetch("/api/user/get/id", {
+const { data: userData, error: userError } = await useFetch("/api/user/get/id", {
   query: {
     id: id,
   },
@@ -209,9 +210,16 @@ const { data: userData, error: userError } = useFetch("/api/user/get/id", {
   lazy: true
 });
 
-watch([userData, userError], (): void => {
+watchEffect(async () => {
+})
+
+watch([userData, userError], async (): Promise<void> => {
+  if (!userData.value && !userError.value) {
+    return;
+  }
+
   if (userError.value || !userData.value) {
-    router.push(`/panel/users/${role}/edit`);
+    router.push(`/panel/users/${role}`);
     return;
   }
 
@@ -225,7 +233,7 @@ watch([userData, userError], (): void => {
   oldUserData.value.role = user.role;
   oldUserData.value.classes = user.idClass;
   newUserData.value.classes = user.idClass;
-  oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
+  oldUserData.value.profilePicture = config.public.originUrl + "/api/file/pfp/" + user.profilePicture;
   oldUserData.value.loaded = true;
 }, { immediate: true });
 

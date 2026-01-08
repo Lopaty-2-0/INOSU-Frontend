@@ -56,8 +56,8 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const onItemGridClick = (item: AccountData): void => {
-  navigateTo(`/panel/users/student/edit/${item.id}`);
+const onItemGridClick = async (item: AccountData): Promise<void> => {
+  await navigateTo(`/panel/users/student/edit/${item.id}`);
 };
 
 const { data: usersData, error: usersError, pending: usersPending } = useFetch(requests.value.url, {
