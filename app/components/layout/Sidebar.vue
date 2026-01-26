@@ -145,7 +145,7 @@ const logOut = async (): Promise<void> => {
 };
 
 if (!["admin", "teacher"].includes(role.value)) {
-  useFetch("/api/user_task/count/approved_without_review", {
+  useFetch("/api/user_team/count/tasks", {
     method: "get",
     server: false,
     credentials: "include",

@@ -113,7 +113,16 @@ const downloadMaterials = async (): Promise<void> => {
   }
 
   await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.id}/${task.value.task}`, { external: true });
-}
+};
+
+const downloadVersion = async (version: Version): Promise<void> => {
+  if (!version || !version.elaboration) {
+    alertsStore.addAlert({ type: "warning", title: "Stahování souborů", message: "Tato verze není dostupná." });
+    return;
+  }
+
+  await navigateTo(`${config.public.originUrl}/api/file/tasks/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
+};
 
 const fetchUserData = async (userId: number): Promise<void> => {
   try {
@@ -400,7 +409,7 @@ watchEffect((): void => {
                     <div class="input">
                       {{ version.elaboration || "Odstraněno" }}
                     </div>
-                    <div class="icon-div" @click="downloadMaterials" v-if="version.elaboration">
+                    <div class="icon-div" @click="downloadVersion(version)" v-if="version.elaboration">
                       <Icon class="icon" name="material-symbols:download"/>
                     </div>
                   </div>

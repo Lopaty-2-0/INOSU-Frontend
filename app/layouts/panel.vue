@@ -37,7 +37,7 @@ onMounted((): void => {
   align-items: center;
   width: 100%;
   height: 100svh;
-  background: var(--main-background);
+  background: rgba(var(--main-background), 1);
 }
 
 .page {
@@ -49,7 +49,7 @@ onMounted((): void => {
   flex-direction: column;
   gap: 60px;
   width: auto;
-  background: var(--main-background);
+  background: rgba(var(--main-background), 1);
   position: relative;
   height: 100%;
   min-height: calc(100vh - 80px);

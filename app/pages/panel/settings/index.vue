@@ -22,12 +22,13 @@ const accountStore = useAccountStore();
 const config = useRuntimeConfig();
 const { getAccountData: accountData } = storeToRefs(accountStore);
 
+
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
 const editReminders = ref<InstanceType<typeof EditReminders> | null>(null);
 const oldUserData = computed<{ profilePicture: string, reminders: boolean }>(() => ({
   profilePicture: `${config.public.originUrl}/api/file/pfp/${accountData.value.profilePicture}`,
-  reminders: accountData.value.reminders,
+  reminders: accountData.value.reminders ?? false,
 }));
 
 const newUserData = ref<{ profilePicture: File | undefined, reminders: boolean }>({

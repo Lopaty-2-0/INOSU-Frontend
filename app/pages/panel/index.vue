@@ -155,7 +155,9 @@ onMounted(async (): Promise<void> => {
                     <p>{{ data.value }}</p>
                   </div>
 
-                  <Icon class="icon" :name="data.icon"></Icon>
+                  <div class="icon-div">
+                    <Icon class="icon" :name="data.icon"></Icon>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -315,10 +317,6 @@ onMounted(async (): Promise<void> => {
           align-items: flex-start;
           justify-content: space-between;
 
-          .icon {
-            font-size: 40px;
-          }
-
           .content {
             display: flex;
             flex-direction: row;
@@ -351,6 +349,21 @@ onMounted(async (): Promise<void> => {
               font-size: 40px;
               color: rgba(var(--description-color), 1);
               order: 1;
+            }
+
+            .icon-div {
+              width: 50px;
+              height: 50px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: var(--small-border-radius);
+              background: rgba(var(--main-color), 0.1);
+
+              .icon {
+                font-size: 40px;
+                color: rgba(var(--main-color), 1);
+              }
             }
           }
         }

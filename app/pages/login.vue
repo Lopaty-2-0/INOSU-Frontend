@@ -74,6 +74,7 @@ const submitLoginForm = async (): Promise<void> => {
             abbreviation: response._data.data.user.abbreviation,
             createdAt: response._data.data.user.createdAt,
             updatedAt: response._data.data.user.updatedAt,
+            reminders: response._data.data.user.reminders,
           } as AccountData));
 
           window.location.href = "/panel";

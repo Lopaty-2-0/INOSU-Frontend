@@ -34,10 +34,6 @@ const numberOfPages = computed<number>((): number => {
   return Math.ceil(tasksCount.value / amountForPaging);
 });
 
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
-
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
 
@@ -136,7 +132,7 @@ watchEffect((): void => {
                 </template>
               </TasksTable>
 
-              <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+              <Pagination v-model="currentPage" :number-of-pages="numberOfPages" />
             </div>
           </div>
         </div>
