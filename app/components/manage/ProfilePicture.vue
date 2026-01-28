@@ -176,7 +176,7 @@ defineExpose({ reset });
               id="image"
               name="image"
               placeholder="https://example.image/image.png"
-              v-model="urlInput"
+              v-model.trim="urlInput"
               @change="onUrlInput"
             />
             <div class="icon-div" @click="pasteUrl">

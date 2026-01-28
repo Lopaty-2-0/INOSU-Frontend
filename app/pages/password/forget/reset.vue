@@ -208,7 +208,7 @@ onMounted((): void => {
             id="password"
             name="password"
             placeholder="*****"
-            v-model="formData.password"
+            v-model.trim="formData.password"
           />
           <p v-if="messages.password" class="error">{{ messages.password }}</p>
         </div>

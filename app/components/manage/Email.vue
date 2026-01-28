@@ -54,7 +54,7 @@ defineExpose({ reset });
       <div class="content">
         <label for="email">E-mail</label>
         <div class="line">
-          <Input :class="{ error: email.error }" type="email" id="email" placeholder="example.email@gmail.com" v-model="email.input" @input="onInput" />
+          <Input :class="{ error: email.error }" type="email" id="email" placeholder="example.email@gmail.com" v-model.trim="email.input" @input="onInput" />
           <div class="icon-div" @click="pasteEmail"><Icon class="icon" name="material-symbols:content-paste"></Icon></div>
         </div>
 

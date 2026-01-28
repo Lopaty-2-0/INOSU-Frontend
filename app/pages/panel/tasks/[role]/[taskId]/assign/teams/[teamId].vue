@@ -358,7 +358,7 @@ watchEffect((): void => {
 
             <div class="content">
               <label for="team-name">Název</label>
-              <Input type="text" id="team-name" placeholder="Zadejte název týmu (nebo ponechte prázdný)" v-model="newTeamNameInput" @update:model-value="checkForErrors" />
+              <Input type="text" id="team-name" placeholder="Zadejte název týmu (nebo ponechte prázdný)" v-model.trim="newTeamNameInput" @update:model-value="checkForErrors" />
 
               <p class="input-error" v-if="newTeamNameInputError">{{ newTeamNameInputError }}</p>
             </div>

@@ -176,7 +176,7 @@ watch(() => props.modelValue, (newValue: number | null): void => {
       <input
         :id="props.id"
         type="number"
-        v-model="currentValue"
+        v-model.number="currentValue"
         @change="handleInput"
         pattern="[0-9]*"
         inputmode="decimal"

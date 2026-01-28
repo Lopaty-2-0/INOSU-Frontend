@@ -130,7 +130,7 @@ defineExpose({ reset })
                     :id="'text-input-' + index"
                     name="linkText"
                     placeholder="YouTube"
-                    v-model="textInputValue[editLinkId!]"
+                    v-model.trim="textInputValue[editLinkId!]"
                     @input="onInput"
                   />
                 </div>
@@ -141,7 +141,7 @@ defineExpose({ reset })
                     :id="'url-input-' + index"
                     name="linkUrl"
                     placeholder="https://www.youtube.com/"
-                    v-model="hrefInputValue[editLinkId!]"
+                    v-model.trim="hrefInputValue[editLinkId!]"
                     @input="onInput"
                   />
                 </div>

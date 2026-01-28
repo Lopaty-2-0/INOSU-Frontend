@@ -179,7 +179,7 @@ const addSpecialization = async (): Promise<void> => {
 
               <div class="content">
                 <label for="name">Název</label>
-                <Input type="text" id="name" placeholder="Informační technologie" v-model="specializationData.name" @input="checkForErrors" />
+                <Input type="text" id="name" placeholder="Informační technologie" v-model.trim="specializationData.name" @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.name.length > 0">{{ errors.name }}</p>
               </div>
@@ -193,7 +193,7 @@ const addSpecialization = async (): Promise<void> => {
 
               <div class="content">
                 <label for="abbreviation">Zkratka</label>
-                <Input type="text" id="abbreviation" placeholder="V" v-model="specializationData.abbreviation " @input="checkForErrors" />
+                <Input type="text" id="abbreviation" placeholder="V" v-model.trim="specializationData.abbreviation " @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.abbreviation.length > 0">{{ errors.abbreviation }}</p>
               </div>

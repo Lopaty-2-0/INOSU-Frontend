@@ -267,7 +267,7 @@ watchEffect((): void => {
 
               <div class="content">
                 <label for="name">Název</label>
-                <Input type="text" id="name" placeholder="V1B-ANJ1" v-model="classData.name" @input="checkForErrors" />
+                <Input type="text" id="name" placeholder="V1B-ANJ1" v-model.trim="classData.name" @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.name.length > 0">{{ errors.name }}</p>
               </div>
@@ -324,7 +324,7 @@ watchEffect((): void => {
 
               <div class="content">
                 <label for="group">Skupina</label>
-                <Input type="text" id="group" placeholder="A" v-model="classData.group" @input="checkForErrors" />
+                <Input type="text" id="group" placeholder="A" v-model.trim="classData.group" @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.group.length > 0">{{ errors.group }}</p>
               </div>

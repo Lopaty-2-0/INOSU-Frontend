@@ -132,7 +132,7 @@ onMounted((): void => {
           <label for="login">{{ t("login.form.login.label") }}</label>
           <Input
             id="login"
-            v-model="loginData.login"
+            v-model.trim="loginData.login"
             type="text"
             name="login"
             :placeholder="t('login.form.login.placeholder')"
@@ -144,7 +144,7 @@ onMounted((): void => {
           <label for="password">{{ t("login.form.password.label") }}</label>
           <Input
             id="password"
-            v-model="loginData.password"
+            v-model.trim="loginData.password"
             type="password"
             name="password"
             :placeholder="t('login.form.password.placeholder')"
