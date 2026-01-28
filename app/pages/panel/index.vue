@@ -45,7 +45,6 @@ const navigationLinks = computed<{
     { name: "Aktivní úkoly", path: `/panel/tasks/${role.value}` },
     { name: "Učitelé", path: `/panel/users/teacher` },
     { name: "Změna hesla", path: `/panel/settings/security` },
-    { name: "Vyhodnocené úkoly", path: `/panel/tasks/${role.value}/evaluated` },
   ];
 });
 const infoCards = computed<{ title: string; icon: string; value: string | number; }[]>(() =>[
@@ -93,6 +92,26 @@ const {data: classesCount} = useFetch("/api/class/count", {
   lazy: true
 });
 
+const { data: tasksData, pending: tasksPending } = useFetch("/api/task/get", {
+  query: {
+    idUser: userId.value,
+    amountForPaging: 5,
+    pageNumber: 1,
+  },
+  method: "get",
+  credentials: "include",
+  ignoreResponseError: true,
+  lazy: true,
+});
+
+watchEffect((): void => {
+  if (!tasksData.value) return;
+
+  const tasks: TaskData[] = tasksData.value.data.tasks.slice(0, 5) || [];
+
+  allTasks.value = tasks || [];
+});
+
 watchEffect((): void => {
   numbers.value = {
     students: studentsCount.value?.data.count ?? null,
@@ -101,27 +120,6 @@ watchEffect((): void => {
   };
 
   useLoadingStore().setLoading("dataLoading", numbers.value.students === null || numbers.value.classes === null || numbers.value.teachers === null);
-});
-
-onMounted(async (): Promise<void> => {
-  if (["admin", "teacher"].includes(role.value)) {
-    await $fetch(`/api/task/get`, {
-      query: {
-        idUser: userId.value,
-        amountForPaging: 5,
-        pageNumber: 1,
-      },
-      method: "get",
-      credentials: "include",
-      ignoreResponseError: true,
-      lazy: true,
-      onResponse({response}: any) {
-        const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
-
-        allTasks.value = tasks || [];
-      },
-    });
-  }
 });
 </script>
 
@@ -137,7 +135,7 @@ onMounted(async (): Promise<void> => {
       </Navbar>
     </template>
 
-    <template #content v-if="allTasks">
+    <template #content>
       <div id="home">
         <div class="info">
           <div class="line">
@@ -164,7 +162,7 @@ onMounted(async (): Promise<void> => {
           </ul>
         </div>
 
-        <div class="line">
+        <div class="line" v-if="allTasks">
           <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />
 
           <div class="column tasks">
@@ -175,7 +173,7 @@ onMounted(async (): Promise<void> => {
               </div>
             </div>
 
-            <TasksTable :tasks="allTasks" :loading="!allTasks" :page-size="5" :pagination="false">
+            <TasksTable :tasks="allTasks" :loading="!allTasks || tasksPending" :page-size="5" :pagination="false">
               <template #actions="data">
                 <div class="actions">
                   <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>

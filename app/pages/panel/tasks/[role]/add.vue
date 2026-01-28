@@ -105,58 +105,53 @@ const addTask = async (): Promise<void> => {
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
+
       switch (resCode) {
-        case "26161":
+        case "26141":
           alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
-
           resetUserData();
-
           break;
         case "26010":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Tato role nemůže vytvářet úkoly." });
           break;
         case "26020":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu nebyl zadán." });
           break;
         case "26030":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení nebylo zadáno." });
           break;
         case "26040":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je neplatné." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu je příliš dlouhý." });
           break;
         case "26050":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je před datem začátku." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je neplatné." });
           break;
         case "26060":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor úkolu nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je před datem začátku." });
           break;
         case "26070":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Neplatný formát souboru nebo je příliš veliký." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor úkolu nebyl zadán." });
           break;
         case "26080":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Garant úkolu nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Neplatný formát souboru nebo příliš dlouhý název." });
           break;
         case "26090":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Garant úkolu neexistuje." });
-          break;
-        case "26100":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uživatel nemůže být garantem." });
-          break;
-        case "26110":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem začátku." });
           break;
-        case "26120":
+        case "26100":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem ukončení." });
           break;
-        case "26130":
+        case "26110":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je neplatná." });
           break;
-        case "26140":
-        case "26150":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Maximální počet bodů je neplatný." });
+        case "26120":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Body nejsou ve správném formátu." });
           break;
-        default:
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba." });
+        case "26130":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Počet bodů není platný." });
+          break;
+
+        default: alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba." });
           break;
       }
     },
