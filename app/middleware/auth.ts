@@ -35,8 +35,6 @@ export default defineNuxtRouteMiddleware(async () => {
         const accountDataString: string | null = sessionStorage.getItem("accountData") as string | null;
         let accountData: LocalAccountData | null = accountDataString ? decodeData(accountDataString) as LocalAccountData : null;
 
-        console.log(accountData);
-
         if (!accountData || (data.value.data.updatedAt !== accountData.updatedAt)) {
             await $fetch("/api/user/logged/data", {
                 method: "get",

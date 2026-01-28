@@ -163,7 +163,7 @@ const updateTeam = async (): Promise<void> => {
       ...(teamTaskPoints.value !== teamTaskData.value?.points && { points: teamTaskPoints.value }),
     },
     ignoreResponseError: true,
-    onResponse({ response }: any) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
@@ -209,8 +209,8 @@ const updateTeam = async (): Promise<void> => {
         case "32161":
           alertsStore.addAlert({ type: "success", title: "Úprava týmu", message: "Tým byl úspěšně aktualizován." });
 
+          await refreshTeamData();
           resetInputs();
-          refreshTeamData();
           errors.value = {
             points: "",
             review: "",
