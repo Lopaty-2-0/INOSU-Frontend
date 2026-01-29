@@ -20,17 +20,17 @@ const loading = ref<boolean>(true);
 const logoutLoading = ref<boolean>(false);
 const numberOfActiveTasks = ref<number | null>(null);
 const sidebarLinks = computed<
-  {
-    name: string;
-    links: {
-      text: string;
-      href: string;
-      iconClass: string;
-      activeHrefs?: string[];
-      notify?: boolean | string;
-    }[];
-  }[]
->(() =>[
+    {
+      name: string;
+      links: {
+        text: string;
+        href: string;
+        iconClass: string;
+        activeHrefs?: string[];
+        notify?: boolean | string;
+      }[];
+    }[]
+>(() => [
   {
     name: "Hlavní",
     links: [
@@ -49,7 +49,11 @@ const sidebarLinks = computed<
           `/panel/tasks/${role.value}/remove`,
         ],
         iconClass: "material-symbols:folder-copy-rounded",
-        notify: !["admin", "teacher"].includes(role.value) ? numberOfActiveTasks.value !== null ? getStyledNumber(numberOfActiveTasks.value) : "?" : false,
+        notify: !["admin", "teacher"].includes(role.value)
+            ? numberOfActiveTasks.value !== null
+                ? getStyledNumber(numberOfActiveTasks.value)
+                : "?"
+            : false,
       },
       {
         text: "Zaměření",
@@ -87,6 +91,27 @@ const sidebarLinks = computed<
       },
     ],
   },
+  ...(role.value === "admin")
+      ? [
+        {
+          name: "Data",
+          links: [
+            {
+              text: "Import",
+              href: "/panel/import",
+              iconClass: "material-symbols:upload-2-rounded",
+              notify: false,
+            },
+            {
+              text: "Export",
+              href: "/panel/export",
+              iconClass: "material-symbols:download-2-rounded",
+              notify: false,
+            },
+          ],
+        },
+      ]
+      : [],
   {
     name: "Ostatní",
     links: [
@@ -100,7 +125,7 @@ const sidebarLinks = computed<
         ],
         iconClass: "material-symbols:settings-rounded",
         notify: false,
-      }
+      },
     ],
   },
 ]);

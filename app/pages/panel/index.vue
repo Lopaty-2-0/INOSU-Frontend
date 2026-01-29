@@ -92,26 +92,6 @@ const {data: classesCount} = useFetch("/api/class/count", {
   lazy: true
 });
 
-const { data: tasksData, pending: tasksPending } = useFetch("/api/task/get", {
-  query: {
-    idUser: userId.value,
-    amountForPaging: 5,
-    pageNumber: 1,
-  },
-  method: "get",
-  credentials: "include",
-  ignoreResponseError: true,
-  lazy: true,
-});
-
-watchEffect((): void => {
-  if (!tasksData.value) return;
-
-  const tasks: TaskData[] = tasksData.value.data.tasks.slice(0, 5) || [];
-
-  allTasks.value = tasks || [];
-});
-
 watchEffect((): void => {
   numbers.value = {
     students: studentsCount.value?.data.count ?? null,
@@ -119,7 +99,54 @@ watchEffect((): void => {
     teachers: teachersCount.value?.data.count ?? null,
   };
 
-  useLoadingStore().setLoading("dataLoading", numbers.value.students === null || numbers.value.classes === null || numbers.value.teachers === null);
+  useLoadingStore().setLoading("dataLoading", !allTasks.value || numbers.value.students === null || numbers.value.classes === null || numbers.value.teachers === null);
+});
+
+onMounted(async (): Promise<void> => {
+  if (["admin", "teacher"].includes(role.value)) {
+    await $fetch(`/api/task/get/task`, {
+      query: {
+        idUser: userId.value,
+        amountForPaging: 5,
+        pageNumber: 1,
+      },
+      method: "get",
+      credentials: "include",
+      ignoreResponseError: true,
+      lazy: true,
+      onResponse({response}: any) {
+        const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
+
+        allTasks.value = tasks || [];
+      },
+    });
+  } else {
+    await $fetch("/api/user_team/get", {
+      query: {
+        idUser: userId.value,
+        amountForPaging: 5,
+        pageNumber: 1,
+      },
+      method: "get",
+      credentials: "include",
+      ignoreResponseError: true,
+      lazy: true,
+      onResponse({response}: any) {
+        const userTeams: TaskData[] = response._data.data.user_teams;
+
+        if (!userTeams) return;
+
+        const tasks: TaskData[] = (userTeams.slice(0, 5) || []).map((task: any) => {
+          return {
+            id: task.idTask,
+            ...task
+          }
+        });
+
+        allTasks.value = tasks || [];
+      }
+    });
+  }
 });
 </script>
 
@@ -135,7 +162,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content>
+    <template #content v-if="allTasks">
       <div id="home">
         <div class="info">
           <div class="line">
@@ -162,7 +189,7 @@ watchEffect((): void => {
           </ul>
         </div>
 
-        <div class="line" v-if="allTasks">
+        <div class="line">
           <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />
 
           <div class="column tasks">
@@ -173,7 +200,7 @@ watchEffect((): void => {
               </div>
             </div>
 
-            <TasksTable :tasks="allTasks" :loading="!allTasks || tasksPending" :page-size="5" :pagination="false">
+            <TasksTable :tasks="allTasks" :loading="!allTasks" :page-size="5" :pagination="false">
               <template #actions="data">
                 <div class="actions">
                   <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>

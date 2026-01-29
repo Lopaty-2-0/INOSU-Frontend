@@ -37,7 +37,6 @@ const submitLoading = ref<boolean>(false);
 const teamTaskData = ref<TaskTeam | undefined>(undefined);
 const task = ref<TaskData | undefined>(undefined);
 const teamTaskPoints = ref<number | null>(null);
-const versionsLoading = ref<boolean>(false);
 const specificVersionLoading = ref<{ idVersion: number, loading: boolean } | undefined>(undefined);
 const guarantorComment = ref<string>("");
 const versions = ref<Version[] | undefined>(undefined);
@@ -241,7 +240,7 @@ const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", 
   credentials: "include",
 });
 
-const { data: versionsData, error: versionsError, refresh: refreshVersions } = await useFetch("/api/version_team/get", {
+const { data: versionsData, error: versionsError, refresh: refreshVersions, pending: versionsLoading } = await useFetch("/api/version_team/get", {
   query: {
     idTask: taskId,
     idTeam: teamId,
@@ -275,12 +274,8 @@ watch(versionsData, async (newValue: any): Promise<void> => {
     return;
   }
 
-  versionsLoading.value = true;
-
   versions.value = newValue.data.versions;
   versionsCount.value = newValue.data.count;
-
-  versionsLoading.value = false;
 }, { immediate: true });
 
 watch(teamData, async (newValue: any): Promise<void> => {
