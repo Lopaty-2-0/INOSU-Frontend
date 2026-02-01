@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import {computed, ref, watchEffect} from "vue";
 import { storeToRefs } from "pinia";
-import Navbar from "~/components/layout/Navbar.vue";
-import ActionBar from "~/components/ui/ActionBar.vue";
-import SearchInput from "~/components/ui/SearchInput.vue";
-import type {Task_Team_Solo_Table, TaskData} from "~/types/tasks";
 import { useAccountStore } from "~/stores/account";
+import Navbar from "~/components/layout/Navbar.vue";
+import SearchInput from "~/components/ui/SearchInput.vue";
+import type {TaskData} from "~/types/tasks";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import TasksTable from "~/components/tables/Tasks.vue";
@@ -20,9 +19,12 @@ useHead({
 });
 
 definePageMeta({
+  roles: ["student"],
 });
 
 const config = useRuntimeConfig();
+const accountStore = useAccountStore();
+const { getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<(TaskData & { team: TaskTeam, guarantor: AccountData })[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
@@ -42,18 +44,18 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const openTask = async (taskId: number, teamId: number): Promise<void> => {
-  if (!taskId || !teamId) return;
+const openTask = async (taskId: number, teamId: number, guarantorId: number): Promise<void> => {
+  if (!taskId || !teamId || !guarantorId) return;
 
-  await navigateTo(`/panel/tasks/student/${taskId}/${teamId}`);
+  await navigateTo(`/panel/tasks/student/${taskId}/${guarantorId}/${teamId}`);
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/user_team/get/type", {
+const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/user_team/get", {
   query: {
+    idUser: userId.value,
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
     searchQuery: searchInput,
-    taskType: "task"
   },
   method: "get",
   server: true,
@@ -69,7 +71,7 @@ watchEffect((): void => {
 
   if (!tasksData.value) return;
 
-  allTasks.value = tasksData.value.data.tasks.map((task: any) => {
+  allTasks.value = tasksData.value.data.user_teams.map((task: any) => {
     return {
       id: task.idTask,
       ...task,
@@ -133,7 +135,7 @@ watchEffect((): void => {
 
                 <template #actions="data">
                   <div class="actions">
-                    <button type="button" class="primary" @click="openTask(data.value.id, data.value.team.idTeam)">Otevřít</button>
+                    <button type="button" class="primary" @click="openTask(data.value.id, data.value.team.idTeam, data.value.guarantor.id)">Otevřít</button>
                   </div>
                 </template>
               </TasksTable>

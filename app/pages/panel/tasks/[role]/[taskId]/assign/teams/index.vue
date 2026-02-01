@@ -14,6 +14,8 @@ import SearchInput from "~/components/ui/SearchInput.vue";
 import type {TaskTeam} from "~/types/team";
 import Input from "~/components/ui/Input.vue";
 import Loading from "~/components/ui/Loading.vue";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -30,6 +32,8 @@ definePageMeta({
 
 const amountOfTeamsForPaging: number = 5;
 const alertsStore = useAlertsStore();
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const taskTeamsDatatable = useTemplateRef<InstanceType<typeof TaskTeamsTable>>("taskTeamsDatatable");
 const task = ref<TaskData | undefined>(undefined);
 const createTeamInput = ref<string>("");
@@ -64,45 +68,52 @@ const createTeam = async (): Promise<void> => {
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode: string = response._data.resCode?.toString();
 
       switch (resCode) {
         case "30010":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Chybí ID úkolu." });
+          break;
+
         case "30020":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "ID úkolu musí být číslo." });
+          break;
+
         case "30030":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "ID úkolu není platné." });
           break;
-        case "36020":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Žádný žák nebyla vybrán." });
-          break;
+
         case "30040":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Zadaný úkol neexistuje." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Úkol neexistuje nebo nejste jeho garant." });
           break;
+
         case "30050":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Uživatel není garant úkolu." });
-          break;
-        case "30060":
           alertsStore.addAlert({ type: "warning", title: "Vytvoření týmu", message: "Název týmu je příliš dlouhý (max. 255 znaků)." });
           break;
-        case "30070":
+
+        case "30060":
           alertsStore.addAlert({ type: "warning", title: "Vytvoření týmu", message: "Tým se stejným názvem již existuje." });
           break;
-        case "30081":
-          alertsStore.addAlert({ type: "success", title: "Vytvoření týmu", message: `Tým byl úspěšně vytvořen.` });
+
+        case "30071":
+          alertsStore.addAlert({ type: "success", title: "Vytvoření týmu", message: "Tým byl úspěšně vytvořen." });
 
           createTeamInput.value = "";
           teamsRefresh();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     creatingTeamLoading.value = false;
   });
 };
@@ -113,18 +124,21 @@ const onTeamsSearchInputChange = (input: string): void => {
   teamSearchInput.value = input;
 };
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true,
 });
 
 const { data: teamsData, error: teamsError, pending: teamsPending, refresh: teamsRefresh } = useFetch("/api/team/get/teams", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
     amountForPaging: amountOfTeamsForPaging,
     pageNumber: currentTeamsPage,
     searchQuery: teamSearchInput,
@@ -136,18 +150,24 @@ const { data: teamsData, error: teamsError, pending: teamsPending, refresh: team
 });
 
 watchEffect((): void => {
-  if (taskError.value || !taskData.value) {
+  if (taskError.value) {
     navigateTo(`/panel/tasks/${role}`);
     return;
   }
 
-  task.value = taskData.value.data.task;
+  if (!taskData.value) return;
 
-  if (teamsError.value || !teamsData.value) {
+  task.value = taskData.value.data.task;
+});
+
+watchEffect((): void => {
+  if (teamsError.value) {
     teams.value = [];
     teamsCount.value = 0;
     return;
   }
+
+  if (!teamsData.value) return;
 
   teams.value = teamsData.value.data.teams;
   teamsCount.value = teamsData.value.data.count;

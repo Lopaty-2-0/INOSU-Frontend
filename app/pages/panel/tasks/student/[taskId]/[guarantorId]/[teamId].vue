@@ -20,6 +20,7 @@ import FileInput from "~/components/ui/FileInput.vue";
 const route = useRoute();
 const teamId = route.params.teamId as string;
 const taskId = route.params.taskId as string;
+const guarantorId = route.params.guarantorId as string;
 
 useHead({
   title: "Panel | Úkol - " + taskId + " - Přiřazení - Jednotlivci",
@@ -72,7 +73,7 @@ const downloadVersion = async (version: Version): Promise<void> => {
 
 const removeVersion = async (version: Version): Promise<void> => {
   if (!version || !version.idVersion) {
-    alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Chyba při odstraňování verze vypracování." });
+    alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Chyba při odstraňování verze." });
     return;
   }
 
@@ -83,60 +84,79 @@ const removeVersion = async (version: Version): Promise<void> => {
     body: {
       idTask: taskId,
       idTeam: teamId,
+      guarantor: guarantorId,
       idVersion: version.idVersion,
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode = response._data?.resCode?.toString();
 
       switch (resCode) {
         case "49010":
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID týmu nebylo zadáno." });
           break;
+
         case "49020":
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID úkolu nebylo zadáno." });
           break;
+
         case "49030":
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID verze nebylo zadáno." });
           break;
+
         case "49040":
         case "49050":
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID týmu je neplatné." });
           break;
+
         case "49060":
         case "49070":
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID úkolu je neplatné." });
           break;
+
         case "49080":
         case "49090":
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID verze je neplatné." });
           break;
+
         case "49100":
+        case "49110":
+          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Neplatný garant úkolu." });
+          break;
+
+        case "49120":
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Zadaný tým neexistuje." });
           break;
-        case "49110":
+
+        case "49130":
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Zadaná verze neexistuje." });
           break;
-        case "49120":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Uživatel na toto nemá práva." });
+
+        case "49140":
+          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Na odstranění verze nemáte oprávnění." });
           break;
-        case "49130":
-          alertsStore.addAlert({ type: "warning", title: "Odstranění verze", message: "Nemůžete odstranit verzi po uzávěrce." });
+
+        case "49150":
+          alertsStore.addAlert({ type: "warning", title: "Odstranění verze", message: "Nelze odstranit verzi po termínu." });
           break;
-        case "49141":
+
+        case "4961":
           alertsStore.addAlert({ type: "success", title: "Odstranění verze", message: "Verze byla úspěšně odstraněna." });
           refreshVersions();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Nepodařilo se spojit se serverem." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     specificVersionLoading.value = undefined;
   });
 };
@@ -149,6 +169,7 @@ const uploadNewVersion = async (): Promise<void> => {
   const formData = new FormData();
   formData.append("idTask", taskId);
   formData.append("idTeam", teamId);
+  formData.append("guarantor", guarantorId);
   formData.append("elaboration", newVersionFile.value);
 
   await $fetch("/api/version_team/add", {
@@ -157,122 +178,164 @@ const uploadNewVersion = async (): Promise<void> => {
     credentials: "include",
     body: formData,
     ignoreResponseError: true,
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode = response._data?.resCode?.toString();
 
       switch (resCode) {
         case "F15010":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nahraný soubor je příliš velký." });
           break;
+
         case "38010":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID týmu nebylo zadáno." });
           break;
+
         case "38020":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID úkolu nebylo zadáno." });
           break;
+
         case "38030":
         case "38040":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID týmu je neplatné." });
           break;
+
         case "38050":
         case "38060":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID úkolu je neplatné." });
           break;
+
         case "38070":
+        case "38080":
+          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Neplatný garant úkolu." });
+          break;
+
+        case "38090":
+          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný garant neexistuje." });
+          break;
+
+        case "38100":
+          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Uživatel není garantem úkolu." });
+          break;
+
+        case "38110":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný úkol neexistuje." });
           break;
-        case "38080":
+
+        case "38120":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný tým neexistuje." });
           break;
-        case "38090":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Uživatel na toto nemá práva." });
+
+        case "38130":
+          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Na přidání verze nemáte oprávnění." });
           break;
-        case "38100":
+
+        case "38140":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Vypracování nebylo zadáno." });
           break;
-        case "38110":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Špatný formát zadaného souboru." });
-          break;
-        case "38120":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Název zadaného souboru je příliš dlouhý." });
-          break;
-        case "38130":
-          alertsStore.addAlert({ type: "warning", title: "Přidání verze", message: "Nemůžete přidat verzi po uzávěrce." });
-          break;
-        case "38140":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný soubor již existuje." });
-          break;
-        case "38151":
-          alertsStore.addAlert({ type: "success", title: "Přidání verze", message: "Nová verze byla nahrána." });
 
+        case "38150":
+          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nepodporovaný formát souboru." });
+          break;
+
+        case "38160":
+          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Název souboru je příliš dlouhý." });
+          break;
+
+        case "38170":
+          alertsStore.addAlert({ type: "warning", title: "Přidání verze", message: "Nelze odevzdat verzi po termínu." });
+          break;
+
+        case "38180":
+          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Soubor se stejným názvem již existuje." });
+          break;
+
+        case "38191":
+          alertsStore.addAlert({ type: "success", title: "Přidání verze", message: "Nová verze byla úspěšně nahrána." });
           resetInputs();
           refreshVersions();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nepodařilo se spojit se serverem." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     submitLoading.value = false;
   });
 };
 
-const { data: teamData, error: teamError } = await useFetch("/api/team/get/info", {
+const { data: teamData, error: teamError } = useFetch("/api/team/get/info", {
   query: {
     idTask: taskId,
     idTeam: teamId,
+    guarantor: guarantorId
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
     idTask: taskId,
+    guarantor: guarantorId
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-const { data: versionsData, error: versionsError, refresh: refreshVersions, pending: versionsLoading } = await useFetch("/api/version_team/get", {
+const { data: versionsData, error: versionsError, refresh: refreshVersions, pending: versionsLoading } = useFetch("/api/version_team/get", {
   query: {
     idTask: taskId,
     idTeam: teamId,
+    guarantor: guarantorId,
     amountForPaging: versionsPerPage,
     pageNumber: versionsActivePage,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
+});
+
+watchEffect((): void => {
+  if (teamError.value) {
+    navigateTo(`/panel/tasks/student/${taskId}`);
+    return;
+  }
+
+  if (!teamTaskData.value) return;
 });
 
 watchEffect(async (): Promise<void> => {
-  if (taskError.value || !taskData.value) {
+  if (taskError.value) {
     navigateTo(`/panel/tasks/student/${taskId}`);
     return;
   }
+
+  if (!taskData.value) return
 
   task.value = taskData.value.data.task;
-
-  if (teamError.value || !teamData.value) {
-    navigateTo(`/panel/tasks/student/${taskId}`);
-    return;
-  }
 });
 
 watch(versionsData, async (newValue: any): Promise<void> => {
   if (!newValue) return;
 
-  if (versionsError.value || !newValue.data.versions) {
+  if (versionsError.value) {
     versions.value = undefined;
     return;
   }
+
+  if (!newValue.data.versions) return;
 
   versions.value = newValue.data.versions;
   versionsCount.value = newValue.data.count;

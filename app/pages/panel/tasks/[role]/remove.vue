@@ -70,10 +70,11 @@ const removeTasks = async (): Promise<void> => {
   await $fetch("/api/task/delete", {
     method: "delete",
     body: {
-      idTask: selectedTaskIds.value,
+      idTask: selectedTaskIds.value
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode?.toString();
       const goodIds: number[] = response._data.data?.goodIds || [];
@@ -81,30 +82,33 @@ const removeTasks = async (): Promise<void> => {
 
       switch (resCode) {
         case "28010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Studenti nemohou mazat úkoly." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Studenti nemohou mazat úkoly." });
           break;
+
         case "28020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Chybí ID úkolu." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Chybí ID úkolu." });
           break;
+
         case "28031":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění úkolu", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: "Odstranění úkolů", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
           }
-
-          alertsStore.addAlert({ type: "success", title: "Odstranění úkolu", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
+          alertsStore.addAlert({ type: "success", title: "Odstranění úkolů", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
 
           tasksRefresh();
           resetSelectedTasks();
           break;
+
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     loading.value = false;
   });
 };

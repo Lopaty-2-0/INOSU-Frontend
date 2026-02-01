@@ -104,7 +104,7 @@ watchEffect((): void => {
 
 onMounted(async (): Promise<void> => {
   if (["admin", "teacher"].includes(role.value)) {
-    await $fetch(`/api/task/get/task`, {
+    await $fetch(" /api/task/get/task", {
       query: {
         idUser: userId.value,
         amountForPaging: 5,

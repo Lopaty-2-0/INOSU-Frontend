@@ -17,6 +17,8 @@ import Pagination from "~/components/ui/Pagination.vue";
 import Loading from "~/components/ui/Loading.vue";
 import Editor from "~/components/ui/Editor.vue";
 import type {Version} from "~/types/team";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const teamId = route.params.teamId as string;
@@ -34,6 +36,8 @@ definePageMeta({
 
 const config = useRuntimeConfig();
 const alertsStore = useAlertsStore();
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const submitLoading = ref<boolean>(false);
 const teamTaskData = ref<TaskTeam | undefined>(undefined);
 const task = ref<TaskData | undefined>(undefined);
@@ -145,7 +149,7 @@ const updateTeam = async (): Promise<void> => {
   checkForErrors();
 
   if (errors.value.points.length > 0 || errors.value.review.length > 0) {
-    alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Opravte chyby v formuláři a zkuste to znovu." });
+    alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Opravte chyby ve formuláři a zkuste to znovu." });
     return;
   }
 
@@ -153,15 +157,15 @@ const updateTeam = async (): Promise<void> => {
 
   await $fetch("/api/team/update", {
     method: "put",
-    server: true,
     credentials: "include",
+    ignoreResponseError: true,
     body: {
       idTask: taskId,
       idTeam: teamId,
       ...(guarantorComment.value !== teamTaskData.value?.review && { review: guarantorComment.value }),
       ...(teamTaskPoints.value !== teamTaskData.value?.points && { points: teamTaskPoints.value }),
     },
-    ignoreResponseError: true,
+
     async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
@@ -187,11 +191,9 @@ const updateTeam = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný tým neexistuje." });
           break;
         case "32090":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Uživatel na toto nemá práva." });
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Neplatný status." });
           break;
         case "32100":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Neplatný typ statusu." });
-          break;
         case "32110":
         case "32120":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů je neplatný." });
@@ -205,69 +207,82 @@ const updateTeam = async (): Promise<void> => {
         case "32150":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Název týmu je příliš dlouhý." });
           break;
-        case "32161":
+        case "32151":
           alertsStore.addAlert({ type: "success", title: "Úprava týmu", message: "Tým byl úspěšně aktualizován." });
-
           await refreshTeamData();
           resetInputs();
-          errors.value = {
-            points: "",
-            review: "",
-          };
+          errors.value = { points: "", review: "" };
           break;
         default:
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     submitLoading.value = false;
   });
 };
 
-const { data: teamData, error: teamError, refresh: refreshTeamData } = await useFetch("/api/team/get/info", {
+const { data: teamData, error: teamError, refresh: refreshTeamData } = useFetch("/api/team/get/info", {
   query: {
     idTask: taskId,
     idTeam: teamId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
-
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-const { data: versionsData, error: versionsError, pending: versionsLoading } = await useFetch("/api/version_team/get", {
+const { data: versionsData, error: versionsError, pending: versionsLoading } = useFetch("/api/version_team/get", {
   query: {
     idTask: taskId,
     idTeam: teamId,
+    guarantor: accountData.value.id,
     amountForPaging: versionsPerPage,
     pageNumber: versionsActivePage,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-watchEffect(async (): Promise<void> => {
-  if (taskError.value || !taskData.value) {
+watchEffect((): void => {
+  if (teamError.value) {
     navigateTo(`/panel/tasks/${role}/${taskId}`);
     return;
   }
 
+  if (!teamData.value) return;
+});
+
+watchEffect(async (): Promise<void> => {
+  if (taskError.value) {
+    navigateTo(`/panel/tasks/${role}/${taskId}`);
+    return;
+  }
+
+  if (!taskData.value) return;
+
   task.value = taskData.value.data.task;
 
-  if (teamError.value || !teamData.value) {
+  if (teamError.value) {
     navigateTo(`/panel/tasks/${role}/${taskId}`);
     return;
   }
@@ -276,10 +291,12 @@ watchEffect(async (): Promise<void> => {
 watch(versionsData, async (newValue: any): Promise<void> => {
   if (!newValue) return;
 
-  if (versionsError.value || !newValue.data.versions) {
+  if (versionsError.value) {
     versions.value = undefined;
     return;
   }
+
+  if (!newValue.data.versions) return;
 
   versions.value = newValue.data.versions;
   versionsCount.value = newValue.data.count;
@@ -431,7 +448,7 @@ watchEffect((): void => {
 
             <div class="content">
               <label for="teamTaskPoints">{{ task.points ? `Maximální počet bodů: ${task.points}` : "Maximální počet bodů není určen." }}</label>
-              <NumberInput id="teamTaskPoints" :enable-null="false" placeholder="Zadejte počet bodů" v-model="teamTaskPoints" :min="0" :max="task.points || 0" :disabled="!task.points" @update:model-value="checkForErrors"  />
+              <NumberInput id="teamTaskPoints" placeholder="Zadejte počet bodů" v-model="teamTaskPoints" :min="0" :max="task.points || 0" :disabled="!task.points" @update:model-value="checkForErrors"  />
               <p class="input-error" v-if="errors.points.length > 0">{{ errors.points }}</p>
             </div>
           </div>

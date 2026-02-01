@@ -52,7 +52,7 @@ const openTask = async (id: number): Promise<void> => {
   await navigateTo(`/panel/tasks/${role}/${id}`);
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get", {
+const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/task", {
   query: {
     idUser: userId,
     amountForPaging: amountForPaging,

@@ -14,6 +14,8 @@ import type {TaskTeam} from "~/types/team";
 import {navigateTo} from "nuxt/app";
 import TasksTable from "~/components/tables/Tasks.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -28,6 +30,8 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const task = ref<TaskData | undefined>(undefined);
 const usersTeam = ref<Task_Team_Solo_Table[] | undefined>(undefined);
 const userSearchInput = ref<string>("");
@@ -75,6 +79,7 @@ const openTeamTask = async (id: number): Promise<void> => {
 const { data: usersData, error: usersError, pending: usersPending } = useFetch("/api/team/get/users", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
     amountForPaging: amountOfUsersForPaging,
     pageNumber: currentUsersPage,
     searchQuery: userSearchInput,
@@ -88,6 +93,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
 const { data: teamsData, error: teamsError, pending: teamsPending } = useFetch("/api/team/get/teams", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
     amountForPaging: amountOfTeamsForPaging,
     pageNumber: currentTeamsPage,
     searchQuery: teamSearchInput,
@@ -98,17 +104,19 @@ const { data: teamsData, error: teamsError, pending: teamsPending } = useFetch("
   credentials: "include",
 });
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true,
 });
 
 watchEffect((): void => {
-  if (taskError.value || !taskData.value) {
+  if (taskError.value) {
     navigateTo(`/panel/tasks/${role}`);
     return;
   }

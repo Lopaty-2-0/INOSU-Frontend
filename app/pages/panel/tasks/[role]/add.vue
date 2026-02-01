@@ -105,53 +105,66 @@ const addTask = async (): Promise<void> => {
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
-
       switch (resCode) {
         case "26141":
           alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
           resetUserData();
           break;
+
         case "26010":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Tato role nemůže vytvářet úkoly." });
           break;
+
         case "26020":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu nebyl zadán." });
           break;
+
         case "26030":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení nebylo zadáno." });
           break;
+
         case "26040":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu je příliš dlouhý." });
           break;
+
         case "26050":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je neplatné." });
           break;
+
         case "26060":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je před datem začátku." });
           break;
+
         case "26070":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor úkolu nebyl zadán." });
           break;
+
         case "26080":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Neplatný formát souboru nebo příliš dlouhý název." });
           break;
+
         case "26090":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem začátku." });
           break;
+
         case "26100":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem ukončení." });
           break;
+
         case "26110":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je neplatná." });
           break;
+
         case "26120":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Body nejsou ve správném formátu." });
           break;
+
         case "26130":
           alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Počet bodů není platný." });
           break;
 
-        default: alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba." });
+        default:
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba." });
           break;
       }
     },
@@ -232,7 +245,7 @@ const addTask = async (): Promise<void> => {
               <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
             </div>
 
-            <NumberInput v-model="newData.maxPoints" :min="1" placeholder="Bez bodů" />
+            <NumberInput v-model="newData.maxPoints" :min="0" placeholder="Bez bodů" enable-null />
           </div>
 
           <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="addTask">

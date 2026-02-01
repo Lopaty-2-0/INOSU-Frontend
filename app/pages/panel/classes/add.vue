@@ -136,62 +136,81 @@ const addClass = async (): Promise<void> => {
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode = response?._data?.resCode?.toString();
 
       switch (resCode) {
         case "8010":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nemáte oprávnění k této akci." });
           break;
+
         case "8020":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník chybí." });
           break;
+
         case "8030":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina chybí." });
           break;
+
         case "8040":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zaměření chybí." });
           break;
+
         case "8050":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy chybí." });
           break;
+
         case "8060":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník musí být celé číslo." });
           break;
+
         case "8070":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník je moc velké číslo." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník musí být kladné číslo v povoleném rozsahu." });
           break;
+
         case "8080":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina může mít maximálně 1 znak." });
           break;
+
         case "8090":
-        case "8100":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Neplatné zaměření." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zaměření musí být číslo." });
           break;
+
+        case "8100":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zaměření má neplatnou hodnotu." });
+          break;
+
         case "8110":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zvolené zaměření neexistuje." });
+          break;
+
+        case "8120":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník přesahuje délku studia zaměření." });
           break;
-        case "8120":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je moc dlouhý." });
-          break;
+
         case "8130":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je příliš dlouhý." });
+          break;
+
+        case "8140":
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je již používán." });
           break;
-        case "8141":
+
+        case "8151":
           alertsStore.addAlert({ type: "success", title: "Vytvoření třídy", message: "Třída byla úspěšně vytvořena." });
-
           resetSelectedClasses();
-
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nastala neznámá chyba." });
-          break;
       }
     },
+
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     loading.value = false;
   });
 };

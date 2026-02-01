@@ -64,7 +64,11 @@ const resetInputs = (): void => {
 };
 
 const addSpecialization = async (): Promise<void> => {
-  if (!specializationData.value.name || specializationData.value.lengthOfStudy === null || !specializationData.value.abbreviation) {
+  if (
+      !specializationData.value.name ||
+      specializationData.value.lengthOfStudy === null ||
+      !specializationData.value.abbreviation
+  ) {
     alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
     return;
   }
@@ -85,54 +89,65 @@ const addSpecialization = async (): Promise<void> => {
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode = response?._data?.resCode?.toString();
 
       switch (resCode) {
         case "4010":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nemáte oprávnění k této akci." });
           break;
+
         case "4020":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia chybí." });
           break;
+
         case "4030":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření chybí." });
           break;
+
         case "4040":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření chybí." });
           break;
+
         case "4050":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být celé číslo." });
           break;
+
         case "4060":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia je moc velká." });
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být kladné číslo v povoleném rozsahu." });
           break;
+
         case "4070":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je příliš dlouhá." });
           break;
+
         case "4080":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je již používána." });
           break;
+
         case "4090":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je příliš dlouhý." });
           break;
+
         case "4100":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je již používán." });
           break;
+
         case "4111":
           alertsStore.addAlert({ type: "success", title: "Přidání zaměření", message: "Zaměření bylo úspěšně vytvořeno." });
-
           resetInputs();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nastala neznámá chyba." });
-          break;
       }
     },
+
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     loading.value = false;
   });
 };

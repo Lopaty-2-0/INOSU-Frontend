@@ -55,7 +55,7 @@ const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string,
   role: "",
   classes: [],
 });
-const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[]}>({
+const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[] | undefined}>({
   profilePicture: undefined,
   name: undefined,
   surname: undefined,
@@ -63,7 +63,7 @@ const newUserData = ref<{ profilePicture: File | undefined; name: string | undef
   password: undefined,
   abbreviation: undefined,
   role: undefined,
-  classes: [],
+  classes: undefined,
 });
 
 const onFullNameUpdate = (fullName: { name: string | undefined, surname: string | undefined }): void => {
@@ -112,7 +112,7 @@ const resetUserData = (): void => {
     password: undefined,
     abbreviation: undefined,
     role: undefined,
-    classes: [],
+    classes: undefined,
   };
 };
 
@@ -120,6 +120,8 @@ const updateUser = async (): Promise<void> => {
   submitLoading.value = true;
 
   const updateUserForm: FormData = new FormData();
+
+  console.log(newUserData.value.classes)
 
   if (newUserData.value.profilePicture) updateUserForm.append("profilePicture", newUserData.value.profilePicture);
   if (newUserData.value.name) updateUserForm.append("name", newUserData.value.name);
@@ -183,9 +185,11 @@ const updateUser = async (): Promise<void> => {
           if (newUserData.value.abbreviation) oldUserData.value.abbreviation = newUserData.value.abbreviation;
           if (newUserData.value.role) oldUserData.value.role = newUserData.value.role;
           if (newUserData.value.profilePicture) oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
-          oldUserData.value.classes = newUserData.value.classes;
+          if (newUserData.value.classes) oldUserData.value.classes = newUserData.value.classes;
 
+          await refreshUser();
           resetUserData();
+
           break;
         default:
           alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nastala neznámá chyba." });
@@ -200,7 +204,7 @@ const updateUser = async (): Promise<void> => {
   });
 };
 
-const { data: userData, error: userError } = await useFetch("/api/user/get/id", {
+const { data: userData, error: userError, refresh: refreshUser } = useFetch("/api/user/get/id", {
   query: {
     id: id,
   },
@@ -210,18 +214,13 @@ const { data: userData, error: userError } = await useFetch("/api/user/get/id", 
   lazy: true
 });
 
-watchEffect(async () => {
-})
-
 watch([userData, userError], async (): Promise<void> => {
-  if (!userData.value && !userError.value) {
-    return;
-  }
-
-  if (userError.value || !userData.value) {
+  if (userError.value) {
     router.push(`/panel/users/${role}`);
     return;
   }
+
+  if (!userData.value) return;
 
   const user: AccountData = userData.value.data.user;
 
@@ -232,7 +231,6 @@ watch([userData, userError], async (): Promise<void> => {
   oldUserData.value.abbreviation = user.abbreviation || "";
   oldUserData.value.role = user.role;
   oldUserData.value.classes = user.idClass;
-  newUserData.value.classes = user.idClass;
   oldUserData.value.profilePicture = config.public.originUrl + "/api/file/pfp/" + user.profilePicture;
   oldUserData.value.loaded = true;
 }, { immediate: true });

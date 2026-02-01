@@ -64,44 +64,47 @@ const removeClasses = async (): Promise<void> => {
   await $fetch("/api/class/delete", {
     method: "delete",
     body: {
-      idClass : selectedClasses.value,
+      id: selectedClasses.value,
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode = response?._data?.resCode?.toString();
+      const data = response?._data?.data;
 
       switch (resCode) {
         case "9010":
-          alertsStore.addAlert({type: "error", title: "Odstranění tříd", message: "Nedostatečné oprávnění pro odstranění tříd.",});
+          alertsStore.addAlert({ type: "error", title: "Odstranění tříd", message: "Nemáte oprávnění k této akci." });
           break;
+
         case "9020":
-          alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: "Žádná třída nebyla vybrána.",});
+          alertsStore.addAlert({ type: "warning", title: "Odstranění tříd", message: "Žádná třída nebyla vybrána." });
           break;
+
         case "9031":
-          if ((response._data.data.taskIds || []).length >= 1) {
-            alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tyto třídy jsou přiřazeny k nějakému úkolu: ${response._data.data.taskIds.join(", ")}`});
-          } else if ((response._data.data.userIds || []).length >= 1) {
-            alertsStore.addAlert({type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Tyto třídy obsahují nějaké uživatele: ${response._data.data.userIds.join(", ")}`});
+          if ((data?.badIds || []).length > 0) {
+            alertsStore.addAlert({ type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Neplatná ID: ${data.badIds.join(", ")}.` });
           } else {
-            alertsStore.addAlert({type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${response._data.data.goodIds.length})`});
+            alertsStore.addAlert({ type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${data?.goodIds?.length ?? 0})` });
           }
 
           classesRefresh();
           resetSelectedClasses();
           break;
+
         default:
-          alertsStore.addAlert({type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba.",});
-          break;
+          alertsStore.addAlert({ type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba." });
       }
     },
+
     onRequestError() {
-      alertsStore.addAlert({type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba.",});
+      alertsStore.addAlert({ type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     loading.value = false;
   });
-}
+};
 
 const { data: classesData, pending: classesTablePending, error: classesError, refresh: classesRefresh } = useFetch("/api/class/get", {
   query: {

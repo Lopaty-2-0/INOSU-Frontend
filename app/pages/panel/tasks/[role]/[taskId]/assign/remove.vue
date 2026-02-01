@@ -16,6 +16,8 @@ import {navigateTo} from "nuxt/app";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import Loading from "~/components/ui/Loading.vue";
 import SpecializationsTable from "~/components/tables/Specializations.vue";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -31,6 +33,8 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const task = ref<TaskData | undefined>(undefined);
 const usersTeam = ref<Task_Team_Solo_Table[] | undefined>(undefined);
 const userSearchInput = ref<string>("");
@@ -99,46 +103,58 @@ const removeTeams = async (): Promise<void> => {
     body: {
       idTask: taskId,
       idTeam: selectedTeams.value,
+      guarantor: accountData.value.id,
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode: string = response._data.resCode?.toString();
+      const goodIds: number[] = response._data.data?.goodIds || [];
+      const badIds: any[] = response._data.data?.badIds || [];
 
       switch (resCode) {
         case "31010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Chybí ID daného úkolu." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Chybí ID úkolu." });
           break;
+
         case "31020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Chybí ID vybraných přiřazení." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Chybí ID týmů." });
           break;
+
         case "31030":
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "ID úkolu musí být číslo." });
+          break;
+
         case "31040":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "ID úkolu není platné." });
           break;
+
         case "31050":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Zadaný úkol neexistuje." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Úkol neexistuje nebo nejste jeho garant." });
           break;
-        case "31060":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Uživatel není garantem úkolu." });
-          break;
+
         case "31071":
-          const goodIds: number[] = response._data.data.goodIds;
-          alertsStore.addAlert({ type: "success", title: "Odstranění přiřazení", message: `Úkol byl odstraněn u ${goodIds.length} přiřazení.` });
+          if (badIds.length > 0)
+            alertsStore.addAlert({ type: "warning", title: "Odstranění přiřazení", message: `Některá přiřazení (${badIds.length}) se nepodařilo odstranit.` });
+
+          alertsStore.addAlert({ type: "success", title: "Odstranění přiřazení", message: `Přiřazení byla úspěšně odstraněna (${goodIds.length}).` });
 
           usersRefresh();
           teamsRefresh();
           resetSelectedTeams();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     loading.value = false;
   });
 };
@@ -151,9 +167,10 @@ const onTeamSearchInputChange = (input: string): void => {
   teamSearchInput.value = input;
 };
 
-const { data: usersData, error: usersError, pending: usersPending, refresh: usersRefresh } = await useFetch("/api/team/get/users", {
+const { data: usersData, error: usersError, pending: usersPending, refresh: usersRefresh } = useFetch("/api/team/get/users", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
     amountForPaging: amountOfUsersForPaging,
     pageNumber: currentUsersPage,
     searchQuery: userSearchInput,
@@ -167,6 +184,7 @@ const { data: usersData, error: usersError, pending: usersPending, refresh: user
 const { data: teamsData, error: teamsError, pending: teamsPending, refresh: teamsRefresh } = useFetch("/api/team/get/teams", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
     amountForPaging: amountOfTeamsForPaging,
     pageNumber: currentTeamsPage,
     searchQuery: teamSearchInput,
@@ -177,38 +195,49 @@ const { data: teamsData, error: teamsError, pending: teamsPending, refresh: team
   credentials: "include",
 });
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 watchEffect((): void => {
-  if (taskError.value || !taskData.value) {
+  if (taskError.value) {
     navigateTo(`/panel/tasks/${role}`);
     return;
   }
 
-  if (usersError.value || !usersData.value) {
+  if (!taskData.value) return;
+
+  task.value = taskData.value.data.task;
+});
+
+watchEffect((): void => {
+  if (usersError.value) {
     users.value = [];
     usersCount.value = 0;
   }
 
-  if (teamsError.value || !teamsData.value) {
+  if (!usersData.value) return;
+
+  users.value = usersData.value.data.users.map((data: any) => data.userData);
+  usersTeam.value = usersData.value.data.users;
+  usersCount.value = usersData.value.data.count;
+});
+
+watchEffect((): void => {
+  if (teamsError.value) {
     teams.value = [];
     teamsCount.value = 0;
   }
 
-  if (!usersData.value || !teamsData.value) return;
+  if (!teamsData.value) return;
 
-
-  task.value = taskData.value.data.task;
-  users.value = usersData.value.data.users.map((data: any) => data.userData);
-  usersTeam.value = usersData.value.data.users;
-  usersCount.value = usersData.value.data.count;
   teams.value = teamsData.value.data.teams;
   teamsCount.value = teamsData.value.data.count;
 });
