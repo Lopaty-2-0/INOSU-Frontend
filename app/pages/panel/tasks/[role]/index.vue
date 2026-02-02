@@ -52,6 +52,12 @@ const openTask = async (id: number): Promise<void> => {
   await navigateTo(`/panel/tasks/${role}/${id}`);
 };
 
+const editTask = async (id: number): Promise<void> => {
+  if (!id) return;
+
+  await navigateTo(`/panel/tasks/${role}/${id}/edit`);
+};
+
 const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/task", {
   query: {
     idUser: userId,
@@ -127,6 +133,7 @@ watchEffect((): void => {
                 <template #actions="data">
                   <div class="actions">
                     <button type="button" class="default" @click="openTask(data.value.id)">Otevřít</button>
+                    <button type="button" class="default" @click="editTask(data.value.id)">Upravit</button>
                     <button type="button" class="assign" @click="assignTask(data.value.id)">Přiřadit</button>
                   </div>
                 </template>

@@ -116,33 +116,43 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
 });
 
 watchEffect((): void => {
-  if (taskError.value) {
-    navigateTo(`/panel/tasks/${role}`);
-    return;
-  }
-
-  if (usersError.value || !usersData.value) {
+  if (usersError.value) {
     users.value = [];
     usersCount.value = 0;
   }
 
-  if (teamsError.value || !teamsData.value) {
+  if (!usersData.value) return;
+
+  users.value = usersData.value.data.users.map((data: any) => data.userData);
+  usersTeam.value = usersData.value.data.users;
+  usersCount.value = usersData.value.data.count;
+});
+
+watchEffect((): void => {
+  if (teamsError.value) {
     teams.value = [];
     teamsCount.value = 0;
   }
 
-  if (!usersData.value || !teamsData.value) return;
+  if (!teamsData.value) return;
 
-  task.value = taskData.value.data.task;
-  users.value = usersData.value.data.users.map((data: any) => data.userData);
-  usersTeam.value = usersData.value.data.users;
-  usersCount.value = usersData.value.data.count;
   teams.value = teamsData.value.data.teams;
   teamsCount.value = teamsData.value.data.count;
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value);
+  if (taskError.value) {
+    navigateTo(`/panel/tasks/${role}`);
+    return;
+  }
+
+  if (!taskData.value) return;
+
+  task.value = taskData.value.data.task;
+});
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !task.value && !teams.value && !users.value);
 });
 </script>
 
@@ -195,14 +205,14 @@ watchEffect((): void => {
             </div>
           </div>
 
-          <div class="page-section" v-if="users">
+          <div class="page-section">
             <div class="section-head">
               <h3>Žáci</h3>
 
               <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
             </div>
 
-            <UsersTable :users="users" :loading="usersPending" :extra-columns="[
+            <UsersTable v-if="users" :users="users" :loading="usersPending" :extra-columns="[
               { field: 'points', title: 'Počet bodů' }
             ]">
               <template #points="data">
@@ -223,14 +233,14 @@ watchEffect((): void => {
             />
           </div>
 
-          <div class="page-section" v-if="teams">
+          <div class="page-section">
             <div class="section-head">
               <h3>Týmy</h3>
 
               <SearchInput @change="onTeamSearchInputChange" placeholder="Hledat týmy" />
             </div>
 
-            <TaskTeamsTable :teams="teams" :loading="teamsPending" :extra-columns="[
+            <TaskTeamsTable v-if="teams" :teams="teams" :loading="teamsPending" :extra-columns="[
               { field: 'points', title: 'Počet bodů' }
             ]">
               <template #points="data">

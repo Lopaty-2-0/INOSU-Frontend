@@ -281,11 +281,6 @@ watchEffect(async (): Promise<void> => {
   if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-
-  if (teamError.value) {
-    navigateTo(`/panel/tasks/${role}/${taskId}`);
-    return;
-  }
 });
 
 watch(versionsData, async (newValue: any): Promise<void> => {
