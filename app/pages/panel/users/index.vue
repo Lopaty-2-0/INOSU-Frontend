@@ -30,13 +30,20 @@ const {data: rolesData, error: rolesError} = useFetch("/api/user/get/roles", {
   lazy: true
 });
 
-watchEffect((): void => {
+watch([rolesData, rolesError, usersData], (): void => {
+  if (rolesError.value) {
+    allRoles.value = [];
+    return;
+  }
+
   if (!rolesData.value) return;
   allRoles.value = rolesData.value.data.roles || [];
 
   if (!usersData.value) return;
   numberOfUsers.value = usersData.value.data.count || 0;
+}, { immediate: true });
 
+watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allRoles.value && !rolesError.value);
 });
 </script>

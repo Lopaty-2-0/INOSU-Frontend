@@ -94,7 +94,6 @@ const addTask = async (): Promise<void> => {
   if (newData.value.deadline) formData.append("deadline", newData.value.deadline.getTime().toString());
   formData.append("endDate", newData.value.endDate?.getTime().toString() || "");
   formData.append("task", newData.value.taskFile || "");
-  formData.append("guarantor", useAccountStore().getId || "");
   if (newData.value.maxPoints) formData.append("points", newData.value.maxPoints.toString());
 
   await $fetch("/api/task/add", {
@@ -241,7 +240,7 @@ const addTask = async (): Promise<void> => {
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Maximální počet bodů <span class="update" v-show="newData.maxPoints">(aktualizováno)</span></h3>
+              <h3>Maximální počet bodů <span class="update" v-show="newData.maxPoints !== null">(aktualizováno)</span></h3>
               <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
             </div>
 

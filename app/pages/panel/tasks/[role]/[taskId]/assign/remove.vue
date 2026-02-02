@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import moment from "moment";
-import {computed, useTemplateRef, watchEffect} from "vue";
+import {computed, useTemplateRef, watch, watchEffect} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import {useLoadingStore} from "~/stores/loading";
 import {useAlertsStore} from "~/stores/alerts";
@@ -197,7 +197,7 @@ const { data: teamsData, error: teamsError, pending: teamsPending, refresh: team
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
     guarantor: accountData.value.id,
   },
   method: "get",
@@ -206,21 +206,22 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   lazy: true
 });
 
-watchEffect((): void => {
+watch([taskData, taskError], (): void => {
   if (taskError.value) {
-    navigateTo(`/panel/tasks/${role}`);
+    task.value = undefined;
     return;
   }
 
   if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-});
+}, { immediate: true });
 
-watchEffect((): void => {
+watch([usersData, usersError], (): void => {
   if (usersError.value) {
     users.value = [];
     usersCount.value = 0;
+    return;
   }
 
   if (!usersData.value) return;
@@ -228,19 +229,20 @@ watchEffect((): void => {
   users.value = usersData.value.data.users.map((data: any) => data.userData);
   usersTeam.value = usersData.value.data.users;
   usersCount.value = usersData.value.data.count;
-});
+}, { immediate: true });
 
-watchEffect((): void => {
+watch([teamsData, teamsError], (): void => {
   if (teamsError.value) {
     teams.value = [];
     teamsCount.value = 0;
+    return;
   }
 
   if (!teamsData.value) return;
 
   teams.value = teamsData.value.data.teams;
   teamsCount.value = teamsData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value);
@@ -290,7 +292,7 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
+                <a :href="`/api/file/task/${task.guarantor.id}/${task.id}/${task.task}`" class="link" download target="_blank">
                   {{ task.task }}
                 </a>
               </p>

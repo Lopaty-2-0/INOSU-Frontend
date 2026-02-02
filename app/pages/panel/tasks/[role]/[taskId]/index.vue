@@ -106,7 +106,7 @@ const { data: teamsData, error: teamsError, pending: teamsPending } = useFetch("
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
     guarantor: accountData.value.id,
   },
   method: "get",
@@ -115,10 +115,11 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   lazy: true,
 });
 
-watchEffect((): void => {
+watch([usersData, usersError], (): void => {
   if (usersError.value) {
     users.value = [];
     usersCount.value = 0;
+    return;
   }
 
   if (!usersData.value) return;
@@ -126,21 +127,22 @@ watchEffect((): void => {
   users.value = usersData.value.data.users.map((data: any) => data.userData);
   usersTeam.value = usersData.value.data.users;
   usersCount.value = usersData.value.data.count;
-});
+}, { immediate: true });
 
-watchEffect((): void => {
+watch([teamsData, teamsError], (): void => {
   if (teamsError.value) {
     teams.value = [];
     teamsCount.value = 0;
+    return;
   }
 
   if (!teamsData.value) return;
 
   teams.value = teamsData.value.data.teams;
   teamsCount.value = teamsData.value.data.count;
-});
+}, { immediate: true });
 
-watchEffect((): void => {
+watch([taskData, taskError], (): void => {
   if (taskError.value) {
     navigateTo(`/panel/tasks/${role}`);
     return;
@@ -149,7 +151,7 @@ watchEffect((): void => {
   if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value && !teams.value && !users.value);
@@ -169,7 +171,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task">
+    <template #content v-if="task && users && teams">
       <div id="task">
         <div class="content">
           <ActionBar
@@ -198,7 +200,7 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
+                <a :href="`/api/file/task/${task.guarantor.id}/${task.id}/${task.task}`" class="link" download target="_blank">
                   {{ task.task }}
                 </a>
               </p>
@@ -212,7 +214,7 @@ watchEffect((): void => {
               <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
             </div>
 
-            <UsersTable v-if="users" :users="users" :loading="usersPending" :extra-columns="[
+            <UsersTable :users="users" :loading="usersPending" :extra-columns="[
               { field: 'points', title: 'Počet bodů' }
             ]">
               <template #points="data">

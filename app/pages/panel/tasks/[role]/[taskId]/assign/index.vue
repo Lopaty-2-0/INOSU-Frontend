@@ -143,7 +143,7 @@ const { data: classesData, pending: classesPending, error: classesError } = useF
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
     guarantor: accountData.value.id,
   },
   method: "get",
@@ -152,19 +152,19 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   lazy: true
 });
 
-watchEffect((): void => {
+watch([taskData, taskError], (): void => {
   if (taskError.value) {
-    navigateTo(`/panel/tasks/${role}`);
+    task.value = undefined;
     return;
   }
 
   if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-});
+}, { immediate: true });
 
-watchEffect((): void => {
-  if (classesError.value || !classesData.value) {
+watch([classesData, classesError], (): void => {
+  if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
     return;
@@ -174,7 +174,7 @@ watchEffect((): void => {
 
   allClasses.value = classesData.value.data.classes;
   classesCount.value = classesData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value);
@@ -216,7 +216,7 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
+                <a :href="`/api/file/task/${task.guarantor.id}/${task.id}/${task.task}`" class="link" download target="_blank">
                   {{ task.task }}
                 </a>
               </p>

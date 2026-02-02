@@ -114,8 +114,7 @@ const downloadMaterials = async (): Promise<void> => {
     alertsStore.addAlert({ type: "error", title: "Stahování souborů", message: "Chyba při stahování materiálů úkolu." });
     return;
   }
-
-  await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.id}/${task.value.task}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.guarantor.id}/${task.value.id}/${task.value.task}`, { external: true });
 };
 
 const downloadVersion = async (version: Version): Promise<void> => {
@@ -124,7 +123,7 @@ const downloadVersion = async (version: Version): Promise<void> => {
     return;
   }
 
-  await navigateTo(`${config.public.originUrl}/api/file/tasks/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/tasks/${accountData.value.id}/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
 };
 
 const fetchUserData = async (userId: number): Promise<void> => {
@@ -240,7 +239,7 @@ const { data: teamData, error: teamError, refresh: refreshTeamData } = useFetch(
 });
 const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
     guarantor: accountData.value.id,
   },
   method: "get",
@@ -263,16 +262,16 @@ const { data: versionsData, error: versionsError, pending: versionsLoading } = u
   lazy: true
 });
 
-watchEffect((): void => {
+watch([teamData, teamError], (): void => {
   if (teamError.value) {
     navigateTo(`/panel/tasks/${role}/${taskId}`);
     return;
   }
 
   if (!teamData.value) return;
-});
+}, { immediate: true });
 
-watchEffect(async (): Promise<void> => {
+watch([taskData, taskError], (): void => {
   if (taskError.value) {
     navigateTo(`/panel/tasks/${role}/${taskId}`);
     return;
@@ -281,7 +280,7 @@ watchEffect(async (): Promise<void> => {
   if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-});
+}, { immediate: true });
 
 watch(versionsData, async (newValue: any): Promise<void> => {
   if (!newValue) return;

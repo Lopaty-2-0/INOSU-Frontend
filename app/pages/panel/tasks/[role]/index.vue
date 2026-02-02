@@ -71,9 +71,10 @@ const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("
   lazy: true
 });
 
-watchEffect((): void => {
+watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
     allTasks.value = [];
+    tasksCount.value = 0;
     return;
   }
 
@@ -81,7 +82,7 @@ watchEffect((): void => {
 
   allTasks.value = tasksData.value.data.tasks;
   tasksCount.value = tasksData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value);

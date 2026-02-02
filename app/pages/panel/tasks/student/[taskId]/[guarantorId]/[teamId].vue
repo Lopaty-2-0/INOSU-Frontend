@@ -59,7 +59,7 @@ const downloadMaterials = async (): Promise<void> => {
     return;
   }
 
-  await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.id}/${task.value.task}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.guarantor.id}/${task.value.id}/${task.value.task}`, { external: true });
 };
 
 const downloadVersion = async (version: Version): Promise<void> => {
@@ -68,7 +68,7 @@ const downloadVersion = async (version: Version): Promise<void> => {
     return;
   }
 
-  await navigateTo(`${config.public.originUrl}/api/file/tasks/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/tasks/${guarantorId}/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
 };
 
 const removeVersion = async (version: Version): Promise<void> => {
@@ -284,7 +284,7 @@ const { data: teamData, error: teamError } = useFetch("/api/team/get/info", {
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
     guarantor: guarantorId
   },
   method: "get",

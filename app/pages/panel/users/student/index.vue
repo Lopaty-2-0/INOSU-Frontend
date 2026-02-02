@@ -35,7 +35,7 @@ const { data: classesData, error: classesError } = useFetch("/api/class/get", {
   lazy: true
 });
 
-watchEffect((): void => {
+watch([classesData, classesError], (): void => {
   if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
@@ -46,8 +46,7 @@ watchEffect((): void => {
 
   allClasses.value = classesData.value.data.classes;
   classesCount.value = classesData.value.data.count;
-
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allClasses.value && !classesError.value);

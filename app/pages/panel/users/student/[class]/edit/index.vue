@@ -73,7 +73,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
   lazy: true
 });
 
-watchEffect((): void => {
+watch([usersData, usersError], (): void => {
   if (usersError.value) {
     users.value = undefined;
     return;
@@ -83,7 +83,7 @@ watchEffect((): void => {
 
   users.value = usersData.value.data.users;
   usersCount.value = usersData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !users.value && !usersError.value);

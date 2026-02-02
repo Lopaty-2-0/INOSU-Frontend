@@ -43,7 +43,7 @@ const { data: specializationData, pending: specializationTablePending, error: sp
   lazy: true
 });
 
-watchEffect((): void => {
+watch([specializationData, specializationError], (): void => {
   if (specializationError.value) {
     allSpecializations.value = [];
     specializationsCount.value = 0;
@@ -54,7 +54,7 @@ watchEffect((): void => {
 
   allSpecializations.value = specializationData.value.data.specializations;
   specializationsCount.value = specializationData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", specializationData.value === undefined);

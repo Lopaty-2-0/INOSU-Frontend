@@ -228,7 +228,7 @@ const {data: specializationsData, error: specializationsError} = useFetch("/api/
   lazy: true
 });
 
-watchEffect((): void => {
+watch([specializationsData, specializationsError], (): void => {
   if (specializationsError.value) {
     allSpecializations.value = [];
     return;
@@ -238,7 +238,7 @@ watchEffect((): void => {
 
   allSpecializations.value = specializationsData.value.data.specializations;
   numberOfSpecializations.value = specializationsData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allSpecializations.value);

@@ -38,15 +38,15 @@ const editTaskFile = ref<InstanceType<typeof EditTaskFile> | null>(null);
 const editDeadlineDate = ref<InstanceType<typeof EditDateTime> | null>(null);
 const editEndDate = ref<InstanceType<typeof EditDateTime> | null>(null);
 const loading = ref<boolean>(false);
-const oldData = computed<{ name: string, needApprove: boolean | null, taskFile: string, endDate: Date | null, deadline: Date | null, maxPoints: number | null, hasData: boolean }>(() => ({
+const oldData = ref<{ name: string, needApprove: boolean | null, taskFile: string, endDate: Date | null, deadline: Date | null, maxPoints: number | null, loaded: boolean }>({
   name: "",
   needApprove: null,
   taskFile: "",
   endDate: null,
   deadline: null,
   maxPoints: null,
-  hasData: false
-}));
+  loaded: false
+});
 const newData = ref<{ name: string | undefined, needApprove: boolean | undefined, taskFile: File | undefined, endDate: Date | undefined, deadline: Date | undefined, maxPoints: number | null }>({
   name: undefined,
   needApprove: undefined,
@@ -77,116 +77,102 @@ const resetUserData = (): void => {
     name: undefined,
     needApprove: undefined,
     taskFile: undefined,
-    deadline: undefined,
     endDate: undefined,
-    maxPoints: null,
+    deadline: undefined,
+    maxPoints: oldData.value.maxPoints,
   };
 
   if (editName.value) editName.value.reset();
   if (editTaskFile.value) editTaskFile.value.reset();
   if (editDeadlineDate.value) editDeadlineDate.value.reset();
   if (editEndDate.value) editEndDate.value.reset();
-  if (newData.value.maxPoints !== null) newData.value.maxPoints = null;
 };
 
-const addTask = async (): Promise<void> => {
-  if (!newData.value.name || !newData.value.endDate || !newData.value.taskFile) {
-    alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Vyplňte všechna povinná pole." });
-    return;
-  }
-
+const updateTask = async (): Promise<void> => {
   loading.value = true;
 
   const formData = new FormData();
-  formData.append("name", newData.value.name || "");
+  formData.append("id", taskId);
+  if (newData.value.name) formData.append("name", newData.value.name || "");
   if (newData.value.deadline) formData.append("deadline", newData.value.deadline.getTime().toString());
-  formData.append("endDate", newData.value.endDate?.getTime().toString() || "");
-  formData.append("task", newData.value.taskFile || "");
-  formData.append("guarantor", useAccountStore().getId || "");
-  if (newData.value.maxPoints) formData.append("points", newData.value.maxPoints.toString());
+  if (newData.value.endDate) formData.append("endDate", newData.value.endDate?.getTime().toString() || "");
+  if (newData.value.taskFile) formData.append("task", newData.value.taskFile || "");
+  if (newData.value.maxPoints !== null) formData.append("points", newData.value.maxPoints.toString());
 
-  await $fetch("/api/task/add", {
-    method: "post",
+  await $fetch("/api/task/update", {
+    method: "put",
     body: formData,
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }: any) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "26141":
-          alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
+        case "74010":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Tato role nemůže upravovat úkol." });
+          break;
+        case "74020":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nebyl zadán ID úkolu." });
+          break;
+        case "74030":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "ID úkolu není číslo." });
+          break;
+        case "74040":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "ID úkolu není platné." });
+          break;
+        case "74050":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Úkol nenalezen." });
+          break;
+        case "74060":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Název úkolu je příliš dlouhý." });
+          break;
+        case "74070":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Špatný formát souboru nebo příliš dlouhý název." });
+          break;
+        case "74080":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Datum ukončení není číslo nebo je příliš daleko." });
+          break;
+        case "74090":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Datum ukončení je před datem začátku." });
+          break;
+        case "74100":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Uzávěrka je před datem začátku." });
+          break;
+        case "74110":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Uzávěrka je před datem ukončení." });
+          break;
+        case "74120":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Uzávěrka není platná." });
+          break;
+        case "74130":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Body nejsou platné." });
+          break;
+        case "74140":
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Body nejsou platné." });
+          break;
+        case "74151":
+          alertsStore.addAlert({ type: "success", title: "Úprava úkolu", message: "Úkol byl úspěšně upraven." });
+
+          await refreshTask();
           resetUserData();
-          break;
 
-        case "26010":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Tato role nemůže vytvářet úkoly." });
           break;
-
-        case "26020":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu nebyl zadán." });
-          break;
-
-        case "26030":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení nebylo zadáno." });
-          break;
-
-        case "26040":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Název úkolu je příliš dlouhý." });
-          break;
-
-        case "26050":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je neplatné." });
-          break;
-
-        case "26060":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Datum ukončení je před datem začátku." });
-          break;
-
-        case "26070":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor úkolu nebyl zadán." });
-          break;
-
-        case "26080":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Neplatný formát souboru nebo příliš dlouhý název." });
-          break;
-
-        case "26090":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem začátku." });
-          break;
-
-        case "26100":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je před datem ukončení." });
-          break;
-
-        case "26110":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je neplatná." });
-          break;
-
-        case "26120":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Body nejsou ve správném formátu." });
-          break;
-
-        case "26130":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Počet bodů není platný." });
-          break;
-
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nastala neznámá chyba." });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba při odesílání požadavku." });
+      alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nastala neznámá chyba." });
     },
   }).finally((): void => {
     loading.value = false;
   });
 };
 
-const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError, refresh: refreshTask } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
     guarantor: accountData.value.id,
   },
   method: "get",
@@ -207,14 +193,15 @@ watch([taskError, taskData], async (): Promise<void> => {
 
   oldData.value.name = task.name;
   oldData.value.taskFile = task.task;
-  oldData.value.endDate = task.endDate;
-  oldData.value.deadline = task.deadline ?? null;
+  oldData.value.endDate = task.endDate ? new Date(task.endDate) : null;
+  oldData.value.deadline = task.deadline ? new Date(task.deadline) : null;
   oldData.value.maxPoints = task.points ?? null;
-  oldData.value.hasData = true;
-});
+  newData.value.maxPoints = task.points ?? null;
+  oldData.value.loaded = true;
+}, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !oldData.value.hasData);
+  useLoadingStore().setLoading("dataLoading", !oldData.value.loaded);
 });
 </script>
 
@@ -225,7 +212,8 @@ watchEffect((): void => {
         <template #left>
           <Breadcrumb :items="[
             { label: 'Úkoly', to: `/panel/tasks/${role}`, active: false, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Přidání', to: `/panel/tasks/${role}/add`, active: true },
+            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
+            { label: 'Úpravení', to: `/panel/tasks/${role}/${taskId}/edit`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -234,26 +222,10 @@ watchEffect((): void => {
     <template #content>
       <div id="tasks">
         <div class="content">
-          <ActionBar
-              class="action-bar"
-              description="Správa úkolů"
-              :texts="['Přidat', 'Odebrat']"
-              :actions="['add', 'remove']"
-              :icons="[
-              'material-symbols:add-rounded',
-              'material-symbols:delete-rounded',
-            ]"
-              :active="0"
-              :navigate-to="[
-              `/panel/tasks/${role}/add`,
-              `/panel/tasks/${role}/remove`,
-            ]"
-          />
-
           <div class="line page-section">
             <EditName ref="editName" :old-name="oldData.name" @update="onNameUpdate">
               <div class="section-head">
-                <h3>Název * <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
+                <h3>Název <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
                 <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
               </div>
             </EditName>
@@ -262,7 +234,7 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditTaskFile ref="editTaskFile" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
-                <h3>Zadání * <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
+                <h3>Zadání <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
                 <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
               </div>
             </EditTaskFile>
@@ -275,23 +247,21 @@ watchEffect((): void => {
             </div>
 
             <div class="line">
-              <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec úkolu *" />
+              <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec úkolu" />
               <EditDateTime ref="editDeadlineDate" @update="onDeadlineDateUpdate" :old-date="oldData.deadline" label="Uzávěrka" />
             </div>
           </div>
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Maximální počet bodů <span class="update" v-show="newData.maxPoints">(aktualizováno)</span></h3>
+              <h3>Maximální počet bodů <span class="update" v-show="newData.maxPoints !== oldData.maxPoints">(aktualizováno)</span></h3>
               <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
             </div>
 
-            <NumberInput v-model="newData.maxPoints" :min="0" placeholder="Bez bodů" enable-null />
+            <NumberInput v-model="newData.maxPoints" :min="0" placeholder="Bez bodů" />
           </div>
 
-          <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="addTask">
-            Pole označená * jsou povinná
-          </EditFormFooter>
+          <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="updateTask"></EditFormFooter>
         </div>
       </div>
     </template>

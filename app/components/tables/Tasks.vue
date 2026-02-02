@@ -80,8 +80,8 @@ const rows = computed<TaskData[]>((): TaskData[] => {
 });
 const selectRowOnClick = computed<boolean>((): boolean => props.hasCheckbox);
 
-const downloadTask = (id: number, task: string): void => {
-  window.open(`/api/file/task/${id}/${task}`, "_blank");
+const downloadTask = (guarantorId: number, id: number, task: string): void => {
+  navigateTo(`/api/file/task/${guarantorId}/${id}/${task}`, { external: true, open: { target: "_blank" } });
 };
 
 const clearSelection = (): void => {
@@ -130,7 +130,7 @@ defineExpose({ clearSelection });
     </template>
 
     <template #task="data">
-      <span class="link limit" @click="downloadTask(data.value.id, data.value.task)">
+      <span class="link limit" @click="downloadTask(data.value.guarantor, data.value.id, data.value.task)">
         {{ data.value.task }}
       </span>
     </template>

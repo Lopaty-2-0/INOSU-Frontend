@@ -217,24 +217,24 @@ const assignToTeam = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Do tohoto týmu nelze přidat více uživatelů." });
           break;
 
-        case "43111":
-          if ((response._data.data?.differentTeam || []).length > 0)
-            alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Někteří žáci nebyli přidáni, protože již patří do jiného týmu. Počet: ${response._data.data.differentTeam.length}` });
+        case "43101":
+          (response._data.data?.differentTeam?.length > 0) &&
+          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Někteří žáci již patří do jiného týmu. Počet: ${response._data.data.differentTeam.length}` });
 
-          if ((response._data.data?.badIds || []).length > 0)
-            alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Některé zadané ID uživatelů jsou neplatné. Počet: ${response._data.data.badIds.length}` });
+          (response._data.data?.badIds?.length > 0) &&
+          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Některá ID uživatelů jsou neplatná. Počet: ${response._data.data.badIds.length}` });
 
-          if ((response._data.data?.goodIds || []).length > 0)
-            alertsStore.addAlert({ type: "success", title: "Přidání do týmu", message: `Do týmu bylo přidáno ${response._data.data.goodIds.length} žáků.` });
+          (response._data.data?.goodIds?.length > 0) &&
+          alertsStore.addAlert({ type: "success", title: "Přidání do týmu", message: `Do týmu bylo přidáno ${response._data.data.goodIds.length} žáků.` });
 
           teamRefresh();
-
           break;
 
         default:
           alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Nastala neznámá chyba." });
           break;
       }
+
     },
 
     onRequestError() {
@@ -288,7 +288,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
   lazy: true,
 });
 
-watchEffect((): void => {
+watch([usersData, usersError], (): void => {
   if (usersError.value) {
     users.value = undefined;
     return;
@@ -298,9 +298,9 @@ watchEffect((): void => {
 
   users.value = usersData.value.data.users;
   usersCount.value = usersData.value.data.count;
-});
+}, { immediate: true });
 
-watchEffect((): void => {
+watch([teamData, teamError], (): void => {
   if (teamError.value) {
     teamTaskData.value = undefined;
     return;
@@ -312,7 +312,7 @@ watchEffect((): void => {
     ...teamData.value.data.team,
     users: teamData.value.data.users,
   }
-});
+}, { immediate: true });
 
 watch(() => teamTaskData.value, (newVal: TaskTeam | undefined): void => {
   if (!newVal) return;

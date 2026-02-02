@@ -44,9 +44,11 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const openTask = async (taskId: number, teamId: number, guarantorId: number): Promise<void> => {
-  if (!taskId || !teamId || !guarantorId) return;
+const downloadTask = async (guarantorId: number, id: number, task: string): Promise<void> => {
+  await navigateTo(`/api/file/task/${guarantorId}/${id}/${task}`, { external: true, open: { target: "_blank" } });
+};
 
+const openTask = async (taskId: number, teamId: number, guarantorId: number): Promise<void> => {
   await navigateTo(`/panel/tasks/student/${taskId}/${guarantorId}/${teamId}`);
 };
 
@@ -63,9 +65,10 @@ const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("
   lazy: true
 });
 
-watchEffect((): void => {
+watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
     allTasks.value = [];
+    tasksCount.value = 0;
     return;
   }
 
@@ -79,7 +82,7 @@ watchEffect((): void => {
   });
 
   tasksCount.value = tasksData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value);
@@ -112,9 +115,15 @@ watchEffect((): void => {
                 <SearchInput @change="onSearchInputChange" placeholder="Hledat úkol" />
               </div>
 
-              <TasksTable :tasks="allTasks" :loading="tasksPending" :extra-columns="[
+              <TasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
                   { field: 'guarantor', title: 'Garant' }
               ]">
+                <template #task="data">
+                  <span class="link limit" @click="downloadTask(data.value.guarantor.id, data.value.id, data.value.task)">
+                    {{ data.value.task }}
+                  </span>
+                </template>
+
                 <template #points="data">
                   {{ data.value.points ? `${data.value.team.points ?? "-"} / ${data.value.points}` : "Neurčeno" }}
                 </template>
@@ -182,36 +191,57 @@ watchEffect((): void => {
     }
   }
 
-  .actions {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
+  .datatable {
+    .actions {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
 
-    button {
-      padding: 10px 15px;
-      border-radius: var(--small-border-radius);
+      button {
+        padding: 10px 15px;
+        border-radius: var(--small-border-radius);
+        transition: 0.2s;
+        font-size: 16px;
+        background: var(--btn-2-background);
+        color: var(--btn-2-color);
+        border: var(--border-width) solid rgba(var(--border-color), 0.5);
+        cursor: pointer;
+
+        &:hover {
+          background: var(--btn-2-hover-background);
+        }
+
+        &.primary {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          align-items: center;
+          background: var(--btn-1-background);
+          color: var(--btn-1-color);
+
+          &:hover {
+            background: var(--btn-1-hover-background);
+          }
+        }
+      }
+    }
+
+    .limit {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .link {
+      color: rgba(var(--main-color), 1);
+      text-decoration: none;
       transition: 0.2s;
-      font-size: 16px;
-      background: var(--btn-2-background);
-      color: var(--btn-2-color);
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
       cursor: pointer;
 
       &:hover {
-        background: var(--btn-2-hover-background);
-      }
-
-      &.primary {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        background: var(--btn-1-background);
-        color: var(--btn-1-color);
-
-        &:hover {
-          background: var(--btn-1-hover-background);
-        }
+        color: rgba(var(--main-color), 0.8);
       }
     }
   }

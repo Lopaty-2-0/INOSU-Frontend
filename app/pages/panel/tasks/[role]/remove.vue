@@ -70,7 +70,7 @@ const removeTasks = async (): Promise<void> => {
   await $fetch("/api/task/delete", {
     method: "delete",
     body: {
-      idTask: selectedTaskIds.value
+      id: selectedTaskIds.value
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -126,9 +126,10 @@ const { data: tasksData, error: tasksError, pending: tasksPending, refresh: task
   lazy: true
 });
 
-watchEffect((): void => {
+watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
     allTasks.value = [];
+    tasksCount.value = 0;
     return;
   }
 
@@ -136,7 +137,7 @@ watchEffect((): void => {
 
   allTasks.value = tasksData.value.data.tasks;
   tasksCount.value = tasksData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value);

@@ -4,7 +4,7 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import moment from "moment/moment";
 import type {TaskData} from "~/types/tasks";
-import {computed, ref, useTemplateRef, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watch, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
@@ -145,7 +145,7 @@ const onUsersRowClicked = (user: AccountData): void => {
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
     guarantor: accountData.value.id,
   },
   method: "get",
@@ -167,18 +167,18 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
   lazy: true
 });
 
-watchEffect((): void => {
+watch([taskData, taskError], (): void => {
   if (taskError.value) {
-    navigateTo(`/panel/tasks/${role}`);
+    task.value = undefined;
     return;
   }
 
   if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-});
+}, { immediate: true });
 
-watchEffect((): void => {
+watch([usersData, usersError], (): void => {
   if (usersError.value) {
     users.value = undefined;
     return;
@@ -188,7 +188,7 @@ watchEffect((): void => {
 
   users.value = usersData.value.data.users;
   usersCount.value = usersData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !users.value && !usersError.value);
@@ -230,7 +230,7 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
+                <a :href="`/api/file/task/${task.guarantor.id}/${task.id}/${task.task}`" class="link" download target="_blank">
                   {{ task.task }}
                 </a>
               </p>

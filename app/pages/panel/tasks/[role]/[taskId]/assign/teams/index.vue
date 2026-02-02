@@ -4,7 +4,7 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import moment from "moment/moment";
 import type {TaskData} from "~/types/tasks";
-import {computed, ref, useTemplateRef, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watch, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
@@ -73,8 +73,14 @@ const createTeam = async (): Promise<void> => {
       const resCode: string = response._data.resCode?.toString();
 
       switch (resCode) {
+        case "30081":
+          alertsStore.addAlert({ type: "success", title: "Vytvoření týmu", message: "Tým byl úspěšně vytvořen." });
+          createTeamInput.value = "";
+          teamsRefresh();
+          break;
+
         case "30010":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Chybí ID úkolu." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "ID úkolu nebylo zadáno." });
           break;
 
         case "30020":
@@ -86,22 +92,19 @@ const createTeam = async (): Promise<void> => {
           break;
 
         case "30040":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Úkol neexistuje nebo nejste jeho garant." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "K tomuto typu úkolu nelze přidat tým." });
           break;
 
         case "30050":
-          alertsStore.addAlert({ type: "warning", title: "Vytvoření týmu", message: "Název týmu je příliš dlouhý (max. 255 znaků)." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Zadaný úkol neexistuje nebo nejste jeho garant." });
           break;
 
         case "30060":
-          alertsStore.addAlert({ type: "warning", title: "Vytvoření týmu", message: "Tým se stejným názvem již existuje." });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Název týmu je příliš dlouhý." });
           break;
 
-        case "30071":
-          alertsStore.addAlert({ type: "success", title: "Vytvoření týmu", message: "Tým byl úspěšně vytvořen." });
-
-          createTeamInput.value = "";
-          teamsRefresh();
+        case "30070":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Tým s tímto názvem již existuje." });
           break;
 
         default:
@@ -126,7 +129,7 @@ const onTeamsSearchInputChange = (input: string): void => {
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
     guarantor: accountData.value.id,
   },
   method: "get",
@@ -149,7 +152,7 @@ const { data: teamsData, error: teamsError, pending: teamsPending, refresh: team
   credentials: "include",
 });
 
-watchEffect((): void => {
+watch([taskData, taskError], (): void => {
   if (taskError.value) {
     navigateTo(`/panel/tasks/${role}`);
     return;
@@ -158,9 +161,9 @@ watchEffect((): void => {
   if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-});
+}, { immediate: true });
 
-watchEffect((): void => {
+watch([teamsData, teamsError], (): void => {
   if (teamsError.value) {
     teams.value = [];
     teamsCount.value = 0;
@@ -171,7 +174,7 @@ watchEffect((): void => {
 
   teams.value = teamsData.value.data.teams;
   teamsCount.value = teamsData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamsData.value && !teamsError.value);
@@ -213,7 +216,7 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points || "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
+                <a :href="`/api/file/task/${task.guarantor.id}/${task.id}/${task.task}`" class="link" download target="_blank">
                   {{ task.task }}
                 </a>
               </p>

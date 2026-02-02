@@ -18,7 +18,6 @@ useHead({
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
-const router = useRouter();
 const accountStore = useAccountStore();
 const { getRole: role, getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<TaskData[] | undefined>(undefined);
@@ -66,9 +65,11 @@ const infoCards = computed<{ title: string; icon: string; value: string | number
 ]);
 
 const openTask = async (id: number): Promise<void> => {
-  if (!id) return;
+  await navigateTo(`/panel/tasks/${role.value}/${id}`);
+};
 
-  await router.push(`/panel/tasks/${role.value}/${id}`);
+const downloadTask = async (guarantorId: number, id: number, task: string): Promise<void> => {
+  await navigateTo(`/api/file/task/${guarantorId}/${id}/${task}`, { external: true, open: { target: "_blank" } });
 };
 
 const {data: studentsCount} = useFetch("/api/user/get/count/byRole?role=student", {
@@ -92,13 +93,21 @@ const {data: classesCount} = useFetch("/api/class/count", {
   lazy: true
 });
 
-watchEffect((): void => {
-  numbers.value = {
-    students: studentsCount.value?.data.count ?? null,
-    classes: classesCount.value?.data.count ?? null,
-    teachers: teachersCount.value?.data.count ?? null,
-  };
+watch([studentsCount, teachersCount, classesCount], (): void => {
+  if (studentsCount.value) {
+    numbers.value.students = studentsCount.value.data.count;
+  }
 
+  if (teachersCount.value) {
+    numbers.value.teachers = teachersCount.value.data.count;
+  }
+
+  if (classesCount.value) {
+    numbers.value.classes = classesCount.value.data.count;
+  }
+}, { immediate: true });
+
+watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allTasks.value || numbers.value.students === null || numbers.value.classes === null || numbers.value.teachers === null);
 });
 
@@ -206,6 +215,12 @@ onMounted(async (): Promise<void> => {
                   <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>
                 </div>
               </template>
+
+              <template #task="data" v-if="!['admin', 'teacher'].includes(role)">
+                  <span class="link limit" @click="downloadTask(data.value.guarantor.id, data.value.id, data.value.task)">
+                    {{ data.value.task }}
+                  </span>
+              </template>
             </TasksTable>
           </div>
         </div>
@@ -239,6 +254,62 @@ onMounted(async (): Promise<void> => {
     }
   }
 
+  .datatable {
+
+    .actions {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+
+      button {
+        padding: 10px 15px;
+        border-radius: var(--small-border-radius);
+        transition: 0.2s;
+        font-size: 16px;
+        background: var(--btn-2-background);
+        color: var(--btn-2-color);
+        border: var(--border-width) solid rgba(var(--border-color), 0.5);
+        cursor: pointer;
+
+        &:hover {
+          background: var(--btn-2-hover-background);
+        }
+
+        &.primary {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          align-items: center;
+          background: var(--btn-1-background);
+          color: var(--btn-1-color);
+
+          &:hover {
+            background: var(--btn-1-hover-background);
+          }
+        }
+      }
+    }
+
+    .limit {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .link {
+      color: rgba(var(--main-color), 1);
+      text-decoration: none;
+      transition: 0.2s;
+      cursor: pointer;
+
+      &:hover {
+        color: rgba(var(--main-color), 0.8);
+      }
+    }
+  }
+
   .link {
     color: rgba(var(--main-color), 1);
     text-decoration: none;
@@ -253,40 +324,6 @@ onMounted(async (): Promise<void> => {
     height: fit-content;
     min-width: 250px;
     padding: 30px;
-  }
-
-  .actions {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-
-    button {
-      padding: 10px 15px;
-      border-radius: var(--small-border-radius);
-      transition: 0.2s;
-      font-size: 16px;
-      background: var(--btn-2-background);
-      color: var(--btn-2-color);
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
-      cursor: pointer;
-
-      &:hover {
-        background: var(--btn-2-hover-background);
-      }
-
-      &.primary {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        background: var(--btn-1-background);
-        color: var(--btn-1-color);
-
-        &:hover {
-          background: var(--btn-1-hover-background);
-        }
-      }
-    }
   }
 
   .line {

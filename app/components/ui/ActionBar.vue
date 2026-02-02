@@ -36,7 +36,7 @@ const emits = defineEmits(["selected"]);
     <p class="description">{{ props.description }}</p>
 
     <div class="actions">
-      <NuxtLink
+      <a
           v-for="(_, index) in props.texts.length"
           :key="index"
           :class="{
@@ -44,7 +44,7 @@ const emits = defineEmits(["selected"]);
           active: props.active === index,
           [props.actions[index] || '']: true,
         }"
-          :to="props.navigateTo[index] || '#'"
+          :href="props.navigateTo[index] || '#'"
           @click="emits('selected', index)"
       >
         <Icon
@@ -54,7 +54,7 @@ const emits = defineEmits(["selected"]);
           "
         ></Icon>
         {{ props.texts[index] }}
-      </NuxtLink>
+      </a>
     </div>
   </div>
 </template>
