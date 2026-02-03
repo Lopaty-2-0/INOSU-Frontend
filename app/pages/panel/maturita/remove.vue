@@ -161,12 +161,12 @@ watchEffect((): void => {
       <div id="maturitas">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa maturitních ročníků"
-              :texts="['Přidat', 'Odebrat']"
-              :actions="['add', 'remove']"
-              :active="1"
-              :icons="[
+            class="action-bar"
+            description="Správa maturitních ročníků"
+            :texts="['Přidat', 'Odebrat']"
+            :actions="['add', 'remove']"
+            :active="1"
+            :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
