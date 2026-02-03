@@ -91,6 +91,46 @@ const sidebarLinks = computed<
       },
     ],
   },
+  {
+    name: "Maturita",
+    links: [
+      {
+        text: "Maturity",
+        href: "/panel/maturita",
+        iconClass: "material-symbols:architecture-rounded",
+        notify: false,
+        activeHrefs: [
+          "/panel/maturita",
+          "/panel/maturita/add",
+          "/panel/maturita/remove",
+        ],
+      },
+      {
+        text: "Zadání",
+        href: "/panel/maturita/tasks",
+        iconClass: "material-symbols:architecture-rounded",
+        notify: false,
+      },
+      {
+        text: "Návrhy",
+        href: "/panel/maturita/proposaltable",
+        iconClass: "material-symbols:architecture-rounded",
+        notify: false,
+      },
+      {
+        text: "Témata",
+        href: "/panel/maturita/topic",
+        iconClass: "material-symbols:architecture-rounded",
+        notify: false,
+      },
+      {
+        text: "Tabulka",
+        href: "/panel/maturita/table",
+        iconClass: "material-symbols:architecture-rounded",
+        notify: false,
+      },
+    ],
+  },
   ...(role.value === "admin")
       ? [
         {
