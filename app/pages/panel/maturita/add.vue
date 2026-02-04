@@ -92,11 +92,31 @@ const onEndDateUpdate = (endDate: Date | undefined): void => {
 };
 
 const checkForErrors = (): void => {
-  errors.value.grade = newData.value.grade && newData.value.grade !== "" ? "" : "Název maturitního ročníku je povinný.";
-  errors.value.grade = newData.value.grade && newData.value.grade.length <= 9 ? "" : "Název maturitního ročníku je příliš dlouhý.";
-  errors.value.startDate = newData.value.startDate ? "" : "Datum začátku je povinné.";
-  errors.value.endDate = newData.value.endDate ? "" : "Datum ukončení je povinné.";
-  errors.value.maxPoints = newData.value.maxPoints !== null && (isNaN(newData.value.maxPoints) || newData.value.maxPoints < 0) ? "Maximální počet bodů musí být kladné číslo." : "";
+  if (!newData.value.grade || newData.value.grade.length > 9 || newData.value.grade.length === 0) {
+    errors.value.grade = newData.value.grade && newData.value.grade.length > 9
+        ? "Název maturitního ročníku je příliš dlouhý."
+        : "Název maturitního ročníku je povinný.";
+  } else {
+    errors.value.grade = "";
+  }
+
+  if (!newData.value.startDate) {
+    errors.value.startDate = "Datum začátku je povinné.";
+  } else {
+    errors.value.startDate = "";
+  }
+
+  if (!newData.value.endDate) {
+    errors.value.endDate = "Datum ukončení je povinné.";
+  } else {
+    errors.value.endDate = "";
+  }
+
+  if (newData.value.maxPoints === null || isNaN(newData.value.maxPoints) || newData.value.maxPoints < 0) {
+    errors.value.maxPoints = "Maximální počet bodů musí být kladné číslo.";
+  } else {
+    errors.value.maxPoints = "";
+  }
 };
 
 const resetUserData = (): void => {
@@ -268,7 +288,7 @@ watchEffect((): void => {
           />
           <div class="page-section">
             <div class="section-head">
-              <h3>Ročník * <span class="update" v-show="newData.grade">(aktualizováno)</span></h3>
+              <h3>Ročník * <span class="update" v-show="newData.grade && errors.grade.length <= 0">(aktualizováno)</span></h3>
               <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
             </div>
 
@@ -303,7 +323,7 @@ watchEffect((): void => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Maximální počet bodů * <span class="update" v-show="newData.maxPoints !== oldData.maxPoints">(aktualizováno)</span></h3>
+              <h3>Maximální počet bodů * <span class="update" v-show="newData.maxPoints !== oldData.maxPoints && errors.maxPoints.length <= 0">(aktualizováno)</span></h3>
               <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
             </div>
 

@@ -79,23 +79,15 @@ const removeMaturitas = async (): Promise<void> => {
           break;
 
         case "71020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Nebyla vybrána maturita." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Nebyl vybrána žádný maturitní ročník." });
           break;
 
         case "71030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "ID maturity není číslo." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Žádný maturitní ročník nebyl odstraněn." });
           break;
 
-        case "71040":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "ID maturity není platné." });
-          break;
-
-        case "71050":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Maturita neexistuje." });
-          break;
-
-        case "71061":
-          alertsStore.addAlert({ type: "success", title: "Odstranění maturit", message: "Maturita byla úspěšně odstraněna." });
+        case "71041":
+          alertsStore.addAlert({ type: "success", title: "Odstranění maturit", message: "Maturitní ročníky byly úspěšně odstraněny." });
           refreshMaturitas();
           resetSelectedMaturitas();
           break;

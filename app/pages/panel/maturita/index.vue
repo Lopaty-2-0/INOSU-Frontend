@@ -73,7 +73,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: '/panel/specializations', active: true, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: '/panel/maturita', active: true, icon: 'material-symbols:architecture-rounded' },
           ]"/>
         </template>
       </Navbar>

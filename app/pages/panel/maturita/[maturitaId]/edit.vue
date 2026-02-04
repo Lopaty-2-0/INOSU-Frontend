@@ -19,6 +19,7 @@ import type {AccountData} from "~/types/account";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import type {TaskData} from "~/types/tasks";
+import type {MaturitaData} from "~/types/maturita";
 
 useHead({
   title: "Panel | Úkol - Přidání",
@@ -38,7 +39,6 @@ const alertsStore = useAlertsStore();
 const usersDatatable = useTemplateRef<InstanceType<typeof UsersTable>>("usersDatatable");
 const users = ref<AccountData[] | undefined>(undefined);
 const usersCount = ref<number>(0);
-const selectedUsers = ref<number[]>([]);
 const currentUsersPage = ref<number>(1);
 const searchUsersInput = ref<string>("");
 const amountForUsersPaging: number = 5;
@@ -46,17 +46,20 @@ const editName = ref<InstanceType<typeof EditName> | null>(null);
 const editStartDate = ref<InstanceType<typeof EditDateTime> | null>(null);
 const editEndDate = ref<InstanceType<typeof EditDateTime> | null>(null);
 const loading = ref<boolean>(false);
-const oldData = computed<{ grade: string, endDate: Date | null, startDate: Date | null, maxPoints: number | null }>(() => ({
+const oldData = ref<{ grade: string, endDate: Date | null, startDate: Date | null, maxPoints: number | null; evaluators: number[], loaded: boolean }>({
   grade: "",
   endDate: null,
   startDate: null,
   maxPoints: 0,
-}));
-const newData = ref<{ grade: string | undefined, endDate: Date | undefined, startDate: Date | undefined, maxPoints: number | null }>({
+  loaded: false,
+  evaluators: []
+});
+const newData = ref<{ grade: string | undefined, endDate: Date | undefined, startDate: Date | undefined, maxPoints: number | null, evaluators: number[] }>({
   grade: undefined,
   endDate: undefined,
   startDate: undefined,
   maxPoints: 0,
+  evaluators: []
 });
 const errors = ref<{ grade: string; endDate: string; startDate: string; maxPoints: string; }>({
   grade: "",
@@ -68,6 +71,16 @@ const numberOfUsersPages = computed<number>((): number => {
   return Math.ceil(usersCount.value / amountForUsersPaging);
 });
 
+const isEqual = (array1: number[], array2: number[]): boolean => {
+  if (array1.length !== array2.length) return false;
+
+  return array1.every((element: number, index: number) => {
+    if (!array2[index]) return false;
+
+    return element === array2[index];
+  });
+};
+
 const onUsersSearchInputChange = (input: string): void => {
   currentUsersPage.value = 1;
 
@@ -75,13 +88,12 @@ const onUsersSearchInputChange = (input: string): void => {
 };
 
 const onUsersRowClicked = (user: AccountData): void => {
-  if (!selectedUsers.value.includes(user.id)) {
-    selectedUsers.value.push(user.id);
+  if (!newData.value.evaluators.includes(user.id)) {
+    newData.value.evaluators.push(user.id);
   } else {
-    selectedUsers.value = selectedUsers.value.filter((id: number) => id !== user.id);
+    newData.value.evaluators = newData.value.evaluators.filter((id: number) => id !== user.id);
   }
 };
-
 
 const onStartDateUpdate = (startDateDate: Date | undefined): void => {
   newData.value.startDate = startDateDate;
@@ -96,22 +108,18 @@ const onEndDateUpdate = (endDate: Date | undefined): void => {
 };
 
 const checkForErrors = (): void => {
-  errors.value.grade = newData.value.grade && newData.value.grade !== "" ? "" : "Název maturitního ročníku je povinný.";
-  errors.value.grade = newData.value.grade && newData.value.grade.length <= 9 ? "" : "Název maturitního ročníku je příliš dlouhý.";
-  errors.value.startDate = newData.value.startDate ? "" : "Datum začátku je povinné.";
-  errors.value.endDate = newData.value.endDate ? "" : "Datum ukončení je povinné.";
+  errors.value.grade = newData.value.grade && newData.value.grade.length > 9 ? "Název maturitního ročníku je příliš dlouhý." : "";
   errors.value.maxPoints = newData.value.maxPoints !== null && (isNaN(newData.value.maxPoints) || newData.value.maxPoints < 0) ? "Maximální počet bodů musí být kladné číslo." : "";
 };
 
 const resetUserData = (): void => {
   newData.value = {
-    grade: undefined,
+    grade: oldData.value.grade,
     startDate: undefined,
     endDate: undefined,
-    maxPoints: 0,
+    maxPoints: oldData.value.maxPoints,
+    evaluators: oldData.value.evaluators
   };
-
-  selectedUsers.value = [];
 
   if (editName.value) editName.value.reset();
   if (editStartDate.value) editStartDate.value.reset();
@@ -119,94 +127,123 @@ const resetUserData = (): void => {
   if (usersDatatable.value) usersDatatable.value.clearSelection();
 };
 
-const addMaturita = async (): Promise<void> => {
-  if (!newData.value.grade || !newData.value.endDate || !newData.value.startDate || newData.value.maxPoints === null) {
-    alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Vyplňte všechna povinná pole." });
-    return;
+const updateMaturita = async (): Promise<void> => {
+  const body = {
+    idMaturita: maturitaId,
+    grade: newData.value.grade !== oldData.value.grade ? newData.value.grade : undefined,
+    startDate:
+        newData.value.startDate?.getTime() !== oldData.value.startDate?.getTime()
+            ? newData.value.startDate?.getTime()
+            : undefined,
+    endDate:
+        newData.value.endDate?.getTime() !== oldData.value.endDate?.getTime()
+            ? newData.value.endDate?.getTime()
+            : undefined,
+    maxPoints:
+        newData.value.maxPoints !== oldData.value.maxPoints
+            ? newData.value.maxPoints
+            : undefined,
+    evaluators:
+        newData.value.evaluators !== oldData.value.evaluators
+            ? newData.value.evaluators
+            : undefined,
   }
 
   loading.value = true;
 
-  await $fetch("/api/maturita/add", {
-    method: "post",
-    body: {
-      grade: newData.value.grade,
-      startDate: newData.value.startDate?.getTime(),
-      endDate: newData.value.endDate?.getTime(),
-      maxPoints: newData.value.maxPoints,
-      evaluators: selectedUsers.value || [],
-    },
+  await $fetch("/api/maturita/update", {
+    method: "put",
+    body: body,
     credentials: "include",
     ignoreResponseError: true,
-    onResponse({ response }: any) {
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "67010":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Nemáte oprávnění k této akci." });
+        case "68010":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Nemáte oprávnění k této akci." });
           break;
 
-        case "67020":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Ročník nebyl zadán." });
+        case "68020":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "ID maturity nebylo zadáno." });
           break;
 
-        case "67030":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Maximální počet bodů nebyl zadán." });
+        case "68030":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Nebyla zadána žádná hodnota ke změně." });
           break;
 
-        case "67040":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Datum začátku nebylo zadáno." });
+        case "68040":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "ID maturity není číslo." });
           break;
 
-        case "67050":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Datum ukončení nebylo zadáno." });
+        case "68050":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "ID maturity není platné." });
           break;
 
-        case "67060":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Název maturitního ročníku je příliš dlouhý." });
+        case "68060":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Maturita nebyla nalezena." });
           break;
 
-        case "67070":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Tento ročník již existuje." });
+        case "68070":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Ročník je příliš dlouhý." });
           break;
 
-        case "67080":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Maximální počet bodů není číslo." });
+        case "68080":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Tento ročník již existuje." });
           break;
 
-        case "67090":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Maximální počet bodů není platný." });
+        case "68090":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Maximální počet bodů není číslo." });
           break;
 
-        case "67100":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Datum ukončení je neplatné." });
+        case "68100":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Maximální počet bodů není platný." });
           break;
 
-        case "67110":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Datum začátku je neplatné." });
+        case "68110":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Datum začátku je neplatné." });
           break;
 
-        case "67120":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Datum ukončení je před datem začátku." });
+        case "68120":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Datum ukončení je před datem začátku." });
           break;
 
-        case "67131":
-          alertsStore.addAlert({ type: "success", title: "Přidání maturity", message: "Maturita byla úspěšně vytvořena." });
+        case "68130":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Datum ukončení je neplatné." });
+          break;
+
+        case "68140":
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Datum ukončení je před datem začátku." });
+          break;
+
+        case "68151":
+          alertsStore.addAlert({ type: "success", title: "Úprava maturity", message: "Maturita byla úspěšně upravena." });
+          await refreshMaturita();
           resetUserData();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Nastala neznámá chyba." });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Nastala neznámá chyba." });
     },
   }).finally((): void => {
     loading.value = false;
   });
 };
+
+const { data: maturitaData, error: maturitaError, refresh: refreshMaturita } = useFetch("/api/maturita/get/id", {
+  query: {
+    id: maturitaId
+  },
+  method: "get",
+  server: true,
+  credentials: "include",
+  lazy: true
+});
 
 const { data: usersData, error: usersError, pending: usersPending } = useFetch("/api/user/get/role", {
   query: {
@@ -220,6 +257,27 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
   credentials: "include",
   lazy: true
 });
+
+watch([maturitaData, maturitaError], async (): Promise<void> => {
+  if (maturitaError.value) {
+    await navigateTo(`/panel/maturita`);
+    return;
+  }
+
+  if (!maturitaData.value) return;
+
+  const maturita: MaturitaData = maturitaData.value.data.maturita;
+
+  oldData.value.grade = maturita.grade;
+  newData.value.grade = maturita.grade;
+  oldData.value.startDate = maturita.startDate ? new Date(maturita.startDate) : null;
+  oldData.value.endDate = maturita.endDate ? new Date(maturita.endDate) : null;
+  oldData.value.maxPoints = maturita.maxPoints ?? null;
+  newData.value.maxPoints = maturita.maxPoints ?? null;
+  oldData.value.evaluators = maturita.evaluators || [];
+  newData.value.evaluators = maturita.evaluators || [];
+  oldData.value.loaded = true;
+}, { immediate: true });
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
@@ -245,7 +303,8 @@ watchEffect((): void => {
         <template #left>
           <Breadcrumb :items="[
             { label: 'Maturity', to: '/panel/maturita', icon: 'material-symbols:architecture-rounded' },
-            { label: 'Vytvoření', to: '/panel/maturita/add', active: true },
+            { label: 'Upravení', to: '/panel/maturita' },
+            { label: `Maturita ID: ${maturitaId}`, to: `/panel/maturita/${maturitaId}/edit`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -259,7 +318,6 @@ watchEffect((): void => {
               description="Správa maturitních ročníků"
               :texts="['Přidat', 'Odebrat']"
               :actions="['add', 'remove']"
-              :active="0"
               :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
@@ -272,7 +330,7 @@ watchEffect((): void => {
           />
           <div class="page-section">
             <div class="section-head">
-              <h3>Ročník * <span class="update" v-show="newData.grade">(aktualizováno)</span></h3>
+              <h3>Ročník <span class="update" v-show="newData.grade !== oldData.grade && errors.grade.length <= 0">(aktualizováno)</span></h3>
               <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
             </div>
 
@@ -292,13 +350,13 @@ watchEffect((): void => {
 
             <div class="line">
               <div class="section-content">
-                <EditDateTime ref="editStartDate" @update="onStartDateUpdate" :old-date="oldData.startDate" label="Začátek maturity *" />
+                <EditDateTime ref="editStartDate" @update="onStartDateUpdate" :old-date="oldData.startDate" label="Začátek maturity" />
 
                 <p class="input-error" v-if="errors.startDate.length > 0">{{ errors.startDate }}</p>
               </div>
 
               <div class="section-content">
-                <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec maturity *" />
+                <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec maturity" />
 
                 <p class="input-error" v-if="errors.endDate.length > 0">{{ errors.endDate }}</p>
               </div>
@@ -307,7 +365,7 @@ watchEffect((): void => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Maximální počet bodů * <span class="update" v-show="newData.maxPoints !== oldData.maxPoints">(aktualizováno)</span></h3>
+              <h3>Maximální počet bodů <span class="update" v-show="newData.maxPoints !== oldData.maxPoints && errors.maxPoints.length <= 0">(aktualizováno)</span></h3>
               <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
             </div>
 
@@ -321,13 +379,13 @@ watchEffect((): void => {
           <div class="page-section">
             <div class="line">
               <div class="section-head users">
-                <h3>Vybraní hodnotitelé: {{ selectedUsers.length }} <span class="update" v-show="selectedUsers.length > 0">(aktualizováno)</span></h3>
+                <h3>Vybraní hodnotitelé: {{ newData.evaluators.length }} <span class="update" v-show="!isEqual(newData.evaluators, oldData.evaluators)">(aktualizováno)</span></h3>
               </div>
 
               <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
             </div>
 
-            <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="selectedUsers"  :users="users || []" :loading="usersPending" />
+            <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="newData.evaluators"  :users="users || []" :loading="usersPending" />
 
             <Pagination
                 class="users-navigation"
@@ -336,7 +394,7 @@ watchEffect((): void => {
             />
           </div>
 
-          <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="addMaturita">
+          <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="updateMaturita">
             Pole označená * jsou povinná
           </EditFormFooter>
         </div>
