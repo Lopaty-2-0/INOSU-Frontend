@@ -167,7 +167,7 @@ const addSpecialization = async (): Promise<void> => {
     </template>
 
     <template #content>
-      <div id="specializations">
+      <div id="topics">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -245,7 +245,7 @@ const addSpecialization = async (): Promise<void> => {
 </template>
 
 <style lang="scss" scoped>
-#specializations {
+#topics {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -429,7 +429,7 @@ const addSpecialization = async (): Promise<void> => {
 }
 
 @media (max-width: 1055px) {
-  #specializations {
+  #topics {
     flex-direction: column;
     gap: 30px;
   }

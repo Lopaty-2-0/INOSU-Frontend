@@ -2,14 +2,13 @@
 import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
-import type {MaturitaData} from "~/types/maturita";
-import moment from "moment/moment";
+import type {TopicData} from "~/types/maturita";
 
 type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
 const props = defineProps({
-  maturitas: {
-    type: Array as () => MaturitaData[],
+  topics: {
+    type: Array as () => TopicData[],
     required: true,
   },
   searchInput: {
@@ -53,11 +52,7 @@ const slots = useSlots();
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
     { field: "id", title: "ID", width: "90px", type: "number" },
-    { field: "grade", title: "Ročník", type: "string" },
-    { field: "maxPoints", title: "Počet bodů", type: "string" },
-    { field: "startDate", title: "Začátek", type: "date" },
-    { field: "endDate", title: "Konec", type: "date" },
-    { field: "evaluators", title: "Počet hodnotitelů", type: "number", cellRenderer: (item: any) => item.evaluators.length },
+    { field: "name", title: "Název", type: "string", width: "100%" },
   ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
@@ -69,12 +64,12 @@ const cols = computed<Column[]>(() => {
   return merged;
 });
 const datatable = ref<InstanceType<typeof Vue3Datatable> | null>(null);
-const rows = computed<MaturitaData[]>((): MaturitaData[] => {
+const rows = computed<TopicData[]>((): TopicData[] => {
   if (!props.pageSize) {
-    return props.maturitas;
+    return props.topics;
   }
 
-  return props.maturitas.slice(0, props.pageSize);
+  return props.topics.slice(0, props.pageSize);
 });
 const selectRowOnClick = computed<boolean>((): boolean => props.hasCheckbox);
 
@@ -87,7 +82,7 @@ const clearSelection = (): void => {
 const onRowClick = (rowData: any): void => {
   if (!datatable.value) return;
 
-  emits("rowClicked", rowData as MaturitaData[]);
+  emits("rowClicked", rowData as TopicData[]);
 };
 
 const updateSelection = async (): Promise<void> => {
@@ -119,14 +114,6 @@ defineExpose({ clearSelection });
       <slot :name="name" v-bind="slotProps" />
     </template>
 
-    <template #startDate="data">
-      <span class="no-wrap">{{ moment(data.value.startDate).format("HH:mm DD.MM. YYYY") }}</span>
-    </template>
-
-    <template #endDate="data">
-      <span class="no-wrap">{{ moment(data.value.endDate).format("HH:mm DD.MM. YYYY") }}</span>
-    </template>
-
     <template #actions="data">
       <slot name="actions" :value="data" />
     </template>
@@ -142,9 +129,5 @@ defineExpose({ clearSelection });
 
 .datatable {
   width: 100%;
-
-  .no-wrap {
-    white-space: nowrap;
-  }
 }
 </style>

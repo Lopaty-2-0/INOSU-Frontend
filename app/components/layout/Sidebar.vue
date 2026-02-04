@@ -96,13 +96,13 @@ const sidebarLinks = computed<
     links: [
       {
         text: "Maturity",
-        href: "/panel/maturita",
+        href: "/panel/maturita/grade",
         iconClass: "material-symbols:architecture-rounded",
         notify: false,
         activeHrefs: [
-          "/panel/maturita",
-          "/panel/maturita/add",
-          "/panel/maturita/remove",
+          "/panel/maturita/grade",
+          "/panel/maturita/grade/add",
+          "/panel/maturita/grade/remove",
         ],
       },
       {
@@ -119,7 +119,12 @@ const sidebarLinks = computed<
       },
       {
         text: "Témata",
-        href: "/panel/maturita/topic",
+        href: "/panel/maturita/topics",
+        activeHrefs: [
+          "/panel/maturita/topics",
+          "/panel/maturita/topics/add",
+          "/panel/maturita/topics/remove",
+        ],
         iconClass: "material-symbols:architecture-rounded",
         notify: false,
       },

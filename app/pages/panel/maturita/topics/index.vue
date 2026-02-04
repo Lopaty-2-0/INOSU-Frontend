@@ -2,27 +2,27 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import {computed, ref, watchEffect} from "vue";
-import type {SpecializationData} from "~/types/specialization";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import { useLoadingStore } from "~/stores/loading";
-import SpecializationsTable from "~/components/tables/Specializations.vue";
 import Pagination from "~/components/ui/Pagination.vue";
+import TopicsTable from "~/components/tables/Topics.vue";
+import type {TopicData} from "~/types/maturita";
 
 useHead({
-  title: "Panel | Zaměření",
+  title: "Panel | Témata maturitních prací",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
-const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
+const allTopics = ref<TopicData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
-const specializationsCount = ref<number>(0);
+const topicsCount = ref<number>(0);
 const numberOfPages = computed<number>((): number => {
-  return Math.ceil(specializationsCount.value / amountForPaging);
+  return Math.ceil(topicsCount.value / amountForPaging);
 });
 
 const onSearchInputChange = (input: string): void => {
@@ -31,7 +31,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const { data: specializationData, pending: specializationTablePending, error: specializationError } = useFetch("/api/specialization/get", {
+const { data: topicData, pending: topicTablePending, error: topicError } = useFetch("/api/topic/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -43,21 +43,21 @@ const { data: specializationData, pending: specializationTablePending, error: sp
   lazy: true
 });
 
-watch([specializationData, specializationError], (): void => {
-  if (specializationError.value) {
-    allSpecializations.value = [];
-    specializationsCount.value = 0;
+watch([topicData, topicError], (): void => {
+  if (topicError.value) {
+    allTopics.value = [];
+    topicsCount.value = 0;
     return;
   }
 
-  if (!specializationData.value) return;
+  if (!topicData.value) return;
 
-  allSpecializations.value = specializationData.value.data.specializations;
-  specializationsCount.value = specializationData.value.data.count;
+  allTopics.value = topicData.value.data.topics;
+  topicsCount.value = topicData.value.data.count;
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", specializationData.value === undefined);
+  useLoadingStore().setLoading("dataLoading", !allTopics.value && !topicError.value);
 });
 </script>
 
@@ -67,41 +67,42 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Zaměření', to: '/panel/specializations', active: true, icon: 'material-symbols:school' },
+            { label: 'Maturity', to: '/panel/maturita/topics', icon: 'material-symbols:architecture-rounded' },
+            { label: 'Témata', to: '/panel/maturita/topics', active: true },
           ]"/>
         </template>
       </Navbar>
     </template>
 
-    <template #content v-if="allSpecializations">
+    <template #content v-if="allTopics">
       <div id="topics">
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa zaměření"
+            description="Správa maturitních témat"
             :texts="['Přidat', 'Odebrat']"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
-              :navigate-to="[
-              `/panel/specializations/add`,
-              `/panel/specializations/remove`,
+            :navigate-to="[
+              `/panel/maturita/topics/add`,
+              `/panel/maturita/topics/remove`,
             ]"
-            v-if="checkPermissions(['admin'])"
+              v-if="checkPermissions(['admin'])"
           />
 
           <div class="line">
             <div class="section-head">
-              <h3>Všechny zaměření</h3>
+              <h3>Všechny maturitní témata</h3>
               <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat zaměření" />
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat témata" />
           </div>
 
-          <SpecializationsTable :loading="specializationTablePending" :specializations="allSpecializations" />
+          <TopicsTable :loading="topicTablePending" :topics="allTopics" />
 
           <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>

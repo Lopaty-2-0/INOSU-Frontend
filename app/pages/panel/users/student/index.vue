@@ -67,7 +67,7 @@ watchEffect((): void => {
     </template>
 
     <template #content v-if="allClasses">
-      <div id="specializations">
+      <div id="topics">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -128,7 +128,7 @@ watchEffect((): void => {
 </template>
 
 <style scoped lang="scss">
-#specializations {
+#topics {
   display: flex;
   flex-direction: row;
   gap: 30px;

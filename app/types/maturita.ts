@@ -7,6 +7,12 @@ interface MaturitaData {
     evaluators: number[];
 }
 
+interface TopicData {
+    id: number;
+    name: string;
+}
+
 export type {
-    MaturitaData
+    MaturitaData,
+    TopicData
 }

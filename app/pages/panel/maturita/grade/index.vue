@@ -63,7 +63,7 @@ watch([maturitaData, maturitaError], (): void => {
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", maturitaData.value === undefined);
+  useLoadingStore().setLoading("dataLoading", !allMaturitas.value && !maturitaError.value);
 });
 </script>
 
@@ -73,14 +73,14 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: '/panel/maturita', active: true, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: '/panel/maturita/grade', active: true, icon: 'material-symbols:architecture-rounded' },
           ]"/>
         </template>
       </Navbar>
     </template>
 
     <template #content v-if="allMaturitas">
-      <div id="maturitas">
+      <div id="topics">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -92,8 +92,8 @@ watchEffect((): void => {
               'material-symbols:delete-rounded',
             ]"
               :navigate-to="[
-              `/panel/maturita/add`,
-              `/panel/maturita/remove`,
+              `/panel/maturita/grade/add`,
+              `/panel/maturita/grade/remove`,
             ]"
               v-if="checkPermissions(['admin'])"
           />
@@ -123,7 +123,7 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#maturitas {
+#topics {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -260,7 +260,7 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1055px) {
-  #maturitas {
+  #topics {
     flex-direction: column;
     gap: 30px;
   }
