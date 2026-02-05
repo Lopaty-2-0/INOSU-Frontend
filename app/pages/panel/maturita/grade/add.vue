@@ -268,7 +268,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="topics">
+      <div id="grade">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -362,7 +362,7 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#topics {
+#grades {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -516,7 +516,7 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1055px) {
-  #topics {
+  #grades {
     flex-direction: column;
     gap: 30px;
   }

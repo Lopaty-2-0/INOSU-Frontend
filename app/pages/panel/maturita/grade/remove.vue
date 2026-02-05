@@ -14,7 +14,7 @@ import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 
 useHead({
-  title: "Panel | Maturitní ročníky",
+  title: "Panel | Maturitní ročníky - Odstranění",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -149,7 +149,7 @@ watchEffect((): void => {
     </template>
 
     <template #content v-if="allMaturitas">
-      <div id="topics">
+      <div id="grades">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -201,7 +201,7 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#topics {
+#grades {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -338,7 +338,7 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1055px) {
-  #topics {
+  #grades {
     flex-direction: column;
     gap: 30px;
   }

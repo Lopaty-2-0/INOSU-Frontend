@@ -34,7 +34,7 @@ defineExpose({ reset })
       <div class="section">
         <div class="content">
           <label for="name">Název</label>
-          <Input type="text" id="name" name="name" :placeholder="props.oldName ? props.oldName : 'Úkol 1'" v-model.trim="name.input" @input="onInput" />
+          <Input type="text" id="name" name="name" :placeholder="props.oldName ? props.oldName : 'Zadejte název'" v-model.trim="name.input" @input="onInput" />
         </div>
       </div>
     </div>

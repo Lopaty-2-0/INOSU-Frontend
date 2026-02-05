@@ -8,14 +8,13 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import { useLoadingStore } from "~/stores/loading";
 import Pagination from "~/components/ui/Pagination.vue";
-import type {MaturitaData, TopicData} from "~/types/maturita";
-import type {ClassData} from "~/types/classes";
+import type {TopicData} from "~/types/maturita";
 import Loading from "~/components/ui/Loading.vue";
 import TopicsTable from "~/components/tables/Topics.vue";
 import { useAlertsStore } from "~/stores/alerts";
 
 useHead({
-  title: "Panel | Maturitní ročníky",
+  title: "Panel | Témata maturitních prací - Odstranění",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
