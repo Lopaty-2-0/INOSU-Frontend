@@ -1,3 +1,5 @@
+import type {AccountData} from "~/types/account";
+
 interface MaturitaData {
     id: number;
     grade: string;
@@ -12,7 +14,23 @@ interface TopicData {
     name: string;
 }
 
+interface MaturitaTaskData {
+    id: number;
+    idTeam: number;
+    name: string;
+    startDate: Date;
+    endDate: Date;
+    deadline: Date;
+    points: number;
+    maxPoints: number;
+    task: string;
+    topic: string;
+    objector: AccountData;
+    userData: AccountData;
+}
+
 export type {
     MaturitaData,
-    TopicData
+    TopicData,
+    MaturitaTaskData,
 }

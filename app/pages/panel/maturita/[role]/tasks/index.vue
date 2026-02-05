@@ -1,31 +1,37 @@
 <script setup lang="ts">
+import {computed, ref, watchEffect} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {computed, ref, watchEffect} from "vue";
-import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
-import {useFetch} from "nuxt/app";
-import { useLoadingStore } from "~/stores/loading";
 import Pagination from "~/components/ui/Pagination.vue";
-import type {MaturitaData} from "~/types/maturita";
-import MaturitasTable from "~/components/tables/Maturitas.vue";
+import MautiraTasksTable from "~/components/tables/MaturitaTasks.vue";
+import type {MaturitaData, MaturitaTaskData} from "~/types/maturita";
+import moment from "moment/moment";
+import Image from "~/components/ui/Image.vue";
 
 useHead({
-  title: "Panel | Maturitní ročníky",
+  title: "Panel | Maturitní zadání",
   meta: [{ name: "description", content: "Panel Homepage" }],
+});
+
+definePageMeta({
+  roles: ["admin", "teacher"],
 });
 
 const route = useRoute();
 const role = route.params.role as string;
 
-const allMaturitas = ref<MaturitaData[] | undefined>(undefined);
+const config = useRuntimeConfig();
+const currentMaturita = ref<MaturitaData | undefined>(undefined);
+const allTasks = ref<MaturitaTaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
-const maturitasCount = ref<number>(0);
+const tasksCount = ref<number>(0);
 const numberOfPages = computed<number>((): number => {
-  return Math.ceil(maturitasCount.value / amountForPaging);
+  return Math.ceil(tasksCount.value / amountForPaging);
 });
 
 const onSearchInputChange = (input: string): void => {
@@ -34,13 +40,25 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const editMaturita = async (id: number): Promise<void> => {
+const openChat = async (id: number): Promise<void> => {
   if (!id) return;
 
-  await navigateTo(`/panel/maturita/${role}/grade/${id}/edit`);
+  await navigateTo(`/panel/maturita/${role}/tasks/${id}/chat`);
 };
 
-const { data: maturitaData, pending: maturitaTablePending, error: maturitaError } = useFetch("/api/maturita/get", {
+const openTask = async (id: number): Promise<void> => {
+  if (!id) return;
+
+  await navigateTo(`/panel/maturita/${role}/tasks/${id}`);
+};
+
+const editTask = async (id: number): Promise<void> => {
+  if (!id) return;
+
+  await navigateTo(`/panel/maturita/${role}/tasks/${id}/edit`);
+};
+
+const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/maturita/guarantor/approved", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -52,21 +70,39 @@ const { data: maturitaData, pending: maturitaTablePending, error: maturitaError 
   lazy: true
 });
 
+const { data: maturitaData, error: maturitaError, pending: maturitaPending } = useFetch("/api/maturita/get/current", {
+  method: "get",
+  server: true,
+  credentials: "include",
+  lazy: true
+});
+
+watch([tasksData, tasksError], (): void => {
+  if (tasksError.value) {
+    allTasks.value = [];
+    tasksCount.value = 0;
+    return;
+  }
+
+  if (!tasksData.value) return;
+
+  allTasks.value = tasksData.value.data.tasks;
+  tasksCount.value = tasksData.value.data.count;
+}, { immediate: true });
+
 watch([maturitaData, maturitaError], (): void => {
   if (maturitaError.value) {
-    allMaturitas.value = [];
-    maturitasCount.value = 0;
+    currentMaturita.value = undefined;
     return;
   }
 
   if (!maturitaData.value) return;
 
-  allMaturitas.value = maturitaData.value.data.maturita;
-  maturitasCount.value = maturitaData.value.data.count;
+  currentMaturita.value = maturitaData.value.data.maturita;
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !allMaturitas.value && !maturitaError.value);
+  useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value || !currentMaturita.value && !maturitaError.value);
 });
 </script>
 
@@ -76,18 +112,19 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, active: true, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Zadání', to: `/panel/maturita/${role}/tasks`, active: true },
           ]"/>
         </template>
       </Navbar>
     </template>
 
-    <template #content v-if="allMaturitas">
-      <div id="grades">
+    <template #content v-if="allTasks && currentMaturita">
+      <div id="maturitaTasks">
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa maturitních ročníků"
+            description="Správa maturitních zadání"
             :texts="['Přidat', 'Odebrat']"
             :actions="['add', 'remove']"
             :icons="[
@@ -95,29 +132,50 @@ watchEffect((): void => {
               'material-symbols:delete-rounded',
             ]"
               :navigate-to="[
-              `/panel/maturita/${role}/grade/add`,
-              `/panel/maturita/${role}/grade/remove`,
+              `/panel/maturita/${role}/tasks/add`,
+              `/panel/maturita/${role}/tasks/remove`,
             ]"
           />
 
           <div class="line">
             <div class="section-head">
-              <h3>Maturitní ročníky</h3>
-              <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
+              <h3>Maturitní zadání</h3>
+              <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+              <br>
+              <p>Ročník: {{ currentMaturita.grade }}</p>
+              <p>Konec: {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat maturity" />
+            <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
           </div>
 
-          <MaturitasTable :loading="maturitaTablePending" :maturitas="allMaturitas">
-            <template #actions="data">
-              <div class="actions">
-                <button type="button" class="primary" @click="editMaturita(data.value.id)">Upravit</button>
+          <MautiraTasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
+              { title: 'Student', field: 'userData' }
+          ]">
+            <template #userData="data">
+              <div class="profile">
+                <Image
+                    :src="config.public.originUrl + '/api/file/pfp/' + data.value.userData.profilePicture"
+                    alt="profile-photo"
+                    draggable="false"
+                />
+
+                <p class="account-name">
+                  {{ data.value.userData.name }} {{ data.value.userData.surname }}
+                </p>
               </div>
             </template>
-          </MaturitasTable>
 
-          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
+            <template #actions="data">
+              <div class="actions">
+                <button type="button" class="default" @click="openChat(data.value.id)">Chat</button>
+                <button type="button" class="default" @click="editTask(data.value.id)">Upravit</button>
+                <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>
+              </div>
+            </template>
+          </MautiraTasksTable>
+
+          <Pagination v-model="currentPage" :number-of-pages="numberOfPages" />
         </div>
       </div>
     </template>
@@ -125,11 +183,17 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#grades {
+#maturitaTasks {
   display: flex;
   flex-direction: row;
   gap: 30px;
   position: relative;
+
+  .navigation {
+    height: fit-content;
+    position: sticky;
+    min-width: 250px;
+  }
 
   .actions {
     display: flex;
@@ -172,6 +236,28 @@ watchEffect((): void => {
     gap: 35px;
     position: relative;
 
+    .datatable {
+      .profile {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-direction: row;
+
+        .account-name {
+          color: var(--mini-title-color);
+          font-size: 16px;
+          text-wrap: nowrap;
+        }
+
+        ::v-deep(img) {
+          width: 45px;
+          height: 45px;
+          border-radius: var(--small-border-radius);
+          object-fit: cover;
+        }
+      }
+    }
+
     .line {
       display: flex;
       flex-direction: row;
@@ -180,6 +266,7 @@ watchEffect((): void => {
       flex-wrap: wrap;
       gap: 30px;
       width: 100%;
+      flex: 1;
     }
 
     .buttons {
@@ -196,8 +283,8 @@ watchEffect((): void => {
         border-radius: var(--small-border-radius);
         border: var(--border-width) solid transparent;
         transition: 0.2s;
-        cursor: pointer;
         font-size: 16px;
+        cursor: pointer;
 
         &.remove {
           color: var(--actionBar-actions-remove-color);
@@ -261,8 +348,14 @@ watchEffect((): void => {
   }
 }
 
+@media (max-width: 1420px) {
+  #maturitaTasks .navigation {
+    flex: 1;
+  }
+}
+
 @media (max-width: 1055px) {
-  #grades {
+  #maturitaTasks {
     flex-direction: column;
     gap: 30px;
   }

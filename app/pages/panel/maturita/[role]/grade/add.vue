@@ -81,7 +81,6 @@ const onUsersRowClicked = (user: AccountData): void => {
   }
 };
 
-
 const onStartDateUpdate = (startDateDate: Date | undefined): void => {
   newData.value.startDate = startDateDate;
 
@@ -470,48 +469,6 @@ watchEffect((): void => {
 
       .update {
         color: rgba(var(--error-color), 1);
-      }
-    }
-
-    .password-rules {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-
-      h4 {
-        font-weight: 600;
-        font-size: 16px;
-        color: var(--title-color);
-        margin-top: 10px;
-      }
-
-      ul {
-        list-style: none;
-
-        li {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 16px;
-          color: rgba(var(--description-color), 1);
-          margin-bottom: 10px;
-
-          .icon {
-            color: rgba(var(--main-color), 1);
-            line-height: 0;
-          }
-        }
-
-        p {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-
-          .icon {
-            padding-left: 5px;
-            color: rgba(var(--success-color), 1);
-          }
-        }
       }
     }
   }

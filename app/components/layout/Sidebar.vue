@@ -97,7 +97,7 @@ const sidebarLinks = computed<
       {
         text: "Maturity",
         href: `/panel/maturita/${role.value}/grade`,
-        iconClass: "material-symbols:architecture-rounded",
+        iconClass: "material-symbols:book-2-rounded",
         notify: false,
         activeHrefs: [
           `/panel/maturita/${role.value}/grade`,
@@ -108,13 +108,18 @@ const sidebarLinks = computed<
       {
         text: "Zadání",
         href: `/panel/maturita/${role.value}/tasks`,
-        iconClass: "material-symbols:architecture-rounded",
+        iconClass: "material-symbols:folder-copy-rounded",
         notify: false,
+        activeHrefs: [
+          `/panel/maturita/${role.value}/tasks`,
+          `/panel/maturita/${role.value}/tasks/add`,
+          `/panel/maturita/${role.value}/tasks/remove`,
+        ],
       },
       {
         text: "Návrhy",
         href: `/panel/maturita/${role.value}/proposaltable`,
-        iconClass: "material-symbols:architecture-rounded",
+        iconClass: "material-symbols:lightbulb-rounded",
         notify: false,
       },
       {
@@ -125,13 +130,13 @@ const sidebarLinks = computed<
           `/panel/maturita/${role.value}/topics/add`,
           `/panel/maturita/${role.value}/topics/remove`,
         ],
-        iconClass: "material-symbols:architecture-rounded",
+        iconClass: "material-symbols:topic",
         notify: false,
       },
       {
         text: "Tabulka",
         href: "/panel/maturita/table",
-        iconClass: "material-symbols:architecture-rounded",
+        iconClass: "material-symbols:table-rows-rounded",
         notify: false,
       },
     ],
