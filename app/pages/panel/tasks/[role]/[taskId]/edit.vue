@@ -150,7 +150,7 @@ const updateTask = async (): Promise<void> => {
         case "74140":
           alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Body nejsou platné." });
           break;
-        case "74151":
+        case "74191":
           alertsStore.addAlert({ type: "success", title: "Úprava úkolu", message: "Úkol byl úspěšně upraven." });
 
           await refreshTask();

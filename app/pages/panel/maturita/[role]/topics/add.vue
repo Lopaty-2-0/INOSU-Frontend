@@ -20,19 +20,15 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const route = useRoute();
+const role = route.params.role as string;
+
 const alertsStore = useAlertsStore();
 const editName = ref<InstanceType<typeof EditName> | null>(null);
 const loading = ref<boolean>(false);
-const oldData = computed<{ name: string }>(() => ({
-  name: "",
-}));
 const newData = ref<{ name: string | undefined }>({
   name: undefined,
 });
-
-const onNameUpdate = (name: string | undefined): void => {
-  newData.value.name = name;
-};
 
 const resetUserData = (): void => {
   newData.value = {
@@ -104,9 +100,9 @@ const addTopic = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: '/panel/maturita/topics', icon: 'material-symbols:architecture-rounded' },
-            { label: 'Témata', to: '/panel/maturita/topics' },
-            { label: 'Vytvoření', to: '/panel/maturita/topics/add', active: true },
+            { label: 'Maturity', to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Témata', to: `/panel/maturita/${role}/topics` },
+            { label: 'Vytvoření', to: `/panel/maturita/${role}/topics/add`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -126,10 +122,9 @@ const addTopic = async (): Promise<void> => {
               'material-symbols:delete-rounded',
             ]"
               :navigate-to="[
-              `/panel/maturita/topics/add`,
-              `/panel/maturita/topics/remove`,
+              `/panel/maturita/${role}/topics/add`,
+              `/panel/maturita/${role}/topics/remove`,
             ]"
-              v-if="checkPermissions(['admin'])"
           />
 
           <div class="page-section">

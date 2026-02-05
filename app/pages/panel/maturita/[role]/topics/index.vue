@@ -1,36 +1,29 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {computed, ref, useTemplateRef, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useFetch} from "nuxt/app";
 import { useLoadingStore } from "~/stores/loading";
 import Pagination from "~/components/ui/Pagination.vue";
-import type {TopicData} from "~/types/maturita";
-import Loading from "~/components/ui/Loading.vue";
 import TopicsTable from "~/components/tables/Topics.vue";
-import { useAlertsStore } from "~/stores/alerts";
+import type {TopicData} from "~/types/maturita";
 
 useHead({
-  title: "Panel | Témata maturitních prací - Odstranění",
+  title: "Panel | Témata maturitních prací",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
-definePageMeta({
-  roles: ["admin", "techer"],
-});
+const route = useRoute();
+const role = route.params.role as string;
 
-const alertsStore = useAlertsStore();
 const allTopics = ref<TopicData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
 const topicsCount = ref<number>(0);
-const selectedTopics = ref<number[]>([]);
-const datatable = useTemplateRef<InstanceType<typeof TopicsTable>>("datatable");
-const loading = ref<boolean>(false);
 const numberOfPages = computed<number>((): number => {
   return Math.ceil(topicsCount.value / amountForPaging);
 });
@@ -41,71 +34,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const onRowClicked = (topic: TopicData): void => {
-  if (!datatable.value) return;
-
-  if (!selectedTopics.value.includes(topic.id)) {
-    selectedTopics.value.push(topic.id);
-  } else {
-    selectedTopics.value = selectedTopics.value.filter((id: number) => id !== topic.id);
-  }
-};
-
-const resetSelectedTopics = (): void => {
-  if (!datatable.value) return;
-
-  selectedTopics.value = [];
-  datatable.value.clearSelection();
-};
-
-const removeTopics = async (): Promise<void> => {
-  loading.value = true;
-
-  await $fetch("/api/topic/delete", {
-    method: "delete",
-    body: {
-      id: selectedTopics.value,
-    },
-    ignoreResponseError: true,
-    credentials: "include",
-
-    onResponse({ response }: any) {
-      const resCode = response?._data?.resCode?.toString();
-
-      switch (resCode) {
-        case "64010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Nemáte oprávnění k této akci." });
-          break;
-
-        case "64020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Nebyla vybrána žádná témata." });
-          break;
-
-        case "64030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Žádné téma nebylo odstraněno." });
-          break;
-
-        case "64041":
-          alertsStore.addAlert({ type: "success", title: "Odstranění témat", message: "Témata byla úspěšně odstraněna." });
-          refreshTopic();
-          resetSelectedTopics();
-          break;
-
-        default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Nastala neznámá chyba." });
-          break;
-      }
-    },
-
-    onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Nastala chyba při komunikaci se serverem." });
-    },
-  }).finally(() => {
-    loading.value = false;
-  });
-};
-
-const { data: topicData, pending: topicTablePending, error: topicError, refresh: refreshTopic } = useFetch("/api/topic/get", {
+const { data: topicData, pending: topicTablePending, error: topicError } = useFetch("/api/topic/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -141,9 +70,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: '/panel/maturita/topics', icon: 'material-symbols:architecture-rounded' },
-            { label: 'Témata', to: '/panel/maturita/topics' },
-            { label: 'Odstranění', to: '/panel/maturita/topics/remove', active: true },
+            { label: 'Maturity', to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Témata', to: `/panel/maturita/${role}/topics`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -153,46 +81,30 @@ watchEffect((): void => {
       <div id="topics">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa maturitních témat"
-              :texts="['Přidat', 'Odebrat']"
-              :actions="['add', 'remove']"
-              :active="1"
-              :icons="[
+            class="action-bar"
+            description="Správa maturitních témat"
+            :texts="['Přidat', 'Odebrat']"
+            :actions="['add', 'remove']"
+            :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
-              :navigate-to="[
-              `/panel/maturita/topics/add`,
-              `/panel/maturita/topics/remove`,
+            :navigate-to="[
+              `/panel/maturita/${role}/topics/add`,
+              `/panel/maturita/${role}/topics/remove`,
             ]"
-              v-if="checkPermissions(['admin'])"
           />
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybraná maturitní témata: {{ selectedTopics.length }}</h3>
+              <h3>Všechny maturitní témata</h3>
               <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
             </div>
 
             <SearchInput @change="onSearchInputChange" placeholder="Hledat témata" />
           </div>
 
-          <div class="buttons">
-            <button class="remove" @click="removeTopics">
-              Odstranit
-              <Loading
-                  v-show="loading"
-                  size="5px"
-                  color="var(--actionBar-actions-remove-color)"
-              />
-            </button>
-            <button class="reset" @click="resetSelectedTopics">
-              Zrušit vše
-            </button>
-          </div>
-
-          <TopicsTable :selected-ids="selectedTopics" ref="datatable" :loading="topicTablePending" :topics="allTopics" has-checkbox @row-clicked="onRowClicked" />
+          <TopicsTable :loading="topicTablePending" :topics="allTopics" />
 
           <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
@@ -207,40 +119,6 @@ watchEffect((): void => {
   flex-direction: row;
   gap: 30px;
   position: relative;
-
-  .actions {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-
-    button {
-      padding: 10px 15px;
-      border-radius: var(--small-border-radius);
-      transition: 0.2s;
-      font-size: 16px;
-      background: var(--btn-2-background);
-      color: var(--btn-2-color);
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
-      cursor: pointer;
-
-      &:hover {
-        background: var(--btn-2-hover-background);
-      }
-
-      &.primary {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        background: var(--btn-1-background);
-        color: var(--btn-1-color);
-
-        &:hover {
-          background: var(--btn-1-hover-background);
-        }
-      }
-    }
-  }
 
   .content {
     width: 100%;
@@ -274,7 +152,6 @@ watchEffect((): void => {
         border: var(--border-width) solid transparent;
         transition: 0.2s;
         font-size: 16px;
-        cursor: pointer;
 
         &.remove {
           color: var(--actionBar-actions-remove-color);

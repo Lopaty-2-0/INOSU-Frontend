@@ -24,7 +24,7 @@ const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Přiřazení - Jednotlivci",
+  title: "Panel | Úkol - " + taskId + " - Upravení týmu",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 

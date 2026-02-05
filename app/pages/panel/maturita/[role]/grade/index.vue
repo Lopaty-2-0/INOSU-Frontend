@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {computed, ref, useTemplateRef, watchEffect} from "vue";
+import {computed, ref, watchEffect} from "vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
@@ -10,27 +10,20 @@ import { useLoadingStore } from "~/stores/loading";
 import Pagination from "~/components/ui/Pagination.vue";
 import type {MaturitaData} from "~/types/maturita";
 import MaturitasTable from "~/components/tables/Maturitas.vue";
-import Loading from "~/components/ui/Loading.vue";
-import { useAlertsStore } from "~/stores/alerts";
 
 useHead({
-  title: "Panel | Maturitní ročníky - Odstranění",
+  title: "Panel | Maturitní ročníky",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
-definePageMeta({
-  roles: ["admin", "techer"],
-});
+const route = useRoute();
+const role = route.params.role as string;
 
-const alertsStore = useAlertsStore();
 const allMaturitas = ref<MaturitaData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
 const maturitasCount = ref<number>(0);
-const selectedMaturitas = ref<number[]>([]);
-const datatable = useTemplateRef<InstanceType<typeof MaturitasTable>>("datatable");
-const loading = ref<boolean>(false);
 const numberOfPages = computed<number>((): number => {
   return Math.ceil(maturitasCount.value / amountForPaging);
 });
@@ -41,71 +34,13 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const onRowClicked = (maturita: MaturitaData): void => {
-  if (!datatable.value) return;
+const editMaturita = async (id: number): Promise<void> => {
+  if (!id) return;
 
-  if (!selectedMaturitas.value.includes(maturita.id)) {
-    selectedMaturitas.value.push(maturita.id);
-  } else {
-    selectedMaturitas.value = selectedMaturitas.value.filter((id: number) => id !== maturita.id);
-  }
+  await navigateTo(`/panel/maturita/${role}/${id}/edit`);
 };
 
-const resetSelectedMaturitas = (): void => {
-  if (!datatable.value) return;
-
-  selectedMaturitas.value = [];
-  datatable.value.clearSelection();
-};
-
-const removeMaturitas = async (): Promise<void> => {
-  loading.value = true;
-
-  await $fetch("/api/maturita/delete", {
-    method: "delete",
-    body: {
-      id: selectedMaturitas.value,
-    },
-    ignoreResponseError: true,
-    credentials: "include",
-
-    onResponse({ response }: any) {
-      const resCode = response?._data?.resCode?.toString();
-
-      switch (resCode) {
-        case "71010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Nemáte oprávnění k této akci." });
-          break;
-
-        case "71020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Nebyl vybrána žádný maturitní ročník." });
-          break;
-
-        case "71030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Žádný maturitní ročník nebyl odstraněn." });
-          break;
-
-        case "71041":
-          alertsStore.addAlert({ type: "success", title: "Odstranění maturit", message: "Maturitní ročníky byly úspěšně odstraněny." });
-          refreshMaturitas();
-          resetSelectedMaturitas();
-          break;
-
-        default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Nastala neznámá chyba." });
-          break;
-      }
-    },
-
-    onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění maturity", message: "Nastala neznámá chyba." })
-    },
-  }).finally(() => {
-    loading.value = false;
-  });
-};
-
-const { data: maturitaData, pending: maturitaTablePending, error: maturitaError, refresh: refreshMaturitas } = useFetch("/api/maturita/get", {
+const { data: maturitaData, pending: maturitaTablePending, error: maturitaError } = useFetch("/api/maturita/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -141,8 +76,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: '/panel/maturita/grade', icon: 'material-symbols:architecture-rounded' },
-            { label: 'Odstranění', to: '/panel/maturita/grade/remove', active: true },
+            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, active: true, icon: 'material-symbols:architecture-rounded' },
           ]"/>
         </template>
       </Navbar>
@@ -156,42 +90,32 @@ watchEffect((): void => {
             description="Správa maturitních ročníků"
             :texts="['Přidat', 'Odebrat']"
             :actions="['add', 'remove']"
-            :active="1"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:delete-rounded',
             ]"
-            :navigate-to="[
-              `/panel/maturita/grade/add`,
-              `/panel/maturita/grade/remove`,
+              :navigate-to="[
+              `/panel/maturita/${role}/grade/add`,
+              `/panel/maturita/${role}/grade/remove`,
             ]"
-              v-if="checkPermissions(['admin'])"
           />
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybrané maturitní ročníky: {{ selectedMaturitas.length }}</h3>
+              <h3>Maturitní ročníky</h3>
               <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
             </div>
 
             <SearchInput @change="onSearchInputChange" placeholder="Hledat maturity" />
           </div>
 
-          <div class="buttons">
-            <button class="remove" @click="removeMaturitas">
-              Odstranit
-              <Loading
-                  v-show="loading"
-                  size="5px"
-                  color="var(--actionBar-actions-remove-color)"
-              />
-            </button>
-            <button class="reset" @click="resetSelectedMaturitas">
-              Zrušit vše
-            </button>
-          </div>
-
-          <MaturitasTable :selected-ids="selectedMaturitas" ref="datatable" :loading="maturitaTablePending" :maturitas="allMaturitas" has-checkbox @row-clicked="onRowClicked" />
+          <MaturitasTable :loading="maturitaTablePending" :maturitas="allMaturitas">
+            <template #actions="data">
+              <div class="actions">
+                <button type="button" class="primary" @click="editMaturita(data.value.id)">Upravit</button>
+              </div>
+            </template>
+          </MaturitasTable>
 
           <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
@@ -272,8 +196,8 @@ watchEffect((): void => {
         border-radius: var(--small-border-radius);
         border: var(--border-width) solid transparent;
         transition: 0.2s;
-        font-size: 16px;
         cursor: pointer;
+        font-size: 16px;
 
         &.remove {
           color: var(--actionBar-actions-remove-color);
