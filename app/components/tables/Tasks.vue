@@ -81,6 +81,8 @@ const rows = computed<TaskData[]>((): TaskData[] => {
 const selectRowOnClick = computed<boolean>((): boolean => props.hasCheckbox);
 
 const downloadTask = (guarantorId: number, id: number, task: string): void => {
+  if (!guarantorId || !id || !task) return;
+
   navigateTo(`/api/file/task/${guarantorId}/${id}/${task}`, { external: true, open: { target: "_blank" } });
 };
 

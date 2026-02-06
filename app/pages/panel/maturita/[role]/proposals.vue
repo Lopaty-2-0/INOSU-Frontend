@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import {computed, ref, watchEffect} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import ActionBar from "~/components/ui/ActionBar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Pagination from "~/components/ui/Pagination.vue";
-import MaturitaTasksTable from "~/components/tables/MaturitaTasks.vue";
+import MauturitaProposalsTable from "~/components/tables/MaturitaProposals.vue";
 import type {MaturitaData, MaturitaTaskData} from "~/types/maturita";
 import moment from "moment/moment";
-import Image from "~/components/ui/Image.vue";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
+import {useAlertsStore} from "~/stores/alerts";
+import Loading from "~/components/ui/Loading.vue";
 
 useHead({
   title: "Panel | Maturitní zadání",
@@ -25,8 +25,8 @@ definePageMeta({
 const route = useRoute();
 const role = route.params.role as string;
 
-const config = useRuntimeConfig();
 const accountStore = useAccountStore();
+const alertsStore = useAlertsStore();
 const { getAccountData: accountData } = storeToRefs(accountStore);
 const currentMaturita = ref<MaturitaData | undefined>(undefined);
 const allTasks = ref<MaturitaTaskData[] | undefined>(undefined);
@@ -34,6 +34,7 @@ const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
 const tasksCount = ref<number>(0);
+const loading = ref<{ isLoading: boolean, id: number | null, teamId: number | null }>({ isLoading: false, id: null, teamId: null });
 const numberOfPages = computed<number>((): number => {
   return Math.ceil(tasksCount.value / amountForPaging);
 });
@@ -44,25 +45,91 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const openChat = async (id: number): Promise<void> => {
-  if (!id) return;
+const changeTaskStatus = async (id: number, teamId: number, status: "approved" | "rejected"): Promise<void> => {
+  if (!teamId || !id) return;
 
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/chat`);
+  loading.value = { isLoading: true, id, teamId };
+
+  await $fetch("/api/team/update", {
+    method: "put",
+    body: {
+      idTask: id,
+      idTeam: teamId,
+      status: status
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+
+    onResponse({ response }: any) {
+      const resCode = response?._data?.resCode?.toString();
+
+      switch (resCode) {
+        case "32010":
+        case "32030":
+        case "32040":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "ID úkolu je neplatné." });
+          break;
+
+        case "32020":
+        case "32050":
+        case "32060":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "ID týmu je neplatné." });
+          break;
+
+        case "32070":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Zadaný úkol neexistuje nebo k němu nemáte oprávnění." });
+          break;
+
+        case "32080":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Zadaný tým neexistuje." });
+          break;
+
+        case "32090":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Zadaný status není povolený." });
+          break;
+
+        case "32100":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Body musí být číslo." });
+          break;
+
+        case "32110":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Počet bodů je neplatný." });
+          break;
+
+        case "32120":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Nelze udělit více bodů, než má úkol." });
+          break;
+
+        case "32130":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Komentář je příliš dlouhý." });
+          break;
+
+        case "32140":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Název týmu je příliš dlouhý." });
+          break;
+
+        case "32151":
+          alertsStore.addAlert({type: "success", title: "Návrhy maturitních prací",
+            message: status === "approved" ? "Návrh maturitní práce byl přijat." : "Návrh maturitní práce byl zamítnut."
+          });
+          refreshTasks();
+          break;
+
+        default:
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Nastala neznámá chyba." });
+    },
+  }).finally(() => {
+    loading.value = { isLoading: false, id: null, teamId: null };
+  });
 };
 
-const openTask = async (id: number): Promise<void> => {
-  if (!id) return;
-
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}`);
-};
-
-const editTask = async (id: number): Promise<void> => {
-  if (!id) return;
-
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/edit`);
-};
-
-const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/maturita/guarantor/approved", {
+const { data: tasksData, error: tasksError, pending: tasksPending, refresh: refreshTasks } = useFetch("/api/task/get/maturita/guarantor/pending", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -74,7 +141,7 @@ const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("
   lazy: true
 });
 
-const { data: maturitaData, error: maturitaError, pending: maturitaPending } = useFetch("/api/maturita/get/current", {
+const { data: maturitaData, error: maturitaError } = useFetch("/api/maturita/get/current", {
   method: "get",
   server: true,
   credentials: "include",
@@ -121,8 +188,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:architecture-rounded' },
-            { label: 'Zadání', to: `/panel/maturita/${role}/tasks`, active: true },
+            { label: 'Maturity', to: `/panel/maturita/${role}/proposals`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Návrhy', to: `/panel/maturita/${role}/proposals`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -131,24 +198,9 @@ watchEffect((): void => {
     <template #content v-if="allTasks && currentMaturita">
       <div id="maturitaTasks">
         <div class="content">
-          <ActionBar
-            class="action-bar"
-            description="Správa maturitních zadání"
-            :texts="['Přidat', 'Odebrat']"
-            :actions="['add', 'remove']"
-            :icons="[
-              'material-symbols:add-rounded',
-              'material-symbols:delete-rounded',
-            ]"
-              :navigate-to="[
-              `/panel/maturita/${role}/tasks/add`,
-              `/panel/maturita/${role}/tasks/remove`,
-            ]"
-          />
-
           <div class="line">
             <div class="section-head">
-              <h3>Maturitní zadání</h3>
+              <h3>Návrhy maturitních zadání</h3>
               <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
               <br>
               <p>Ročník: {{ currentMaturita.grade }}</p>
@@ -158,31 +210,17 @@ watchEffect((): void => {
             <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
           </div>
 
-          <MaturitaTasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
-              { title: 'Student', field: 'userData' }
-          ]">
-            <template #userData="data">
-              <div class="profile">
-                <Image
-                    :src="config.public.originUrl + '/api/file/pfp/' + data.value.userData.profilePicture"
-                    alt="profile-photo"
-                    draggable="false"
-                />
-
-                <p class="account-name">
-                  {{ data.value.userData.name }} {{ data.value.userData.surname }}
-                </p>
-              </div>
-            </template>
-
+          <MauturitaProposalsTable class="datatable" :tasks="allTasks" :loading="tasksPending">
             <template #actions="data">
-              <div class="actions">
-                <button type="button" class="default" @click="openChat(data.value.id)">Chat</button>
-                <button type="button" class="default" @click="editTask(data.value.id)">Upravit</button>
-                <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>
+              <Loading color="var(--actionBar-actions-add-color)" size="6px" v-if="loading.isLoading && loading.id === data.value.id && loading.teamId === data.value.idTeam" />
+
+              <div class="actions" v-else>
+                <button type="button" class="approved" @click="changeTaskStatus(data.value.id, data.value.idTeam, 'approved')">Přijmout</button>
+                <button type="button" class="rejected" @click="changeTaskStatus(data.value.id, data.value.idTeam, 'rejected')">Zamítnout</button>
               </div>
+
             </template>
-          </MaturitaTasksTable>
+          </MauturitaProposalsTable>
 
           <Pagination v-model="currentPage" :number-of-pages="numberOfPages" />
         </div>
@@ -218,9 +256,34 @@ watchEffect((): void => {
       color: var(--btn-2-color);
       border: var(--border-width) solid rgba(var(--border-color), 0.5);
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
 
       &:hover {
         background: var(--btn-2-hover-background);
+      }
+
+      &.rejected {
+        color: var(--actionBar-actions-remove-color);
+        background: rgba(var(--actionBar-actions-remove-background), 1);
+        border-color: rgba(var(--actionBar-actions-remove-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-remove-background), 0.8);
+        }
+      }
+
+      &.approved {
+        color: var(--actionBar-actions-add-color);
+        background: rgba(var(--actionBar-actions-add-background), 1);
+        border-color: rgba(var(--actionBar-actions-add-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-add-background), 0.8);
+        }
       }
 
       &.primary {
@@ -244,28 +307,6 @@ watchEffect((): void => {
     flex-direction: column;
     gap: 35px;
     position: relative;
-
-    .datatable {
-      .profile {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-direction: row;
-
-        .account-name {
-          color: var(--mini-title-color);
-          font-size: 16px;
-          text-wrap: nowrap;
-        }
-
-        ::v-deep(img) {
-          width: 45px;
-          height: 45px;
-          border-radius: var(--small-border-radius);
-          object-fit: cover;
-        }
-      }
-    }
 
     .line {
       display: flex;

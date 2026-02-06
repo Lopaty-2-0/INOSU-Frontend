@@ -118,7 +118,7 @@ const sidebarLinks = computed<
       },
       {
         text: "Návrhy",
-        href: `/panel/maturita/${role.value}/proposaltable`,
+        href: `/panel/maturita/${role.value}/proposals`,
         iconClass: "material-symbols:lightbulb-rounded",
         notify: false,
       },

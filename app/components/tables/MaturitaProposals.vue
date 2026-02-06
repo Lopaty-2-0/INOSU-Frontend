@@ -5,6 +5,7 @@ import "../../assets/style/datatable.scss";
 import moment from "moment";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {MaturitaTaskData} from "~/types/maturita";
+import Image from "~/components/ui/Image.vue";
 
 type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
@@ -50,13 +51,15 @@ const props = defineProps({
 });
 const emits = defineEmits(["rowClicked"]);
 const slots = useSlots();
+const config = useRuntimeConfig();
 
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
     { field: "id", title: "ID", width: "90px", type: "number" },
-    { field: "name", title: "Název", type: "string", width: "30%" },
-    { field: "points", title: "Počet bodů", type: "number" },
+    { field: "name", title: "Název", type: "string" },
+    { field: "topic", title: "Téma", type: "string" },
     { field: "task", title: "Zadání", type: "string" },
+    { field: "userData", title: "Navrhovel", type: "object" },
   ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
@@ -124,6 +127,20 @@ defineExpose({ clearSelection });
       <slot :name="name" v-bind="slotProps" />
     </template>
 
+    <template #userData="data">
+      <div class="profile">
+        <Image
+            :src="config.public.originUrl + '/api/file/pfp/' + data.value.userData.profilePicture"
+            alt="profile-photo"
+            draggable="false"
+        />
+
+        <p class="account-name">
+          {{ data.value.userData.name }} {{ data.value.userData.surname }}
+        </p>
+      </div>
+    </template>
+
     <template #name="data">
       <span class="limit">{{ data.value.name }}</span>
     </template>
@@ -164,6 +181,26 @@ defineExpose({ clearSelection });
 
   .no-wrap {
     white-space: nowrap;
+  }
+
+  .profile {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-direction: row;
+
+    .account-name {
+      color: var(--mini-title-color);
+      font-size: 16px;
+      text-wrap: nowrap;
+    }
+
+    ::v-deep(img) {
+      width: 45px;
+      height: 45px;
+      border-radius: var(--small-border-radius);
+      object-fit: cover;
+    }
   }
 
   .link {
