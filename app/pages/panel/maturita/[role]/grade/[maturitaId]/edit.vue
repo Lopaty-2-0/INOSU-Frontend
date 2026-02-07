@@ -318,7 +318,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content>
+    <template #content v-if="oldData.loaded && users">
       <div id="grades">
         <div class="content">
           <ActionBar

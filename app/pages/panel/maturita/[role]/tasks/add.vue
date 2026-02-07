@@ -43,10 +43,11 @@ const loading = ref<boolean>(false);
 const editName = ref<InstanceType<typeof EditName> | null>(null);
 const editTaskFile = ref<InstanceType<typeof EditTaskFile> | null>(null);
 const selectedTopicId = ref<string[]>([]);
-
 const topics = ref<TopicData[] | undefined>(undefined);
+const currentTopicsPage = ref<number>(1);
+const topicsCount = ref<number>(0);
+const searchTopicsInput = ref<string>("");
 const selectedClass = ref<number | undefined>(undefined);
-
 const usersDatatable = useTemplateRef<InstanceType<typeof UsersTable>>("usersDatatable");
 const users = ref<AccountData[] | undefined>(undefined);
 const selectedUserId = ref<number[]>([]);
@@ -59,6 +60,9 @@ const newData = ref<{ name: string | undefined, taskFile: File | undefined }>({
 });
 const numberOfUsersPages = computed<number>((): number => {
   return Math.ceil(usersCount.value / amountForUsersPaging);
+});
+const numberOfTopicsPages = computed<number>((): number => {
+  return Math.ceil(topicsCount.value / amountForTopicsPaging);
 });
 const oldData = computed<{ name: string, taskFile: string }>(() => ({
   name: "",
@@ -78,6 +82,12 @@ const onUsersSearchInputChange = (input: string): void => {
   currentUsersPage.value = 1;
 
   searchUsersInput.value = input;
+};
+
+const onTopicsSearchInputChange = (input: string): void => {
+  currentTopicsPage.value = 1;
+
+  searchTopicsInput.value = input;
 };
 
 const onUsersRowClicked = (user: AccountData): void => {
@@ -247,8 +257,8 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
 const { data: topicsData, error: topicsError, pending: topicsPending } = useFetch("/api/topic/get", {
   query: {
     amountForPaging: amountForTopicsPaging,
-    pageNumber: currentUsersPage,
-    searchQuery: searchUsersInput,
+    pageNumber: currentTopicsPage,
+    searchQuery: searchTopicsInput,
   },
   method: "get",
   server: true,
@@ -277,6 +287,7 @@ watch([topicsData, topicsError], (): void => {
   if (!topicsData.value) return;
 
   topics.value = topicsData.value.data.topics;
+  topicsCount.value = topicsData.value.data.count;
 }, { immediate: true });
 
 watchEffect((): void => {
@@ -334,7 +345,11 @@ watchEffect((): void => {
 
             <div class="section-content">
               <label for="grade">Téma</label>
-              <InputMenu :items="dropDownTopics" v-model="selectedTopicId" placeholder="Vyberte téma" />
+              <InputMenu :items="dropDownTopics" deselect v-model="selectedTopicId" placeholder="Vyberte téma" :loading="topicsPending" @search:change="onTopicsSearchInputChange">
+                <template #row-extra v-if="numberOfTopicsPages > 1">
+                  <Pagination v-model="currentTopicsPage" :number-of-pages="numberOfTopicsPages" :chunk-size="2" />
+                </template>
+              </InputMenu>
             </div>
           </div>
 

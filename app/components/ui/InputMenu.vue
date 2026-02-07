@@ -122,7 +122,11 @@ const toggleDropdown = (): void => {
 
   open.value = !open.value;
 
-  if (open.value) input.value = "";
+  if (open.value) {
+    input.value = "";
+    emits("search:input", "");
+    emits("search:change", "");
+  }
 };
 
 const selectItem = (item: InputMenuItem): void => {
@@ -162,6 +166,7 @@ const onInput = (): void => {
     emits("update:modelValue", selectedItems.value);
   }
 };
+
 
 watch(() => props.modelValue, (newValue: string[]): void => {
   selectedItems.value = newValue;
