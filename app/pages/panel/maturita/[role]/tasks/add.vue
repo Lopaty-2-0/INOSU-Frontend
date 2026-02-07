@@ -301,7 +301,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
             { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
             { label: 'Přidáni', to: `/panel/maturita/${role}/tasks/add`, active: true },
           ]"/>
@@ -310,7 +310,7 @@ watchEffect((): void => {
     </template>
 
     <template #content v-if="users && topics">
-      <div id="maturitaTasks">
+      <div id="maturita-tasks">
         <div class="content">
           <ActionBar
               class="action-bar"
@@ -393,7 +393,7 @@ watchEffect((): void => {
 </template>
 
 <style scoped lang="scss">
-#maturitaTasks {
+#maturita-tasks {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -505,7 +505,7 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1055px) {
-  #maturitaTasks {
+  #maturita-tasks {
     flex-direction: column;
     gap: 30px;
   }

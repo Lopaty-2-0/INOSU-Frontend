@@ -76,7 +76,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, active: true, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, active: true, icon: 'material-symbols:book-2-rounded' },
           ]"/>
         </template>
       </Navbar>

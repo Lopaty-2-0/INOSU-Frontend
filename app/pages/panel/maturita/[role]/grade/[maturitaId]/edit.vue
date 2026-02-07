@@ -310,7 +310,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, icon: 'material-symbols:book-2-rounded' },
             { label: 'Upravení', to: `/panel/maturita/${role}/grade` },
             { label: `Maturita ID: ${maturitaId}`, to: `/panel/maturita/${role}/grade/${maturitaId}/edit`, active: true },
           ]"/>

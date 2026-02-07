@@ -19,6 +19,8 @@ import Editor from "~/components/ui/Editor.vue";
 import type {Version} from "~/types/team";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
+import type {MaturitaTaskData} from "~/types/maturita";
+import ActionBar from "~/components/ui/ActionBar.vue";
 
 const route = useRoute();
 const teamId = route.params.teamId as string;
@@ -26,7 +28,7 @@ const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Tým - " + teamId,
+  title: "Panel | Úkol - " + taskId + " - Upravení",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -40,8 +42,7 @@ const accountStore = useAccountStore();
 const { getAccountData: accountData } = storeToRefs(accountStore);
 const submitLoading = ref<boolean>(false);
 const teamTaskData = ref<TaskTeam | undefined>(undefined);
-const task = ref<TaskData | undefined>(undefined);
-const userData = ref<AccountData | undefined>(undefined);
+const task = ref<MaturitaTaskData | undefined>(undefined);
 const teamTaskPoints = ref<number | null>(null);
 const isGuarantorCommentEnabled = ref<boolean>(false);
 const guarantorComment = ref<string>("");
@@ -114,7 +115,7 @@ const downloadMaterials = async (): Promise<void> => {
     alertsStore.addAlert({ type: "error", title: "Stahování souborů", message: "Chyba při stahování materiálů úkolu." });
     return;
   }
-  await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.guarantor.id}/${task.value.id}/${task.value.task}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/task/${accountData.value.id}/${task.value.id}/${task.value.task}`, { external: true });
 };
 
 const downloadVersion = async (version: Version): Promise<void> => {
@@ -124,24 +125,6 @@ const downloadVersion = async (version: Version): Promise<void> => {
   }
 
   await navigateTo(`${config.public.originUrl}/api/file/tasks/${accountData.value.id}/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
-};
-
-const fetchUserData = async (userId: number): Promise<void> => {
-  try {
-    const response = await $fetch("/api/user/get/id", {
-      query: {
-        id: userId,
-      },
-      method: "get",
-      credentials: "include",
-    });
-
-    if (response && response.data) {
-      userData.value = response.data.user;
-    }
-  } catch (_) {
-    userData.value = undefined;
-  }
 };
 
 const updateTeam = async (): Promise<void> => {
@@ -262,15 +245,6 @@ const { data: versionsData, error: versionsError, pending: versionsLoading } = u
   lazy: true
 });
 
-watch([teamData, teamError], (): void => {
-  if (teamError.value) {
-    navigateTo(`/panel/tasks/${role}/${taskId}`);
-    return;
-  }
-
-  if (!teamData.value) return;
-}, { immediate: true });
-
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
     navigateTo(`/panel/tasks/${role}/${taskId}`);
@@ -296,21 +270,21 @@ watch(versionsData, async (newValue: any): Promise<void> => {
   versionsCount.value = newValue.data.count;
 }, { immediate: true });
 
-watch(teamData, async (newValue: any): Promise<void> => {
-  if (!newValue) return;
-
-  teamTaskData.value = {
-    ...newValue.data.team,
-    users: newValue.data.users,
+watch([teamData, teamError], async (): Promise<void> => {
+  if (teamError.value) {
+    navigateTo(`/panel/tasks/${role}/${taskId}`);
+    return;
   }
 
-  if (newValue.data.users && newValue.data.users.length === 1) {
-    await fetchUserData(newValue.data.users[0]);
+  if (!teamData.value) return;
+
+  teamTaskData.value = {
+    ...teamData.value.data.team,
+    users: teamData.value.data.users,
   }
 
   teamTaskPoints.value = teamData.value.data.team.points ?? null;
   guarantorComment.value = teamData.value.data.team.review ?? "";
-
 }, { immediate: true });
 
 watchEffect((): void => {
@@ -324,22 +298,35 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
-            { label: `${teamId}`, to: `/panel/tasks/${role}/${taskId}/${teamId}`, active: true },
+            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
+            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}` },
+            { label: `Vypracování ID: ${teamId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}`, active: true },
           ]"/>
         </template>
       </Navbar>
     </template>
 
     <template #content v-if="teamTaskData && task">
-      <div id="team-task">
+      <div id="maturita-task">
         <div class="content">
+          <ActionBar
+            class="action-bar"
+            description="Správa maturitního zadání"
+            :texts="['Otevřít chat']"
+            :actions="['edit']"
+            :icons="[
+                'material-symbols:chat-rounded'
+            ]"
+              :navigate-to="[
+              `/panel/maturita/${role}/tasks/${taskId}/${teamId}/chat`,
+            ]"
+          />
+
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
-              <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
               <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
               <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
@@ -358,19 +345,28 @@ watchEffect((): void => {
               </div>
             </Card>
 
-            <div class="user section-head" v-else-if="userData">
+            <div class="user section-head" v-else-if="task.userData">
               <span>Student:</span>
               <div class="profile">
-                <Image
-                  :src="config.public.originUrl + '/api/file/pfp/' + userData.profilePicture"
-                  alt="profile-photo"
-                  draggable="false"
-                />
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + task.userData.profilePicture" alt="profile-photo" draggable="false" />
 
                 <p class="account-name">
-                  {{ userData.name + " " + userData.surname }}
+                  {{ task.userData.name + " " + task.userData.surname }}
                 </p>
               </div>
+            </div>
+
+            <div class="user section-head">
+              <span>Oponent:</span>
+              <div class="profile" v-if="task.objector">
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + task.objector.profilePicture" alt="profile-photo" draggable="false" />
+
+                <p class="account-name">
+                  {{ task.objector.name + " " + task.objector.surname }}
+                </p>
+              </div>
+
+              <p v-else>Neurčeno</p>
             </div>
           </div>
 
@@ -451,12 +447,12 @@ watchEffect((): void => {
 
                 <div class="line">
                   <Editor
-                    v-model="guarantorComment"
-                    class="editor"
-                    :enable="isGuarantorCommentEnabled"
-                    placeholder="Zadejte komentář garanta"
-                    :enabled-tools="editorEnabledTools"
-                    @update:model-value="checkForErrors"
+                      v-model="guarantorComment"
+                      class="editor"
+                      :enable="isGuarantorCommentEnabled"
+                      placeholder="Zadejte komentář garanta"
+                      :enabled-tools="editorEnabledTools"
+                      @update:model-value="checkForErrors"
                   />
                   <div class="icon-div" @click="toggleGuarantorCommentEnabled">
                     <Icon class="icon" name="material-symbols:edit"/>
@@ -476,7 +472,7 @@ watchEffect((): void => {
 </template>
 
 <style scoped lang="scss">
-#team-task {
+#maturita-task {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -742,20 +738,6 @@ watchEffect((): void => {
           background: var(--card-1-hover-background);
         }
       }
-    }
-  }
-}
-
-@media (max-width: 1200px) {
-  #task-assign {
-    flex-direction: column;
-    gap: 30px;
-
-    .page-navigation {
-      width: 100%;
-      position: relative;
-      top: 0;
-      min-width: 200px;
     }
   }
 }

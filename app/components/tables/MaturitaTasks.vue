@@ -54,7 +54,7 @@ const slots = useSlots();
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
     { field: "id", title: "ID", width: "90px", type: "number" },
-    { field: "name", title: "Název", type: "string", width: "30%" },
+    { field: "name", title: "Název", type: "string", width: "20%" },
     { field: "points", title: "Počet bodů", type: "number" },
     { field: "task", title: "Zadání", type: "string" },
   ];

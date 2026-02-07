@@ -100,7 +100,7 @@ const addTopic = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:topic' },
             { label: 'Témata', to: `/panel/maturita/${role}/topics` },
             { label: 'Vytvoření', to: `/panel/maturita/${role}/topics/add`, active: true },
           ]"/>

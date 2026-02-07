@@ -166,7 +166,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
             { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
             { label: 'Odstranění', to: `/panel/maturita/${role}/tasks/remove`, active: true },
           ]"/>
@@ -175,7 +175,7 @@ watchEffect((): void => {
     </template>
 
     <template #content v-if="allTasks && currentMaturita">
-      <div id="tasks">
+      <div id="maturita-tasks">
         <div class="content">
           <ActionBar
               class="action-bar"
@@ -226,7 +226,7 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#tasks {
+#maturita-tasks {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -365,7 +365,7 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1055px) {
-  #tasks {
+  #maturita-tasks {
     flex-direction: column;
     gap: 30px;
   }

@@ -188,7 +188,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/proposals`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: `/panel/maturita/${role}/proposals`, icon: 'material-symbols:lightbulb-rounded' },
             { label: 'Návrhy', to: `/panel/maturita/${role}/proposals`, active: true },
           ]"/>
         </template>

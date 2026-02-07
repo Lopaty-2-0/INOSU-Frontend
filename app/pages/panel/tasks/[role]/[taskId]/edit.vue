@@ -15,8 +15,12 @@ import {navigateTo} from "nuxt/app";
 import type { TaskData } from "~/types/tasks";
 import {useLoadingStore} from "~/stores/loading";
 
+const route = useRoute();
+const role = route.params.role as string;
+const taskId = route.params.taskId as string;
+
 useHead({
-  title: "Panel | Úkol - Přidání",
+  title: "Panel | Úkol - " + taskId + " - Upravení",
   meta: [
     { name: "description", content: "Panel Settings User Information" }
   ],
@@ -25,10 +29,6 @@ useHead({
 definePageMeta({
   roles: ["admin", "teacher"],
 });
-
-const route = useRoute();
-const role = route.params.role as string;
-const taskId = route.params.taskId as string;
 
 const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();

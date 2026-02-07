@@ -44,16 +44,16 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const openChat = async (id: number): Promise<void> => {
-  if (!id) return;
+const openChat = async (id: number, teamId: number): Promise<void> => {
+  if (!id || !teamId) return;
 
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/chat`);
+  await navigateTo(`/panel/maturita/${role}/tasks/${id}/${teamId}/chat`);
 };
 
-const openTask = async (id: number): Promise<void> => {
-  if (!id) return;
+const openTask = async (id: number, teamId: number): Promise<void> => {
+  if (!id || !teamId) return;
 
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}`);
+  await navigateTo(`/panel/maturita/${role}/tasks/${id}/${teamId}`);
 };
 
 const editTask = async (id: number): Promise<void> => {
@@ -74,7 +74,7 @@ const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("
   lazy: true
 });
 
-const { data: maturitaData, error: maturitaError, pending: maturitaPending } = useFetch("/api/maturita/get/current", {
+const { data: maturitaData, error: maturitaError } = useFetch("/api/maturita/get/current", {
   method: "get",
   server: true,
   credentials: "include",
@@ -96,6 +96,7 @@ watch([tasksData, tasksError], (): void => {
       guarantor: accountData.value
     }
   });
+
   tasksCount.value = tasksData.value.data.count;
 }, { immediate: true });
 
@@ -121,7 +122,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:architecture-rounded' },
+            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
             { label: 'Zadání', to: `/panel/maturita/${role}/tasks`, active: true },
           ]"/>
         </template>
@@ -129,7 +130,7 @@ watchEffect((): void => {
     </template>
 
     <template #content v-if="allTasks && currentMaturita">
-      <div id="maturitaTasks">
+      <div id="maturita-tasks">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -159,15 +160,12 @@ watchEffect((): void => {
           </div>
 
           <MaturitaTasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
-              { title: 'Student', field: 'userData' }
+              { title: 'Student', field: 'userData' },
+              { title: 'Oponent', field: 'objector' }
           ]">
             <template #userData="data">
               <div class="profile">
-                <Image
-                    :src="config.public.originUrl + '/api/file/pfp/' + data.value.userData.profilePicture"
-                    alt="profile-photo"
-                    draggable="false"
-                />
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + data.value.userData.profilePicture" alt="profile-photo" draggable="false"/>
 
                 <p class="account-name">
                   {{ data.value.userData.name }} {{ data.value.userData.surname }}
@@ -175,11 +173,25 @@ watchEffect((): void => {
               </div>
             </template>
 
+            <template #objector="data">
+              <div class="profile" v-if="data.value.objector">
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + data.value.objector.profilePicture" alt="profile-photo" draggable="false"/>
+
+                <p class="account-name">
+                  {{ data.value.objector.name }} {{ data.value.objector.surname }}
+                </p>
+              </div>
+
+              <div v-else>
+                Neurčeno
+              </div>
+            </template>
+
             <template #actions="data">
               <div class="actions">
-                <button type="button" class="default" @click="openChat(data.value.id)">Chat</button>
+                <button type="button" class="default" @click="openChat(data.value.id, data.value.idTeam)">Chat</button>
                 <button type="button" class="default" @click="editTask(data.value.id)">Upravit</button>
-                <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>
+                <button type="button" class="primary" @click="openTask(data.value.id, data.value.idTeam)">Otevřít</button>
               </div>
             </template>
           </MaturitaTasksTable>
@@ -192,7 +204,7 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#maturitaTasks {
+#maturita-tasks {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -315,13 +327,13 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1420px) {
-  #maturitaTasks .navigation {
+  #maturita-tasks .navigation {
     flex: 1;
   }
 }
 
 @media (max-width: 1055px) {
-  #maturitaTasks {
+  #maturita-tasks {
     flex-direction: column;
     gap: 30px;
   }
