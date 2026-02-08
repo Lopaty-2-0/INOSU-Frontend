@@ -16,6 +16,10 @@ useHead({
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
+definePageMeta({
+  roles: ["admin", "teacher"],
+});
+
 const route = useRoute();
 const role = route.params.role as string;
 

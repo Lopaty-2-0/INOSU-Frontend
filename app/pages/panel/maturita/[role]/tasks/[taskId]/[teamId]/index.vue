@@ -28,7 +28,7 @@ const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Upravení",
+  title: "Panel | Maturitní zadání - " + taskId,
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -220,6 +220,7 @@ const { data: teamData, error: teamError, refresh: refreshTeamData } = useFetch(
   credentials: "include",
   lazy: true
 });
+
 const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
     id: taskId,
@@ -247,7 +248,7 @@ const { data: versionsData, error: versionsError, pending: versionsLoading } = u
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
-    navigateTo(`/panel/tasks/${role}/${taskId}`);
+    navigateTo(`/panel/maturita/tasks/${role}`);
     return;
   }
 
@@ -272,7 +273,7 @@ watch(versionsData, async (newValue: any): Promise<void> => {
 
 watch([teamData, teamError], async (): Promise<void> => {
   if (teamError.value) {
-    navigateTo(`/panel/tasks/${role}/${taskId}`);
+    navigateTo(`/panel/maturita/tasks/${role}`);
     return;
   }
 

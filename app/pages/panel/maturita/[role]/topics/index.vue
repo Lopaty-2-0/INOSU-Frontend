@@ -93,6 +93,7 @@ watchEffect((): void => {
               `/panel/maturita/${role}/topics/add`,
               `/panel/maturita/${role}/topics/remove`,
             ]"
+            v-if="checkPermissions(['admin', 'teacher'])"
           />
 
           <div class="line">

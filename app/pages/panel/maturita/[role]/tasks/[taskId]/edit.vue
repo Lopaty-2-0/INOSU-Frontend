@@ -294,7 +294,7 @@ watchEffect((): void => {
           <div class="page-section">
             <div class="line">
               <div class="section-head users">
-                <h3>Oponent <span class="update" v-show="newData.objector?.[0] !== oldData.objector?.id">(aktualizováno)</span></h3>
+                <h3>Oponent <span class="update" v-show="newData.objector?.[0] && newData.objector?.[0] !== oldData.objector?.id">(aktualizováno)</span></h3>
               </div>
 
               <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />

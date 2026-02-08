@@ -93,53 +93,68 @@ const sidebarLinks = computed<
   },
   {
     name: "Maturita",
-    links: [
+    ...(role.value === "admin" || role.value === "teacher")
+    ?
       {
-        text: "Maturity",
-        href: `/panel/maturita/${role.value}/grade`,
-        iconClass: "material-symbols:book-2-rounded",
-        notify: false,
-        activeHrefs: [
-          `/panel/maturita/${role.value}/grade`,
-          `/panel/maturita/${role.value}/grade/add`,
-          `/panel/maturita/${role.value}/grade/remove`,
+        links: [
+          {
+            text: "Maturity",
+            href: `/panel/maturita/${role.value}/grade`,
+            iconClass: "material-symbols:book-2-rounded",
+            notify: false,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/grade`,
+              `/panel/maturita/${role.value}/grade/add`,
+              `/panel/maturita/${role.value}/grade/remove`,
+            ],
+          },
+          {
+            text: "Zadání",
+            href: `/panel/maturita/${role.value}/tasks`,
+            iconClass: "material-symbols:folder-copy-rounded",
+            notify: false,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/tasks`,
+              `/panel/maturita/${role.value}/tasks/add`,
+              `/panel/maturita/${role.value}/tasks/remove`,
+            ],
+          },
+          {
+            text: "Návrhy",
+            href: `/panel/maturita/${role.value}/proposals`,
+            iconClass: "material-symbols:lightbulb-rounded",
+            notify: false,
+          },
+          {
+            text: "Témata",
+            href: `/panel/maturita/${role.value}/topics`,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/topics`,
+              `/panel/maturita/${role.value}/topics/add`,
+              `/panel/maturita/${role.value}/topics/remove`,
+            ],
+            iconClass: "material-symbols:topic",
+            notify: false,
+          },
+          {
+            text: "Tabulka",
+            href: "/panel/maturita/table",
+            iconClass: "material-symbols:table-rows-rounded",
+            notify: false,
+          },
         ],
-      },
+      }
+    :
       {
-        text: "Zadání",
-        href: `/panel/maturita/${role.value}/tasks`,
-        iconClass: "material-symbols:folder-copy-rounded",
-        notify: false,
-        activeHrefs: [
-          `/panel/maturita/${role.value}/tasks`,
-          `/panel/maturita/${role.value}/tasks/add`,
-          `/panel/maturita/${role.value}/tasks/remove`,
+        links: [
+          {
+            text: "Maturitní zadání",
+            href: `/panel/maturita/${role.value}`,
+            iconClass: "material-symbols:folder-copy-rounded",
+            notify: false,
+          },
         ],
-      },
-      {
-        text: "Návrhy",
-        href: `/panel/maturita/${role.value}/proposals`,
-        iconClass: "material-symbols:lightbulb-rounded",
-        notify: false,
-      },
-      {
-        text: "Témata",
-        href: `/panel/maturita/${role.value}/topics`,
-        activeHrefs: [
-          `/panel/maturita/${role.value}/topics`,
-          `/panel/maturita/${role.value}/topics/add`,
-          `/panel/maturita/${role.value}/topics/remove`,
-        ],
-        iconClass: "material-symbols:topic",
-        notify: false,
-      },
-      {
-        text: "Tabulka",
-        href: "/panel/maturita/table",
-        iconClass: "material-symbols:table-rows-rounded",
-        notify: false,
-      },
-    ],
+      }
   },
   ...(role.value === "admin")
       ? [

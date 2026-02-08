@@ -26,7 +26,8 @@ interface MaturitaTaskData {
     task: string;
     topic: string;
     objector: AccountData;
-    userData: AccountData;
+    userData: AccountData | null;
+    guarantor: AccountData | null;
 }
 
 export type {

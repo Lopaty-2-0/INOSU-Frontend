@@ -16,14 +16,11 @@ import Loading from "~/components/ui/Loading.vue";
 import Editor from "~/components/ui/Editor.vue";
 import type {Version} from "~/types/team";
 import FileInput from "~/components/ui/FileInput.vue";
-
-const route = useRoute();
-const teamId = route.params.teamId as string;
-const taskId = route.params.taskId as string;
-const guarantorId = route.params.guarantorId as string;
+import type {MaturitaTaskData} from "~/types/maturita";
+import ActionBar from "~/components/ui/ActionBar.vue";
 
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Přiřazení - Jednotlivci",
+  title: "Panel | Maturitní zadání",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -36,7 +33,7 @@ const alertsStore = useAlertsStore();
 const editorEnabledTools: string[] = [];
 const submitLoading = ref<boolean>(false);
 const teamTaskData = ref<TaskTeam | undefined>(undefined);
-const task = ref<TaskData | undefined>(undefined);
+const task = ref<MaturitaTaskData | undefined>(undefined);
 const teamTaskPoints = ref<number | null>(null);
 const specificVersionLoading = ref<{ idVersion: number, loading: boolean } | undefined>(undefined);
 const guarantorComment = ref<string>("");
@@ -48,6 +45,29 @@ const versionsNumberOfPages = computed<number>(() => {
   return Math.ceil(versionsCount.value / versionsPerPage);
 });
 const newVersionFile = ref<File | null>(null);
+const guarantorId = computed<number | undefined>(() => task.value?.guarantor?.id);
+const taskId = computed<number | undefined>(() => task.value?.id);
+const teamId = computed<number | undefined>(() => task.value?.idTeam);
+const teamQuery = computed(() => {
+  if (!task.value) return null;
+
+  return {
+    idTask: task.value.id,
+    idTeam: task.value.idTeam,
+    guarantor: task.value.guarantor?.id,
+  };
+});
+const versionsQuery = computed(() => {
+  if (!task.value) return null;
+
+  return {
+    idTask: task.value.id,
+    idTeam: task.value.idTeam,
+    guarantor: task.value.guarantor?.id,
+    amountForPaging: versionsPerPage,
+    pageNumber: versionsActivePage.value,
+  };
+});
 
 const resetInputs = (): void => {
   newVersionFile.value = null;
@@ -59,7 +79,7 @@ const downloadMaterials = async (): Promise<void> => {
     return;
   }
 
-  await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.guarantor.id}/${task.value.id}/${task.value.task}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.guarantor?.id}/${task.value.id}/${task.value.task}`, { external: true });
 };
 
 const downloadVersion = async (version: Version): Promise<void> => {
@@ -68,7 +88,7 @@ const downloadVersion = async (version: Version): Promise<void> => {
     return;
   }
 
-  await navigateTo(`${config.public.originUrl}/api/file/tasks/${guarantorId}/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/tasks/${guarantorId.value}/${taskId.value}/${teamId.value}/${version.idVersion}/${version.elaboration}`, { external: true });
 };
 
 const removeVersion = async (version: Version): Promise<void> => {
@@ -82,9 +102,9 @@ const removeVersion = async (version: Version): Promise<void> => {
   await $fetch("/api/version_team/change", {
     method: "put",
     body: {
-      idTask: taskId,
-      idTeam: teamId,
-      guarantor: guarantorId,
+      idTask: taskId.value,
+      idTeam: teamId.value,
+      guarantor: guarantorId.value,
       idVersion: version.idVersion,
     },
     ignoreResponseError: true,
@@ -167,9 +187,9 @@ const uploadNewVersion = async (): Promise<void> => {
   submitLoading.value = true;
 
   const formData = new FormData();
-  formData.append("idTask", taskId);
-  formData.append("idTeam", teamId);
-  formData.append("guarantor", guarantorId);
+  if (taskId.value) formData.append("idTask", taskId.value.toString());
+  if (teamId.value) formData.append("idTeam", teamId.value.toString());
+  if (guarantorId.value) formData.append("guarantor", guarantorId.value.toString());
   formData.append("elaboration", newVersionFile.value);
 
   await $fetch("/api/version_team/add", {
@@ -270,62 +290,41 @@ const uploadNewVersion = async (): Promise<void> => {
   });
 };
 
-const { data: teamData, error: teamError } = useFetch("/api/team/get/info", {
-  query: {
-    idTask: taskId,
-    idTeam: teamId,
-    guarantor: guarantorId
-  },
+const { data: taskData, error: taskError } = useFetch("/api/task/get/maturita/student/approved", {
   method: "get",
   server: true,
   credentials: "include",
   lazy: true
 });
 
-const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
-  query: {
-    id: taskId,
-    guarantor: guarantorId
-  },
+const {data: teamData, error: teamError, refresh: refreshTeam} = useFetch("/api/team/get/info", {
   method: "get",
   server: true,
   credentials: "include",
-  lazy: true
+  lazy: true,
+  query: teamQuery,
+  watch: [teamQuery],
 });
 
-const { data: versionsData, error: versionsError, refresh: refreshVersions, pending: versionsLoading } = useFetch("/api/version_team/get", {
-  query: {
-    idTask: taskId,
-    idTeam: teamId,
-    guarantor: guarantorId,
-    amountForPaging: versionsPerPage,
-    pageNumber: versionsActivePage,
-  },
+const {data: versionsData, error: versionsError, pending: versionsLoading, refresh: refreshVersions} = useFetch("/api/version_team/get", {
   method: "get",
   server: true,
   credentials: "include",
-  lazy: true
+  lazy: true,
+  query: versionsQuery,
+  watch: [versionsQuery],
 });
 
-watchEffect((): void => {
-  if (teamError.value) {
-    navigateTo(`/panel/tasks/student/${taskId}`);
-    return;
-  }
-
-  if (!teamTaskData.value) return;
-});
-
-watchEffect(async (): Promise<void> => {
+watch([taskData, taskError], (): void => {
   if (taskError.value) {
-    navigateTo(`/panel/tasks/student/${taskId}`);
+    navigateTo(`/panel/maturita/student`);
     return;
   }
 
-  if (!taskData.value) return
+  if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-});
+}, { immediate: true });
 
 watch(versionsData, async (newValue: any): Promise<void> => {
   if (!newValue) return;
@@ -341,17 +340,21 @@ watch(versionsData, async (newValue: any): Promise<void> => {
   versionsCount.value = newValue.data.count;
 }, { immediate: true });
 
-watch(teamData, async (newValue: any): Promise<void> => {
-  if (!newValue) return;
+watch([teamData, teamError], async (): Promise<void> => {
+  if (teamError.value) {
+    navigateTo(`/panel/maturita/student`);
+    return;
+  }
+
+  if (!teamData.value) return;
 
   teamTaskData.value = {
-    ...newValue.data.team,
-    users: newValue.data.users,
+    ...teamData.value.data.team,
+    users: teamData.value.data.users,
   }
 
   teamTaskPoints.value = teamData.value.data.team.points ?? null;
-  guarantorComment.value = teamData.value.data.team.review ?? "Zatím žádný komentář...";
-
+  guarantorComment.value = teamData.value.data.team.review ?? "";
 }, { immediate: true });
 
 watchEffect((): void => {
@@ -365,52 +368,64 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/student`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/student/${taskId}/${teamId}`, active: true },
+            { label: 'Maturita', to: `/panel/maturita/student`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/student`, active: true },
           ]"/>
         </template>
       </Navbar>
     </template>
 
-    <template #content v-if="teamTaskData && task">
-      <div id="team-task">
+    <template #content v-if="task && teamTaskData">
+      <div id="maturita-task">
         <div class="content">
+          <ActionBar
+            class="action-bar"
+            description="Správa maturitního zadání"
+            :texts="['Otevřít chat']"
+            :actions="['edit']"
+            :icons="[
+              'material-symbols:chat-rounded'
+            ]"
+            :navigate-to="[
+              `/panel/maturita/chat`,
+            ]"
+          />
+
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
-              <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
               <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
               <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.points">
                 <br>
-                Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }} = {{ teamTaskData.points !== null && task.points ? ((teamTaskData.points / task.points) * 100).toFixed(2) : "0" }}%
+                Body: {{ task.points ?? "-" }} / {{ task.maxPoints }} = {{ task.points !== null && task.points ? ((task.points / task.maxPoints) * 100).toFixed(2) : "0" }}%
               </p>
             </div>
-
-            <Card class="team-card section-head" variant="outlined" v-if="teamTaskData.isTeam">
-              <div class="content">
-                <p class="name"><span>{{ teamTaskData.name || "Neurčeno" }}</span></p>
-                <p><span>ID:</span> {{ teamTaskData.idTeam }}</p>
-                <p><span>Počet členů:</span> {{ (teamTaskData.users || []).length }}</p>
-                <p></p>
-              </div>
-            </Card>
 
             <div class="user section-head">
               <span>Garant:</span>
               <div class="profile">
-                <Image
-                    :src="config.public.originUrl + '/api/file/pfp/' + task.guarantor.profilePicture"
-                    alt="profile-photo"
-                    draggable="false"
-                />
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + task.guarantor?.profilePicture" alt="profile-photo" draggable="false"/>
 
                 <p class="account-name">
-                  {{ task.guarantor.name + " " + task.guarantor.surname }}
+                  {{ task.guarantor?.name + " " + task.guarantor?.surname }}
                 </p>
               </div>
+            </div>
+
+            <div class="user section-head">
+              <span>Oponent:</span>
+              <div class="profile" v-if="task.objector">
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + task.objector.profilePicture" alt="profile-photo" draggable="false" />
+
+                <p class="account-name">
+                  {{ task.objector.name + " " + task.objector.surname }}
+                </p>
+              </div>
+
+              <p v-else>Neurčeno</p>
             </div>
           </div>
 
@@ -493,12 +508,12 @@ watchEffect((): void => {
 
                 <div class="line">
                   <Editor
-                    v-model="guarantorComment"
-                    class="editor"
-                    :enable="true"
-                    :read-only="true"
-                    :enabled-tools="editorEnabledTools"
-                    placeholder=""
+                      v-model="guarantorComment"
+                      class="editor"
+                      :enable="true"
+                      :read-only="true"
+                      :enabled-tools="editorEnabledTools"
+                      placeholder=""
                   />
                 </div>
               </div>
@@ -515,7 +530,7 @@ watchEffect((): void => {
 </template>
 
 <style scoped lang="scss">
-#team-task {
+#maturita-task {
   display: flex;
   flex-direction: row;
   gap: 30px;
