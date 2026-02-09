@@ -359,7 +359,7 @@ watchEffect((): void => {
 
             <div class="user section-head">
               <span>Oponent:</span>
-              <div class="profile" v-if="task.objector">
+              <div class="profile" v-if="task.objector && task.objector.id">
                 <Image :src="config.public.originUrl + '/api/file/pfp/' + task.objector.profilePicture" alt="profile-photo" draggable="false" />
 
                 <p class="account-name">

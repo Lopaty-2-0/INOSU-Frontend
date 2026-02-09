@@ -1,31 +1,26 @@
 <script setup lang="ts">
 import {computed, ref, watchEffect} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import ActionBar from "~/components/ui/ActionBar.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Pagination from "~/components/ui/Pagination.vue";
-import MaturitaTasksTable from "~/components/tables/MaturitaTasks.vue";
+import MauturitaProposalsTable from "~/components/tables/MaturitaProposals.vue";
 import type {MaturitaData, MaturitaTaskData} from "~/types/maturita";
 import moment from "moment/moment";
-import Image from "~/components/ui/Image.vue";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
+import ActionBar from "~/components/ui/ActionBar.vue";
 
 useHead({
-  title: "Panel | Maturitní zadání",
+  title: "Panel | Návrhy maturitních zadání - Zamítnuté",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
 definePageMeta({
-  roles: ["admin", "teacher"],
+  roles: ["student"],
 });
 
-const route = useRoute();
-const role = route.params.role as string;
-
-const config = useRuntimeConfig();
 const accountStore = useAccountStore();
 const { getAccountData: accountData } = storeToRefs(accountStore);
 const maturitaNotExists = ref<boolean | undefined>(undefined);
@@ -45,25 +40,7 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const openChat = async (id: number, teamId: number): Promise<void> => {
-  if (!id || !teamId) return;
-
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/${teamId}/chat`);
-};
-
-const openTask = async (id: number, teamId: number): Promise<void> => {
-  if (!id || !teamId) return;
-
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/${teamId}`);
-};
-
-const editTask = async (id: number): Promise<void> => {
-  if (!id) return;
-
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/edit`);
-};
-
-const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/maturita/guarantor/approved", {
+const { data: tasksData, error: tasksError, pending: tasksPending, refresh: refreshTasks } = useFetch("/api/task/get/maturita/student/pending", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -97,7 +74,6 @@ watch([tasksData, tasksError], (): void => {
       guarantor: accountData.value
     }
   });
-
   tasksCount.value = tasksData.value.data.count;
 }, { immediate: true });
 
@@ -124,8 +100,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Zadání', to: `/panel/maturita/${role}/tasks`, active: true },
+            { label: 'Maturity', to: `/panel/maturita/student/proposals`, icon: 'material-symbols:lightbulb-rounded' },
+            { label: 'Návrhy', to: `/panel/maturita/student/proposals`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -148,23 +124,23 @@ watchEffect((): void => {
       <div id="maturita-tasks" v-else-if="allTasks && currentMaturita">
         <div class="content">
           <ActionBar
-            class="action-bar"
-            description="Správa maturitních zadání"
-            :texts="['Přidat', 'Odebrat']"
-            :actions="['add', 'remove']"
-            :icons="[
+              class="action-bar"
+              description="Správa návrhů maturitních zadání"
+              :texts="['Přidat', 'Zamítnuté']"
+              :actions="['add', 'remove']"
+              :icons="[
               'material-symbols:add-rounded',
-              'material-symbols:delete-rounded',
+              'material-symbols:close-rounded',
             ]"
               :navigate-to="[
-              `/panel/maturita/${role}/tasks/add`,
-              `/panel/maturita/${role}/tasks/remove`,
+              `/panel/maturita/student/proposals/add`,
+              `/panel/maturita/student/proposals/rejected`,
             ]"
           />
 
           <div class="line">
             <div class="section-head bottom-line">
-              <h3>Maturitní zadání</h3>
+              <h3>Návrhy maturitních zadání</h3>
               <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
               <br>
               <p>Ročník: {{ currentMaturita.grade }}</p>
@@ -174,42 +150,7 @@ watchEffect((): void => {
             <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
           </div>
 
-          <MaturitaTasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
-              { title: 'Student', field: 'userData' },
-              { title: 'Oponent', field: 'objector' }
-          ]">
-            <template #userData="data">
-              <div class="profile">
-                <Image :src="config.public.originUrl + '/api/file/pfp/' + data.value.userData.profilePicture" alt="profile-photo" draggable="false"/>
-
-                <p class="account-name">
-                  {{ data.value.userData.name }} {{ data.value.userData.surname }}
-                </p>
-              </div>
-            </template>
-
-            <template #objector="data">
-              <div class="profile" v-if="data.value.objector && data.value.objector.id">
-                <Image :src="config.public.originUrl + '/api/file/pfp/' + data.value.objector.profilePicture" alt="profile-photo" draggable="false"/>
-
-                <p class="account-name">
-                  {{ data.value.objector.name }} {{ data.value.objector.surname }}
-                </p>
-              </div>
-
-              <div v-else>
-                Neurčeno
-              </div>
-            </template>
-
-            <template #actions="data">
-              <div class="actions">
-                <button type="button" class="default" @click="openChat(data.value.id, data.value.idTeam)">Chat</button>
-                <button type="button" class="default" @click="editTask(data.value.id)">Upravit</button>
-                <button type="button" class="primary" @click="openTask(data.value.id, data.value.idTeam)">Otevřít</button>
-              </div>
-            </template>
-          </MaturitaTasksTable>
+          <MauturitaProposalsTable class="datatable" role="student" :tasks="allTasks" :loading="tasksPending" />
 
           <Pagination v-model="currentPage" :number-of-pages="numberOfPages" />
         </div>
@@ -254,9 +195,34 @@ watchEffect((): void => {
       color: var(--btn-2-color);
       border: var(--border-width) solid rgba(var(--border-color), 0.5);
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
 
       &:hover {
         background: var(--btn-2-hover-background);
+      }
+
+      &.rejected {
+        color: var(--actionBar-actions-remove-color);
+        background: rgba(var(--actionBar-actions-remove-background), 1);
+        border-color: rgba(var(--actionBar-actions-remove-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-remove-background), 0.8);
+        }
+      }
+
+      &.approved {
+        color: var(--actionBar-actions-add-color);
+        background: rgba(var(--actionBar-actions-add-background), 1);
+        border-color: rgba(var(--actionBar-actions-add-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-add-background), 0.8);
+        }
       }
 
       &.primary {
@@ -280,28 +246,6 @@ watchEffect((): void => {
     flex-direction: column;
     gap: 35px;
     position: relative;
-
-    .datatable {
-      .profile {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-direction: row;
-
-        .account-name {
-          color: var(--mini-title-color);
-          font-size: 16px;
-          text-wrap: nowrap;
-        }
-
-        ::v-deep(img) {
-          width: 45px;
-          height: 45px;
-          border-radius: var(--small-border-radius);
-          object-fit: cover;
-        }
-      }
-    }
 
     .line {
       display: flex;

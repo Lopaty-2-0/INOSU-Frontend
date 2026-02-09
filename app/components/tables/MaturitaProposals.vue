@@ -14,6 +14,10 @@ const props = defineProps({
     type: Array as () => MaturitaTaskData[],
     required: true,
   },
+  role: {
+    type: String,
+    required: true,
+  },
   searchInput: {
     type: String,
     required: false,
@@ -54,13 +58,22 @@ const slots = useSlots();
 const config = useRuntimeConfig();
 
 const cols = computed<Column[]>(() => {
-  const base: Column[] = [
-    { field: "id", title: "ID", width: "90px", type: "number" },
-    { field: "name", title: "Název", type: "string" },
-    { field: "topic", title: "Téma", type: "string" },
-    { field: "task", title: "Zadání", type: "string" },
-    { field: "userData", title: "Navrhovel", type: "object" },
-  ];
+  const base: Column[] = props.role === "student" ?
+    [
+      { field: "id", title: "ID", width: "90px", type: "number" },
+      { field: "name", title: "Název", type: "string" },
+      { field: "topic", title: "Téma", type: "string" },
+      { field: "task", title: "Zadání", type: "string" },
+      { field: "guarantor", title: "Garant", type: "object" },
+    ]
+      :
+    [
+      { field: "id", title: "ID", width: "90px", type: "number" },
+      { field: "name", title: "Název", type: "string" },
+      { field: "topic", title: "Téma", type: "string" },
+      { field: "task", title: "Zadání", type: "string" },
+      { field: "userData", title: "Navrhovel", type: "object" },
+    ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
 
@@ -140,6 +153,21 @@ defineExpose({ clearSelection });
         </p>
       </div>
     </template>
+
+    <template #guarantor="data">
+      <div class="profile">
+        <Image
+            :src="config.public.originUrl + '/api/file/pfp/' + data.value.guarantor.profilePicture"
+            alt="profile-photo"
+            draggable="false"
+        />
+
+        <p class="account-name">
+          {{ data.value.guarantor.name }} {{ data.value.guarantor.surname }}
+        </p>
+      </div>
+    </template>
+
 
     <template #name="data">
       <span class="limit">{{ data.value.name }}</span>

@@ -32,6 +32,7 @@ const config = useRuntimeConfig();
 const alertsStore = useAlertsStore();
 const editorEnabledTools: string[] = [];
 const submitLoading = ref<boolean>(false);
+const taskNotExists = ref<boolean | undefined>(undefined);
 const teamTaskData = ref<TaskTeam | undefined>(undefined);
 const task = ref<MaturitaTaskData | undefined>(undefined);
 const teamTaskPoints = ref<number | null>(null);
@@ -49,7 +50,7 @@ const guarantorId = computed<number | undefined>(() => task.value?.guarantor?.id
 const taskId = computed<number | undefined>(() => task.value?.id);
 const teamId = computed<number | undefined>(() => task.value?.idTeam);
 const teamQuery = computed(() => {
-  if (!task.value) return null;
+  if (!task.value || taskNotExists.value) return null;
 
   return {
     idTask: task.value.id,
@@ -58,7 +59,7 @@ const teamQuery = computed(() => {
   };
 });
 const versionsQuery = computed(() => {
-  if (!task.value) return null;
+  if (!task.value || taskNotExists.value) return null;
 
   return {
     idTask: task.value.id,
@@ -301,7 +302,6 @@ const {data: teamData, error: teamError, refresh: refreshTeam} = useFetch("/api/
   method: "get",
   server: true,
   credentials: "include",
-  lazy: true,
   query: teamQuery,
   watch: [teamQuery],
 });
@@ -310,14 +310,20 @@ const {data: versionsData, error: versionsError, pending: versionsLoading, refre
   method: "get",
   server: true,
   credentials: "include",
-  lazy: true,
   query: versionsQuery,
   watch: [versionsQuery],
 });
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
-    navigateTo(`/panel/maturita/student`);
+    const resCode: number = taskError.value.data.resCode;
+
+    if ([78010, 78020].includes(resCode)) {
+      taskNotExists.value = true;
+      return;
+    }
+
+    navigateTo(`/panel`);
     return;
   }
 
@@ -338,11 +344,11 @@ watch(versionsData, async (newValue: any): Promise<void> => {
 
   versions.value = newValue.data.versions;
   versionsCount.value = newValue.data.count;
-}, { immediate: true });
+});
 
 watch([teamData, teamError], async (): Promise<void> => {
   if (teamError.value) {
-    navigateTo(`/panel/maturita/student`);
+    navigateTo(`/panel`);
     return;
   }
 
@@ -355,7 +361,7 @@ watch([teamData, teamError], async (): Promise<void> => {
 
   teamTaskPoints.value = teamData.value.data.team.points ?? null;
   guarantorComment.value = teamData.value.data.team.review ?? "";
-}, { immediate: true });
+});
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamError.value && !teamTaskData.value);
@@ -375,8 +381,21 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task && teamTaskData">
-      <div id="maturita-task">
+    <template #content>
+      <div v-if="taskNotExists !== undefined && (taskNotExists || !task || !teamTaskData)" id="maturita-task">
+        <div class="content">
+          <div class="page-section">
+            <div class="section-head">
+              <h3>Maturitní zadání</h3>
+              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+            </div>
+
+            <p class="error message">More nemáš ještě maturitní zadání, podej návrh nebo počkej na jeho přidělení.</p>
+          </div>
+        </div>
+      </div>
+
+      <div v-else-if="!taskNotExists && task && teamTaskData" id="maturita-task">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -417,7 +436,7 @@ watchEffect((): void => {
 
             <div class="user section-head">
               <span>Oponent:</span>
-              <div class="profile" v-if="task.objector">
+              <div class="profile" v-if="task.objector && task.objector.id">
                 <Image :src="config.public.originUrl + '/api/file/pfp/' + task.objector.profilePicture" alt="profile-photo" draggable="false" />
 
                 <p class="account-name">
@@ -550,6 +569,15 @@ watchEffect((): void => {
     flex-direction: column;
     gap: 35px;
     position: relative;
+
+    .message {
+      font-size: 16px;
+      color: rgba(var(--description-color), 1);
+
+      &.error {
+        color: rgba(var(--error-color), 1);
+      }
+    }
 
     .versions {
       display: flex;

@@ -148,9 +148,26 @@ const sidebarLinks = computed<
       {
         links: [
           {
-            text: "Maturitní zadání",
+            text: "Zadání",
             href: `/panel/maturita/${role.value}`,
             iconClass: "material-symbols:folder-copy-rounded",
+            notify: false,
+          },
+          {
+            text: "Návrhy",
+            href: `/panel/maturita/${role.value}/proposals`,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/proposals`,
+              `/panel/maturita/${role.value}/proposals/add`,
+              `/panel/maturita/${role.value}/proposals/remove`,
+            ],
+            iconClass: "material-symbols:lightbulb-rounded",
+            notify: false,
+          },
+          {
+            text: "Chat",
+            href: `/panel/maturita/${role.value}/chat`,
+            iconClass: "material-symbols:chat-rounded",
             notify: false,
           },
         ],

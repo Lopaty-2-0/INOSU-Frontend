@@ -14,7 +14,7 @@ import {useAlertsStore} from "~/stores/alerts";
 import Loading from "~/components/ui/Loading.vue";
 
 useHead({
-  title: "Panel | Maturitní zadání",
+  title: "Panel | Návrhy maturitních zadání",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -28,6 +28,7 @@ const role = route.params.role as string;
 const accountStore = useAccountStore();
 const alertsStore = useAlertsStore();
 const { getAccountData: accountData } = storeToRefs(accountStore);
+const maturitaNotExists = ref<boolean | undefined>(undefined);
 const currentMaturita = ref<MaturitaData | undefined>(undefined);
 const allTasks = ref<MaturitaTaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
@@ -169,6 +170,7 @@ watch([tasksData, tasksError], (): void => {
 watch([maturitaData, maturitaError], (): void => {
   if (maturitaError.value) {
     currentMaturita.value = undefined;
+    maturitaNotExists.value = true;
     return;
   }
 
@@ -195,11 +197,24 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allTasks && currentMaturita">
-      <div id="maturitaTasks">
+    <template #content>
+      <div id="maturita-tasks" v-if="maturitaNotExists !== undefined && (maturitaNotExists || !currentMaturita || !allTasks)">
+        <div class="content">
+          <div class="page-section">
+            <div class="section-head">
+              <h3>Maturitní zadání</h3>
+              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+            </div>
+
+            <p class="error message">Žádný maturitní období more.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="maturita-tasks" v-else-if="allTasks && currentMaturita">
         <div class="content">
           <div class="line">
-            <div class="section-head">
+            <div class="section-head bottom-line">
               <h3>Návrhy maturitních zadání</h3>
               <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
               <br>
@@ -210,7 +225,7 @@ watchEffect((): void => {
             <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
           </div>
 
-          <MauturitaProposalsTable class="datatable" :tasks="allTasks" :loading="tasksPending">
+          <MauturitaProposalsTable :role="role" class="datatable" :tasks="allTasks" :loading="tasksPending">
             <template #actions="data">
               <Loading color="var(--actionBar-actions-add-color)" size="6px" v-if="loading.isLoading && loading.id === data.value.id && loading.teamId === data.value.idTeam" />
 
@@ -230,7 +245,7 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#maturitaTasks {
+#maturita-tasks {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -240,6 +255,15 @@ watchEffect((): void => {
     height: fit-content;
     position: sticky;
     min-width: 250px;
+  }
+
+  .message {
+    font-size: 16px;
+    color: rgba(var(--description-color), 1);
+
+    &.error {
+      color: rgba(var(--error-color), 1);
+    }
   }
 
   .actions {
@@ -325,11 +349,14 @@ watchEffect((): void => {
     }
 
     .page-section {
-      border-bottom: 1px solid rgba(var(--border-color), 0.5);
-      padding-bottom: 35px;
       display: flex;
       flex-direction: column;
       gap: 20px;
+
+      &.bottom-line {
+        padding-bottom: 35px;
+        border-bottom: 1px solid rgba(var(--border-color), 0.5);
+      }
     }
 
     .section-head {
@@ -356,13 +383,13 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1420px) {
-  #maturitaTasks .navigation {
+  #maturita-tasks .navigation {
     flex: 1;
   }
 }
 
 @media (max-width: 1055px) {
-  #maturitaTasks {
+  #maturita-tasks {
     flex-direction: column;
     gap: 30px;
   }

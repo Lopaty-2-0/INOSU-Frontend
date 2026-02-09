@@ -11,24 +11,21 @@ import Loading from "~/components/ui/Loading.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import moment from "moment";
 import type {MaturitaData, MaturitaTaskData} from "~/types/maturita";
-import MaturitaTasksTable from "~/components/tables/MaturitaTasks.vue";
+import MaturitaProposalsTable from "~/components/tables/MaturitaProposals.vue";
 
 useHead({
-  title: "Panel | Maturitní zadání - Odstranění",
+  title: "Panel | Návrhy maturitních zadání - Odstranění",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
 definePageMeta({
-  roles: ["admin", "teacher"],
+  roles: ["student"],
 });
-
-const route = useRoute();
-const role = route.params.role as string;
 
 const alertsStore = useAlertsStore();
 const maturitaNotExists = ref<boolean | undefined>(undefined);
 const currentMaturita = ref<MaturitaData | undefined>(undefined);
-const datatable = useTemplateRef<InstanceType<typeof MaturitaTasksTable>>("datatable");
+const datatable = useTemplateRef<InstanceType<typeof MaturitaProposalsTable>>("datatable");
 const allTasks = ref<MaturitaTaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
@@ -168,9 +165,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
-            { label: 'Odstranění', to: `/panel/maturita/${role}/tasks/remove`, active: true },
+            { label: 'Maturity', to: `/panel/maturita/student/proposals`, icon: 'material-symbols:lightbulb-rounded' },
+            { label: 'Návrhy', to: `/panel/maturita/student/proposals` },
+            { label: 'Zamítnuté', to: `/panel/maturita/student/proposals/rejected`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -193,18 +190,18 @@ watchEffect((): void => {
       <div id="maturita-tasks" v-else-if="allTasks && currentMaturita">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa maturitních zadání"
-              :texts="['Přidat', 'Odebrat']"
-              :actions="['add', 'remove']"
-              :active="1"
-              :icons="[
+            class="action-bar"
+            description="Správa návrhů maturitních zadání"
+            :texts="['Přidat', 'Zamítnuté']"
+            :actions="['add', 'remove']"
+            :active="1"
+            :icons="[
               'material-symbols:add-rounded',
-              'material-symbols:delete-rounded',
+              'material-symbols:close-rounded',
             ]"
-              :navigate-to="[
-              `/panel/maturita/${role}/tasks/add`,
-              `/panel/maturita/${role}/tasks/remove`,
+            :navigate-to="[
+              `/panel/maturita/student/proposals/add`,
+              `/panel/maturita/student/proposals/rejected`,
             ]"
           />
 
@@ -231,7 +228,7 @@ watchEffect((): void => {
             </button>
           </div>
 
-          <MaturitaTasksTable ref="datatable" :selected-ids="selectedTaskIds" :tasks="allTasks" :loading="tasksPending" :has-checkbox="true"  @row-clicked="onRowClicked" />
+          <MaturitaProposalsTable ref="datatable" :selected-ids="selectedTaskIds" role="student" :tasks="allTasks" :loading="tasksPending" :has-checkbox="true"  @row-clicked="onRowClicked" />
 
           <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
