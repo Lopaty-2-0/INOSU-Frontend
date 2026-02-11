@@ -16,6 +16,14 @@ const props = defineProps({
     type: Array as () => string[],
     default: ["add", "edit", "remove"],
   },
+  separatorIndexes: {
+    type: Array as () => number[],
+    default: [],
+  },
+  separatorIcon: {
+    type: String,
+    default: "material-symbols:square-rounded",
+  },
   description: {
     type: String,
     default: "Akční bar",
@@ -36,25 +44,29 @@ const emits = defineEmits(["selected"]);
     <p class="description">{{ props.description }}</p>
 
     <div class="actions">
-      <a
-          v-for="(_, index) in props.texts.length"
-          :key="index"
+      <div class="action"
+       v-for="(_, index) in props.texts.length"
+       :key="index"
+      >
+        <a
           :class="{
-          action: true,
-          active: props.active === index,
-          [props.actions[index] || '']: true,
-        }"
+            active: props.active === index,
+            [props.actions[index] || '']: true,
+          }"
           :href="props.navigateTo[index] || '#'"
           @click="emits('selected', index)"
-      >
-        <Icon
-            class="icon"
-            :name="
+        >
+          <Icon
+              class="icon"
+              :name="
             props.icons[index] || 'material-symbols:radio-button-unchecked'
           "
-        ></Icon>
-        {{ props.texts[index] }}
-      </a>
+          ></Icon>
+          {{ props.texts[index] }}
+        </a>
+
+        <Icon v-if="props.separatorIndexes.includes(index)" :name="separatorIcon" class="separator icon" />
+      </div>
     </div>
   </div>
 </template>
@@ -91,50 +103,61 @@ const emits = defineEmits(["selected"]);
 
     .action {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
-      justify-content: center;
-      gap: 5px;
-      padding: 10px 15px;
-      border-radius: var(--small-border-radius);
-      font-size: 16px;
-      transition: 0.2s;
-      background: var(--btn-2-background);
-      color: var(--btn-2-color);
-      text-decoration: none;
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
 
-      .icon {
+      .separator {
+        color: rgba(var(--description-color), 0.5);
         font-size: 16px;
+        margin-left: 10px;
       }
 
-      &:hover,
-      &.active {
-        color: var(--actionBar-actions-default-color);
-        background: rgba(var(--actionBar-actions-default-background), 1);
-        border-color: rgba(var(--actionBar-actions-default-border), 1);
+      a {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px 15px;
+        border-radius: var(--small-border-radius);
+        font-size: 16px;
+        transition: 0.2s;
+        background: var(--btn-2-background);
+        color: var(--btn-2-color);
+        text-decoration: none;
+        border: var(--border-width) solid rgba(var(--border-color), 0.5);
 
-        &.add {
-          color: var(--actionBar-actions-add-color);
-          background: rgba(var(--actionBar-actions-add-background), 1);
-          border-color: rgba(var(--actionBar-actions-add-border), 1);
+        .icon {
+          font-size: 16px;
         }
 
-        &.edit {
-          color: var(--actionBar-actions-edit-color);
-          background: rgba(var(--actionBar-actions-edit-background), 1);
-          border-color: rgba(var(--actionBar-actions-edit-border), 1);
+        &:hover,
+        &.active {
+          color: var(--actionBar-actions-default-color);
+          background: rgba(var(--actionBar-actions-default-background), 1);
+          border-color: rgba(var(--actionBar-actions-default-border), 1);
+
+          &.add {
+            color: var(--actionBar-actions-add-color);
+            background: rgba(var(--actionBar-actions-add-background), 1);
+            border-color: rgba(var(--actionBar-actions-add-border), 1);
+          }
+
+          &.edit {
+            color: var(--actionBar-actions-edit-color);
+            background: rgba(var(--actionBar-actions-edit-background), 1);
+            border-color: rgba(var(--actionBar-actions-edit-border), 1);
+          }
+
+          &.remove {
+            color: var(--actionBar-actions-remove-color);
+            background: rgba(var(--actionBar-actions-remove-background), 1);
+            border-color: rgba(var(--actionBar-actions-remove-border), 1);
+          }
         }
 
-        &.remove {
-          color: var(--actionBar-actions-remove-color);
-          background: rgba(var(--actionBar-actions-remove-background), 1);
-          border-color: rgba(var(--actionBar-actions-remove-border), 1);
+        &.active {
+          cursor: default;
         }
-      }
-
-      &.active {
-        cursor: default;
       }
     }
   }

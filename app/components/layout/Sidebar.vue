@@ -165,6 +165,12 @@ const sidebarLinks = computed<
             notify: false,
           },
           {
+            text: "Témata",
+            href: `/panel/maturita/${role.value}/topics`,
+            iconClass: "material-symbols:topic",
+            notify: false,
+          },
+          {
             text: "Chat",
             href: `/panel/maturita/${role.value}/chat`,
             iconClass: "material-symbols:chat-rounded",

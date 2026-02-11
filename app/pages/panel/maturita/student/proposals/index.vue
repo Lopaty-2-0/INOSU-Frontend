@@ -40,6 +40,12 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
+const editTask = async (id: number, guarantorId: number): Promise<void> => {
+  if (!id || !guarantorId) return;
+
+  await navigateTo(`/panel/maturita/student/proposals/${id}/${guarantorId}`);
+};
+
 const { data: tasksData, error: tasksError, pending: tasksPending, refresh: refreshTasks } = useFetch("/api/task/get/maturita/student/pending", {
   query: {
     amountForPaging: amountForPaging,
@@ -68,12 +74,7 @@ watch([tasksData, tasksError], (): void => {
 
   if (!tasksData.value) return;
 
-  allTasks.value = tasksData.value.data.tasks.map((task: MaturitaTaskData) => {
-    return {
-      ...task,
-      guarantor: accountData.value
-    }
-  });
+  allTasks.value = tasksData.value.data.tasks;
   tasksCount.value = tasksData.value.data.count;
 }, { immediate: true });
 
@@ -124,17 +125,20 @@ watchEffect((): void => {
       <div id="maturita-tasks" v-else-if="allTasks && currentMaturita">
         <div class="content">
           <ActionBar
-              class="action-bar"
-              description="Správa návrhů maturitních zadání"
-              :texts="['Přidat', 'Zamítnuté']"
-              :actions="['add', 'remove']"
-              :icons="[
+            class="action-bar"
+            description="Správa návrhů maturitních zadání"
+            :texts="['Přidat', 'Zamítnuté', 'Odstranit']"
+            :actions="['add', 'remove', 'remove']"
+            :separator-indexes="[1]"
+            :icons="[
               'material-symbols:add-rounded',
               'material-symbols:close-rounded',
+              'material-symbols:delete-rounded',
             ]"
               :navigate-to="[
               `/panel/maturita/student/proposals/add`,
               `/panel/maturita/student/proposals/rejected`,
+              `/panel/maturita/student/proposals/remove`,
             ]"
           />
 
@@ -150,7 +154,13 @@ watchEffect((): void => {
             <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
           </div>
 
-          <MauturitaProposalsTable class="datatable" role="student" :tasks="allTasks" :loading="tasksPending" />
+          <MauturitaProposalsTable class="datatable" role="student" :tasks="allTasks" :loading="tasksPending">
+            <template #actions="data">
+              <div class="actions">
+                <button type="button" class="primary" @click="editTask(data.value.id, data.value.guarantor.id)">Upravit</button>
+              </div>
+            </template>
+          </MauturitaProposalsTable>
 
           <Pagination v-model="currentPage" :number-of-pages="numberOfPages" />
         </div>

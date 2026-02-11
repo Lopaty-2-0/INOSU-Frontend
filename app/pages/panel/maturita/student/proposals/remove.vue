@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import {computed, ref, watchEffect} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
+import ActionBar from "~/components/ui/ActionBar.vue";
+import {computed, ref, useTemplateRef, watchEffect} from "vue";
+import { useAlertsStore } from "~/stores/alerts";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import Loading from "~/components/ui/Loading.vue";
 import Pagination from "~/components/ui/Pagination.vue";
-import MauturitaProposalsTable from "~/components/tables/MaturitaProposals.vue";
+import moment from "moment";
 import type {MaturitaData, MaturitaTaskData} from "~/types/maturita";
-import moment from "moment/moment";
-import {useAccountStore} from "~/stores/account";
-import {storeToRefs} from "pinia";
-import ActionBar from "~/components/ui/ActionBar.vue";
+import MaturitaProposalsTable from "~/components/tables/MaturitaProposals.vue";
 
 useHead({
-  title: "Panel | Návrhy maturitních zadání - Zamítnuté",
+  title: "Panel | Návrhy maturitních zadání - Odstranění",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -21,15 +22,17 @@ definePageMeta({
   roles: ["student"],
 });
 
-const accountStore = useAccountStore();
-const { getAccountData: accountData } = storeToRefs(accountStore);
+const alertsStore = useAlertsStore();
 const maturitaNotExists = ref<boolean | undefined>(undefined);
 const currentMaturita = ref<MaturitaData | undefined>(undefined);
+const datatable = useTemplateRef<InstanceType<typeof MaturitaProposalsTable>>("datatable");
 const allTasks = ref<MaturitaTaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
 const tasksCount = ref<number>(0);
+const loading = ref<boolean>(false);
+const selectedTaskIds = ref<number[]>([]);
 const numberOfPages = computed<number>((): number => {
   return Math.ceil(tasksCount.value / amountForPaging);
 });
@@ -40,7 +43,74 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending, refresh: refreshTasks } = useFetch("/api/task/get/maturita/student/rejected", {
+const resetSelectedTasks = (): void => {
+  if (!datatable.value) return;
+
+  selectedTaskIds.value = [];
+  datatable.value.clearSelection();
+};
+
+const onRowClicked = (tasks: MaturitaTaskData): void => {
+  if (!datatable.value) return;
+
+  if (!selectedTaskIds.value.includes(tasks.id)) {
+    selectedTaskIds.value.push(tasks.id);
+  } else {
+    selectedTaskIds.value = selectedTaskIds.value.filter((id: number) => id !== tasks.id);
+  }
+};
+
+const removeTasks = async (): Promise<void> => {
+  loading.value = true;
+
+  await $fetch("/api/task/delete", {
+    method: "delete",
+    body: {
+      id: selectedTaskIds.value
+    },
+    ignoreResponseError: true,
+    credentials: "include",
+
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode?.toString();
+      const goodIds: number[] = response._data.data?.goodIds || [];
+      const badIds: any[] = response._data.data?.badIds || [];
+
+      switch (resCode) {
+        case "28010":
+          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Studenti nemohou mazat úkoly." });
+          break;
+
+        case "28020":
+          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Chybí ID úkolu." });
+          break;
+
+        case "28031":
+          if (badIds.length > 0) {
+            alertsStore.addAlert({ type: "warning", title: "Odstranění maturitních zadání", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
+          }
+
+          alertsStore.addAlert({ type: "success", title: "Odstranění maturitních zadání", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
+
+          tasksRefresh();
+          resetSelectedTasks();
+          break;
+
+        default:
+          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Nastala neznámá chyba." });
+    },
+  }).finally(() => {
+    loading.value = false;
+  });
+};
+
+const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = useFetch("/api/task/get/maturita/guarantor/approved", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -52,7 +122,7 @@ const { data: tasksData, error: tasksError, pending: tasksPending, refresh: refr
   lazy: true
 });
 
-const { data: maturitaData, error: maturitaError } = useFetch("/api/maturita/get/current", {
+const { data: maturitaData, error: maturitaError, pending: maturitaPending } = useFetch("/api/maturita/get/current", {
   method: "get",
   server: true,
   credentials: "include",
@@ -124,7 +194,7 @@ watchEffect((): void => {
             description="Správa návrhů maturitních zadání"
             :texts="['Přidat', 'Zamítnuté', 'Odstranit']"
             :actions="['add', 'remove', 'remove']"
-            :active="1"
+            :active="2"
             :separator-indexes="[1]"
             :icons="[
               'material-symbols:add-rounded',
@@ -139,8 +209,8 @@ watchEffect((): void => {
           />
 
           <div class="line">
-            <div class="section-head bottom-line">
-              <h3>Zamítnuté návrhy maturitních zadání</h3>
+            <div class="section-head">
+              <h3>Vybrané maturitní zadání: {{ selectedTaskIds.length }}</h3>
               <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
               <br>
               <p>Ročník: {{ currentMaturita.grade }}</p>
@@ -150,9 +220,20 @@ watchEffect((): void => {
             <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
           </div>
 
-          <MauturitaProposalsTable class="datatable" role="student" :tasks="allTasks" :loading="tasksPending" />
 
-          <Pagination v-model="currentPage" :number-of-pages="numberOfPages" />
+          <div class="buttons">
+            <button class="remove" @click="removeTasks">
+              Odstranit
+              <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
+            </button>
+            <button class="reset" @click="resetSelectedTasks">
+              Zrušit vše
+            </button>
+          </div>
+
+          <MaturitaProposalsTable ref="datatable" :selected-ids="selectedTaskIds" role="student" :tasks="allTasks" :loading="tasksPending" :has-checkbox="true"  @row-clicked="onRowClicked" />
+
+          <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
       </div>
     </template>
@@ -166,10 +247,14 @@ watchEffect((): void => {
   gap: 30px;
   position: relative;
 
-  .navigation {
-    height: fit-content;
-    position: sticky;
-    min-width: 250px;
+  .link {
+    color: rgba(var(--main-color), 1);
+    text-decoration: none;
+    transition: 0.2s;
+
+    &:hover {
+      color: rgba(var(--main-color), 0.8);
+    }
   }
 
   .message {
@@ -191,50 +276,15 @@ watchEffect((): void => {
       border-radius: var(--small-border-radius);
       transition: 0.2s;
       font-size: 16px;
-      background: var(--btn-2-background);
-      color: var(--btn-2-color);
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
 
-      &:hover {
-        background: var(--btn-2-hover-background);
-      }
-
-      &.rejected {
+      &.remove {
         color: var(--actionBar-actions-remove-color);
         background: rgba(var(--actionBar-actions-remove-background), 1);
         border-color: rgba(var(--actionBar-actions-remove-border), 1);
 
         &:hover {
           background: rgba(var(--actionBar-actions-remove-background), 0.8);
-        }
-      }
-
-      &.approved {
-        color: var(--actionBar-actions-add-color);
-        background: rgba(var(--actionBar-actions-add-background), 1);
-        border-color: rgba(var(--actionBar-actions-add-border), 1);
-
-        &:hover {
-          background: rgba(var(--actionBar-actions-add-background), 0.8);
-        }
-      }
-
-      &.primary {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        background: var(--btn-1-background);
-        color: var(--btn-1-color);
-
-        &:hover {
-          background: var(--btn-1-hover-background);
         }
       }
     }
@@ -255,7 +305,50 @@ watchEffect((): void => {
       flex-wrap: wrap;
       gap: 30px;
       width: 100%;
-      flex: 1;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+
+      button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        padding: 10px 15px;
+        border-radius: var(--small-border-radius);
+        border: var(--border-width) solid transparent;
+        transition: 0.2s;
+        font-size: 16px;
+        cursor: pointer;
+
+        &.remove {
+          color: var(--actionBar-actions-remove-color);
+          background: rgba(var(--actionBar-actions-remove-background), 1);
+          border-color: rgba(var(--actionBar-actions-remove-border), 1);
+
+          &:hover {
+            background: rgba(var(--actionBar-actions-remove-background), 0.8);
+          }
+        }
+
+        &.reset {
+          background: var(--btn-2-background);
+          color: var(--btn-2-color);
+          border-color: rgba(var(--border-color), 0.5);
+
+          &:hover {
+            background: var(--btn-2-hover-background);
+          }
+        }
+
+        .icon {
+          font-size: 16px;
+        }
+      }
     }
 
     .error {
@@ -294,12 +387,6 @@ watchEffect((): void => {
         color: rgba(var(--error-color), 1);
       }
     }
-  }
-}
-
-@media (max-width: 1420px) {
-  #maturita-tasks .navigation {
-    flex: 1;
   }
 }
 

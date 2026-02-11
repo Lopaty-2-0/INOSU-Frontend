@@ -287,17 +287,20 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            :active="0"
             description="Správa návrhů maturitních zadání"
-            :texts="['Přidat', 'Zamítnuté']"
-            :actions="['add', 'remove']"
+            :texts="['Přidat', 'Zamítnuté', 'Odstranit']"
+            :actions="['add', 'remove', 'remove']"
+            :active="0"
+            :separator-indexes="[1]"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:close-rounded',
+              'material-symbols:delete-rounded',
             ]"
               :navigate-to="[
               `/panel/maturita/student/proposals/add`,
               `/panel/maturita/student/proposals/rejected`,
+              `/panel/maturita/student/proposals/remove`,
             ]"
           />
 

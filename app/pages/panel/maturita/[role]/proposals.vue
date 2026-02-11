@@ -233,7 +233,6 @@ watchEffect((): void => {
                 <button type="button" class="approved" @click="changeTaskStatus(data.value.id, data.value.idTeam, 'approved')">Přijmout</button>
                 <button type="button" class="rejected" @click="changeTaskStatus(data.value.id, data.value.idTeam, 'rejected')">Zamítnout</button>
               </div>
-
             </template>
           </MauturitaProposalsTable>
 
