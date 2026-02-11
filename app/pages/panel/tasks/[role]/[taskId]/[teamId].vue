@@ -332,8 +332,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="teamTaskData && task">
-      <div id="team-task">
+    <template #content>
+      <div id="team-task" v-if="teamTaskData && task">
         <div class="content">
           <div class="page-section bottom-line">
             <div class="section-head">

@@ -329,21 +329,20 @@ watch([taskData, taskError], (): void => {
 
   if (!taskData.value) return;
 
+  taskNotExists.value = false;
   task.value = taskData.value.data.task;
 }, { immediate: true });
 
-watch(versionsData, async (newValue: any): Promise<void> => {
-  if (!newValue) return;
-
+watch([versionsData, versionsError], async (): Promise<void> => {
   if (versionsError.value) {
     versions.value = undefined;
     return;
   }
 
-  if (!newValue.data.versions) return;
+  if (!versionsData.value.data.versions) return;
 
-  versions.value = newValue.data.versions;
-  versionsCount.value = newValue.data.count;
+  versions.value = versionsData.value.data.versions;
+  versionsCount.value = versionsData.value.data.count;
 });
 
 watch([teamData, teamError], async (): Promise<void> => {
@@ -364,7 +363,7 @@ watch([teamData, teamError], async (): Promise<void> => {
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamError.value && !teamTaskData.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamError.value && !teamTaskData.value && taskNotExists.value === undefined);
 });
 </script>
 
@@ -382,7 +381,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div v-if="taskNotExists !== undefined && (taskNotExists || !task || !teamTaskData)" id="maturita-task">
+      <div v-if="taskNotExists !== undefined && (taskNotExists)" id="maturita-task">
         <div class="content">
           <div class="page-section">
             <div class="section-head">
@@ -395,7 +394,7 @@ watchEffect((): void => {
         </div>
       </div>
 
-      <div v-else-if="!taskNotExists && task && teamTaskData" id="maturita-task">
+      <div v-else-if="task" id="maturita-task">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -523,7 +522,7 @@ watchEffect((): void => {
 
             <div class="guarantor-comment download-input">
               <div class="input-div">
-                <span class="label">Poslední úprava: {{ teamTaskData.reviewUpdatedAt ? moment(teamTaskData.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") : "Neupraveno" }}</span>
+                <span class="label">Poslední úprava: {{ teamTaskData?.reviewUpdatedAt ? moment(teamTaskData?.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") : "Neupraveno" }}</span>
 
                 <div class="line">
                   <Editor
