@@ -32,9 +32,12 @@ const currentPage = ref<number>(1);
 const amountForPaging: number = 10;
 const tasksCount = ref<number>(0);
 const loading = ref<boolean>(false);
-const selectedTaskIds = ref<number[]>([]);
+const selectedRows = ref<{ taskId: number, guarantorId: number }[]>([]);
 const numberOfPages = computed<number>((): number => {
   return Math.ceil(tasksCount.value / amountForPaging);
+});
+const selectedTaskIds = computed<number[]>((): number[] => {
+  return selectedRows.value.map((row: { taskId: number, guarantorId: number }) => row.taskId);
 });
 
 const onSearchInputChange = (input: string): void => {
@@ -46,27 +49,28 @@ const onSearchInputChange = (input: string): void => {
 const resetSelectedTasks = (): void => {
   if (!datatable.value) return;
 
-  selectedTaskIds.value = [];
+  selectedRows.value = [];
   datatable.value.clearSelection();
 };
 
 const onRowClicked = (tasks: MaturitaTaskData): void => {
-  if (!datatable.value) return;
+  if (!datatable.value || !tasks.guarantor) return;
 
-  if (!selectedTaskIds.value.includes(tasks.id)) {
-    selectedTaskIds.value.push(tasks.id);
+  if (!selectedRows.value.includes({ taskId: tasks.id, guarantorId: tasks.guarantor.id })) {
+    selectedRows.value.push({ taskId: tasks.id, guarantorId: tasks.guarantor.id });
   } else {
-    selectedTaskIds.value = selectedTaskIds.value.filter((id: number) => id !== tasks.id);
+    selectedRows.value = selectedRows.value.filter((id) => id.taskId !== tasks.id && id.guarantorId !== tasks.guarantor?.id);
   }
 };
 
 const removeTasks = async (): Promise<void> => {
   loading.value = true;
 
-  await $fetch("/api/task/delete", {
+  await $fetch("/api/task/delete/student", {
     method: "delete",
     body: {
-      id: selectedTaskIds.value
+      idTask: selectedTaskIds.value,
+      guarantor: selectedRows.value.map((row) => row.guarantorId),
     },
     ignoreResponseError: true,
     credentials: "include",
@@ -77,40 +81,50 @@ const removeTasks = async (): Promise<void> => {
       const badIds: any[] = response._data.data?.badIds || [];
 
       switch (resCode) {
-        case "28010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Studenti nemohou mazat úkoly." });
+        case "81010":
+          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Tato role nemůže mazat maturitní zadání." });
           break;
 
-        case "28020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Chybí ID úkolu." });
+        case "81020":
+          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Nebyl zadán identifikátor zadání." });
           break;
 
-        case "28031":
+        case "81030":
+          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Nebyl zadán garant." });
+          break;
+
+        case "81040":
+          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Počet ID zadání neodpovídá počtu garantů." });
+          break;
+
+        case "81051":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění maturitních zadání", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: "Odstranění návrhů maturitních zadání", message: `Některá zadání (${badIds.length}) se nepodařilo odstranit.` });
           }
 
-          alertsStore.addAlert({ type: "success", title: "Odstranění maturitních zadání", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
+          if (goodIds.length > 0) {
+            alertsStore.addAlert({ type: "success", title: "Odstranění návrhů maturitních zadání", message: `Zadání (${goodIds.length}) byla úspěšně odstraněna.` });
+          }
 
           tasksRefresh();
           resetSelectedTasks();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Nastala neznámá chyba." });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Nastala neznámá chyba." });
     },
   }).finally(() => {
     loading.value = false;
   });
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = useFetch("/api/task/get/maturita/guarantor/approved", {
+const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = useFetch("/api/task/get/maturita/student/not_approved", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -210,7 +224,7 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybrané maturitní zadání: {{ selectedTaskIds.length }}</h3>
+              <h3>Vybrané maturitní zadání: {{ selectedRows.length }}</h3>
               <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
               <br>
               <p>Ročník: {{ currentMaturita.grade }}</p>
@@ -231,7 +245,23 @@ watchEffect((): void => {
             </button>
           </div>
 
-          <MaturitaProposalsTable ref="datatable" :selected-ids="selectedTaskIds" role="student" :tasks="allTasks" :loading="tasksPending" :has-checkbox="true"  @row-clicked="onRowClicked" />
+          <MaturitaProposalsTable ref="datatable" :selected-ids="selectedTaskIds" role="student" :tasks="allTasks" :loading="tasksPending" :has-checkbox="true" @row-clicked="onRowClicked"
+                                  :extra-columns="[
+              { title: 'Status', field: 'status' }
+            ]"
+          >
+
+            <template #status="data">
+              <p class="status" :class="[data.value.status]">
+                {{
+                  data.value.status === "approved" ? "Schváleno" :
+                  data.value.status === "rejected" ? "Zamítnuto" :
+                  data.value.status === "pending" ? "Čeká na schválení" :
+                  data.value.status
+                }}
+              </p>
+            </template>
+          </MaturitaProposalsTable>
 
           <Pagination :number-of-pages="numberOfPages" v-model="currentPage" />
         </div>
@@ -305,6 +335,23 @@ watchEffect((): void => {
       flex-wrap: wrap;
       gap: 30px;
       width: 100%;
+    }
+
+    .status {
+      font-size: 14px;
+      font-weight: 500;
+
+      &.approved {
+        color: rgba(var(--success-color), 1);
+      }
+
+      &.rejected {
+        color: rgba(var(--error-color), 1);
+      }
+
+      &.pending {
+        color: rgba(var(--warning-color), 1);
+      }
     }
 
     .buttons {

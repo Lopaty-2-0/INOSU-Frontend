@@ -28,6 +28,7 @@ interface MaturitaTaskData {
     objector: AccountData;
     userData: AccountData | null;
     guarantor: AccountData | null;
+    status: "pending" | "approved" | "rejected";
 }
 
 export type {

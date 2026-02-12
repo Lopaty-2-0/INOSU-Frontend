@@ -255,7 +255,6 @@ onMounted(async (): Promise<void> => {
   }
 
   .datatable {
-
     .actions {
       display: flex;
       flex-direction: row;

@@ -137,8 +137,12 @@ const sidebarLinks = computed<
             notify: false,
           },
           {
-            text: "Tabulka",
-            href: "/panel/maturita/table",
+            text: "Tabulky",
+            href: `/panel/maturita/${role.value}/tables`,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/tables`,
+              `/panel/maturita/${role.value}/tables/evaluators`,
+            ],
             iconClass: "material-symbols:table-rows-rounded",
             notify: false,
           },
@@ -174,6 +178,16 @@ const sidebarLinks = computed<
             text: "Chat",
             href: `/panel/maturita/${role.value}/chat`,
             iconClass: "material-symbols:chat-rounded",
+            notify: false,
+          },
+          {
+            text: "Tabulky",
+            href: `/panel/maturita/${role.value}/tables`,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/tables`,
+              `/panel/maturita/${role.value}/tables/evaluators`,
+            ],
+            iconClass: "material-symbols:table-rows-rounded",
             notify: false,
           },
         ],
