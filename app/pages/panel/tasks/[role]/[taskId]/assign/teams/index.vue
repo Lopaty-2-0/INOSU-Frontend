@@ -177,7 +177,7 @@ watch([teamsData, teamsError], (): void => {
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamsData.value && !teamsError.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teamsData.value && !teamsError.value);
 });
 </script>
 
@@ -196,7 +196,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task">
+    <template #content>
       <div id="task-assign">
         <Navigation class="page-navigation" title="Přiřazení" :active-link-id="2" :links="[
           { name: 'Třídy', path: `/panel/tasks/${role}/${taskId}/assign` },
@@ -204,7 +204,7 @@ watchEffect((): void => {
           { name: 'Týmy', path: `/panel/tasks/${role}/${taskId}/assign/teams` },
         ]" />
 
-        <div class="content">
+        <div class="content" v-if="task">
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>

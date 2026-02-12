@@ -270,8 +270,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="oldData.loaded && users">
-      <div id="maturita-tasks">
+    <template #content>
+      <div id="maturita-tasks" v-if="oldData.loaded && users">
         <div class="content">
           <div class="line page-section">
             <EditName ref="editName" :old-name="oldData.name" @update="onNameUpdate">

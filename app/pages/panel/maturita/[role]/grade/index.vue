@@ -86,8 +86,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allMaturitas">
-      <div id="grades">
+    <template #content>
+      <div id="grades" v-if="allMaturitas">
         <div class="content">
           <ActionBar
             class="action-bar"

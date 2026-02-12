@@ -104,7 +104,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="maturita-tasks" v-if="maturitaNotExists !== undefined && (maturitaNotExists || !currentMaturita || !allTasks)">
+      <div id="maturita-tasks" v-if="maturitaNotExists !== undefined && (maturitaNotExists)">
         <div class="content">
           <div class="page-section">
             <div class="section-head">

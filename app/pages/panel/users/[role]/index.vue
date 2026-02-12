@@ -86,7 +86,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="users">
+      <div id="users" v-if="users">
         <div class="content">
           <ActionBar
             class="action-bar"

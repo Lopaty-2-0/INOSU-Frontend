@@ -289,7 +289,7 @@ watch([teamData, teamError], async (): Promise<void> => {
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamError.value && !teamTaskData.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teamError.value && !teamTaskData.value || !versionsData.value && !versionsError.value);
 });
 </script>
 
@@ -308,8 +308,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="teamTaskData && task">
-      <div id="maturita-task">
+    <template #content>
+      <div id="maturita-task" v-if="teamTaskData && task">
         <div class="content">
           <ActionBar
             class="action-bar"

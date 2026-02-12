@@ -309,8 +309,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="users && topics">
-      <div id="maturita-tasks">
+    <template #content>
+      <div id="maturita-tasks" v-if="users && topics">
         <div class="content">
           <ActionBar
               class="action-bar"

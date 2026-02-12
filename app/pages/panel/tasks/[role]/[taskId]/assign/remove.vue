@@ -263,8 +263,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task">
-      <div id="task">
+    <template #content>
+      <div id="task" v-if="task">
         <div class="content">
           <ActionBar
             class="action-bar"

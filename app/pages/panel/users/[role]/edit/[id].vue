@@ -256,7 +256,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="settings">
+      <div id="settings" v-if="oldUserData.loaded">
         <div class="content">
           <div class="line page-section no-border">
             <EditProfilePicture ref="editProfilePicture" class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate">

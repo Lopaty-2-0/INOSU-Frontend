@@ -322,7 +322,7 @@ watch(() => teamTaskData.value, (newVal: TaskTeam | undefined): void => {
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !users.value && !usersError.value);
+  useLoadingStore().setLoading("dataLoading", !users.value && !usersError.value || !teamTaskData.value && !teamError.value);
 });
 </script>
 
@@ -342,7 +342,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="teamTaskData">
+    <template #content>
       <ActionBar
         class="action-bar"
         description="Správa týmů"
@@ -352,7 +352,7 @@ watchEffect((): void => {
         :navigate-to="[`/panel/tasks/${role}/${taskId}/assign/teams`]"
       />
 
-      <div id="task-assign">
+      <div id="task-assign" v-if="teamTaskData">
         <Navigation class="page-navigation" title="Přiřazení" :active-link-id="2" :links="[
           { name: 'Třídy', path: `/panel/tasks/${role}/${taskId}/assign` },
           { name: 'Jednotlivci', path: `/panel/tasks/${role}/${taskId}/assign/individuals` },

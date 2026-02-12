@@ -220,7 +220,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="tasks">
+      <div id="tasks" v-if="oldData.loaded">
         <div class="content">
           <div class="line page-section">
             <EditName ref="editName" :old-name="oldData.name" @update="onNameUpdate">

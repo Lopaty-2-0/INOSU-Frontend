@@ -154,7 +154,7 @@ watch([taskData, taskError], (): void => {
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !teams.value && !users.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teams.value && !teamsError.value || !users.value && !usersError.value);
 });
 </script>
 
@@ -171,8 +171,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task && users && teams">
-      <div id="task">
+    <template #content>
+      <div id="task" v-if="task && users && teams">
         <div class="content">
           <ActionBar
             class="action-bar"

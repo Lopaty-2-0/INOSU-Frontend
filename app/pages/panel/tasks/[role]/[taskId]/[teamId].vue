@@ -314,7 +314,7 @@ watch(teamData, async (newValue: any): Promise<void> => {
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamError.value && !teamTaskData.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teamError.value && !teamTaskData.value);
 });
 </script>
 
@@ -333,8 +333,8 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="team-task" v-if="teamTaskData && task">
-        <div class="content">
+      <div id="team-task">
+        <div class="content" v-if="teamTaskData && task">
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>

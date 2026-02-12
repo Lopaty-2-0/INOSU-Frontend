@@ -77,8 +77,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allTopics">
-      <div id="topics">
+    <template #content>
+      <div id="topics" v-if="allTopics">
         <div class="content">
           <ActionBar
             class="action-bar"

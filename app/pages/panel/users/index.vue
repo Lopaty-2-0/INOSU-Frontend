@@ -61,7 +61,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="users">
+      <div id="users" v-if="allRoles">
         <div class="content">
           <ActionBar
             class="action-bar"

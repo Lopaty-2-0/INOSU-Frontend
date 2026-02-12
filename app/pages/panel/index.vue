@@ -171,8 +171,8 @@ onMounted(async (): Promise<void> => {
       </Navbar>
     </template>
 
-    <template #content v-if="allTasks">
-      <div id="home">
+    <template #content>
+      <div id="home" v-if="allTasks">
         <div class="info">
           <div class="line">
             <div class="section-head">
