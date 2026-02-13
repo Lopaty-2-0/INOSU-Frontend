@@ -130,8 +130,8 @@ defineExpose({ clearSelection });
           <p class="account-name no-wrap">
             {{ data.value.user.name + " " + data.value.user.surname }}
           </p>
-          <p class="abbreviation no-wrap" v-if="data.value.user.abbreviation">
-            {{ data.value.user.abbreviation }}
+          <p class="abbreviation no-wrap">
+            {{ data.value.user.abbreviation || "Neurčeno" }}
           </p>
         </div>
       </div>
@@ -145,8 +145,8 @@ defineExpose({ clearSelection });
           <p class="account-name no-wrap">
             {{ data.value.guarantor.name + " " + data.value.guarantor.surname }}
           </p>
-          <p class="abbreviation no-wrap" v-if="data.value.guarantor.abbreviation">
-            {{ data.value.guarantor.abbreviation }}
+          <p class="abbreviation no-wrap">
+            {{ data.value.guarantor.abbreviation || "Neurčeno" }}
           </p>
         </div>
       </div>
@@ -164,8 +164,8 @@ defineExpose({ clearSelection });
           <p class="account-name no-wrap">
             {{ data.value.objector.name + " " + data.value.objector.surname }}
           </p>
-          <p class="abbreviation no-wrap" v-if="data.value.objector.abbreviation">
-            {{ data.value.objector.abbreviation }}
+          <p class="abbreviation no-wrap">
+            {{ data.value.objector.abbreviation || "Neurčeno" }}
           </p>
         </div>
       </div>
