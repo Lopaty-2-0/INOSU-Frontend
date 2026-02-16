@@ -68,13 +68,13 @@ const changeTaskStatus = async (id: number, teamId: number, status: "approved" |
         case "32010":
         case "32030":
         case "32040":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "ID úkolu je neplatné nebo nebylo zadáno." });
           break;
 
         case "32020":
         case "32050":
         case "32060":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "ID týmu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "ID týmu je neplatné nebo nebylo zadáno." });
           break;
 
         case "32070":
@@ -90,31 +90,29 @@ const changeTaskStatus = async (id: number, teamId: number, status: "approved" |
           break;
 
         case "32100":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Body musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Bylo dosaženo max variant pro tento topic." });
           break;
 
         case "32110":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Počet bodů je neplatný." });
-          break;
-
         case "32120":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Nelze udělit více bodů, než má úkol." });
-          break;
-
         case "32130":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Komentář je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Body nejsou platné nebo nelze udělit více bodů, než má úkol." });
           break;
 
         case "32140":
+          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Komentář je příliš dlouhý." });
+          break;
+
+        case "32150":
           alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Název týmu je příliš dlouhý." });
           break;
 
-        case "32151":
+        case "32161":
           alertsStore.addAlert({type: "success", title: "Návrhy maturitních prací",
             message: status === "approved" ? "Návrh maturitní práce byl přijat." : "Návrh maturitní práce byl zamítnut."
           });
           refreshTasks();
-          break;
+        break;
 
         default:
           alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Nastala neznámá chyba." });

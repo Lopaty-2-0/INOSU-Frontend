@@ -176,9 +176,13 @@ const updateTeam = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Neplatný status." });
           break;
         case "32100":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Bylo dosaženo max variant pro tento topic." });
+          break;
         case "32110":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů není platný." });
+          break;
         case "32120":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů je neplatný." });
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů není platný." });
           break;
         case "32130":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nelze udělit více bodů, než má úkol." });
@@ -189,7 +193,7 @@ const updateTeam = async (): Promise<void> => {
         case "32150":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Název týmu je příliš dlouhý." });
           break;
-        case "32151":
+        case "32161":
           alertsStore.addAlert({ type: "success", title: "Úprava týmu", message: "Tým byl úspěšně aktualizován." });
           await refreshTeamData();
           resetInputs();

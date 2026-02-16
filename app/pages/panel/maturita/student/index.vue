@@ -4,7 +4,7 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {computed, ref, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
-import { useAlertsStore } from "~/stores/alerts";
+import {type Alert, useAlertsStore} from "~/stores/alerts";
 import ActionFooter from "~/components/manage/Footer.vue";
 import type {TaskTeam} from "~/types/team";
 import type {TaskData} from "~/types/tasks";
@@ -18,6 +18,7 @@ import type {Version} from "~/types/team";
 import FileInput from "~/components/ui/FileInput.vue";
 import type {MaturitaTaskData} from "~/types/maturita";
 import ActionBar from "~/components/ui/ActionBar.vue";
+import {useUpload} from "~/componsables/useUploader";
 
 useHead({
   title: "Panel | Maturitní zadání",
@@ -30,6 +31,7 @@ definePageMeta({
 
 const config = useRuntimeConfig();
 const alertsStore = useAlertsStore();
+const { progress, upload } = useUpload();
 const editorEnabledTools: string[] = [];
 const submitLoading = ref<boolean>(false);
 const taskNotExists = ref<boolean | undefined>(undefined);
@@ -183,100 +185,107 @@ const removeVersion = async (version: Version): Promise<void> => {
 };
 
 const uploadNewVersion = async (): Promise<void> => {
-  if (!newVersionFile.value) return;
+  if (!newVersionFile.value) {
+    alertsStore.addAlert({ type: "warning", title: "Přidání verze", message: "Nejprve vyberte soubor s vypracováním." });
+    return;
+  }
 
   submitLoading.value = true;
-
-  const formData = new FormData();
-  if (taskId.value) formData.append("idTask", taskId.value.toString());
-  if (teamId.value) formData.append("idTeam", teamId.value.toString());
-  if (guarantorId.value) formData.append("guarantor", guarantorId.value.toString());
-  formData.append("elaboration", newVersionFile.value);
 
   await $fetch("/api/version_team/add", {
     method: "post",
     server: true,
     credentials: "include",
-    body: formData,
+    body: {
+      idTask: taskId.value,
+      idTeam: teamId.value,
+      guarantor: guarantorId.value,
+      elaboration: newVersionFile.value.name,
+      size: newVersionFile.value.size,
+    },
     ignoreResponseError: true,
 
     onResponse({ response }: any) {
       const resCode = response._data?.resCode?.toString();
+      const data: any = response._data?.data;
 
       switch (resCode) {
-        case "F15010":
+        case "F15030":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nahraný soubor je příliš velký." });
           break;
-
         case "38010":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID týmu nebylo zadáno." });
           break;
-
         case "38020":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID úkolu nebylo zadáno." });
           break;
-
         case "38030":
         case "38040":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID týmu je neplatné." });
           break;
-
         case "38050":
         case "38060":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID úkolu je neplatné." });
           break;
-
         case "38070":
         case "38080":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Neplatný garant úkolu." });
           break;
-
         case "38090":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný garant neexistuje." });
           break;
-
         case "38100":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Uživatel není garantem úkolu." });
           break;
-
         case "38110":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný úkol neexistuje." });
           break;
-
         case "38120":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný tým neexistuje." });
           break;
-
         case "38130":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Na přidání verze nemáte oprávnění." });
           break;
-
         case "38140":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Vypracování nebylo zadáno." });
           break;
-
         case "38150":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nepodporovaný formát souboru." });
           break;
-
         case "38160":
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Název souboru je příliš dlouhý." });
           break;
-
         case "38170":
           alertsStore.addAlert({ type: "warning", title: "Přidání verze", message: "Nelze odevzdat verzi po termínu." });
           break;
+        case "38181":
+          if (data.redirectUrl && newVersionFile.value) {
+            const alert: Alert = {
+              title: "Nahrávání souboru",
+              message: "Probíhá nahrávání souboru...",
+              type: "info",
+              infinite: true,
+              canClose: false,
+              progress: progress
+            };
 
-        case "38180":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Soubor se stejným názvem již existuje." });
+            const alertIndex: number = alertsStore.addAlert(alert);
+
+            upload(newVersionFile.value, data.redirectUrl)
+            .then(() => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({ title: "Nahrávání souboru", message: "Soubor byl úspěšně nahrán.", type: "success" });
+              alertsStore.addAlert({ type: "success", title: "Přidání verze", message: "Nová verze byla úspěšně nahrána." });
+
+              resetInputs();
+              refreshVersions();
+            })
+            .catch(() => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({ title: "Nahrávání souboru", message: "Nastala chyba při nahrávání souboru.", type: "error" });
+            });
+          }
           break;
-
-        case "38191":
-          alertsStore.addAlert({ type: "success", title: "Přidání verze", message: "Nová verze byla úspěšně nahrána." });
-          resetInputs();
-          refreshVersions();
-          break;
-
         default:
           alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nastala neznámá chyba." });
           break;
@@ -359,8 +368,8 @@ watch([teamData, teamError], async (): Promise<void> => {
   }
 
   teamTaskPoints.value = teamData.value.data.team.points ?? null;
-  guarantorComment.value = teamData.value.data.team.review ?? "";
-});
+  guarantorComment.value = teamData.value.data.team.review || "Zatím žádný komentář...";
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teamError.value && !teamTaskData.value || taskNotExists.value === undefined);
@@ -476,7 +485,7 @@ watchEffect((): void => {
                 class="content"
                 v-model="newVersionFile"
                 :placeholder="'Klikni pro nahrání souboru z počítače'"
-                :max-size-m-b="2"
+                :max-size-m-b="5000"
                 accept=".pdf,.docx,.odt,.gif,.html,.zip"
                 :title="newVersionFile ? newVersionFile.name : ''"
             />

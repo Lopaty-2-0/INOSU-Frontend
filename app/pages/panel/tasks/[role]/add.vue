@@ -6,10 +6,10 @@ import EditDateTime from "~/components/manage/DateTime.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import { ref, computed } from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import { useAlertsStore } from "~/stores/alerts";
-import {useAccountStore} from "~/stores/account";
+import {type Alert, useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import NumberInput from "~/components/ui/NumberInput.vue";
+import {useUpload} from "~/componsables/useUploader";
 
 useHead({
   title: "Panel | Úkol - Přidání",
@@ -26,6 +26,7 @@ const route = useRoute();
 const role = route.params.role as string;
 
 const alertsStore = useAlertsStore();
+const { progress, upload } = useUpload();
 const editName = ref<InstanceType<typeof EditName> | null>(null);
 const editTaskFile = ref<InstanceType<typeof EditTaskFile> | null>(null);
 const editDeadlineDate = ref<InstanceType<typeof EditDateTime> | null>(null);
@@ -89,23 +90,57 @@ const addTask = async (): Promise<void> => {
 
   loading.value = true;
 
-  const formData = new FormData();
-  formData.append("name", newData.value.name || "");
-  if (newData.value.deadline) formData.append("deadline", newData.value.deadline.getTime().toString());
-  formData.append("endDate", newData.value.endDate?.getTime().toString() || "");
-  formData.append("task", newData.value.taskFile || "");
-  if (newData.value.maxPoints) formData.append("points", newData.value.maxPoints.toString());
-
   await $fetch("/api/task/add", {
     method: "post",
-    body: formData,
+    body: {
+      name: newData.value.name,
+      deadline: newData.value.deadline ? newData.value.deadline.getTime() : undefined,
+      endDate: newData.value.endDate ? newData.value.endDate.getTime() : undefined,
+      task: newData.value.taskFile.name,
+      points: newData.value.maxPoints ?? undefined,
+      size: newData.value.taskFile.size,
+    },
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
+      const data: any = response._data.data;
 
       switch (resCode) {
+        case "F15030":
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nahraný soubor je příliš velký." });
+          break;
         case "26141":
+          if (data.uploadUrl && newData.value.taskFile) {
+            const alert: Alert = {
+              title: "Nahrávání souboru",
+              message: "Probíhá nahrávání souboru...",
+              type: "info",
+              infinite: true,
+              canClose: false,
+              progress: progress
+            };
+
+            const alertIndex: number = alertsStore.addAlert(alert);
+
+            upload(newData.value.taskFile, data.uploadUrl).then((): void => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Soubor byl úspěšně nahrán.",
+                type: "success"
+              });
+            })
+            .catch((): void => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Nastala chyba při nahrávání souboru.",
+                type: "error"
+              });
+            });
+          }
+
           alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
           resetUserData();
           break;
@@ -151,7 +186,7 @@ const addTask = async (): Promise<void> => {
           break;
 
         case "26110":
-          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka je neplatná." });
+          alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Uzávěrka není platná." });
           break;
 
         case "26120":
@@ -218,7 +253,7 @@ const addTask = async (): Promise<void> => {
           </div>
 
           <div class="line page-section">
-            <EditTaskFile ref="editTaskFile" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
+            <EditTaskFile ref="editTaskFile" :max-size-m-b="32" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
                 <h3>Zadání * <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
                 <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>

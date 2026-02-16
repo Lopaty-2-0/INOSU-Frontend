@@ -64,8 +64,8 @@ const infoCards = computed<{ title: string; icon: string; value: string | number
   },
 ]);
 
-const openTask = async (id: number): Promise<void> => {
-  await navigateTo(`/panel/tasks/${role.value}/${id}`);
+const openTask = async (task: TaskData): Promise<void> => {
+  await navigateTo(`/panel/tasks/${role.value}/${task.id}`);
 };
 
 const downloadTask = async (guarantorId: number, id: number, task: string): Promise<void> => {
@@ -210,9 +210,9 @@ onMounted(async (): Promise<void> => {
             </div>
 
             <TasksTable :tasks="allTasks" :loading="!allTasks" :page-size="5" :pagination="false">
-              <template #actions="data">
+              <template #actions="data" v-if="['admin', 'teacher'].includes(role)">
                 <div class="actions">
-                  <button type="button" class="primary" @click="openTask(data.value.id)">Otevřít</button>
+                  <button type="button" class="primary" @click="openTask(data.value)">Otevřít</button>
                 </div>
               </template>
 

@@ -1,50 +1,46 @@
 <script setup lang="ts">
 import { useAlertsStore } from "~/stores/alerts";
 import { storeToRefs } from "pinia";
-import { onMounted, onUnmounted, ref } from "vue";
+import type { Alert } from "~/stores/alerts";
+import { ref, onMounted, onUnmounted, unref } from "vue";
 
 const alertsStore = useAlertsStore();
-const { getAlerts: alerts, getDefaultAlertTimeout: defaultTimeout } = storeToRefs(alertsStore);
+const { getAlerts: alerts } = storeToRefs(alertsStore);
+
 const now = ref<number>(Date.now());
 let tickerId: number = 0;
 
-const removeAlert = (index?: number): void => {
-  if (index) alertsStore.removeAlert(index);
-};
-
-const pauseAlertTimeout = (index?: number): void => {
-  if (index) alertsStore.pauseAlertTimeout(index);
-};
-
-const resumeAlertTimeout = (index?: number): void => {
-  if (index) alertsStore.resumeAlertTimeout(index);
-};
-
-const getProgress = (alert: any): number => {
-  if (!defaultTimeout.value) return 0;
-
-  if (alert.timeoutId && alert.createdAt) {
-    const elapsed: number = Math.max(0, now.value - alert.createdAt);
-    const remaining: number = Math.max(0, defaultTimeout.value - elapsed);
-    return (remaining / defaultTimeout.value) * 100;
-  }
-
-  if (typeof alert.remainingTime === "number") {
-    return Math.max(0, (alert.remainingTime / defaultTimeout.value) * 100);
-  }
-
-  return 0;
-};
-
-onMounted((): void => {
+onMounted(() => {
   tickerId = window.setInterval(() => {
     now.value = Date.now();
+    alertsStore.updateNow?.();
   }, 100);
 });
 
-onUnmounted((): void => {
+onUnmounted(() => {
   if (tickerId) window.clearInterval(tickerId);
 });
+
+const removeAlert = (index?: number) => {
+  if (index) alertsStore.removeAlert(index);
+};
+
+const pauseAlertTimeout = (index?: number) => {
+  if (index) alertsStore.pauseAlertTimeout(index);
+};
+
+const resumeAlertTimeout = (index?: number) => {
+  if (index) alertsStore.resumeAlertTimeout(index);
+};
+
+const getProgress = (alert: Alert) => {
+  const p = unref(alert.progress);
+
+  if (p !== undefined) return Math.min(100, Math.max(0, p));
+
+  return alertsStore.getAlertProgress(alert.index ?? -1);
+};
+
 </script>
 
 <template>
@@ -62,9 +58,14 @@ onUnmounted((): void => {
         <p>{{ alert.message }}</p>
       </div>
 
-      <div class="progress-bar" :style="{ '--progress': (getProgress(alert) / 100) }"></div>
+      <div
+        v-if="alert.progress !== undefined || !alert.infinite"
+        class="progress-bar"
+        :style="{ '--progress': getProgress(alert) / 100 }"
+      ></div>
 
       <Icon
+        v-if="alert.canClose !== false"
         class="icon"
         size="24px"
         name="material-symbols:close-rounded"
@@ -73,6 +74,7 @@ onUnmounted((): void => {
     </div>
   </div>
 </template>
+
 
 <style scoped lang="scss">
 #alerts {

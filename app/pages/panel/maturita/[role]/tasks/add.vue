@@ -6,7 +6,7 @@ import EditDateTime from "~/components/manage/DateTime.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import {ref, computed, useTemplateRef, watch, watchEffect} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import { useAlertsStore } from "~/stores/alerts";
+import {type Alert, useAlertsStore} from "~/stores/alerts";
 import {useAccountStore} from "~/stores/account";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import NumberInput from "~/components/ui/NumberInput.vue";
@@ -21,6 +21,7 @@ import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import type {ClassData} from "~/types/classes";
 import type {TopicData} from "~/types/maturita";
+import {useUpload} from "~/componsables/useUploader";
 
 useHead({
   title: "Panel | Maturitní zadání - Přidání",
@@ -37,6 +38,7 @@ const route = useRoute();
 const role = route.params.role as string;
 
 const alertsStore = useAlertsStore();
+const { progress, upload } = useUpload();
 const amountForUsersPaging: number = 5;
 const amountForTopicsPaging: number = 5;
 const loading = ref<boolean>(false);
@@ -135,21 +137,25 @@ const addMaturitaTask = async (): Promise<void> => {
 
   loading.value = true;
 
-  const formData = new FormData();
-  formData.append("name", newData.value.name);
-  formData.append("task", newData.value.taskFile);
-  formData.append("idUser", selectedUserId.value[0].toString());
-  formData.append("idTopic", selectedTopicId.value[0].toString());
-
   await $fetch("/api/task/add/maturita/guarantor", {
     method: "post",
-    body: formData,
+    body: {
+      name: newData.value.name,
+      task: newData.value.taskFile.name,
+      size: newData.value.taskFile.size,
+      idUser: selectedUserId.value[0],
+      idTopic: selectedTopicId.value[0],
+    },
     credentials: "include",
     ignoreResponseError: true,
     onResponse({ response }: any) {
       const resCode = response?._data?.resCode?.toString();
+      const data: any = response?._data?.data;
 
       switch (resCode) {
+        case "F15030":
+          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Nahraný soubor je příliš velký." });
+          break;
         case "61010":
           alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Tato role nemůže vytvářet maturitní úkoly." });
           break;
@@ -223,8 +229,38 @@ const addMaturitaTask = async (): Promise<void> => {
           break;
 
         case "61191":
-          alertsStore.addAlert({ type: "success", title: "Přidání maturitního zadání", message: "Maturitní úkol byl úspěšně vytvořen." });
-          resetUserData();
+          if (data.uploadUrl && newData.value.taskFile) {
+            const alert: Alert = {
+              title: "Nahrávání souboru",
+              message: "Probíhá nahrávání souboru...",
+              type: "info",
+              infinite: true,
+              canClose: false,
+              progress: progress
+            };
+
+            const alertIndex: number = alertsStore.addAlert(alert);
+
+            upload(newData.value.taskFile, data.uploadUrl).then((): void => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Soubor byl úspěšně nahrán.",
+                type: "success"
+              });
+
+              alertsStore.addAlert({ type: "success", title: "Přidání maturitního zadání", message: "Maturitní úkol byl úspěšně vytvořen." });
+              resetUserData();
+            })
+            .catch((): void => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Nastala chyba při nahrávání souboru.",
+                type: "error"
+              });
+            });
+          }
           break;
 
         default:
@@ -354,7 +390,7 @@ watchEffect((): void => {
           </div>
 
           <div class="page-section">
-            <EditTaskFile ref="editTaskFile" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
+            <EditTaskFile ref="editTaskFile" :max-size-m-b="32" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
                 <h3>Zadání * <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
                 <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>

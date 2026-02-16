@@ -4,7 +4,7 @@ import EditName from "~/components/manage/Name.vue";
 import EditTaskFile from "~/components/manage/TaskFile.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import {ref, computed, watchEffect, useTemplateRef, watch} from "vue";
-import { useAlertsStore } from "~/stores/alerts";
+import {type Alert, useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {storeToRefs} from "pinia";
 import {navigateTo, useFetch} from "nuxt/app";
@@ -14,6 +14,7 @@ import UsersTable from "~/components/tables/Users.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import type {MaturitaTaskData, TopicData} from "~/types/maturita";
 import type {AccountData} from "~/types/account";
+import {useUpload} from "~/componsables/useUploader";
 
 const route = useRoute();
 const taskId = route.params.taskId as string;
@@ -31,6 +32,7 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
+const { progress, upload } = useUpload();
 const usersDatatable = useTemplateRef<InstanceType<typeof UsersTable>>("usersDatatable");
 const amountForUsersPaging: number = 5;
 const editName = ref<InstanceType<typeof EditName> | null>(null);
@@ -92,21 +94,25 @@ const resetUserData = (): void => {
 const updateTask = async (): Promise<void> => {
   loading.value = true;
 
-  const formData = new FormData();
-  formData.append("id", taskId);
-  if (newData.value.name) formData.append("name", newData.value.name || "");
-  if (newData.value.taskFile) formData.append("task", newData.value.taskFile);
-  if (newData.value.guarantor?.[0]) formData.append("guarantor", newData.value.guarantor[0].toString());
-
   await $fetch("/api/task/update/maturita/student", {
     method: "put",
-    body: formData,
+    body: {
+      id: taskId,
+      name: newData.value.name ? newData.value.name : undefined,
+      task: newData.value.taskFile ? newData.value.taskFile.name : undefined,
+      size: newData.value.taskFile ? newData.value.taskFile.size : undefined,
+      guarantor: newData.value.guarantor?.[0] ? newData.value.guarantor[0].toString() : undefined,
+    },
     credentials: "include",
     ignoreResponseError: true,
     async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
+      const data: any = response._data.data;
 
       switch (resCode) {
+        case "F15030":
+          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nahraný soubor je příliš velký." });
+          break;
         case "80010":
           alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nebyl zadán identifikátor zadání." });
           break;
@@ -152,10 +158,40 @@ const updateTask = async (): Promise<void> => {
           break;
 
         case "80121":
-          alertsStore.addAlert({ type: "success", title: "Úprava návrhu maturitního zadání", message: "Návrh maturitního zadání byl úspěšně upraven." });
+          if (data.uploadUrl && newData.value.taskFile) {
+            const alert: Alert = {
+              title: "Nahrávání souboru",
+              message: "Probíhá nahrávání souboru...",
+              type: "info",
+              infinite: true,
+              canClose: false,
+              progress: progress
+            };
 
-          await refreshTask();
-          resetUserData();
+            const alertIndex: number = alertsStore.addAlert(alert);
+
+            upload(newData.value.taskFile, data.uploadUrl).then(async (): Promise<void> => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Soubor byl úspěšně nahrán.",
+                type: "success"
+              });
+
+              alertsStore.addAlert({ type: "success", title: "Úprava návrhu maturitního zadání", message: "Návrh maturitního zadání byl úspěšně upraven." });
+
+              await refreshTask();
+              resetUserData();
+            })
+            .catch((): void => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Nastala chyba při nahrávání souboru.",
+                type: "error"
+              });
+            });
+          }
           break;
 
         default:
@@ -256,7 +292,7 @@ watchEffect((): void => {
           </div>
 
           <div class="line page-section">
-            <EditTaskFile ref="editTaskFile" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
+            <EditTaskFile ref="editTaskFile" :max-size-m-b="32" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
                 <h3>Zadání <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
                 <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>

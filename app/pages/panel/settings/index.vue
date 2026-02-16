@@ -7,8 +7,9 @@ import Navbar from "~/components/layout/Navbar.vue";
 import { ref, computed } from "vue";
 import {storeToRefs} from "pinia";
 import {useAccountStore} from "~/stores/account";
-import {useAlertsStore} from "~/stores/alerts";
+import {type Alert, useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import {useUpload} from "~/componsables/useUploader";
 
 useHead({
   title: "Panel | Nastavení - Údaje",
@@ -21,7 +22,7 @@ const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();
 const config = useRuntimeConfig();
 const { getAccountData: accountData } = storeToRefs(accountStore);
-
+const { progress, upload } = useUpload();
 
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = ref<InstanceType<typeof EditProfilePicture> | null>(null);
@@ -62,14 +63,13 @@ const updateUserData = async (): Promise<void> => {
     return;
   }
 
-  const updateProfileForm: FormData = new FormData();
-
-  if (newUserData.value.profilePicture) updateProfileForm.append("profilePicture", newUserData.value.profilePicture);
-  if (oldUserData.value.reminders !== newUserData.value.reminders) updateProfileForm.append("reminders", newUserData.value.reminders.toString());
-
   await $fetch("/api/user/update", {
     method: "PUT",
-    body: updateProfileForm,
+    body: {
+      profilePicture: newUserData.value.profilePicture?.name,
+      size: newUserData.value.profilePicture?.size,
+      reminders: newUserData.value.reminders ?? undefined,
+    },
     credentials: "include",
     ignoreResponseError: true,
     async onResponse({ response }: any) {
@@ -77,7 +77,7 @@ const updateUserData = async (): Promise<void> => {
       const data: any = response._data.data;
 
       switch (resCode) {
-        case "F15010":
+        case "F15030":
           alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nahraný soubor je příliš velký." });
           break;
         case "2010":
@@ -87,10 +87,40 @@ const updateUserData = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nepodporovaný formát obrázku." });
           break;
         case "2031":
+          if (data.uploadUrl && newUserData.value.profilePicture) {
+            const alert: Alert = {
+              title: "Nahrávání souboru",
+              message: "Probíhá nahrávání souboru...",
+              type: "info",
+              infinite: true,
+              canClose: false,
+              progress: progress
+            };
+
+            const alertIndex: number = alertsStore.addAlert(alert);
+
+            upload(newUserData.value.profilePicture, data.uploadUrl).then((): void => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Soubor byl úspěšně nahrán.",
+                type: "success"
+              });
+              accountStore.updateProfilePicture(data.user.profilePicture);
+              accountStore.updateAccountDataSessionStorage();
+              newUserData.value.profilePicture = undefined;
+            })
+            .catch((): void => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Nastala chyba při nahrávání souboru.",
+                type: "error"
+              });
+            });
+          }
+
           alertsStore.addAlert({ type: "success", title: "Změna údajů", message: "Údaje byly úspěšně aktualizovány." });
-          accountStore.updateProfilePicture(data.user.profilePicture);
-          accountStore.updateAccountDataSessionStorage();
-          newUserData.value.profilePicture = undefined;
           oldUserData.value.reminders = data.user.reminders;
           break;
         default:
