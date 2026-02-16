@@ -77,7 +77,7 @@ const updateUserData = async (): Promise<void> => {
       const data: any = response._data.data;
 
       switch (resCode) {
-        case "F15030":
+        case "F15020":
           alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nahraný soubor je příliš velký." });
           break;
         case "2010":

@@ -141,7 +141,7 @@ const updateUser = async (): Promise<void> => {
       const data: any = response._data.data;
 
       switch (resCode) {
-        case "F15030":
+        case "F15020":
           alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nahraný soubor je příliš velký." });
           break;
         case "2010":
