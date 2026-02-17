@@ -252,7 +252,7 @@ const { data: versionsData, error: versionsError, pending: versionsLoading } = u
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
-    navigateTo(`/panel/maturita/tasks/${role}`);
+    navigateTo(`/panel/maturita/${role}tasks/`);
     return;
   }
 
@@ -277,7 +277,7 @@ watch(versionsData, async (newValue: any): Promise<void> => {
 
 watch([teamData, teamError], async (): Promise<void> => {
   if (teamError.value) {
-    navigateTo(`/panel/maturita/tasks/${role}`);
+    navigateTo(`/panel/maturita/${role}/tasks/`);
     return;
   }
 
