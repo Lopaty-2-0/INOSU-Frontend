@@ -23,8 +23,6 @@ definePageMeta({
 const route = useRoute();
 const role = route.params.role as string;
 
-const accountStore = useAccountStore();
-const { getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
@@ -60,7 +58,6 @@ const editTask = async (id: number): Promise<void> => {
 
 const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/task", {
   query: {
-    idUser: userId,
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
     searchQuery: searchInput,

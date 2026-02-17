@@ -23,8 +23,6 @@ definePageMeta({
 });
 
 const config = useRuntimeConfig();
-const accountStore = useAccountStore();
-const { getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<(TaskData & { team: TaskTeam, guarantor: AccountData })[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
@@ -56,7 +54,6 @@ const openTask = async (taskId: number, teamId: number, guarantorId: number): Pr
 
 const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/user_team/get", {
   query: {
-    idUser: userId.value,
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
     searchQuery: searchInput,
