@@ -211,6 +211,34 @@ const updateUser = async (): Promise<void> => {
                 message: "Soubor byl úspěšně nahrán.",
                 type: "success"
               });
+
+              await $fetch("/api/user/put/pfp", {
+                method: "PUT",
+                body: {
+                  idUser: id,
+                  profilePicture: data.user.profilePicture,
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                async onResponse({ response }: any) {
+                  const resCode: string = response._data.resCode.toString();
+
+                  switch (resCode) {
+                    case "57070":
+                      alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Soubor nebyl nalezen na úložišti." });
+                      return;
+                    case "57081":
+                      oldUserData.value.profilePicture = data.user.profilePicture;
+                      newUserData.value.profilePicture = undefined;
+                      await refreshUser();
+                      resetUserData();
+                      break;
+                    default:
+                      alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nastala neznámá chyba při ukládání." });
+                      break;
+                  }
+                },
+              });
             }).catch((): void => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
@@ -228,7 +256,6 @@ const updateUser = async (): Promise<void> => {
           if (newUserData.value.abbreviation) oldUserData.value.abbreviation = newUserData.value.abbreviation;
           if (newUserData.value.role) oldUserData.value.role = newUserData.value.role;
           if (newUserData.value.classes) oldUserData.value.classes = newUserData.value.classes;
-          if (newUserData.value.profilePicture) oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
 
           await refreshUser();
           resetUserData();

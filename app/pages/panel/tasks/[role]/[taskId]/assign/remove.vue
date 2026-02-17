@@ -292,8 +292,8 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.guarantor.id}/${task.id}/${task.task}`" class="link" download target="_blank">
-                  {{ task.task }}
+                <a :href="task.task ? `/api/file/task/${task.guarantor.id}/${task.id}/${task.task}` : '#'" class="link" download target="_blank">
+                  {{ task.task || "Žádné zadání" }}
                 </a>
               </p>
             </div>

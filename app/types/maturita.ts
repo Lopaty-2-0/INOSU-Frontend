@@ -23,7 +23,7 @@ interface MaturitaTaskData {
     deadline: Date;
     points: number;
     maxPoints: number;
-    task: string;
+    task: string | null;
     topic: string;
     objector: AccountData;
     userData: AccountData | null;

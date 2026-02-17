@@ -192,19 +192,42 @@ const updateTask = async (): Promise<void> => {
                 type: "success"
               });
 
-              alertsStore.addAlert({ type: "success", title: "Úprava úkolu", message: "Úkol byl úspěšně upraven." });
-              await refreshTask();
-              resetUserData();
+              await $fetch("/api/task/put/task", {
+                method: "PUT",
+                body: {
+                  id: data.task.id,
+                  guarantor: data.task.guarantor.id,
+                  task: data.task.task,
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                async onResponse({ response }: any) {
+                  const resCode: string = response._data.resCode.toString();
+
+                  switch (resCode) {
+                    case "84110":
+                      alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Soubor nebyl nalezen na úložišti." });
+                      return;
+                    case "84121":
+                      await refreshTask();
+                      resetUserData();
+                      break;
+                    default:
+                      alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nastala neznámá chyba při ukládání." });
+                      break;
+                  }
+                },
+              });
             })
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);
-              alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Nastala chyba při nahrávání souboru.",
-                type: "error"
-              });
+              alertsStore.addAlert({title: "Nahrávání souboru", message: "Nastala chyba při nahrávání souboru.", type: "error"});
             });
           }
+          alertsStore.addAlert({ type: "success", title: "Úprava úkolu", message: "Úkol byl úspěšně upraven." });
+          await refreshTask();
+          resetUserData();
+
           break;
         default:
           alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nastala neznámá chyba." });
@@ -241,7 +264,7 @@ watch([taskError, taskData], async (): Promise<void> => {
   const task: TaskData = taskData.value.data.task;
 
   oldData.value.name = task.name;
-  oldData.value.taskFile = task.task;
+  oldData.value.taskFile = task.task || "";
   oldData.value.endDate = task.endDate ? new Date(task.endDate) : null;
   oldData.value.deadline = task.deadline ? new Date(task.deadline) : null;
   oldData.value.maxPoints = task.points ?? null;

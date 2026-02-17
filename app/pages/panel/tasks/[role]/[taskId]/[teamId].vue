@@ -383,7 +383,7 @@ watchEffect((): void => {
             <div class="download-input">
               <div class="line">
                 <div class="input">
-                  {{ task.task }}
+                  {{ task.task || "Žádné zadání" }}
                 </div>
                 <div class="icon-div" @click="downloadMaterials">
                   <Icon class="icon" name="material-symbols:download"/>

@@ -178,10 +178,34 @@ const updateTask = async (): Promise<void> => {
                 type: "success"
               });
 
-              alertsStore.addAlert({ type: "success", title: "Úprava návrhu maturitního zadání", message: "Návrh maturitního zadání byl úspěšně upraven." });
+              await $fetch("/api/task/put/task", {
+                method: "PUT",
+                body: {
+                  id: data.task.id,
+                  guarantor: data.task.guarantor.id,
+                  task: data.task.task,
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                async onResponse({ response }: any) {
+                  const resCode: string = response._data.resCode.toString();
 
-              await refreshTask();
-              resetUserData();
+                  switch (resCode) {
+                    case "84110":
+                      alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Soubor nebyl nalezen na úložišti." });
+                      return;
+                    case "84121":
+                      alertsStore.addAlert({ type: "success", title: "Úprava návrhu maturitního zadání", message: "Návrh maturitního zadání byl úspěšně upraven." });
+
+                      await refreshTask();
+                      resetUserData();
+                      break;
+                    default:
+                      alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nastala neznámá chyba při ukládání." });
+                      break;
+                  }
+                },
+              });
             })
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);
@@ -241,7 +265,7 @@ watch([taskError, taskData], async (): Promise<void> => {
   const task: MaturitaTaskData = taskData.value.data.task;
 
   oldData.value.name = task.name;
-  oldData.value.taskFile = task.task;
+  oldData.value.taskFile = task.task || "";
   oldData.value.guarantor = task.guarantor;
   newData.value.guarantor = task.guarantor ? [task.guarantor.id] : undefined;
   oldData.value.loaded = true;

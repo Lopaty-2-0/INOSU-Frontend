@@ -6,7 +6,7 @@ interface TaskData {
     startDate: Date;
     endDate: Date;
     deadline?: Date | null;
-    task: string;
+    task: string | null;
     guarantor: AccountData;
     type: "maturita" | "task";
     points: number | null;

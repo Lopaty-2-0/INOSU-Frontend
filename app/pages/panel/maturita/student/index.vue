@@ -271,16 +271,41 @@ const uploadNewVersion = async (): Promise<void> => {
 
             const alertIndex: number = alertsStore.addAlert(alert);
 
-            upload(newVersionFile.value, data.redirectUrl)
-            .then(() => {
+            upload(newVersionFile.value, data.redirectUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({ title: "Nahrávání souboru", message: "Soubor byl úspěšně nahrán.", type: "success" });
-              alertsStore.addAlert({ type: "success", title: "Přidání verze", message: "Nová verze byla úspěšně nahrána." });
 
-              resetInputs();
-              refreshVersions();
-            })
-            .catch(() => {
+              await $fetch("/api/version_team/put/elaboration", {
+                method: "PUT",
+                body: {
+                  idTask: data.version.idTask,
+                  idTeam: data.version.idTeam,
+                  idVersion: data.version.idVersion,
+                  guarantor: data.version.guarantor,
+                  elaboration: data.version.elaboration,
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                async onResponse({ response }: any) {
+                  const resCode: string = response._data.resCode.toString();
+
+                  switch (resCode) {
+                    case "85190":
+                      alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Soubor nebyl nalezen na úložišti." });
+                      return;
+                    case "85201":
+                      alertsStore.addAlert({ type: "success", title: "Přidání verze", message: "Nová verze byla úspěšně nahrána." });
+
+                      resetInputs();
+                      await refreshVersions();
+                      break;
+                    default:
+                      alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nastala neznámá chyba při ukládání." });
+                      break;
+                  }
+                },
+              });
+            }).catch(() => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({ title: "Nahrávání souboru", message: "Nastala chyba při nahrávání souboru.", type: "error" });
             });
@@ -369,7 +394,7 @@ watch([teamData, teamError], async (): Promise<void> => {
 
   teamTaskPoints.value = teamData.value.data.team.points ?? null;
   guarantorComment.value = teamData.value.data.team.review || "Zatím žádný komentář...";
-}, { immediate: true });
+});
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teamError.value && !teamTaskData.value || taskNotExists.value === undefined);
@@ -465,7 +490,7 @@ watchEffect((): void => {
             <div class="download-input">
               <div class="line">
                 <div class="input">
-                  {{ task.task }}
+                  {{ task.task || "Žádný materiál" }}
                 </div>
                 <div class="icon-div" @click="downloadMaterials">
                   <Icon class="icon" name="material-symbols:download"/>

@@ -68,7 +68,9 @@ const openTask = async (task: TaskData): Promise<void> => {
   await navigateTo(`/panel/tasks/${role.value}/${task.id}`);
 };
 
-const downloadTask = async (guarantorId: number, id: number, task: string): Promise<void> => {
+const downloadTask = async (guarantorId: number, id: number, task: string | null): Promise<void> => {
+  if (!task || !guarantorId || !id) return;
+
   await navigateTo(`/api/file/task/${guarantorId}/${id}/${task}`, { external: true, open: { target: "_blank" } });
 };
 
@@ -218,7 +220,7 @@ onMounted(async (): Promise<void> => {
 
               <template #task="data" v-if="!['admin', 'teacher'].includes(role)">
                   <span class="link limit" @click="downloadTask(data.value.guarantor.id, data.value.id, data.value.task)">
-                    {{ data.value.task }}
+                    {{ data.value.task || "Žádné zadání" }}
                   </span>
               </template>
             </TasksTable>

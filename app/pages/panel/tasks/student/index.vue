@@ -44,7 +44,9 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const downloadTask = async (guarantorId: number, id: number, task: string): Promise<void> => {
+const downloadTask = async (guarantorId: number, id: number, task: string | null): Promise<void> => {
+  if (!guarantorId || !id || !task) return;
+
   await navigateTo(`/api/file/task/${guarantorId}/${id}/${task}`, { external: true, open: { target: "_blank" } });
 };
 
@@ -120,7 +122,7 @@ watchEffect((): void => {
               ]">
                 <template #task="data">
                   <span class="link limit" @click="downloadTask(data.value.guarantor.id, data.value.id, data.value.task)">
-                    {{ data.value.task }}
+                    {{ data.value.task || "Žádné zadání" }}
                   </span>
                 </template>
 

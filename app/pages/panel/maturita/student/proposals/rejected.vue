@@ -21,8 +21,6 @@ definePageMeta({
   roles: ["student"],
 });
 
-const accountStore = useAccountStore();
-const { getAccountData: accountData } = storeToRefs(accountStore);
 const maturitaNotExists = ref<boolean | undefined>(undefined);
 const currentMaturita = ref<MaturitaData | undefined>(undefined);
 const allTasks = ref<MaturitaTaskData[] | undefined>(undefined);

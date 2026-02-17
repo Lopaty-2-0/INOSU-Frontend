@@ -185,10 +185,32 @@ const updateTask = async (): Promise<void> => {
                 type: "success"
               });
 
-              alertsStore.addAlert({ type: "success", title: "Úprava maturitního zadání", message: "Maturitní zadání bylo úspěšně upraveno." });
+              await $fetch("/api/task/put/task", {
+                method: "PUT",
+                body: {
+                  id: data.task.id,
+                  guarantor: data.task.guarantor.id,
+                  task: data.task.task,
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                async onResponse({ response }: any) {
+                  const resCode: string = response._data.resCode.toString();
 
-              await refreshTask();
-              resetUserData();
+                  switch (resCode) {
+                    case "84110":
+                      alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Soubor nebyl nalezen na úložišti." });
+                      return;
+                    case "84121":
+                      await refreshTask();
+                      resetUserData();
+                      break;
+                    default:
+                      alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Nastala neznámá chyba při ukládání." });
+                      break;
+                  }
+                },
+              });
             })
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);
@@ -199,6 +221,11 @@ const updateTask = async (): Promise<void> => {
               });
             });
           }
+
+          alertsStore.addAlert({ type: "success", title: "Úprava maturitního zadání", message: "Maturitní zadání bylo úspěšně upraveno." });
+
+          await refreshTask();
+          resetUserData();
           break;
 
         default:
@@ -249,7 +276,7 @@ watch([taskError, taskData], async (): Promise<void> => {
   const task: MaturitaTaskData = taskData.value.data.task;
 
   oldData.value.name = task.name;
-  oldData.value.taskFile = task.task;
+  oldData.value.taskFile = task.task || "";
   oldData.value.objector = task.objector;
   newData.value.objector = [task.objector.id];
   oldData.value.loaded = true;

@@ -80,7 +80,7 @@ const rows = computed<TaskData[]>((): TaskData[] => {
 });
 const selectRowOnClick = computed<boolean>((): boolean => props.hasCheckbox);
 
-const downloadTask = (guarantorId: number, id: number, task: string): void => {
+const downloadTask = (guarantorId: number, id: number, task: string | null): void => {
   if (!guarantorId || !id || !task) return;
 
   navigateTo(`/api/file/task/${guarantorId}/${id}/${task}`, { external: true, open: { target: "_blank" } });
@@ -133,7 +133,7 @@ defineExpose({ clearSelection });
 
     <template #task="data">
       <span class="link limit" @click="downloadTask(data.value.guarantor, data.value.id, data.value.task)">
-        {{ data.value.task }}
+        {{ data.value.task || "Žádné zadání" }}
       </span>
     </template>
 

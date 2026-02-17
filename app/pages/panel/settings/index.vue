@@ -99,16 +99,40 @@ const updateUserData = async (): Promise<void> => {
 
             const alertIndex: number = alertsStore.addAlert(alert);
 
-            upload(newUserData.value.profilePicture, data.uploadUrl).then((): void => {
+            upload(newUserData.value.profilePicture, data.uploadUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
                 title: "Nahrávání souboru",
                 message: "Soubor byl úspěšně nahrán.",
                 type: "success"
               });
-              accountStore.updateProfilePicture(data.user.profilePicture);
-              accountStore.updateAccountDataSessionStorage();
-              newUserData.value.profilePicture = undefined;
+
+              await $fetch("/api/user/put/pfp", {
+                method: "PUT",
+                body: {
+                  idUser: accountData.value.id,
+                  profilePicture: data.user.profilePicture,
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                onResponse({ response }: any) {
+                  const resCode: string = response._data.resCode.toString();
+
+                  switch (resCode) {
+                    case "57070":
+                      alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Soubor nebyl nalezen na úložišti." });
+                      return;
+                    case "57081":
+                      accountStore.updateProfilePicture(data.user.profilePicture);
+                      accountStore.updateAccountDataSessionStorage();
+                      newUserData.value.profilePicture = undefined;
+                      break;
+                    default:
+                      alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nastala neznámá chyba při ukládání." });
+                      break;
+                  }
+                },
+              });
             })
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);

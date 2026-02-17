@@ -123,12 +123,39 @@ const addTask = async (): Promise<void> => {
 
             const alertIndex: number = alertsStore.addAlert(alert);
 
-            upload(newData.value.taskFile, data.uploadUrl).then((): void => {
+            upload(newData.value.taskFile, data.uploadUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
                 title: "Nahrávání souboru",
                 message: "Soubor byl úspěšně nahrán.",
                 type: "success"
+              });
+
+              await $fetch("/api/task/put/task", {
+                method: "PUT",
+                body: {
+                  id: data.task.id,
+                  guarantor: data.task.guarantor.id,
+                  task: data.task.task,
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                async onResponse({ response }: any) {
+                  const resCode: string = response._data.resCode.toString();
+
+                  switch (resCode) {
+                    case "84110":
+                      alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Soubor nebyl nalezen na úložišti." });
+                      return;
+                    case "84121":
+                      alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
+                      resetUserData();
+                      break;
+                    default:
+                      alertsStore.addAlert({ type: "error", title: "Přidání úkolu", message: "Nastala neznámá chyba při ukládání." });
+                      break;
+                  }
+                },
               });
             })
             .catch((): void => {
@@ -140,9 +167,6 @@ const addTask = async (): Promise<void> => {
               });
             });
           }
-
-          alertsStore.addAlert({ type: "success", title: "Přidání úkolu", message: "Úkol byl úspěšně vytvořen." });
-          resetUserData();
           break;
 
         case "26010":
