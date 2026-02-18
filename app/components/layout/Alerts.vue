@@ -64,13 +64,15 @@ const getProgress = (alert: Alert) => {
         :style="{ '--progress': getProgress(alert) / 100 }"
       ></div>
 
-      <Icon
-        v-if="alert.canClose !== false"
-        class="icon"
-        size="24px"
-        name="material-symbols:close-rounded"
-        @click="removeAlert(alert.index)"
-      />
+      <div class="icon-div">
+        <Icon
+            v-if="alert.canClose !== false"
+            class="icon"
+            size="24px"
+            name="material-symbols:close-rounded"
+            @click="removeAlert(alert.index)"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -141,13 +143,15 @@ const getProgress = (alert: Alert) => {
       }
     }
 
-    .icon {
-      cursor: pointer;
-      color: var(--alert-description-color);
-      transition: 0.2s;
+    .icon-div {
+      .icon {
+        cursor: pointer;
+        color: var(--alert-description-color);
+        transition: 0.2s;
 
-      &:hover {
-        opacity: 0.7;
+        &:hover {
+          opacity: 0.7;
+        }
       }
     }
 
@@ -195,6 +199,14 @@ const getProgress = (alert: Alert) => {
         color: var(--alert-info-color);
       }
     }
+  }
+}
+
+@media (max-width: 500px) {
+  #alerts .alert {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
   }
 }
 </style>

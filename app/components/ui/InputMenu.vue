@@ -65,7 +65,11 @@ const props = defineProps({
   loading: {
     type: Boolean,
     default: false,
-  }
+  },
+  hideIcons: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const icons = {
@@ -167,10 +171,16 @@ const onInput = (): void => {
   }
 };
 
+const resetSelection = (): void => {
+  selectedItems.value = [];
+  emits("update:modelValue", []);
+};
 
 watch(() => props.modelValue, (newValue: string[]): void => {
   selectedItems.value = newValue;
 });
+
+defineExpose({ resetSelection });
 </script>
 
 <template>
@@ -197,7 +207,7 @@ watch(() => props.modelValue, (newValue: string[]): void => {
         class="section"
         @click="selectItem(item)"
       >
-        <Icon class="icon" :name="selectedItems.includes(item.value) ? icons.select : icons.selected"/>
+        <Icon class="icon" v-if="!props.hideIcons" :name="selectedItems.includes(item.value) ? icons.select : icons.selected"/>
         <span>{{ item.label }}</span>
       </div>
 

@@ -47,7 +47,7 @@ const setEditLinkId = (index: number): void => {
   editLinkId.value = editLinkId.value === index ? null : index;
 };
 
-const addCustomLink = (): void => {
+const addCustomLink = (): any => {
   if (accountCustomLinks.value.length >= 5) {
     return useAlertsStore().addAlert({
       type: "warning",

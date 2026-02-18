@@ -89,6 +89,12 @@ const sidebarLinks = computed<
         iconClass: "material-symbols:supervisor-account-rounded",
         notify: false,
       },
+      {
+        text: "Chat",
+        href: "/panel/chat",
+        iconClass: "material-symbols:mark-chat-unread-rounded",
+        notify: false,
+      },
     ],
   },
   {

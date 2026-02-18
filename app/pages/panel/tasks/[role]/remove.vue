@@ -26,9 +26,7 @@ definePageMeta({
 const route = useRoute();
 const role = route.params.role as string;
 
-const accountStore = useAccountStore();
 const alertsStore = useAlertsStore();
-const { getId: userId } = storeToRefs(accountStore);
 const datatable = useTemplateRef<InstanceType<typeof TasksTable>>("datatable");
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
@@ -113,9 +111,8 @@ const removeTasks = async (): Promise<void> => {
   });
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = useFetch("/api/task/get", {
+const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = useFetch("/api/task/get/task", {
   query: {
-    idUser: userId,
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
     searchQuery: searchInput,

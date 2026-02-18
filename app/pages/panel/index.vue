@@ -7,7 +7,6 @@ import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
 import {computed} from "vue";
 import {useFetch} from "nuxt/app";
-import Editor from "~/components/ui/Editor.vue";
 import Card from "~/components/ui/Card.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import TasksTable from "~/components/tables/Tasks.vue";

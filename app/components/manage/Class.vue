@@ -86,7 +86,7 @@ const { data: classesData, error: classesError, pending: classesPending } = useF
   lazy: true,
 });
 
-watchEffect((): void => {
+watch([classesData, classesError], (): void => {
   if (classesError.value) {
     classes.value = [];
     classesCount.value = 0;
@@ -97,7 +97,7 @@ watchEffect((): void => {
 
   classes.value = classesData.value.data.classes;
   classesCount.value = classesData.value.data.count;
-});
+}, { immediate: true });
 
 watch(() => props.oldClassIds, (newClassIds: number[]): void => {
   selectedClasses.value = newClassIds.map((id: number) => id.toString());
