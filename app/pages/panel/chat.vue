@@ -47,7 +47,7 @@ const dropDownUsers = computed(() => {
   });
 });
 
-const selectConversation = (conversation: ConversationData): void => {
+const selectConversation = (conversation: ConversationData | undefined): void => {
   selectedConversation.value = conversation;
 };
 
@@ -57,13 +57,14 @@ const onUsersSearchInputChange = (input: string): void => {
   usersSearchInput.value = input;
 };
 
-const removeConversation = async (id: number): Promise<void> => {
-  if (!id) return;
+const removeConversation = async (conversation: ConversationData): Promise<void> => {
+  if (!conversation) return;
 
   await $fetch("/api/conversation/delete", {
     method: "delete",
     body: {
-      idConversation: id,
+      idConversation: conversation.idConversation,
+      idUser: conversation.user.id
     },
     credentials: "include",
     ignoreResponseError: true,
@@ -76,15 +77,30 @@ const removeConversation = async (id: number): Promise<void> => {
           break;
 
         case "87020":
+          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID konverzace musí být číslo." });
+          break;
+
         case "87030":
           alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID konverzace je neplatné." });
           break;
 
         case "87040":
+          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID uživatele nebylo zadáno." });
+          break;
+
+        case "87050":
+          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID uživatele musí být číslo." });
+          break;
+
+        case "87060":
+          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID uživatele je neplatné." });
+          break;
+
+        case "87070":
           alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "Konverzace nebyla nalezena nebo ji nelze odstranit." });
           break;
 
-        case "87051":
+        case "87081":
           await refreshConversations();
           alertsStore.addAlert({ type: "success", title: "Odstranění konverzace", message: "Konverzace byla úspěšně odstraněna." });
           break;
@@ -99,9 +115,10 @@ const removeConversation = async (id: number): Promise<void> => {
     },
   }).finally((): void => {
     conversationsLoading.value = false;
+
+    selectConversation(undefined);
   });
 };
-
 
 const createNewConversation = async (userId: string[]): Promise<void> => {
   if (!userId[0]) return;
@@ -155,14 +172,11 @@ const createNewConversation = async (userId: string[]): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé nemohou vytvořit konverzaci pro tento úkol." });
           break;
         case "86140":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé již mezi sebou konverzaci mají.", infinite: true });
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé již mezi sebou konverzaci mají." });
           break;
 
         case "86151":
-          const conversation: ConversationData = response._data.data.conversation;
-
           await refreshConversations();
-          selectConversation(conversation);
           alertsStore.addAlert({ type: "success", title: "Vytvoření konverzace", message: "Konverzace byla úspěšně vytvořena." });
           break;
 
@@ -176,6 +190,7 @@ const createNewConversation = async (userId: string[]): Promise<void> => {
     },
   }).finally((): void => {
     conversationsLoading.value = false;
+    selectConversation(undefined);
 
     if (usersDropdown.value) usersDropdown.value.resetSelection();
   });
@@ -226,7 +241,7 @@ watch([conversationsData, conversationsError], (): void => {
 
   if (!conversationsData.value) return;
 
-  console.log(conversationsData.value.data);
+  console.log(conversationsData.value.data.conversations);
 
   conversations.value = conversationsData.value.data.conversations;
   conversationsCount.value = conversationsData.value.data.count;
@@ -264,8 +279,8 @@ watchEffect((): void => {
           <div class="users" :class="{ isLoading: conversationsPending || conversationsLoading }" v-if="conversations && conversations.length > 0">
             <Loading class="loading" v-if="conversationsPending || conversationsLoading" size="20px" color="rgba(var(--description-color), 1)"/>
 
-            <div class="user" v-for="conversation in conversations" :key="conversation.idConversation" @click="selectConversation(conversation)" :class="{ active: selectedConversation?.idConversation === conversation.idConversation }">
-              <div class="profile" v-if="conversation.user">
+            <div class="user" v-for="conversation in conversations" :key="conversation.idConversation" @click="selectConversation(conversation)" :class="{ active: selectedConversation?.idConversation === conversation.idConversation && selectedConversation.user === conversation.user }">
+              <div class="profile">
                 <Image :src="config.public.originUrl + '/api/file/pfp/' + conversation.user.profilePicture" alt="profile-photo" draggable="false"/>
 
                 <div class="data">
@@ -279,11 +294,7 @@ watchEffect((): void => {
                 </div>
               </div>
 
-              <p class="undefined-account" v-else>
-                Neznámý uživatel
-              </p>
-
-              <button class="remove-btn" @click="removeConversation(conversation.idConversation)"><Icon class="icon" name="material-symbols:delete-rounded"></Icon></button>
+              <button class="remove-btn" @click="removeConversation(conversation)"><Icon class="icon" name="material-symbols:delete-rounded"></Icon></button>
             </div>
           </div>
 
@@ -299,7 +310,7 @@ watchEffect((): void => {
         </div>
 
         <div class="content">
-          <Chat class="chat" :conversation-id="selectedConversation.idConversation" v-if="selectedConversation"  />
+          <Chat class="chat" :conversation="selectedConversation" v-if="selectedConversation"  />
 
           <div class="card" v-else>
             <p class="error">Žádná konverzace není vybrána. Vyberte konverzaci ze seznamu vlevo nebo založte novou.</p>

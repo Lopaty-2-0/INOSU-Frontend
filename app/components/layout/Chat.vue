@@ -5,19 +5,14 @@ import {useFetch} from "nuxt/app";
 import {computed, watch,} from "vue";
 import moment from "moment/moment";
 import {useAlertsStore} from "~/stores/alerts";
-import type {ConversationMessageData} from "~/types/chat";
+import type {ConversationData, ConversationMessageData} from "~/types/chat";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
 
 const props = defineProps({
-  conversationId: {
-    type: Number,
+  conversation: {
+    type: Object as () => ConversationData,
     required: true
-  },
-  archived: {
-    type: Boolean,
-    required: false,
-    default: false
   },
   pagesPerFetch: {
     type: Number,
@@ -29,7 +24,10 @@ const props = defineProps({
 const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();
 const { getId: userId } = storeToRefs(accountStore);
-const conversationId = computed<number>(() => props.conversationId);
+const conversation = computed<ConversationData>(() => props.conversation);
+const archived = computed<boolean>(() => conversation.value.isArchived);
+const conversationUserId = computed<number>(() => conversation.value.user.id);
+const conversationId = computed<number>(() => conversation.value.idConversation);
 const currentPage = ref<number>(1);
 const messageLoadingId = ref<number | null>(null);
 const replyingToMessage = ref<ConversationMessageData | null>(null);
@@ -80,8 +78,9 @@ const removeMessage = async (message: ConversationMessageData): Promise<void> =>
   await $fetch("/api/message/delete", {
     method: "DELETE",
     body: {
-      idConversation: props.conversationId,
-      idMessage: message.idMessage
+      idConversation: conversationId.value,
+      idMessage: message.idMessage,
+      idUser: conversationUserId.value
     },
     credentials: "include",
     ignoreResponseError: true,
@@ -92,44 +91,67 @@ const removeMessage = async (message: ConversationMessageData): Promise<void> =>
         case "88010":
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID konverzace nebylo zadáno." });
           break;
+
         case "88020":
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID zprávy nebylo zadáno." });
           break;
+
         case "88030":
+          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID uživatele nebylo zadáno." });
+          break;
+
         case "88040":
+          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID konverzace musí být číslo." });
+          break;
+
+        case "88050":
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID konverzace je neplatné." });
           break;
-        case "88050":
+
         case "88060":
+          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID zprávy musí být číslo." });
+          break;
+
+        case "88070":
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID zprávy je neplatné." });
           break;
-        case "88070":
+
+        case "88080":
+          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID uživatele musí být číslo." });
+          break;
+
+        case "88090":
+          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID uživatele je neplatné." });
+          break;
+
+        case "88110":
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Konverzace nebyla nalezena." });
           break;
-        case "88080":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Nemáte přístup k této konverzaci." });
-          break;
-        case "88090":
+
+        case "88120":
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "V této archivované konverzaci nelze mazat zprávy." });
           break;
-        case "88100":
+
+        case "88130":
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Zpráva nebyla nalezena." });
           break;
-        case "88110":
+
+        case "88140":
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Tuto zprávu nelze smazat." });
           break;
-        case "88121":
+
+        case "88151":
           messages.value = messages.value.filter((m: ConversationMessageData) => m.idMessage !== message.idMessage);
           messages.value = messages.value.map((m: ConversationMessageData) => {
             if (m.replyToMessage?.idMessage === message.idMessage) {
               return { ...m, replyToMessage: undefined };
             }
-
             return m;
           });
 
           alertsStore.addAlert({ type: "success", title: "Smazání zprávy", message: "Zpráva byla úspěšně smazána." });
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Nastala neznámá chyba." });
           break;
@@ -144,14 +166,15 @@ const removeMessage = async (message: ConversationMessageData): Promise<void> =>
 };
 
 const addMessage = async (): Promise<void> => {
-  if (!textMessage.value || !props.conversationId) return;
+  if (!textMessage.value || !conversation.value) return;
 
   sendLoading.value = true;
 
   await $fetch("/api/message/add", {
     method: "post",
     body: {
-      idConversation: props.conversationId,
+      idConversation: conversationId.value,
+      idUser: conversationUserId.value,
       message: textMessage.value,
       replyToMessage: replyingToMessage.value?.idMessage || null,
     },
@@ -164,44 +187,67 @@ const addMessage = async (): Promise<void> => {
         case "87010":
           alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID konverzace nebylo zadáno." });
           break;
+
         case "87020":
+          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID uživatele nebylo zadáno." });
+          break;
+
         case "87030":
+          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID konverzace musí být číslo." });
+          break;
+
+        case "87040":
           alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID konverzace je neplatné." });
           break;
-        case "87040":
+
+        case "87050":
+          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID uživatele musí být číslo." });
+          break;
+
+        case "87060":
+          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID uživatele je neplatné." });
+          break;
+
+        case "87070":
           alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Zpráva nebyla zadána." });
           break;
-        case "87050":
+
+        case "87080":
           alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Zpráva je příliš dlouhá." });
           break;
-        case "87060":
+
+        case "87090":
           alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Konverzace nebyla nalezena." });
           break;
-        case "87070":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Nemáte přístup k této konverzaci." });
-          break;
-        case "87080":
-        case "87090":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Odpovídaná zpráva je neplatná." });
-          break;
+
         case "87100":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Zpráva, na kterou odpovídáte, neexistuje." });
-          break;
-        case "87110":
           alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Do této konverzace nelze psát (je archivovaná)." });
           break;
-        case "87121":
+
+        case "87110":
+          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Odpovídaná zpráva musí být číslo." });
+          break;
+
+        case "87120":
+          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Odpovídaná zpráva je neplatná." });
+          break;
+
+        case "87130":
+          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Zpráva, na kterou odpovídáte, neexistuje." });
+          break;
+
+        case "87141":
           const newMessage: any = response._data.data.newMessage;
           messages.value = [...messages.value, newMessage];
           textMessage.value = "";
           replyingToMessage.value = null;
           alertsStore.addAlert({ type: "success", title: "Odeslání zprávy", message: "Zpráva byla úspěšně odeslána." });
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Nastala neznámá chyba." });
           break;
       }
-
     },
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Nastala neznámá chyba." });
@@ -225,6 +271,7 @@ const refreshMessagesAndReset = (): void => {
 
 const { data: messagesData, error: messagesError, pending: messagesPending, refresh: refreshMessages } = useFetch("/api/message/get", {
   query: {
+    idUser: conversationUserId,
     idConversation: conversationId,
     amountForPaging: props.pagesPerFetch,
     pageNumber: currentPage,
@@ -256,7 +303,7 @@ watch([messagesData, messagesError], (): void => {
   allMessagesCount.value = messagesData.value.data.count;
 }, { immediate: true });
 
-watch(() => props.conversationId, (): void => {
+watch(conversation, (): void => {
   currentPage.value = 1;
   messages.value = [];
   textMessage.value = "";

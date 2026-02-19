@@ -1,26 +1,18 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
-import {computed, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
-import ActionFooter from "~/components/manage/Footer.vue";
-import type {TaskTeam} from "~/types/team";
-import type {TaskData} from "~/types/tasks";
 import moment from "moment";
-import Card from "~/components/ui/Card.vue";
-import type {AccountData} from "~/types/account";
 import Image from "~/components/ui/Image.vue";
-import NumberInput from "~/components/ui/NumberInput.vue";
-import Pagination from "~/components/ui/Pagination.vue";
-import Loading from "~/components/ui/Loading.vue";
-import Editor from "~/components/ui/Editor.vue";
-import type {Version} from "~/types/team";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
 import type {MaturitaTaskData} from "~/types/maturita";
-import ActionBar from "~/components/ui/ActionBar.vue";
+import type { ConversationData} from "~/types/chat";
+import Chat from "~/components/layout/Chat.vue";
+import Loading from "~/components/ui/Loading.vue";
 
 const route = useRoute();
 const teamId = route.params.teamId as string;
@@ -28,7 +20,7 @@ const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Maturitní zadání - " + taskId,
+  title: "Panel | Maturitní zadání - " + taskId + " - Chat",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -36,20 +28,133 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const config = useRuntimeConfig();
+const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();
-const { getAccountData: accountData } = storeToRefs(accountStore);
+const { getId: guarantorId } = storeToRefs(accountStore);
 const task = ref<MaturitaTaskData | undefined>(undefined);
+const conversations = ref<{ objectorConversation?: ConversationData | null, studentConversation?: ConversationData | null } | undefined>(undefined);
+const conversationsLoading = ref<{ objector: boolean; student: boolean; }>( { objector: false, student: false });
 
-const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
+const getDotColor = (isArchived?: boolean | null): string => {
+  if (isArchived) {
+    return "--dot-color: rgba(var(--warning-color), 1)";
+  } else if (isArchived !== undefined && isArchived !== null && !isArchived) {
+    return "--dot-color: rgba(var(--success-color), 1)";
+  } else {
+    return "--dot-color: rgba(var(--description-color), 1)";
+  }
+};
+
+const createNewConversation = async (userType: "student" | "objector", userId: string): Promise<void> => {
+  if (!userId || !userType) return;
+
+  conversationsLoading.value[userType] = true;
+
+  await $fetch("/api/conversation/add", {
+    method: "post",
+    body: {
+      idTask: taskId,
+      idUser: userId,
+      guarantor: guarantorId.value,
+    },
+    credentials: "include",
+    ignoreResponseError: true,
+    async onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "86010":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID uživatele nebylo zadáno." });
+          break;
+        case "86020":
+        case "86030":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID uživatele je neplatné." });
+          break;
+        case "86040":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Uživatel nebyl nalezen." });
+          break;
+        case "86050":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nelze vytvořit konverzaci se sebou samým." });
+          break;
+
+        case "86060":
+        case "86070":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID úkolu je neplatné." });
+          break;
+        case "86080":
+        case "86090":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Garant je neplatný." });
+          break;
+
+        case "86100":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Úkol nebyl nalezen." });
+          break;
+        case "86110":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Konverzaci lze vytvořit pouze pro maturitní úkol." });
+          break;
+        case "86120":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nelze vytvořit konverzaci k ukončenému zadání." });
+          break;
+        case "86130":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé nemohou vytvořit konverzaci pro tento úkol." });
+          break;
+        case "86140":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé již mezi sebou konverzaci mají." });
+          break;
+
+        case "86151":
+          await refreshConversations();
+          alertsStore.addAlert({ type: "success", title: "Vytvoření konverzace", message: "Konverzace byla úspěšně vytvořena." });
+          break;
+
+        default:
+          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nastala neznámá chyba." });
+    },
+  }).finally((): void => {
+    conversationsLoading.value[userType] = false;
+  });
+};
+
+const { data: conversationsData, error: conversationsError, refresh: refreshConversations } = useFetch("/api/conversation/get/guarantor", {
   query: {
-    id: taskId,
-    guarantor: accountData.value.id,
+    idTask: taskId,
   },
   method: "get",
   server: true,
   credentials: "include",
   lazy: true
 });
+
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
+  query: {
+    id: taskId,
+    guarantor: guarantorId,
+  },
+  method: "get",
+  server: true,
+  credentials: "include",
+  lazy: true
+});
+
+watch([conversationsData, conversationsError], (): void => {
+  if (conversationsError.value) {
+    navigateTo(`/panel/maturita/${role}/tasks/`);
+    return;
+  }
+
+  if (!conversationsData.value) return;
+
+  conversations.value = {
+    objectorConversation: conversationsData.value.data.objectorConversation,
+    studentConversation: conversationsData.value.data.studentConversation,
+  }
+}, { immediate: true });
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
@@ -63,7 +168,7 @@ watch([taskData, taskError], (): void => {
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !conversations.value && !conversationsError.value);
 });
 </script>
 
@@ -84,7 +189,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="maturita-task" v-if="task">
+      <div id="maturita-task-chat" v-if="task && conversations">
         <div class="content">
           <div class="page-section bottom-line">
             <div class="section-head">
@@ -95,6 +200,62 @@ watchEffect((): void => {
               <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
           </div>
+
+          <div class="chats">
+            <div class="student card" v-if="task.userData && task.userData.id">
+              <div class="head">
+                <div class="info">
+                  <span class="dot" :style="getDotColor(conversations.studentConversation?.isArchived)"></span>
+                  <h3>Žák {{ conversations.studentConversation && (conversations.studentConversation?.isArchived ? "- Archivováno" : "- Otevřený") }}</h3>
+                </div>
+
+                <div class="profile">
+                  <Image :src="config.public.originUrl + '/api/file/pfp/' + task.userData.profilePicture" alt="profile-photo" draggable="false" />
+
+                  <p class="account-name">
+                    {{ task.userData.name + " " + task.userData.surname }}
+                  </p>
+                </div>
+              </div>
+
+              <Chat class="chat" :conversation="conversations.studentConversation" v-if="!conversationsLoading.student && conversations.studentConversation" />
+
+              <div class="chat-box" v-if="!conversations.studentConversation && !conversationsLoading.student">
+                <button @click="createNewConversation('student', task.userData.id.toString())">Založit konverzaci</button>
+              </div>
+
+              <div class="chat-box" v-if="conversationsLoading.student">
+                <Loading size="20px" color="rgba(var(--description-color), 1)" />
+              </div>
+            </div>
+
+            <div class="objector card" v-if="task.objector && task.objector.id">
+              <div class="head">
+                <div class="info">
+                  <span class="dot" :style="getDotColor(conversations.objectorConversation?.isArchived)"></span>
+                  <h3>Oponent {{ conversations.objectorConversation && (conversations.objectorConversation?.isArchived ? "- Archivováno" : "- Otevřený") }}</h3>
+                </div>
+
+                <div class="profile">
+                  <Image :src="config.public.originUrl + '/api/file/pfp/' + task.objector.profilePicture" alt="profile-photo" draggable="false" />
+
+                  <p class="account-name">
+                    {{ task.objector.name + " " + task.objector.surname }}
+                  </p>
+                </div>
+              </div>
+
+              <Chat class="chat" :conversation="conversations.objectorConversation" v-if="!conversationsLoading.objector && conversations.objectorConversation" />
+
+              <div class="chat-box" v-if="!conversations.objectorConversation && !conversationsLoading.objector">
+                <button @click="createNewConversation('objector', task.objector.id.toString())">Založit konverzaci</button>
+              </div>
+
+              <div class="chat-box" v-if="conversationsLoading.objector">
+                <Loading size="20px" color="rgba(var(--description-color), 1)" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -102,11 +263,12 @@ watchEffect((): void => {
 </template>
 
 <style scoped lang="scss">
-#maturita-task {
+#maturita-task-chat {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 30px;
   position: relative;
+  height: calc(100vh - 140px);
 
   .page-navigation {
     height: fit-content;
@@ -118,28 +280,115 @@ watchEffect((): void => {
 
   .content {
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: 35px;
     position: relative;
 
-    .versions {
+    .chats {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
+      flex-direction: row;
+      gap: 30px;
+      flex: 1;
+      min-height: 500px;
+      padding-bottom: 30px;
 
-      p {
-        font-size: 16px;
+      .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+        flex: 1;
+        gap: 20px;
 
-        &.error {
-          color: rgba(var(--error-color), 1);
+        .head {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          flex-wrap: wrap;
+
+          .info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .dot {
+              display: flex;
+              min-width: 10px;
+              min-height: 10px;
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+              background: var(--dot-color);
+            }
+
+            h3 {
+              font-size: 18px;
+              color: var(--title-color);
+            }
+          }
+        }
+
+        .chat {
+          width: 100%;
+          flex: 1;
+        }
+
+        .chat-box {
+          display: flex;
+          border: var(--border-width) solid rgba(var(--border-color), 0.5);
+          border-radius: var(--normal-border-radius);
+          background: var(--card-1-background);
+          width: 100%;
+          flex: 1;
+          padding: 30px;
+          align-items: center;
+          justify-content: center;
+
+          button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            border-radius: var(--small-border-radius);
+            transition: 0.2s;
+            font-size: 16px;
+            background: var(--btn-2-background);
+            color: var(--btn-2-color);
+            border: var(--border-width) solid rgba(var(--border-color), 0.5);
+            cursor: pointer;
+            width: fit-content;
+            padding: 10px 20px;
+
+            &:hover {
+              background: var(--btn-2-hover-background);
+            }
+          }
         }
       }
+    }
 
-      &.loading {
-        justify-content: center;
-        align-items: center;
-        min-height: 100px;
+    .profile {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      .account-name {
+        color: rgba(var(--description-color), 1);
+        font-size: 16px;
+      }
+
+      ::v-deep(img) {
+        width: 45px;
+        height: 45px;
+        border-radius: var(--small-border-radius);
+        object-fit: cover;
       }
     }
 
@@ -152,91 +401,6 @@ watchEffect((): void => {
       gap: 30px;
       width: 100%;
       flex: 1;
-    }
-
-    .download-input {
-      &.guarantor-comment {
-        .line {
-          align-items: flex-start;
-
-          ::v-deep(.editor) {
-            flex: 1;
-          }
-        }
-      }
-
-      .input-div {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        gap: 10px;
-
-        .label {
-          color: var(--mini-title-color);
-          font-size: 16px;
-        }
-      }
-
-      .line {
-        gap: 10px;
-
-        .input {
-          border-radius: var(--normal-border-radius);
-          border: var(--border-width) solid rgba(var(--border-color), 0.5);
-          padding: 15px;
-          font-size: 16px;
-          outline: none;
-          background: var(--input-background);
-          color: var(--input-color);
-          flex: 1;
-        }
-
-        .icon-div {
-          padding: 15px;
-          border: var(--border-width) solid rgba(var(--border-color), 0.5);
-          color: var(--btn-2-color);
-          background: var(--btn-2-background);
-          border-radius: var(--normal-border-radius);
-          cursor: pointer;
-          transition: 0.2s;
-          line-height: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          .icon {
-            font-size: 16px;
-          }
-
-          &:hover {
-            background: var(--btn-2-hover-background);
-          }
-        }
-      }
-    }
-
-    .link {
-      color: rgba(var(--main-color), 1);
-      text-decoration: none;
-      transition: 0.2s;
-
-      &:hover {
-        color: rgba(var(--main-color), 0.8);
-      }
-    }
-
-    .team-card {
-      padding: 30px;
-
-      .content {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-
-        .name {
-          font-weight: 800;
-        }
-      }
     }
 
     .section-head {
@@ -331,41 +495,20 @@ watchEffect((): void => {
         }
       }
     }
+  }
+}
 
-    .classes {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 30px;
+@media (max-width: 900px) {
+  #maturita-task-chat {
+    height: 100%;
 
-      .class {
-        display: flex;
-        flex: 1;
-        cursor: pointer;
-        min-width: 200px;
-        text-decoration: none;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        width: 100%;
-        padding: 60px 30px;
-        transition: 0.2s;
-        border-radius: var(--normal-border-radius);
+    .content {
+      .chats {
+        flex-direction: column;
+        padding-bottom: 0;
 
-        span {
-          font-weight: 600;
-          font-size: 16px;
-          color: var(--title-color);
-          text-transform: uppercase;
-
-          .name {
-            text-transform: none;
-          }
-        }
-
-        &:hover,
-        &.active {
-          background: var(--card-1-hover-background);
+        .chat, .card {
+          min-height: 400px;
         }
       }
     }

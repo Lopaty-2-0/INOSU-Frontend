@@ -16,7 +16,7 @@ import Navigation from "~/components/ui/Navigation.vue";
 import MaturitaTable from "~/components/tables/MaturitaTable.vue";
 
 useHead({
-  title: "Panel | Maturitní zadání",
+  title: "Panel | Oponentura",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
@@ -28,8 +28,6 @@ const route = useRoute();
 const role = route.params.role as string;
 
 const config = useRuntimeConfig();
-const accountStore = useAccountStore();
-const { getAccountData: accountData } = storeToRefs(accountStore);
 const maturitaNotExists = ref<boolean | undefined>(undefined);
 const currentMaturita = ref<MaturitaData | undefined>(undefined);
 const allTasks = ref<MaturitaTaskData[] | undefined>(undefined);
@@ -47,25 +45,19 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const openChat = async (id: number, teamId: number): Promise<void> => {
-  if (!id || !teamId) return;
+const openChat = async (id: number, teamId: number, guarantorId: number): Promise<void> => {
+  if (!id || !teamId || !guarantorId) return;
 
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/${teamId}/chat`);
+  await navigateTo(`/panel/maturita/${role}/objector/${id}/${teamId}/${guarantorId}/chat`);
 };
 
-const openTask = async (id: number, teamId: number): Promise<void> => {
-  if (!id || !teamId) return;
+const openTask = async (id: number, teamId: number, guarantorId: number): Promise<void> => {
+  if (!id || !teamId || !guarantorId) return;
 
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/${teamId}`);
+  await navigateTo(`/panel/maturita/${role}/objector/${id}/${guarantorId}/${teamId}`);
 };
 
-const editTask = async (id: number): Promise<void> => {
-  if (!id) return;
-
-  await navigateTo(`/panel/maturita/${role}/tasks/${id}/edit`);
-};
-
-const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/maturita/guarantor/approved", {
+const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/maturita/objector", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
@@ -93,13 +85,7 @@ watch([tasksData, tasksError], (): void => {
 
   if (!tasksData.value) return;
 
-  allTasks.value = tasksData.value.data.tasks.map((task: MaturitaTaskData) => {
-    return {
-      ...task,
-      guarantor: accountData.value
-    }
-  });
-
+  allTasks.value = tasksData.value.data.tasks;
   tasksCount.value = tasksData.value.data.count;
 }, { immediate: true });
 
@@ -128,8 +114,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Zadání', to: `/panel/maturita/${role}/tasks`, active: true },
+            { label: 'Maturity', to: `/panel/maturita/${role}/objector`, icon: 'material-symbols:search-rounded' },
+            { label: 'Oponentura', to: `/panel/maturita/${role}/objector`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -149,24 +135,9 @@ watchEffect((): void => {
 
       <div id="maturita-tasks" v-else-if="allTasks && currentMaturita">
         <div class="content">
-          <ActionBar
-            class="action-bar"
-            description="Správa maturitních zadání"
-            :texts="['Přidat', 'Odebrat']"
-            :actions="['add', 'remove']"
-            :icons="[
-              'material-symbols:add-rounded',
-              'material-symbols:delete-rounded',
-            ]"
-              :navigate-to="[
-              `/panel/maturita/${role}/tasks/add`,
-              `/panel/maturita/${role}/tasks/remove`,
-            ]"
-          />
-
           <div class="line">
             <div class="section-head bottom-line">
-              <h3>Maturitní zadání</h3>
+              <h3>Oponentura</h3>
               <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
               <br>
               <p>Ročník: {{ currentMaturita.grade }}</p>
@@ -178,7 +149,7 @@ watchEffect((): void => {
 
           <MaturitaTasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
               { title: 'Student', field: 'userData' },
-              { title: 'Oponent', field: 'objector' }
+              { title: 'Garant', field: 'guarantor' }
           ]">
             <template #userData="data">
               <div class="profile">
@@ -190,12 +161,12 @@ watchEffect((): void => {
               </div>
             </template>
 
-            <template #objector="data">
-              <div class="profile" v-if="data.value.objector && data.value.objector.id">
-                <Image :src="config.public.originUrl + '/api/file/pfp/' + data.value.objector.profilePicture" alt="profile-photo" draggable="false"/>
+            <template #guarantor="data">
+              <div class="profile" v-if="data.value.guarantor && data.value.guarantor.id">
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + data.value.guarantor.profilePicture" alt="profile-photo" draggable="false"/>
 
                 <p class="account-name">
-                  {{ data.value.objector.name }} {{ data.value.objector.surname }}
+                  {{ data.value.guarantor.name }} {{ data.value.guarantor.surname }}
                 </p>
               </div>
 
@@ -206,9 +177,8 @@ watchEffect((): void => {
 
             <template #actions="data">
               <div class="actions">
-                <button type="button" class="default" @click="openChat(data.value.id, data.value.idTeam)">Chat</button>
-                <button type="button" class="default" @click="editTask(data.value.id)">Upravit</button>
-                <button type="button" class="primary" @click="openTask(data.value.id, data.value.idTeam)">Otevřít</button>
+                <button type="button" class="default" @click="openChat(data.value.id, data.value.idTeam, data.value.guarantor.id)">Chat</button>
+                <button type="button" class="primary" @click="openTask(data.value.id, data.value.idTeam, data.value.guarantor.id)">Otevřít</button>
               </div>
             </template>
           </MaturitaTasksTable>

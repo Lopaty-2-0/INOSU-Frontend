@@ -1,16 +1,13 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import EditName from "~/components/manage/Name.vue";
-import EditTaskFile from "~/components/manage/TaskFile.vue";
 import EditDateTime from "~/components/manage/DateTime.vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import {ref, computed, useTemplateRef, watch, watchEffect} from "vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import { useAlertsStore } from "~/stores/alerts";
-import {useAccountStore} from "~/stores/account";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import NumberInput from "~/components/ui/NumberInput.vue";
-import checkPermissions from "~/componsables/checkPermissions";
 import Input from "~/components/ui/Input.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
@@ -18,6 +15,7 @@ import UsersTable from "~/components/tables/Users.vue";
 import type {AccountData} from "~/types/account";
 import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
+import SelectRole from "~/components/manage/Role.vue";
 
 useHead({
   title: "Panel | Maturitní ročníky - Přidání",
@@ -35,6 +33,8 @@ const role = route.params.role as string;
 
 const alertsStore = useAlertsStore();
 const usersDatatable = useTemplateRef<InstanceType<typeof UsersTable>>("usersDatatable");
+const selectRole = useTemplateRef<InstanceType<typeof SelectRole>>("selectRole");
+const selectedRole = ref<string>("teacher");
 const users = ref<AccountData[] | undefined>(undefined);
 const usersCount = ref<number>(0);
 const selectedUsers = ref<number[]>([]);
@@ -137,6 +137,12 @@ const resetUserData = (): void => {
   if (usersDatatable.value) usersDatatable.value.clearSelection();
 };
 
+const onRoleSelect = (data: { role: string }): void => {
+  if (!data.role) return;
+
+  selectedRole.value = data.role;
+};
+
 const addMaturita = async (): Promise<void> => {
   if (!newData.value.grade || !newData.value.endDate || !newData.value.startDate || newData.value.maxPoints === null) {
     alertsStore.addAlert({ type: "error", title: "Přidání maturity", message: "Vyplňte všechna povinná pole." });
@@ -228,7 +234,7 @@ const addMaturita = async (): Promise<void> => {
 
 const { data: usersData, error: usersError, pending: usersPending } = useFetch("/api/user/get/role", {
   query: {
-    role: "teacher",
+    role: selectedRole,
     amountForPaging: amountForUsersPaging,
     pageNumber: currentUsersPage,
     searchQuery: searchUsersInput,
@@ -343,6 +349,8 @@ watchEffect((): void => {
 
               <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
             </div>
+
+            <SelectRole ref="selectRole" :roles="['teacher', 'admin']" :multiple="false" :old-role="selectedRole" @update="onRoleSelect" />
 
             <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="selectedUsers"  :users="users || []" :loading="usersPending" />
 

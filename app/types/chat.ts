@@ -2,7 +2,7 @@ import type {AccountData} from "~/types/account";
 
 interface ConversationData {
     idConversation: number;
-    user?: AccountData | null;
+    user: AccountData;
     task?: {
         id: number;
         name: string,

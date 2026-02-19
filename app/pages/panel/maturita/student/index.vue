@@ -332,7 +332,7 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/maturita/st
   lazy: true
 });
 
-const {data: teamData, error: teamError, refresh: refreshTeam} = useFetch("/api/team/get/info", {
+const {data: teamData, error: teamError} = useFetch("/api/team/get/info", {
   method: "get",
   server: true,
   credentials: "include",
@@ -408,7 +408,7 @@ watchEffect((): void => {
         <template #left>
           <Breadcrumb :items="[
             { label: 'Maturita', to: `/panel/maturita/student`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/student`, active: true },
+            { label: `Zadání ID: ${taskId || '-'}`, to: `/panel/maturita/student`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -439,7 +439,7 @@ watchEffect((): void => {
               'material-symbols:chat-rounded'
             ]"
             :navigate-to="[
-              `/panel/maturita/chat`,
+              `/panel/maturita/student/chat`,
             ]"
           />
 

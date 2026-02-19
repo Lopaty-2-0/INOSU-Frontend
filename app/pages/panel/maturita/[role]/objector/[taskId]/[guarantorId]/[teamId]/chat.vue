@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
-import {computed, ref, watchEffect} from "vue";
+import {ref, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
@@ -12,13 +12,19 @@ import type { ConversationData} from "~/types/chat";
 import Chat from "~/components/layout/Chat.vue";
 import Loading from "~/components/ui/Loading.vue";
 
+const route = useRoute();
+const teamId = route.params.teamId as string;
+const role = route.params.role as string;
+const taskId = route.params.taskId as string;
+const guarantorId = route.params.guarantorId as string;
+
 useHead({
-  title: "Panel | Maturitní zadání - Chat",
+  title: "Panel | Oponentura zadání - " + taskId + " - Chat",
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
 definePageMeta({
-  roles: ["student"],
+  roles: ["admin", "teacher"],
 });
 
 const config = useRuntimeConfig();
@@ -26,15 +32,6 @@ const alertsStore = useAlertsStore();
 const task = ref<MaturitaTaskData | undefined>(undefined);
 const conversation = ref<ConversationData | undefined>(undefined);
 const conversationLoading = ref<boolean>( false);
-const taskId = computed<number | undefined>(() => task.value?.id);
-const conversationsQuery = computed(() => {
-  if (!task.value) return null;
-
-  return {
-    idTask: task.value.id,
-    guarantor: task.value.guarantor?.id,
-  };
-});
 
 const getDotColor = (isArchived?: boolean | null): string => {
   if (isArchived) {
@@ -47,16 +44,14 @@ const getDotColor = (isArchived?: boolean | null): string => {
 };
 
 const createNewConversation = async (): Promise<void> => {
-  if (!task.value || !task.value.objector || !task.value.guarantor) return;
-
   conversationLoading.value = true;
 
   await $fetch("/api/conversation/add", {
     method: "post",
     body: {
-      idTask: task.value.id,
-      idUser: task.value.objector.id,
-      guarantor: task.value.guarantor.id,
+      idTask: taskId,
+      idUser: guarantorId,
+      guarantor: guarantorId,
     },
     credentials: "include",
     ignoreResponseError: true,
@@ -122,14 +117,21 @@ const createNewConversation = async (): Promise<void> => {
 };
 
 const { data: conversationsData, error: conversationsError, refresh: refreshConversations } = useFetch("/api/conversation/get/participant", {
+  query: {
+    idTask: taskId,
+    guarantor: guarantorId,
+  },
   method: "get",
   server: true,
   credentials: "include",
-  query: conversationsQuery,
-  watch: [conversationsQuery],
+  lazy: true
 });
 
-const { data: taskData, error: taskError } = useFetch("/api/task/get/maturita/student/approved", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
+  query: {
+    id: taskId,
+    guarantor: guarantorId,
+  },
   method: "get",
   server: true,
   credentials: "include",
@@ -144,7 +146,7 @@ watch([conversationsData, conversationsError], (): void => {
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
-    navigateTo(`/panel`);
+    navigateTo(`/panel/maturita/${role}/objector`);
     return;
   }
 
@@ -164,9 +166,11 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturita', to: `/panel/maturita/student`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Zadání ID: ${taskId || '-'}`, to: `/panel/maturita/student` },
-            { label: `Chat`, to: `/panel/maturita/student/chat`, active: true },
+            { label: 'Maturity', to: `/panel/maturita/${role}/objector`, icon: 'material-symbols:search-rounded' },
+            { label: 'Oponentura', to: `/panel/maturita/${role}/objector` },
+            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/${role}/objector/${taskId}/${guarantorId}/${teamId}/` },
+            { label: `Vypracování ID: ${teamId}`, to: `/panel/maturita/${role}/objector/${taskId}/${guarantorId}/${teamId}` },
+            { label: `Chat`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}/chat`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -185,12 +189,12 @@ watchEffect((): void => {
             </div>
 
             <div class="user section-head">
-              <span>Oponent:</span>
-              <div class="profile"  v-if="task.objector && task.objector.id">
-                <Image :src="config.public.originUrl + '/api/file/pfp/' + task.objector.profilePicture" alt="profile-photo" draggable="false" />
+              <span>Student:</span>
+              <div class="profile" v-if="task.userData && task.userData.id">
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + task.userData.profilePicture" alt="profile-photo" draggable="false" />
 
                 <p class="account-name">
-                  {{ task.objector.name + " " + task.objector.surname }}
+                  {{ task.userData.name + " " + task.userData.surname }}
                 </p>
               </div>
 

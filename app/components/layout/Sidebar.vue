@@ -126,6 +126,15 @@ const sidebarLinks = computed<
             ],
           },
           {
+            text: "Oponentura",
+            href: `/panel/maturita/${role.value}/objector`,
+            iconClass: "material-symbols:search-rounded",
+            activeHrefs: [
+              `/panel/maturita/${role.value}/objector`,
+            ],
+            notify: false,
+          },
+          {
             text: "Návrhy",
             href: `/panel/maturita/${role.value}/proposals`,
             iconClass: "material-symbols:lightbulb-rounded",
