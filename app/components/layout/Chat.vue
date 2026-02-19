@@ -49,7 +49,9 @@ const setReplyMessage = (message: ConversationMessageData | null) => {
   replyingToMessage.value = message;
 };
 
-const isCurrentUser = (authorId: number): boolean => {
+const isCurrentUser = (authorId?: number | null): boolean => {
+  if (!authorId) return false;
+
   return authorId === userId.value;
 };
 
@@ -57,7 +59,7 @@ const isMessageSentByCurrentUser = (message: ConversationMessageData): boolean =
   return message.sender.id === userId.value;
 };
 
-const getMessageStyles = (authorId: number) => {
+const getMessageStyles = (authorId?: number | null) => {
   if (isCurrentUser(authorId)) {
     return {
       "--message-bg": "var(--btn-1-background)",
@@ -274,7 +276,7 @@ watch(() => props.conversationId, (): void => {
     </button>
 
     <div class="messages" v-if="messages.length > 0">
-      <div v-for="message in messages" :key="message.idMessage" :class="['message', { right: isCurrentUser(message.sender.id) }]" :style="getMessageStyles(message.sender.id)">
+      <div v-for="message in messages" :key="message.idMessage" :class="['message', { right: isCurrentUser(message.sender?.id) }]" :style="getMessageStyles(message.sender?.id)">
         <p class="reply" v-if="message.replyToMessage">
           <span>Odpověď na:</span> {{ message.replyToMessage.message.substring(0, 50) }}{{ message.replyToMessage.message.length > 50 ? "..." : "" }}
         </p>
@@ -292,7 +294,7 @@ watch(() => props.conversationId, (): void => {
 
           <div class="actions">
             <Icon class="icon" name="material-symbols:reply-rounded" @click="setReplyMessage(message)"></Icon>
-            <Icon class="icon" name="material-symbols:delete-rounded" v-if="isCurrentUser(message.sender.id)" @click="removeMessage(message)"></Icon>
+            <Icon class="icon" name="material-symbols:delete-rounded" v-if="isCurrentUser(message.sender?.id)" @click="removeMessage(message)"></Icon>
           </div>
         </div>
       </div>
@@ -419,6 +421,7 @@ watch(() => props.conversationId, (): void => {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        align-items: center;
         width: 100%;
         gap: 20px;
 

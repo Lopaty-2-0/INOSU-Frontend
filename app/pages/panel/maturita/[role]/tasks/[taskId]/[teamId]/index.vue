@@ -341,16 +341,7 @@ watchEffect((): void => {
               </p>
             </div>
 
-            <Card class="team-card section-head" variant="outlined" v-if="teamTaskData.isTeam">
-              <div class="content">
-                <p class="name"><span>{{ teamTaskData.name || "Neurčeno" }}</span></p>
-                <p><span>ID:</span> {{ teamTaskData.idTeam }}</p>
-                <p><span>Počet členů:</span> {{ (teamTaskData.users || []).length }}</p>
-                <p></p>
-              </div>
-            </Card>
-
-            <div class="user section-head" v-else-if="task.userData">
+            <div class="user section-head" v-if="task.userData">
               <span>Student:</span>
               <div class="profile">
                 <Image :src="config.public.originUrl + '/api/file/pfp/' + task.userData.profilePicture" alt="profile-photo" draggable="false" />
