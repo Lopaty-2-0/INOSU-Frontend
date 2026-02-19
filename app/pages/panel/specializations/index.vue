@@ -43,7 +43,7 @@ const { data: specializationData, pending: specializationTablePending, error: sp
   lazy: true
 });
 
-watchEffect((): void => {
+watch([specializationData, specializationError], (): void => {
   if (specializationError.value) {
     allSpecializations.value = [];
     specializationsCount.value = 0;
@@ -54,7 +54,7 @@ watchEffect((): void => {
 
   allSpecializations.value = specializationData.value.data.specializations;
   specializationsCount.value = specializationData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", specializationData.value === undefined);
@@ -73,8 +73,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allSpecializations">
-      <div id="specializations">
+    <template #content>
+      <div id="topics" v-if="allSpecializations">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -111,7 +111,7 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#specializations {
+#topics {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -213,7 +213,7 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1055px) {
-  #specializations {
+  #topics {
     flex-direction: column;
     gap: 30px;
   }

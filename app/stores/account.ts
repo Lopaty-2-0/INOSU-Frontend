@@ -4,7 +4,7 @@ import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
 
 export const useAccountStore = defineStore("account", {
     state: () => ({
-        id: "",
+        id: -1,
         name: "",
         surname: "",
         abbreviation: null as string | null,
@@ -56,7 +56,7 @@ export const useAccountStore = defineStore("account", {
         getRole(): string {
             return this.role;
         },
-        getId(): string {
+        getId(): number {
             return this.id;
         }
     },
@@ -72,7 +72,7 @@ export const useAccountStore = defineStore("account", {
             this.updatedAt = accountData.updatedAt;
             this.reminders = accountData.reminders;
         },
-        setId(id: string): void {
+        setId(id: number): void {
             this.id = id;
         },
         updateAccountDataSessionStorage(): void {

@@ -100,7 +100,7 @@ const updateUserData = () => {
 
     <template #content>
       <div id="settings">
-        <Navigation class="navigation" title="Nastavení účtu" :active-link-id="2" :links="[
+        <Navigation class="navigation" title="Nastavení" :active-link-id="2" :links="[
           { name: 'Údaje', path: '/panel/settings' },
           { name: 'Zabezpečení', path: '/panel/settings/security' },
           { name: 'Přizpůsobení', path: '/panel/settings/customization' },

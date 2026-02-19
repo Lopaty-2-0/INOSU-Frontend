@@ -23,8 +23,6 @@ definePageMeta({
 const route = useRoute();
 const role = route.params.role as string;
 
-const accountStore = useAccountStore();
-const { getId: userId } = storeToRefs(accountStore);
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
 const currentPage = ref<number>(1);
@@ -33,10 +31,6 @@ const tasksCount = ref<number>(0);
 const numberOfPages = computed<number>((): number => {
   return Math.ceil(tasksCount.value / amountForPaging);
 });
-
-const updateActivePage = (pageNumber: number): void => {
-  currentPage.value = pageNumber + 1;
-};
 
 const onSearchInputChange = (input: string): void => {
   currentPage.value = 1;
@@ -56,9 +50,14 @@ const openTask = async (id: number): Promise<void> => {
   await navigateTo(`/panel/tasks/${role}/${id}`);
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get", {
+const editTask = async (id: number): Promise<void> => {
+  if (!id) return;
+
+  await navigateTo(`/panel/tasks/${role}/${id}/edit`);
+};
+
+const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/task/get/task", {
   query: {
-    idUser: userId,
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
     searchQuery: searchInput,
@@ -69,9 +68,10 @@ const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("
   lazy: true
 });
 
-watchEffect((): void => {
+watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
     allTasks.value = [];
+    tasksCount.value = 0;
     return;
   }
 
@@ -79,7 +79,7 @@ watchEffect((): void => {
 
   allTasks.value = tasksData.value.data.tasks;
   tasksCount.value = tasksData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value);
@@ -98,8 +98,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allTasks">
-      <div id="tasks">
+    <template #content>
+      <div id="tasks" v-if="allTasks">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -131,12 +131,13 @@ watchEffect((): void => {
                 <template #actions="data">
                   <div class="actions">
                     <button type="button" class="default" @click="openTask(data.value.id)">Otevřít</button>
+                    <button type="button" class="default" @click="editTask(data.value.id)">Upravit</button>
                     <button type="button" class="assign" @click="assignTask(data.value.id)">Přiřadit</button>
                   </div>
                 </template>
               </TasksTable>
 
-              <Pagination :number-of-pages="numberOfPages" @get:active-page="updateActivePage" />
+              <Pagination v-model="currentPage" :number-of-pages="numberOfPages" />
             </div>
           </div>
         </div>

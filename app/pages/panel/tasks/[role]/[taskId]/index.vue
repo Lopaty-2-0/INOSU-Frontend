@@ -14,6 +14,8 @@ import type {TaskTeam} from "~/types/team";
 import {navigateTo} from "nuxt/app";
 import TasksTable from "~/components/tables/Tasks.vue";
 import ActionBar from "~/components/ui/ActionBar.vue";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -28,6 +30,8 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const task = ref<TaskData | undefined>(undefined);
 const usersTeam = ref<Task_Team_Solo_Table[] | undefined>(undefined);
 const userSearchInput = ref<string>("");
@@ -75,6 +79,7 @@ const openTeamTask = async (id: number): Promise<void> => {
 const { data: usersData, error: usersError, pending: usersPending } = useFetch("/api/team/get/users", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
     amountForPaging: amountOfUsersForPaging,
     pageNumber: currentUsersPage,
     searchQuery: userSearchInput,
@@ -88,6 +93,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
 const { data: teamsData, error: teamsError, pending: teamsPending } = useFetch("/api/team/get/teams", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
     amountForPaging: amountOfTeamsForPaging,
     pageNumber: currentTeamsPage,
     searchQuery: teamSearchInput,
@@ -98,43 +104,57 @@ const { data: teamsData, error: teamsError, pending: teamsPending } = useFetch("
   credentials: "include",
 });
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true,
 });
 
-watchEffect((): void => {
-  if (taskError.value || !taskData.value) {
+watch([usersData, usersError], (): void => {
+  if (usersError.value) {
+    users.value = [];
+    usersCount.value = 0;
+    return;
+  }
+
+  if (!usersData.value) return;
+
+  users.value = usersData.value.data.users.map((data: any) => data.userData);
+  usersTeam.value = usersData.value.data.users;
+  usersCount.value = usersData.value.data.count;
+}, { immediate: true });
+
+watch([teamsData, teamsError], (): void => {
+  if (teamsError.value) {
+    teams.value = [];
+    teamsCount.value = 0;
+    return;
+  }
+
+  if (!teamsData.value) return;
+
+  teams.value = teamsData.value.data.teams;
+  teamsCount.value = teamsData.value.data.count;
+}, { immediate: true });
+
+watch([taskData, taskError], (): void => {
+  if (taskError.value) {
     navigateTo(`/panel/tasks/${role}`);
     return;
   }
 
-  if (usersError.value || !usersData.value) {
-    users.value = [];
-    usersCount.value = 0;
-  }
-
-  if (teamsError.value || !teamsData.value) {
-    teams.value = [];
-    teamsCount.value = 0;
-  }
-
-  if (!usersData.value || !teamsData.value) return;
+  if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-  users.value = usersData.value.data.users.map((data: any) => data.userData);
-  usersTeam.value = usersData.value.data.users;
-  usersCount.value = usersData.value.data.count;
-  teams.value = teamsData.value.data.teams;
-  teamsCount.value = teamsData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teams.value && !teamsError.value || !users.value && !usersError.value);
 });
 </script>
 
@@ -151,8 +171,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task">
-      <div id="task">
+    <template #content>
+      <div id="task" v-if="task && users && teams">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -180,14 +200,14 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
-                  {{ task.task }}
+                <a :href="task.task ? `/api/file/task/${task.guarantor.id}/${task.id}/${task.task}` : '#'" class="link" download target="_blank">
+                  {{ task.task || "Žádné zadání" }}
                 </a>
               </p>
             </div>
           </div>
 
-          <div class="page-section" v-if="users">
+          <div class="page-section">
             <div class="section-head">
               <h3>Žáci</h3>
 
@@ -215,14 +235,14 @@ watchEffect((): void => {
             />
           </div>
 
-          <div class="page-section" v-if="teams">
+          <div class="page-section">
             <div class="section-head">
               <h3>Týmy</h3>
 
               <SearchInput @change="onTeamSearchInputChange" placeholder="Hledat týmy" />
             </div>
 
-            <TaskTeamsTable :teams="teams" :loading="teamsPending" :extra-columns="[
+            <TaskTeamsTable v-if="teams" :teams="teams" :loading="teamsPending" :extra-columns="[
               { field: 'points', title: 'Počet bodů' }
             ]">
               <template #points="data">

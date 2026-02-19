@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import {computed, ref, watchEffect} from "vue";
 import { storeToRefs } from "pinia";
-import Navbar from "~/components/layout/Navbar.vue";
-import ActionBar from "~/components/ui/ActionBar.vue";
-import SearchInput from "~/components/ui/SearchInput.vue";
-import type {Task_Team_Solo_Table, TaskData} from "~/types/tasks";
 import { useAccountStore } from "~/stores/account";
+import Navbar from "~/components/layout/Navbar.vue";
+import SearchInput from "~/components/ui/SearchInput.vue";
+import type {TaskData} from "~/types/tasks";
 import {useLoadingStore} from "~/stores/loading";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import TasksTable from "~/components/tables/Tasks.vue";
@@ -20,6 +19,7 @@ useHead({
 });
 
 definePageMeta({
+  roles: ["student"],
 });
 
 const config = useRuntimeConfig();
@@ -42,18 +42,21 @@ const onSearchInputChange = (input: string): void => {
   searchInput.value = input;
 };
 
-const openTask = async (taskId: number, teamId: number): Promise<void> => {
-  if (!taskId || !teamId) return;
+const downloadTask = async (guarantorId: number, id: number, task: string | null): Promise<void> => {
+  if (!guarantorId || !id || !task) return;
 
-  await navigateTo(`/panel/tasks/student/${taskId}/${teamId}`);
+  await navigateTo(`/api/file/task/${guarantorId}/${id}/${task}`, { external: true, open: { target: "_blank" } });
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/user_team/get/type", {
+const openTask = async (taskId: number, teamId: number, guarantorId: number): Promise<void> => {
+  await navigateTo(`/panel/tasks/student/${taskId}/${guarantorId}/${teamId}`);
+};
+
+const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("/api/user_team/get", {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
     searchQuery: searchInput,
-    taskType: "task"
   },
   method: "get",
   server: true,
@@ -61,15 +64,16 @@ const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("
   lazy: true
 });
 
-watchEffect((): void => {
+watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
     allTasks.value = [];
+    tasksCount.value = 0;
     return;
   }
 
   if (!tasksData.value) return;
 
-  allTasks.value = tasksData.value.data.tasks.map((task: any) => {
+  allTasks.value = tasksData.value.data.user_teams.map((task: any) => {
     return {
       id: task.idTask,
       ...task,
@@ -77,7 +81,7 @@ watchEffect((): void => {
   });
 
   tasksCount.value = tasksData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value);
@@ -96,8 +100,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allTasks">
-      <div id="tasks">
+    <template #content>
+      <div id="tasks" v-if="allTasks">
         <div class="content">
           <div class="line">
             <div class="line">
@@ -110,9 +114,15 @@ watchEffect((): void => {
                 <SearchInput @change="onSearchInputChange" placeholder="Hledat úkol" />
               </div>
 
-              <TasksTable :tasks="allTasks" :loading="tasksPending" :extra-columns="[
+              <TasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
                   { field: 'guarantor', title: 'Garant' }
               ]">
+                <template #task="data">
+                  <span class="link limit" @click="downloadTask(data.value.guarantor.id, data.value.id, data.value.task)">
+                    {{ data.value.task || "Žádné zadání" }}
+                  </span>
+                </template>
+
                 <template #points="data">
                   {{ data.value.points ? `${data.value.team.points ?? "-"} / ${data.value.points}` : "Neurčeno" }}
                 </template>
@@ -133,7 +143,7 @@ watchEffect((): void => {
 
                 <template #actions="data">
                   <div class="actions">
-                    <button type="button" class="primary" @click="openTask(data.value.id, data.value.team.idTeam)">Otevřít</button>
+                    <button type="button" class="primary" @click="openTask(data.value.id, data.value.team.idTeam, data.value.guarantor.id)">Otevřít</button>
                   </div>
                 </template>
               </TasksTable>
@@ -180,36 +190,57 @@ watchEffect((): void => {
     }
   }
 
-  .actions {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
+  .datatable {
+    .actions {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
 
-    button {
-      padding: 10px 15px;
-      border-radius: var(--small-border-radius);
+      button {
+        padding: 10px 15px;
+        border-radius: var(--small-border-radius);
+        transition: 0.2s;
+        font-size: 16px;
+        background: var(--btn-2-background);
+        color: var(--btn-2-color);
+        border: var(--border-width) solid rgba(var(--border-color), 0.5);
+        cursor: pointer;
+
+        &:hover {
+          background: var(--btn-2-hover-background);
+        }
+
+        &.primary {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          align-items: center;
+          background: var(--btn-1-background);
+          color: var(--btn-1-color);
+
+          &:hover {
+            background: var(--btn-1-hover-background);
+          }
+        }
+      }
+    }
+
+    .limit {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .link {
+      color: rgba(var(--main-color), 1);
+      text-decoration: none;
       transition: 0.2s;
-      font-size: 16px;
-      background: var(--btn-2-background);
-      color: var(--btn-2-color);
-      border: var(--border-width) solid rgba(var(--border-color), 0.5);
       cursor: pointer;
 
       &:hover {
-        background: var(--btn-2-hover-background);
-      }
-
-      &.primary {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-        background: var(--btn-1-background);
-        color: var(--btn-1-color);
-
-        &:hover {
-          background: var(--btn-1-hover-background);
-        }
+        color: rgba(var(--main-color), 0.8);
       }
     }
   }

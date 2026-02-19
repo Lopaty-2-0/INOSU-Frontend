@@ -69,9 +69,11 @@ defineExpose({ reset });
     <div class="items reset-password">
       <div class="section old-password">
         <div class="content">
-          <label for="oldPassword">{{
-            props.type === "new" ? "Heslo" : "Staré heslo"
-          }}</label>
+          <label for="oldPassword">
+            {{
+                props.type === "new" ? "Heslo" : "Staré heslo"
+            }}
+          </label>
           <div class="line">
             <Input
               :type="isPasswordVisible ? 'text' : 'password'"
@@ -79,7 +81,7 @@ defineExpose({ reset });
               :class="{ error: passwords.old.error }"
               name="oldPassword"
               placeholder="******"
-              v-model="passwords.old.input"
+              v-model.trim="passwords.old.input"
               @input="onInput"
             />
             <div
@@ -117,7 +119,7 @@ defineExpose({ reset });
             name="newPassword"
             placeholder="******"
             ref="newPassword"
-            v-model="passwords.new.input"
+            v-model.trim="passwords.new.input"
             @input="onInput"
           />
           <p v-if="passwords.new.error" class="input-error">

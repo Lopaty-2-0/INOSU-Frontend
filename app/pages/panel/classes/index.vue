@@ -44,7 +44,7 @@ const { data: classesData, pending: classesTablePending, error: classesError } =
   lazy: true
 });
 
-watchEffect((): void => {
+watch([classesData, classesError], (): void => {
   if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
@@ -55,7 +55,7 @@ watchEffect((): void => {
 
   allClasses.value = classesData.value.data.classes;
   classesCount.value = classesData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", allClasses.value === undefined);
@@ -74,8 +74,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allClasses">
-      <div id="classes">
+    <template #content>
+      <div id="classes" v-if="allClasses">
         <div class="content">
           <ActionBar
             class="action-bar"

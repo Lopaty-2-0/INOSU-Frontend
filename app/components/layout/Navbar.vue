@@ -97,9 +97,13 @@ onMounted((): void => {
 
   .account {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 10px;
     align-items: center;
+    position: absolute;
+    right: 30px;
+    padding: 5px;
+    background: var(--menu-background);
 
     .name {
       transition: 0.2s;

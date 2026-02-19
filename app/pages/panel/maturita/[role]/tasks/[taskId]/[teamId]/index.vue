@@ -10,36 +10,61 @@ import type {TaskTeam} from "~/types/team";
 import type {TaskData} from "~/types/tasks";
 import moment from "moment";
 import Card from "~/components/ui/Card.vue";
+import type {AccountData} from "~/types/account";
 import Image from "~/components/ui/Image.vue";
+import NumberInput from "~/components/ui/NumberInput.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import Loading from "~/components/ui/Loading.vue";
 import Editor from "~/components/ui/Editor.vue";
 import type {Version} from "~/types/team";
-import FileInput from "~/components/ui/FileInput.vue";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
+import type {MaturitaTaskData} from "~/types/maturita";
+import ActionBar from "~/components/ui/ActionBar.vue";
 
 const route = useRoute();
 const teamId = route.params.teamId as string;
+const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Přiřazení - Jednotlivci",
+  title: "Panel | Maturitní zadání - " + taskId,
   meta: [{ name: "description", content: "Panel Homepage" }],
 });
 
 definePageMeta({
-  roles: ["student"],
+  roles: ["admin", "teacher"],
 });
 
 const config = useRuntimeConfig();
 const alertsStore = useAlertsStore();
-const editorEnabledTools: string[] = [];
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const submitLoading = ref<boolean>(false);
 const teamTaskData = ref<TaskTeam | undefined>(undefined);
-const task = ref<TaskData | undefined>(undefined);
+const task = ref<MaturitaTaskData | undefined>(undefined);
 const teamTaskPoints = ref<number | null>(null);
-const versionsLoading = ref<boolean>(false);
-const specificVersionLoading = ref<{ idVersion: number, loading: boolean } | undefined>(undefined);
+const isGuarantorCommentEnabled = ref<boolean>(false);
 const guarantorComment = ref<string>("");
+const editorEnabledTools: string[] = [
+  "bold",
+  "underline",
+  "strike",
+  "italic",
+  "blockquote",
+  "code-block",
+  "link",
+  "header",
+  "list-ordered",
+  "list-bullet",
+  "list-check",
+  "indentUp",
+  "indentDown",
+  "align",
+  "color",
+  "background",
+  "clean",
+];
 const versions = ref<Version[] | undefined>(undefined);
 const versionsPerPage = 3;
 const versionsActivePage = ref<number>(1);
@@ -47,10 +72,42 @@ const versionsCount = ref<number>(0);
 const versionsNumberOfPages = computed<number>(() => {
   return Math.ceil(versionsCount.value / versionsPerPage);
 });
-const newVersionFile = ref<File | null>(null);
+const errors = ref<{ points: string, review: string }>({
+  points: "",
+  review: "",
+});
+
+const checkForErrors = (): void => {
+  errors.value.points = "";
+  errors.value.review = "";
+
+  if (teamTaskPoints.value && task.value && teamTaskPoints.value > task.value.points!) {
+    errors.value.points = `Počet bodů nesmí být větší než maximální počet bodů: ${task.value.points}`;
+  } else if (teamTaskPoints.value && teamTaskPoints.value < 0) {
+    errors.value.points = "Počet bodů nesmí být menší než 0";
+  }
+
+  if (guarantorComment.value.length > 65535) {
+    errors.value.review = "Komentář je příliš dlouhý";
+  }
+};
 
 const resetInputs = (): void => {
-  newVersionFile.value = null;
+  if (teamTaskData.value && typeof teamTaskData.value.points === "number") {
+    teamTaskPoints.value = teamTaskData.value.points;
+  } else {
+    teamTaskPoints.value = null;
+  }
+
+  if (teamTaskData.value && teamTaskData.value.review) {
+    guarantorComment.value = teamTaskData.value.review;
+  } else {
+    guarantorComment.value = "";
+  }
+};
+
+const toggleGuarantorCommentEnabled = (): void => {
+  isGuarantorCommentEnabled.value = !isGuarantorCommentEnabled.value;
 };
 
 const downloadMaterials = async (): Promise<void> => {
@@ -58,255 +115,185 @@ const downloadMaterials = async (): Promise<void> => {
     alertsStore.addAlert({ type: "error", title: "Stahování souborů", message: "Chyba při stahování materiálů úkolu." });
     return;
   }
-
-  await navigateTo(`${config.public.originUrl}/api/file/task/${task.value.id}/${task.value.task}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/task/${accountData.value.id}/${task.value.id}/${task.value.task}`, { external: true });
 };
 
 const downloadVersion = async (version: Version): Promise<void> => {
   if (!version || !version.elaboration) {
-    alertsStore.addAlert({ type: "warning", title: "Stahování verze", message: "Tato verze není dostupná." });
+    alertsStore.addAlert({ type: "warning", title: "Stahování souborů", message: "Tato verze není dostupná." });
     return;
   }
 
-  await navigateTo(`${config.public.originUrl}/api/file/tasks/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
+  await navigateTo(`${config.public.originUrl}/api/file/tasks/${accountData.value.id}/${taskId}/${teamId}/${version.idVersion}/${version.elaboration}`, { external: true });
 };
 
-const removeVersion = async (version: Version): Promise<void> => {
-  if (!version || !version.idVersion) {
-    alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Chyba při odstraňování verze vypracování." });
+const updateTeam = async (): Promise<void> => {
+  checkForErrors();
+
+  if (errors.value.points.length > 0 || errors.value.review.length > 0) {
+    alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Opravte chyby ve formuláři a zkuste to znovu." });
     return;
   }
-
-  specificVersionLoading.value = { idVersion: version.idVersion, loading: true };
-
-  await $fetch("/api/version_team/change", {
-    method: "put",
-    body: {
-      idTask: taskId,
-      idTeam: teamId,
-      idVersion: version.idVersion,
-    },
-    ignoreResponseError: true,
-    credentials: "include",
-    onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
-
-      switch (resCode) {
-        case "49010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID týmu nebylo zadáno." });
-          break;
-        case "49020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID úkolu nebylo zadáno." });
-          break;
-        case "49030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID verze nebylo zadáno." });
-          break;
-        case "49040":
-        case "49050":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID týmu je neplatné." });
-          break;
-        case "49060":
-        case "49070":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID úkolu je neplatné." });
-          break;
-        case "49080":
-        case "49090":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID verze je neplatné." });
-          break;
-        case "49100":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Zadaný tým neexistuje." });
-          break;
-        case "49110":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Zadaná verze neexistuje." });
-          break;
-        case "49120":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Uživatel na toto nemá práva." });
-          break;
-        case "49130":
-          alertsStore.addAlert({ type: "warning", title: "Odstranění verze", message: "Nemůžete odstranit verzi po uzávěrce." });
-          break;
-        case "49141":
-          alertsStore.addAlert({ type: "success", title: "Odstranění verze", message: "Verze byla úspěšně odstraněna." });
-          refreshVersions();
-          break;
-        default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Nastala neznámá chyba." });
-          break;
-      }
-    },
-    onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Nastala neznámá chyba." });
-    },
-  }).finally((): void => {
-    specificVersionLoading.value = undefined;
-  });
-};
-
-const uploadNewVersion = async (): Promise<void> => {
-  if (!newVersionFile.value) return;
 
   submitLoading.value = true;
 
-  const formData = new FormData();
-  formData.append("idTask", taskId);
-  formData.append("idTeam", teamId);
-  formData.append("elaboration", newVersionFile.value);
-
-  await $fetch("/api/version_team/add", {
-    method: "post",
-    server: true,
+  await $fetch("/api/team/update", {
+    method: "put",
     credentials: "include",
-    body: formData,
     ignoreResponseError: true,
-    onResponse({ response }: any) {
+    body: {
+      idTask: taskId,
+      idTeam: teamId,
+      ...(guarantorComment.value !== teamTaskData.value?.review && { review: guarantorComment.value }),
+      ...(teamTaskPoints.value !== teamTaskData.value?.points && { points: teamTaskPoints.value }),
+    },
+
+    async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
-        case "F15010":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nahraný soubor je příliš velký." });
+        case "32010":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID úkolu nebylo zadáno." });
           break;
-        case "38010":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID týmu nebylo zadáno." });
+        case "32020":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID týmu nebylo zadáno." });
           break;
-        case "38020":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID úkolu nebylo zadáno." });
+        case "32030":
+        case "32040":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID úkolu je neplatné." });
           break;
-        case "38030":
-        case "38040":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID týmu je neplatné." });
+        case "32050":
+        case "32060":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID týmu je neplatné." });
           break;
-        case "38050":
-        case "38060":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID úkolu je neplatné." });
+        case "32070":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný úkol neexistuje." });
           break;
-        case "38070":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný úkol neexistuje." });
+        case "32080":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný tým neexistuje." });
           break;
-        case "38080":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný tým neexistuje." });
+        case "32090":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Neplatný status." });
           break;
-        case "38090":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Uživatel na toto nemá práva." });
+        case "32100":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Bylo dosaženo max variant pro tento topic." });
           break;
-        case "38100":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Vypracování nebylo zadáno." });
+        case "32110":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů není platný." });
           break;
-        case "38110":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Špatný formát zadaného souboru." });
+        case "32120":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů není platný." });
           break;
-        case "38120":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Název zadaného souboru je příliš dlouhý." });
+        case "32130":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nelze udělit více bodů, než má úkol." });
           break;
-        case "38130":
-          alertsStore.addAlert({ type: "warning", title: "Přidání verze", message: "Nemůžete přidat verzi po uzávěrce." });
+        case "32140":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Komentář je příliš dlouhý." });
           break;
-        case "38140":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný soubor již existuje." });
+        case "32150":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Název týmu je příliš dlouhý." });
           break;
-        case "38151":
-          alertsStore.addAlert({ type: "success", title: "Přidání verze", message: "Nová verze byla nahrána." });
-
+        case "32161":
+          alertsStore.addAlert({ type: "success", title: "Úprava týmu", message: "Tým byl úspěšně aktualizován." });
+          await refreshTeamData();
           resetInputs();
-          refreshVersions();
+          errors.value = { points: "", review: "" };
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     submitLoading.value = false;
   });
 };
 
-const { data: teamData, error: teamError } = await useFetch("/api/team/get/info", {
+const { data: teamData, error: teamError, refresh: refreshTeamData } = useFetch("/api/team/get/info", {
   query: {
     idTask: taskId,
     idTeam: teamId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-const { data: versionsData, error: versionsError, refresh: refreshVersions } = await useFetch("/api/version_team/get", {
+const { data: versionsData, error: versionsError, pending: versionsLoading } = useFetch("/api/version_team/get", {
   query: {
     idTask: taskId,
     idTeam: teamId,
+    guarantor: accountData.value.id,
     amountForPaging: versionsPerPage,
     pageNumber: versionsActivePage,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-watchEffect(async (): Promise<void> => {
-  if (taskError.value || !taskData.value) {
-    navigateTo(`/panel/tasks/student/${taskId}`);
+watch([taskData, taskError], (): void => {
+  if (taskError.value) {
+    navigateTo(`/panel/maturita/${role}/tasks/`);
     return;
   }
+
+  if (!taskData.value) return;
 
   task.value = taskData.value.data.task;
-
-  if (teamError.value || !teamData.value) {
-    navigateTo(`/panel/tasks/student/${taskId}`);
-    return;
-  }
-});
+}, { immediate: true });
 
 watch(versionsData, async (newValue: any): Promise<void> => {
   if (!newValue) return;
 
-  if (versionsError.value || !newValue.data.versions) {
+  if (versionsError.value) {
     versions.value = undefined;
     return;
   }
 
-  versionsLoading.value = true;
+  if (!newValue.data.versions) return;
 
   versions.value = newValue.data.versions;
   versionsCount.value = newValue.data.count;
-
-  versionsLoading.value = false;
 }, { immediate: true });
 
-watch(teamData, async (newValue: any): Promise<void> => {
-  if (!newValue) return;
+watch([teamData, teamError], async (): Promise<void> => {
+  if (teamError.value) {
+    navigateTo(`/panel/maturita/${role}/tasks/`);
+    return;
+  }
+
+  if (!teamData.value) return;
 
   teamTaskData.value = {
-    ...newValue.data.team,
-    users: newValue.data.users,
+    ...teamData.value.data.team,
+    users: teamData.value.data.users,
   }
 
-  if (newValue && typeof newValue.points === "number") {
-    teamTaskPoints.value = newValue.points;
-  } else {
-    teamTaskPoints.value = null;
-  }
-
-  if (newValue.data.team.review) {
-    guarantorComment.value = newValue.data.team.review;
-  } else {
-    guarantorComment.value = "Zatím žádný komentář...";
-  }
-
+  teamTaskPoints.value = teamData.value.data.team.points ?? null;
+  guarantorComment.value = teamData.value.data.team.review ?? "";
 }, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamError.value && !teamTaskData.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teamError.value && !teamTaskData.value || !versionsData.value && !versionsError.value);
 });
 </script>
 
@@ -316,21 +303,35 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/student`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/student/${taskId}/${teamId}`, active: true },
+            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
+            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}` },
+            { label: `Vypracování ID: ${teamId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}`, active: true },
           ]"/>
         </template>
       </Navbar>
     </template>
 
-    <template #content v-if="teamTaskData && task">
-      <div id="team-task">
+    <template #content>
+      <div id="maturita-task" v-if="teamTaskData && task">
         <div class="content">
+          <ActionBar
+            class="action-bar"
+            description="Správa maturitního zadání"
+            :texts="['Otevřít chat']"
+            :actions="['edit']"
+            :icons="[
+                'material-symbols:chat-rounded'
+            ]"
+              :navigate-to="[
+              `/panel/maturita/${role}/tasks/${taskId}/${teamId}/chat`,
+            ]"
+          />
+
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
               <p>Úkol ID: {{ task.id }}</p>
-              <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
               <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
               <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
@@ -340,28 +341,28 @@ watchEffect((): void => {
               </p>
             </div>
 
-            <Card class="team-card section-head" variant="outlined" v-if="teamTaskData.isTeam">
-              <div class="content">
-                <p class="name"><span>{{ teamTaskData.name || "Neurčeno" }}</span></p>
-                <p><span>ID:</span> {{ teamTaskData.idTeam }}</p>
-                <p><span>Počet členů:</span> {{ (teamTaskData.users || []).length }}</p>
-                <p></p>
-              </div>
-            </Card>
-
-            <div class="user section-head">
-              <span>Garant:</span>
+            <div class="user section-head" v-if="task.userData">
+              <span>Student:</span>
               <div class="profile">
-                <Image
-                    :src="config.public.originUrl + '/api/file/pfp/' + task.guarantor.profilePicture"
-                    alt="profile-photo"
-                    draggable="false"
-                />
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + task.userData.profilePicture" alt="profile-photo" draggable="false" />
 
                 <p class="account-name">
-                  {{ task.guarantor.name + " " + task.guarantor.surname }}
+                  {{ task.userData.name + " " + task.userData.surname }}
                 </p>
               </div>
+            </div>
+
+            <div class="user section-head">
+              <span>Oponent:</span>
+              <div class="profile" v-if="task.objector && task.objector.id">
+                <Image :src="config.public.originUrl + '/api/file/pfp/' + task.objector.profilePicture" alt="profile-photo" draggable="false" />
+
+                <p class="account-name">
+                  {{ task.objector.name + " " + task.objector.surname }}
+                </p>
+              </div>
+
+              <p v-else>Neurčeno</p>
             </div>
           </div>
 
@@ -374,7 +375,7 @@ watchEffect((): void => {
             <div class="download-input">
               <div class="line">
                 <div class="input">
-                  {{ task.task }}
+                  {{ task.task || "Žádné zadání" }}
                 </div>
                 <div class="icon-div" @click="downloadMaterials">
                   <Icon class="icon" name="material-symbols:download"/>
@@ -385,19 +386,9 @@ watchEffect((): void => {
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Verze vypracování <span class="update" v-if="newVersionFile">(aktualizováno)</span></h3>
+              <h3>Verze vypracování</h3>
               <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
             </div>
-
-            <FileInput
-                ref="fileInput"
-                class="content"
-                v-model="newVersionFile"
-                :placeholder="'Klikni pro nahrání souboru z počítače'"
-                :max-size-m-b="2"
-                accept=".pdf,.docx,.odt,.gif,.html,.zip"
-                :title="newVersionFile ? newVersionFile.name : ''"
-            />
 
             <div class="versions" v-show="!versionsLoading && versionsCount > 0">
               <div class="download-input" v-for="version in versions" :key="version.idVersion">
@@ -406,15 +397,10 @@ watchEffect((): void => {
 
                   <div class="line">
                     <div class="input">
-                      <Loading class="loading" color="rgba(var(--description-color), 1)" size="6px" v-if="specificVersionLoading && specificVersionLoading.idVersion === version.idVersion && specificVersionLoading.loading" />
-
-                      <p v-else>{{ version.elaboration || "Odstraněno" }}</p>
+                      {{ version.elaboration || "Odstraněno" }}
                     </div>
                     <div class="icon-div" @click="downloadVersion(version)" v-if="version.elaboration">
                       <Icon class="icon" name="material-symbols:download"/>
-                    </div>
-                    <div class="icon-div" @click="removeVersion(version)" v-if="version.elaboration">
-                      <Icon class="icon" name="material-symbols:delete-rounded"/>
                     </div>
                   </div>
                 </div>
@@ -432,9 +418,22 @@ watchEffect((): void => {
             <Pagination :number-of-pages="versionsNumberOfPages" v-model="versionsActivePage" />
           </div>
 
+          <div class="page-section bottom-line" v-if="task.points">
+            <div class="section-head">
+              <h3>Počet bodů <span class="update" v-if="teamTaskData.points !== teamTaskPoints">(aktualizováno)</span></h3>
+              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+            </div>
+
+            <div class="content">
+              <label for="teamTaskPoints">{{ task.points ? `Maximální počet bodů: ${task.points}` : "Maximální počet bodů není určen." }}</label>
+              <NumberInput id="teamTaskPoints" placeholder="Zadejte počet bodů" v-model="teamTaskPoints" :min="0" :max="task.points || 0" :disabled="!task.points" @update:model-value="checkForErrors"  />
+              <p class="input-error" v-if="errors.points.length > 0">{{ errors.points }}</p>
+            </div>
+          </div>
+
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Komentář garanta</h3>
+              <h3>Komentář garanta <span class="update" v-if="guarantorComment && teamTaskData.review !== guarantorComment">(aktualizováno)</span></h3>
               <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
             </div>
 
@@ -444,20 +443,23 @@ watchEffect((): void => {
 
                 <div class="line">
                   <Editor
-                    v-model="guarantorComment"
-                    class="editor"
-                    :enable="true"
-                    :read-only="true"
-                    :enabled-tools="editorEnabledTools"
-                    placeholder=""
+                      v-model="guarantorComment"
+                      class="editor"
+                      :enable="isGuarantorCommentEnabled"
+                      placeholder="Zadejte komentář garanta"
+                      :enabled-tools="editorEnabledTools"
+                      @update:model-value="checkForErrors"
                   />
+                  <div class="icon-div" @click="toggleGuarantorCommentEnabled">
+                    <Icon class="icon" name="material-symbols:edit"/>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="page-section">
-            <ActionFooter :submit-function="uploadNewVersion" :reset-function="resetInputs" :is-loading="submitLoading" />
+            <ActionFooter :submit-function="updateTeam" :reset-function="resetInputs" :is-loading="submitLoading" />
           </div>
         </div>
       </div>
@@ -466,7 +468,7 @@ watchEffect((): void => {
 </template>
 
 <style scoped lang="scss">
-#team-task {
+#maturita-task {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -553,10 +555,6 @@ watchEffect((): void => {
           background: var(--input-background);
           color: var(--input-color);
           flex: 1;
-
-          .loading {
-            padding: 5px;
-          }
         }
 
         .icon-div {
@@ -736,20 +734,6 @@ watchEffect((): void => {
           background: var(--card-1-hover-background);
         }
       }
-    }
-  }
-}
-
-@media (max-width: 1200px) {
-  #task-assign {
-    flex-direction: column;
-    gap: 30px;
-
-    .page-navigation {
-      width: 100%;
-      position: relative;
-      top: 0;
-      min-width: 200px;
     }
   }
 }

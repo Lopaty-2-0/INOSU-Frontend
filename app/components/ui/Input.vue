@@ -11,7 +11,7 @@ const props = defineProps({
     default: "text",
   }
 });
-const emits = defineEmits(["update:modelValue"]);
+const emits = defineEmits(["update:modelValue", "change"]);
 
 const input = ref<number | string>(props.modelValue ?? "");
 
@@ -22,12 +22,17 @@ watch(() => props.modelValue, (newVal) => {
 watch(() => input.value, (newVal) => {
   emits("update:modelValue", newVal === "" ? null : newVal);
 });
+
+const handleChange = (): void => {
+  emits("change", input.value === "" ? null : input.value);
+};
 </script>
 
 <template>
   <input
     v-model="input"
     :type="props.type"
+    @change="handleChange"
   />
 </template>
 

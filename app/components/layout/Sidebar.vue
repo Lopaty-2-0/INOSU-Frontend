@@ -4,8 +4,10 @@ import {navigateTo, useFetch, useRoute, useState} from "nuxt/app";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
 import Loading from "~/components/ui/Loading.vue";
+import {useAlertsStore} from "~/stores/alerts";
 
 const route = useRoute();
+const alertStore = useAlertsStore();
 const { getLinks: accountLinks, getRole: role } = storeToRefs(useAccountStore());
 
 const getStyledNumber = (number: number): string => {
@@ -18,17 +20,17 @@ const loading = ref<boolean>(true);
 const logoutLoading = ref<boolean>(false);
 const numberOfActiveTasks = ref<number | null>(null);
 const sidebarLinks = computed<
-  {
-    name: string;
-    links: {
-      text: string;
-      href: string;
-      iconClass: string;
-      activeHrefs?: string[];
-      notify?: boolean | string;
-    }[];
-  }[]
->(() =>[
+    {
+      name: string;
+      links: {
+        text: string;
+        href: string;
+        iconClass: string;
+        activeHrefs?: string[];
+        notify?: boolean | string;
+      }[];
+    }[]
+>(() => [
   {
     name: "Hlavní",
     links: [
@@ -47,7 +49,11 @@ const sidebarLinks = computed<
           `/panel/tasks/${role.value}/remove`,
         ],
         iconClass: "material-symbols:folder-copy-rounded",
-        notify: !["admin", "teacher"].includes(role.value) ? numberOfActiveTasks.value !== null ? getStyledNumber(numberOfActiveTasks.value) : "?" : false,
+        notify: !["admin", "teacher"].includes(role.value)
+            ? numberOfActiveTasks.value !== null
+                ? getStyledNumber(numberOfActiveTasks.value)
+                : "?"
+            : false,
       },
       {
         text: "Zaměření",
@@ -83,8 +89,146 @@ const sidebarLinks = computed<
         iconClass: "material-symbols:supervisor-account-rounded",
         notify: false,
       },
+      {
+        text: "Chat",
+        href: "/panel/chat",
+        iconClass: "material-symbols:mark-chat-unread-rounded",
+        notify: false,
+      },
     ],
   },
+  {
+    name: "Maturita",
+    ...(role.value === "admin" || role.value === "teacher")
+    ?
+      {
+        links: [
+          {
+            text: "Maturity",
+            href: `/panel/maturita/${role.value}/grade`,
+            iconClass: "material-symbols:book-2-rounded",
+            notify: false,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/grade`,
+              `/panel/maturita/${role.value}/grade/add`,
+              `/panel/maturita/${role.value}/grade/remove`,
+            ],
+          },
+          {
+            text: "Zadání",
+            href: `/panel/maturita/${role.value}/tasks`,
+            iconClass: "material-symbols:folder-copy-rounded",
+            notify: false,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/tasks`,
+              `/panel/maturita/${role.value}/tasks/add`,
+              `/panel/maturita/${role.value}/tasks/remove`,
+            ],
+          },
+          {
+            text: "Oponentura",
+            href: `/panel/maturita/${role.value}/objector`,
+            iconClass: "material-symbols:search-rounded",
+            activeHrefs: [
+              `/panel/maturita/${role.value}/objector`,
+            ],
+            notify: false,
+          },
+          {
+            text: "Návrhy",
+            href: `/panel/maturita/${role.value}/proposals`,
+            iconClass: "material-symbols:lightbulb-rounded",
+            notify: false,
+          },
+          {
+            text: "Témata",
+            href: `/panel/maturita/${role.value}/topics`,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/topics`,
+              `/panel/maturita/${role.value}/topics/add`,
+              `/panel/maturita/${role.value}/topics/remove`,
+            ],
+            iconClass: "material-symbols:topic",
+            notify: false,
+          },
+          {
+            text: "Tabulky",
+            href: `/panel/maturita/${role.value}/tables`,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/tables`,
+              `/panel/maturita/${role.value}/tables/evaluators`,
+            ],
+            iconClass: "material-symbols:table-rows-rounded",
+            notify: false,
+          },
+        ],
+      }
+    :
+      {
+        links: [
+          {
+            text: "Zadání",
+            href: `/panel/maturita/${role.value}`,
+            iconClass: "material-symbols:folder-copy-rounded",
+            notify: false,
+          },
+          {
+            text: "Návrhy",
+            href: `/panel/maturita/${role.value}/proposals`,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/proposals`,
+              `/panel/maturita/${role.value}/proposals/add`,
+              `/panel/maturita/${role.value}/proposals/remove`,
+            ],
+            iconClass: "material-symbols:lightbulb-rounded",
+            notify: false,
+          },
+          {
+            text: "Témata",
+            href: `/panel/maturita/${role.value}/topics`,
+            iconClass: "material-symbols:topic",
+            notify: false,
+          },
+          {
+            text: "Chat",
+            href: `/panel/maturita/${role.value}/chat`,
+            iconClass: "material-symbols:chat-rounded",
+            notify: false,
+          },
+          {
+            text: "Tabulky",
+            href: `/panel/maturita/${role.value}/tables`,
+            activeHrefs: [
+              `/panel/maturita/${role.value}/tables`,
+              `/panel/maturita/${role.value}/tables/evaluators`,
+            ],
+            iconClass: "material-symbols:table-rows-rounded",
+            notify: false,
+          },
+        ],
+      }
+  },
+  ...(role.value === "admin")
+      ? [
+        {
+          name: "Data",
+          links: [
+            {
+              text: "Import",
+              href: "/panel/import",
+              iconClass: "material-symbols:upload-2-rounded",
+              notify: false,
+            },
+            {
+              text: "Export",
+              href: "/panel/export",
+              iconClass: "material-symbols:download-2-rounded",
+              notify: false,
+            },
+          ],
+        },
+      ]
+      : [],
   {
     name: "Ostatní",
     links: [
@@ -98,7 +242,7 @@ const sidebarLinks = computed<
         ],
         iconClass: "material-symbols:settings-rounded",
         notify: false,
-      }
+      },
     ],
   },
 ]);
@@ -122,7 +266,6 @@ const logOut = async (): Promise<void> => {
 
   await $fetch("/api/auth/logout", {
     method: "delete",
-    ignoreResponseError: true,
     credentials: "include",
     async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
@@ -132,13 +275,19 @@ const logOut = async (): Promise<void> => {
         await navigateTo("/login");
       }
     },
+    onResponseError() {
+      alertStore.addAlert({ type: "error", title: "Odhlášení", message: "Nastala neznámá chyba." });
+    },
+    onRequestError() {
+      alertStore.addAlert({ type: "error", title: "Odhlášení", message: "Nastala neznámá chyba." });
+    }
   }).finally((): void => {
     logoutLoading.value = false;
   });
 };
 
 if (!["admin", "teacher"].includes(role.value)) {
-  useFetch("/api/user_task/count/approved_without_review", {
+  useFetch("/api/user_team/count/tasks", {
     method: "get",
     server: false,
     credentials: "include",

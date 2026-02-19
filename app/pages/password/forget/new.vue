@@ -130,7 +130,7 @@ onMounted((): void => {
             id="email"
             name="email"
             placeholder="test@test.com"
-            v-model="email"
+            v-model.trim="email"
           />
           <p v-if="messages.email" class="error">{{ messages.email }}</p>
         </div>

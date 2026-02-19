@@ -19,8 +19,8 @@ const inputData = ref<{
 });
 
 const onInput = () => {
-  inputData.value.name.updated = inputData.value.name.input !== "" && inputData.value.name.input !== props.oldFullName?.name;
-  inputData.value.surname.updated = inputData.value.surname.input !== "" && inputData.value.surname.input !== props.oldFullName?.surname;
+  inputData.value.name.updated = inputData.value.name.input ? inputData.value.name.input !== props.oldFullName?.name : false;
+  inputData.value.surname.updated = inputData.value.surname.input ? inputData.value.surname.input !== props.oldFullName?.surname : false;
 
   const updateUserData: { name?: string | undefined, surname?: string | undefined } = {};
 
@@ -48,14 +48,14 @@ defineExpose({ reset });
       <div class="section">
         <div class="content">
           <label for="firstName">Jméno <span class="update" v-if="inputData.name.updated">(aktualizováno)</span></label>
-          <Input type="text" id="firstName" name="firstName" :placeholder="props.oldFullName?.name ? props.oldFullName?.name : 'Jan'" v-model="inputData.name.input" @input="onInput" />
+          <Input type="text" id="firstName" name="firstName" :placeholder="props.oldFullName?.name ? props.oldFullName?.name : 'Jan'" v-model.trim="inputData.name.input" @input="onInput" />
         </div>
       </div>
 
       <div class="section">
         <div class="content">
           <label for="secondName">Příjmení <span class="update" v-if="inputData.surname.updated">(aktualizováno)</span></label>
-          <Input type="text" id="secondName" name="secondName" :placeholder="props.oldFullName?.surname ? props.oldFullName?.surname : 'Novák'" v-model="inputData.surname.input" @input="onInput" />
+          <Input type="text" id="secondName" name="secondName" :placeholder="props.oldFullName?.surname ? props.oldFullName?.surname : 'Novák'" v-model.trim="inputData.surname.input" @input="onInput" />
         </div>
       </div>
     </div>

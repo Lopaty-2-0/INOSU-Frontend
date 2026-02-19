@@ -26,9 +26,7 @@ definePageMeta({
 const route = useRoute();
 const role = route.params.role as string;
 
-const accountStore = useAccountStore();
 const alertsStore = useAlertsStore();
-const { getId: userId } = storeToRefs(accountStore);
 const datatable = useTemplateRef<InstanceType<typeof TasksTable>>("datatable");
 const allTasks = ref<TaskData[] | undefined>(undefined);
 const searchInput = ref<string>("");
@@ -70,10 +68,11 @@ const removeTasks = async (): Promise<void> => {
   await $fetch("/api/task/delete", {
     method: "delete",
     body: {
-      idTask: selectedTaskIds.value,
+      id: selectedTaskIds.value
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode?.toString();
       const goodIds: number[] = response._data.data?.goodIds || [];
@@ -81,37 +80,39 @@ const removeTasks = async (): Promise<void> => {
 
       switch (resCode) {
         case "28010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Studenti nemohou mazat úkoly." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Studenti nemohou mazat úkoly." });
           break;
+
         case "28020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Chybí ID úkolu." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Chybí ID úkolu." });
           break;
+
         case "28031":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění úkolu", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: "Odstranění úkolů", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
           }
-
-          alertsStore.addAlert({ type: "success", title: "Odstranění úkolu", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
+          alertsStore.addAlert({ type: "success", title: "Odstranění úkolů", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
 
           tasksRefresh();
           resetSelectedTasks();
           break;
+
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění úkolu", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     loading.value = false;
   });
 };
 
-const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = useFetch("/api/task/get", {
+const { data: tasksData, error: tasksError, pending: tasksPending, refresh: tasksRefresh } = useFetch("/api/task/get/task", {
   query: {
-    idUser: userId,
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
     searchQuery: searchInput,
@@ -122,9 +123,10 @@ const { data: tasksData, error: tasksError, pending: tasksPending, refresh: task
   lazy: true
 });
 
-watchEffect((): void => {
+watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
     allTasks.value = [];
+    tasksCount.value = 0;
     return;
   }
 
@@ -132,7 +134,7 @@ watchEffect((): void => {
 
   allTasks.value = tasksData.value.data.tasks;
   tasksCount.value = tasksData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !allTasks.value && !tasksError.value);
@@ -152,8 +154,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allTasks">
-      <div id="tasks">
+    <template #content>
+      <div id="tasks" v-if="allTasks">
         <div class="content">
           <ActionBar
             class="action-bar"

@@ -47,7 +47,7 @@ const setEditLinkId = (index: number): void => {
   editLinkId.value = editLinkId.value === index ? null : index;
 };
 
-const addCustomLink = (): void => {
+const addCustomLink = (): any => {
   if (accountCustomLinks.value.length >= 5) {
     return useAlertsStore().addAlert({
       type: "warning",
@@ -121,7 +121,7 @@ defineExpose({ reset })
                 <h4>{{ link.text }}</h4>
                 <NuxtLink target="_blank" :to="link.href">{{ link.href }}</NuxtLink>
               </div>
-              <hr />
+              <div class="line"></div>
               <div class="content">
                 <div class="input">
                   <label :for="'text-input-' + index">Text</label>
@@ -130,7 +130,7 @@ defineExpose({ reset })
                     :id="'text-input-' + index"
                     name="linkText"
                     placeholder="YouTube"
-                    v-model="textInputValue[editLinkId!]"
+                    v-model.trim="textInputValue[editLinkId!]"
                     @input="onInput"
                   />
                 </div>
@@ -141,7 +141,7 @@ defineExpose({ reset })
                     :id="'url-input-' + index"
                     name="linkUrl"
                     placeholder="https://www.youtube.com/"
-                    v-model="hrefInputValue[editLinkId!]"
+                    v-model.trim="hrefInputValue[editLinkId!]"
                     @input="onInput"
                   />
                 </div>
@@ -238,7 +238,7 @@ defineExpose({ reset })
       width: 100%;
 
       &.open .link .body .content,
-      &.open .link .body hr {
+      &.open .link .body .line {
         display: flex;
       }
 
@@ -285,9 +285,11 @@ defineExpose({ reset })
             }
           }
 
-          hr {
+          .line {
             display: none;
-            border-color: rgba(var(--border-color), 0.5);
+            height: var(--border-width);
+            width: 100%;
+            background: rgba(var(--border-color), 0.5);
           }
 
           .content {

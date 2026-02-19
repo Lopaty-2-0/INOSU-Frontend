@@ -18,7 +18,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emits = defineEmits(["update:modelValue"]);
 
 const activePagesIndex = ref<number>(0);
 const pagesArray = ref<number[]>([]);
@@ -28,7 +28,7 @@ const modelIndex = () => Math.max(0, (props.modelValue ?? 1) - 1);
 const toModelValue = (index: number) => index + 1;
 
 const setActivePage = (index: number): void => {
-  emit("update:modelValue", toModelValue(index));
+  emits("update:modelValue", toModelValue(index));
 };
 
 const previousPage = (): void => {
@@ -37,7 +37,7 @@ const previousPage = (): void => {
   const firstIndex = navigationPages.value[activePagesIndex.value]?.[0];
 
   if (firstIndex !== undefined && modelIndex() > firstIndex && modelIndex() > 0) {
-    emit("update:modelValue", props.modelValue - 1);
+    emits("update:modelValue", props.modelValue - 1);
   } else if (activePagesIndex.value > 0) {
     navigationPagesPrevious();
   }
@@ -50,7 +50,7 @@ const nextPage = (): void => {
   const lastIndex = currentChunk?.[currentChunk.length - 1];
 
   if (lastIndex !== undefined && modelIndex() < lastIndex) {
-    emit("update:modelValue", props.modelValue + 1);
+    emits("update:modelValue", props.modelValue + 1);
   } else if (activePagesIndex.value < navigationPages.value.length - 1) {
     navigationPagesNext();
   }
@@ -60,7 +60,7 @@ const navigationPagesNext = (): void => {
   if (activePagesIndex.value < navigationPages.value.length - 1) {
     activePagesIndex.value++;
     const first = navigationPages.value[activePagesIndex.value]?.[0] ?? 0;
-    emit("update:modelValue", toModelValue(first));
+    emits("update:modelValue", toModelValue(first));
   }
 };
 
@@ -71,7 +71,7 @@ const navigationPagesPrevious = (): void => {
     const pages = navigationPages.value[activePagesIndex.value];
     const last = pages?.[pages.length - 1] ?? 0;
 
-    emit("update:modelValue", toModelValue(last));
+    emits("update:modelValue", toModelValue(last));
   }
 };
 
@@ -81,12 +81,12 @@ watch([() => props.numberOfPages, () => props.chunkSize], ([newCount, newChunk])
     navigationPages.value = useArrayChunks(pagesArray.value, newChunk);
 
     activePagesIndex.value = 0;
-    emit("update:modelValue", 1);
+    emits("update:modelValue", 1);
   } else {
     pagesArray.value = [];
     navigationPages.value = [];
     activePagesIndex.value = 0;
-    emit("update:modelValue", 1);
+    emits("update:modelValue", 1);
   }
 }, { immediate: true });
 </script>

@@ -4,7 +4,7 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import moment from "moment/moment";
 import type {TaskData} from "~/types/tasks";
-import {computed, ref, useTemplateRef, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watch, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
@@ -14,6 +14,8 @@ import type {AccountData} from "~/types/account";
 import Pagination from "~/components/ui/Pagination.vue";
 import UsersTable from "~/components/tables/Users.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -30,6 +32,8 @@ definePageMeta({
 
 const amountForUsersPaging: number = 5;
 const alertsStore = useAlertsStore();
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const usersDatatable = useTemplateRef<InstanceType<typeof UsersTable>>("usersDatatable");
 const task = ref<TaskData | undefined>(undefined);
 const submitLoading = ref<boolean>(false);
@@ -69,6 +73,9 @@ const assignToTask = async (): Promise<void> => {
     credentials: "include",
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
+      const goodIds: any[] = response._data.data?.goodIds || [];
+      const badIds: any[] = response._data.data?.badIds || [];
+      const differentTeam: any[] = response._data.data?.differentTeam || [];
 
       switch (resCode) {
         case "36010":
@@ -76,23 +83,35 @@ const assignToTask = async (): Promise<void> => {
         case "36040":
           alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je neplatné." });
           break;
+
         case "36020":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádný žák nebyla vybrán." });
+          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Nebyl vybrán žádný uživatel ani třída." });
           break;
+
         case "36050":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Zadaný úkol neexistuje." });
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Úkol neexistuje nebo nejste jeho garant." });
           break;
+
         case "36060":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Uživatel není garant úkolu." });
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Tento endpoint nelze použít pro maturitní úkol." });
           break;
+
         case "36070":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádnému žákovi nebyl přidělen tento úkol." });
+          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Nikomu nebyl úkol přiřazen." });
           break;
+
         case "36081":
-          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Úkol byl přidělen ${response._data.data.goodIds.length} žákům.` });
+          if (differentTeam.length > 0)
+            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Někteří uživatelé (${differentTeam.length}) již byli přiřazeni k jinému týmu.` });
+
+          if (badIds.length > 0)
+            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Některé položky (${badIds.length}) nebylo možné přiřadit.` });
+
+          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Úkol byl úspěšně přiřazen (${goodIds.length}).` });
 
           resetSelection();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala neznámá chyba." });
           break;
@@ -124,13 +143,15 @@ const onUsersRowClicked = (user: AccountData): void => {
   }
 };
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
 const { data: usersData, error: usersError, pending: usersPending } = useFetch(requestUrls, {
@@ -146,14 +167,18 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
   lazy: true
 });
 
-watchEffect((): void => {
-  if (taskError.value || !taskData.value) {
-    navigateTo(`/panel/tasks/${role}`);
+watch([taskData, taskError], (): void => {
+  if (taskError.value) {
+    task.value = undefined;
     return;
   }
 
-  task.value = taskData.value.data.task;
+  if (!taskData.value) return;
 
+  task.value = taskData.value.data.task;
+}, { immediate: true });
+
+watch([usersData, usersError], (): void => {
   if (usersError.value) {
     users.value = undefined;
     return;
@@ -163,10 +188,10 @@ watchEffect((): void => {
 
   users.value = usersData.value.data.users;
   usersCount.value = usersData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !users.value && !usersError.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !users.value && !usersError.value);
 });
 </script>
 
@@ -185,7 +210,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task">
+    <template #content>
       <div id="task-assign">
         <Navigation class="page-navigation" title="Přiřazení" :active-link-id="1" :links="[
           { name: 'Třídy', path: `/panel/tasks/${role}/${taskId}/assign` },
@@ -193,7 +218,7 @@ watchEffect((): void => {
           { name: 'Týmy', path: `/panel/tasks/${role}/${taskId}/assign/teams` },
         ]" />
 
-        <div class="content">
+        <div class="content" v-if="task">
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
@@ -205,8 +230,8 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
-                  {{ task.task }}
+                <a :href="task.task ? `/api/file/task/${task.guarantor.id}/${task.id}/${task.task}` : '#'" class="link" download target="_blank">
+                  {{ task.task || "Žádné zadání" }}
                 </a>
               </p>
             </div>

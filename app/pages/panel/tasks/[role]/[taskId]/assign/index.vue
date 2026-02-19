@@ -4,7 +4,7 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import moment from "moment/moment";
 import type {TaskData} from "~/types/tasks";
-import {computed, ref, watchEffect} from "vue";
+import {computed, ref, watch, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
@@ -13,6 +13,8 @@ import SearchInput from "~/components/ui/SearchInput.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import CardsGrid from "~/components/ui/CardsGrid.vue";
 import ActionFooter from "~/components/manage/Footer.vue";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -28,6 +30,8 @@ definePageMeta({
 });
 
 const alertsStore = useAlertsStore();
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const amountForPaging: number = 6;
 const task = ref<TaskData | undefined>(undefined);
 const allClasses = ref<ClassData[] | undefined>(undefined);
@@ -55,8 +59,8 @@ const resetSelection = (): void => {
 };
 
 const assignToTask = async (): Promise<void> => {
-  if (!selectedClasses.value) {
-    alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
+  if (!selectedClasses.value || selectedClasses.value.length === 0) {
+    alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nebyla vybrána žádná třída." });
     return;
   }
 
@@ -66,12 +70,15 @@ const assignToTask = async (): Promise<void> => {
     method: "post",
     body: {
       idTask: taskId,
-      idClass: selectedClasses.value.map((classData: ClassData) => classData.id)
+      idClass: selectedClasses.value.map((c: ClassData) => c.id),
     },
     ignoreResponseError: true,
     credentials: "include",
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode: string = response._data.resCode?.toString();
+      const goodIds: any[] = response._data.data?.goodIds || [];
+      const badIds: any[] = response._data.data?.badIds || [];
+      const differentTeam: any[] = response._data.data?.differentTeam || [];
 
       switch (resCode) {
         case "36010":
@@ -79,32 +86,45 @@ const assignToTask = async (): Promise<void> => {
         case "36040":
           alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je neplatné." });
           break;
+
         case "36020":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádná třída nebyla vybrána." });
+          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Nebyl vybrán žádný uživatel ani třída." });
           break;
+
         case "36050":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Zadaný úkol neexistuje." });
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Úkol neexistuje nebo nejste jeho garant." });
           break;
+
         case "36060":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Uživatel není garant úkolu." });
+          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Tento endpoint nelze použít pro maturitní úkol." });
           break;
+
         case "36070":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Žádnému žákovi nebyl přidělen tento úkol." });
+          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Nikomu nebyl úkol přiřazen." });
           break;
+
         case "36081":
-          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Úkol byl přidělen ${response._data.data.goodIds.length} žákům.` });
+          if (differentTeam.length > 0)
+            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Někteří uživatelé (${differentTeam.length}) již byli přiřazeni k jinému týmu.` });
+
+          if (badIds.length > 0)
+            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Některé položky (${badIds.length}) nebylo možné přiřadit.` });
+
+          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Úkol byl úspěšně přiřazen (${goodIds.length}).` });
 
           resetSelection();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala chyba při odesílání požadavku." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     submitLoading.value = false;
   });
 };
@@ -121,23 +141,29 @@ const { data: classesData, pending: classesPending, error: classesError } = useF
   lazy: true
 });
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true
 });
 
-watchEffect((): void => {
-  if (taskError.value || !taskData.value) {
-    navigateTo(`/panel/tasks/${role}`);
+watch([taskData, taskError], (): void => {
+  if (taskError.value) {
+    task.value = undefined;
     return;
   }
 
-  task.value = taskData.value.data.task;
+  if (!taskData.value) return;
 
+  task.value = taskData.value.data.task;
+}, { immediate: true });
+
+watch([classesData, classesError], (): void => {
   if (classesError.value) {
     allClasses.value = [];
     classesCount.value = 0;
@@ -148,7 +174,7 @@ watchEffect((): void => {
 
   allClasses.value = classesData.value.data.classes;
   classesCount.value = classesData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", !task.value);
@@ -170,7 +196,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task">
+    <template #content>
       <div id="task-assign">
         <Navigation class="page-navigation" title="Přiřazení" :active-link-id="0" :links="[
           { name: 'Třídy', path: `/panel/tasks/${role}/${taskId}/assign` },
@@ -178,7 +204,7 @@ watchEffect((): void => {
           { name: 'Týmy', path: `/panel/tasks/${role}/${taskId}/assign/teams` },
         ]" />
 
-        <div class="content">
+        <div class="content" v-if="task">
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
@@ -190,8 +216,8 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
-                  {{ task.task }}
+                <a :href="task.task ? `/api/file/task/${task.guarantor.id}/${task.id}/${task.task}` : '#'" class="link" download target="_blank">
+                  {{ task.task || "Žádné zadání" }}
                 </a>
               </p>
             </div>

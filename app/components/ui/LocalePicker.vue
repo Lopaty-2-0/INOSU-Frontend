@@ -18,7 +18,7 @@ const emits = defineEmits(["update:modelValue"]);
 
 const localeItems = computed<InputMenuItem[]>(() =>
     props.locales.map((l: LocaleObject) => ({
-      name: l.code,
+      value: l.code,
       label: l.code.toUpperCase() + " - " + l.name,
     }))
 );

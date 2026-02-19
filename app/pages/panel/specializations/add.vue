@@ -64,7 +64,11 @@ const resetInputs = (): void => {
 };
 
 const addSpecialization = async (): Promise<void> => {
-  if (!specializationData.value.name || specializationData.value.lengthOfStudy === null || !specializationData.value.abbreviation) {
+  if (
+      !specializationData.value.name ||
+      specializationData.value.lengthOfStudy === null ||
+      !specializationData.value.abbreviation
+  ) {
     alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
     return;
   }
@@ -85,54 +89,65 @@ const addSpecialization = async (): Promise<void> => {
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode = response?._data?.resCode?.toString();
 
       switch (resCode) {
         case "4010":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nemáte oprávnění k této akci." });
           break;
+
         case "4020":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia chybí." });
           break;
+
         case "4030":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření chybí." });
           break;
+
         case "4040":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření chybí." });
           break;
+
         case "4050":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být celé číslo." });
           break;
+
         case "4060":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia je moc velká." });
+          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být kladné číslo v povoleném rozsahu." });
           break;
+
         case "4070":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je příliš dlouhá." });
           break;
+
         case "4080":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je již používána." });
           break;
+
         case "4090":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je příliš dlouhý." });
           break;
+
         case "4100":
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je již používán." });
           break;
+
         case "4111":
           alertsStore.addAlert({ type: "success", title: "Přidání zaměření", message: "Zaměření bylo úspěšně vytvořeno." });
-
           resetInputs();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nastala neznámá chyba." });
-          break;
       }
     },
+
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     loading.value = false;
   });
 };
@@ -152,7 +167,7 @@ const addSpecialization = async (): Promise<void> => {
     </template>
 
     <template #content>
-      <div id="specializations">
+      <div id="topics">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -179,7 +194,7 @@ const addSpecialization = async (): Promise<void> => {
 
               <div class="content">
                 <label for="name">Název</label>
-                <Input type="text" id="name" placeholder="Informační technologie" v-model="specializationData.name" @input="checkForErrors" />
+                <Input type="text" id="name" placeholder="Informační technologie" v-model.trim="specializationData.name" @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.name.length > 0">{{ errors.name }}</p>
               </div>
@@ -193,7 +208,7 @@ const addSpecialization = async (): Promise<void> => {
 
               <div class="content">
                 <label for="abbreviation">Zkratka</label>
-                <Input type="text" id="abbreviation" placeholder="V" v-model="specializationData.abbreviation " @input="checkForErrors" />
+                <Input type="text" id="abbreviation" placeholder="V" v-model.trim="specializationData.abbreviation " @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.abbreviation.length > 0">{{ errors.abbreviation }}</p>
               </div>
@@ -230,7 +245,7 @@ const addSpecialization = async (): Promise<void> => {
 </template>
 
 <style lang="scss" scoped>
-#specializations {
+#topics {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -414,7 +429,7 @@ const addSpecialization = async (): Promise<void> => {
 }
 
 @media (max-width: 1055px) {
-  #specializations {
+  #topics {
     flex-direction: column;
     gap: 30px;
   }

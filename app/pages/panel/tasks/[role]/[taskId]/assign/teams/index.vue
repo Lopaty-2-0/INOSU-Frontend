@@ -4,7 +4,7 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import moment from "moment/moment";
 import type {TaskData} from "~/types/tasks";
-import {computed, ref, useTemplateRef, watchEffect} from "vue";
+import {computed, ref, useTemplateRef, watch, watchEffect} from "vue";
 import {navigateTo, useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 import { useAlertsStore } from "~/stores/alerts";
@@ -14,6 +14,8 @@ import SearchInput from "~/components/ui/SearchInput.vue";
 import type {TaskTeam} from "~/types/team";
 import Input from "~/components/ui/Input.vue";
 import Loading from "~/components/ui/Loading.vue";
+import {useAccountStore} from "~/stores/account";
+import {storeToRefs} from "pinia";
 
 const route = useRoute();
 const role = route.params.role as string;
@@ -30,6 +32,8 @@ definePageMeta({
 
 const amountOfTeamsForPaging: number = 5;
 const alertsStore = useAlertsStore();
+const accountStore = useAccountStore();
+const { getAccountData: accountData } = storeToRefs(accountStore);
 const taskTeamsDatatable = useTemplateRef<InstanceType<typeof TaskTeamsTable>>("taskTeamsDatatable");
 const task = ref<TaskData | undefined>(undefined);
 const createTeamInput = ref<string>("");
@@ -64,45 +68,55 @@ const createTeam = async (): Promise<void> => {
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode: string = response._data.resCode?.toString();
 
       switch (resCode) {
-        case "30010":
-        case "30020":
-        case "30030":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "ID úkolu je neplatné." });
-          break;
-        case "36020":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Žádný žák nebyla vybrán." });
-          break;
-        case "30040":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Zadaný úkol neexistuje." });
-          break;
-        case "30050":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Uživatel není garant úkolu." });
-          break;
-        case "30060":
-          alertsStore.addAlert({ type: "warning", title: "Vytvoření týmu", message: "Název týmu je příliš dlouhý (max. 255 znaků)." });
-          break;
-        case "30070":
-          alertsStore.addAlert({ type: "warning", title: "Vytvoření týmu", message: "Tým se stejným názvem již existuje." });
-          break;
         case "30081":
-          alertsStore.addAlert({ type: "success", title: "Vytvoření týmu", message: `Tým byl úspěšně vytvořen.` });
-
+          alertsStore.addAlert({ type: "success", title: "Vytvoření týmu", message: "Tým byl úspěšně vytvořen." });
           createTeamInput.value = "";
           teamsRefresh();
           break;
+
+        case "30010":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "ID úkolu nebylo zadáno." });
+          break;
+
+        case "30020":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "ID úkolu musí být číslo." });
+          break;
+
+        case "30030":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "ID úkolu není platné." });
+          break;
+
+        case "30040":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "K tomuto typu úkolu nelze přidat tým." });
+          break;
+
+        case "30050":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Zadaný úkol neexistuje nebo nejste jeho garant." });
+          break;
+
+        case "30060":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Název týmu je příliš dlouhý." });
+          break;
+
+        case "30070":
+          alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Tým s tímto názvem již existuje." });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Vytvoření týmu", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     creatingTeamLoading.value = false;
   });
 };
@@ -113,18 +127,21 @@ const onTeamsSearchInputChange = (input: string): void => {
   teamSearchInput.value = input;
 };
 
-const { data: taskData, error: taskError } = await useFetch("/api/task/get/id", {
+const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
   query: {
-    idTask: taskId,
+    id: taskId,
+    guarantor: accountData.value.id,
   },
   method: "get",
   server: true,
   credentials: "include",
+  lazy: true,
 });
 
 const { data: teamsData, error: teamsError, pending: teamsPending, refresh: teamsRefresh } = useFetch("/api/team/get/teams", {
   query: {
     idTask: taskId,
+    guarantor: accountData.value.id,
     amountForPaging: amountOfTeamsForPaging,
     pageNumber: currentTeamsPage,
     searchQuery: teamSearchInput,
@@ -135,26 +152,32 @@ const { data: teamsData, error: teamsError, pending: teamsPending, refresh: team
   credentials: "include",
 });
 
-watchEffect((): void => {
-  if (taskError.value || !taskData.value) {
+watch([taskData, taskError], (): void => {
+  if (taskError.value) {
     navigateTo(`/panel/tasks/${role}`);
     return;
   }
 
-  task.value = taskData.value.data.task;
+  if (!taskData.value) return;
 
-  if (teamsError.value || !teamsData.value) {
+  task.value = taskData.value.data.task;
+}, { immediate: true });
+
+watch([teamsData, teamsError], (): void => {
+  if (teamsError.value) {
     teams.value = [];
     teamsCount.value = 0;
     return;
   }
 
+  if (!teamsData.value) return;
+
   teams.value = teamsData.value.data.teams;
   teamsCount.value = teamsData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value && !teamsData.value && !teamsError.value);
+  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teamsData.value && !teamsError.value);
 });
 </script>
 
@@ -173,7 +196,7 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="task">
+    <template #content>
       <div id="task-assign">
         <Navigation class="page-navigation" title="Přiřazení" :active-link-id="2" :links="[
           { name: 'Třídy', path: `/panel/tasks/${role}/${taskId}/assign` },
@@ -181,7 +204,7 @@ watchEffect((): void => {
           { name: 'Týmy', path: `/panel/tasks/${role}/${taskId}/assign/teams` },
         ]" />
 
-        <div class="content">
+        <div class="content" v-if="task">
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
@@ -193,8 +216,8 @@ watchEffect((): void => {
               <p>Max bodů: {{ task.points || "neurčeno" }}</p>
               <p>
                 Zadání:
-                <a :href="`/api/file/task/${task.id}/${task.task}`" class="link" download target="_blank">
-                  {{ task.task }}
+                <a :href="task.task ? `/api/file/task/${task.guarantor.id}/${task.id}/${task.task}` : '#'" class="link" download target="_blank">
+                  {{ task.task || "Žádné zadání" }}
                 </a>
               </p>
             </div>

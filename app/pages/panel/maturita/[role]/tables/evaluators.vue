@@ -1,0 +1,279 @@
+<script setup lang="ts">
+import {computed, ref, watchEffect} from "vue";
+import Navbar from "~/components/layout/Navbar.vue";
+import {useLoadingStore} from "~/stores/loading";
+import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import Pagination from "~/components/ui/Pagination.vue";
+import type {MaturitaData} from "~/types/maturita";
+import moment from "moment/moment";
+import Navigation from "~/components/ui/Navigation.vue";
+import UsersTable from "~/components/tables/Users.vue";
+import type {AccountData} from "~/types/account";
+
+useHead({
+  title: "Panel | Návrhy maturitních zadání",
+  meta: [{ name: "description", content: "Panel Homepage" }],
+});
+
+const route = useRoute();
+const role = route.params.role as string;
+
+const maturitaNotExists = ref<boolean | undefined>(undefined);
+const currentMaturita = ref<MaturitaData | undefined>(undefined);
+const allRows = ref<AccountData[] | undefined>(undefined);
+const currentPage = ref<number>(1);
+const amountForPaging: number = 10;
+const rowsCount = ref<number>(0);
+const numberOfPages = computed<number>((): number => {
+  return Math.ceil(rowsCount.value / amountForPaging);
+});
+
+const { data: tableData, error: tableError, pending: tablePending } = useFetch("/api/evaluator/get/current", {
+  query: {
+    amountForPaging: amountForPaging,
+    pageNumber: currentPage,
+  },
+  method: "get",
+  server: true,
+  credentials: "include",
+  lazy: true
+});
+
+const { data: maturitaData, error: maturitaError } = useFetch("/api/maturita/get/current", {
+  method: "get",
+  server: true,
+  credentials: "include",
+  lazy: true
+});
+
+watch([tableData, tableError], (): void => {
+  if (tableError.value) {
+    allRows.value = [];
+    rowsCount.value = 0;
+    return;
+  }
+
+  if (!tableData.value) return;
+
+  allRows.value = tableData.value.data.evaluators;
+  rowsCount.value = tableData.value.data.count;
+}, { immediate: true });
+
+watch([maturitaData, maturitaError], (): void => {
+  if (maturitaError.value) {
+    currentMaturita.value = undefined;
+    maturitaNotExists.value = true;
+    return;
+  }
+
+  if (!maturitaData.value) return;
+
+  currentMaturita.value = maturitaData.value.data.maturita;
+}, { immediate: true });
+
+watchEffect((): void => {
+  useLoadingStore().setLoading("dataLoading", !allRows.value && !tableData.value || !currentMaturita.value && !maturitaError.value);
+});
+</script>
+
+<template>
+  <NuxtLayout name="panel">
+    <template #header>
+      <Navbar>
+        <template #left>
+          <Breadcrumb :items="[
+            { label: 'Maturity', to: `/panel/maturita/${role}/tables`, icon: 'material-symbols:table-rows-rounded' },
+            { label: 'Tabulky', to: `/panel/maturita/${role}/tables` },
+            { label: 'Hodnotitelé', to: `/panel/maturita/${role}/tables/evaluators`, active: true },
+          ]"/>
+        </template>
+      </Navbar>
+    </template>
+
+    <template #content>
+      <div id="maturita-table" v-if="maturitaNotExists !== undefined && (maturitaNotExists)">
+        <div class="content">
+          <div class="page-section">
+            <div class="section-head">
+              <h3>Maturitní zadání</h3>
+              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+            </div>
+
+            <p class="error message">Žádný maturitní období more.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="maturita-table" v-else-if="allRows && currentMaturita">
+        <Navigation class="navigation" title="Tabulky" :active-link-id="1" :links="[
+          { name: 'Maturitní zadání', path: `/panel/maturita/${role}/tables` },
+          { name: 'Hodnotitelé', path: `/panel/maturita/${role}/tables/evaluators` },
+        ]" />
+
+        <div class="content">
+          <div class="section-head bottom-line">
+            <h3>Tabulka maturitních hodnotitelů</h3>
+            <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+            <br>
+            <p>Ročník: {{ currentMaturita.grade }}</p>
+            <p>Konec: {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+          </div>
+
+          <UsersTable :role="role" class="datatable" :users="allRows" :loading="tablePending" />
+
+          <Pagination v-model="currentPage" :number-of-pages="numberOfPages" />
+        </div>
+      </div>
+    </template>
+  </NuxtLayout>
+</template>
+
+<style lang="scss" scoped>
+#maturita-table {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  position: relative;
+
+  .message {
+    font-size: 16px;
+    color: rgba(var(--description-color), 1);
+
+    &.error {
+      color: rgba(var(--error-color), 1);
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+
+    button {
+      padding: 10px 15px;
+      border-radius: var(--small-border-radius);
+      transition: 0.2s;
+      font-size: 16px;
+      background: var(--btn-2-background);
+      color: var(--btn-2-color);
+      border: var(--border-width) solid rgba(var(--border-color), 0.5);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      &:hover {
+        background: var(--btn-2-hover-background);
+      }
+
+      &.rejected {
+        color: var(--actionBar-actions-remove-color);
+        background: rgba(var(--actionBar-actions-remove-background), 1);
+        border-color: rgba(var(--actionBar-actions-remove-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-remove-background), 0.8);
+        }
+      }
+
+      &.approved {
+        color: var(--actionBar-actions-add-color);
+        background: rgba(var(--actionBar-actions-add-background), 1);
+        border-color: rgba(var(--actionBar-actions-add-border), 1);
+
+        &:hover {
+          background: rgba(var(--actionBar-actions-add-background), 0.8);
+        }
+      }
+
+      &.primary {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        background: var(--btn-1-background);
+        color: var(--btn-1-color);
+
+        &:hover {
+          background: var(--btn-1-hover-background);
+        }
+      }
+    }
+  }
+
+  .navigation {
+    height: fit-content;
+    position: sticky;
+    top: 110px;
+    min-width: 300px;
+    padding: 30px;
+  }
+
+  .content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    position: relative;
+    overflow-x: auto;
+
+    .line {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 30px;
+      width: 100%;
+      flex: 1;
+    }
+
+    .error {
+      color: rgba(var(--error-color), 1);
+      font-size: 16px;
+    }
+
+    .page-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      &.bottom-line {
+        padding-bottom: 35px;
+        border-bottom: 1px solid rgba(var(--border-color), 0.5);
+      }
+    }
+
+    .section-head {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      h3 {
+        font-weight: 600;
+        font-size: 20px;
+        color: var(--title-color);
+      }
+
+      p {
+        color: rgba(var(--description-color), 1);
+        font-size: 16px;
+      }
+
+      .update {
+        color: rgba(var(--error-color), 1);
+      }
+    }
+  }
+}
+
+@media (max-width: 1055px) {
+  #maturita-table {
+    flex-direction: column;
+    gap: 30px;
+  }
+}
+</style>

@@ -57,42 +57,48 @@ const removeSpecializations = async (): Promise<void> => {
   await $fetch("/api/specialization/delete", {
     method: "delete",
     body: {
-      idSpecialization: selectedSpecializationIds.value,
+      id: selectedSpecializationIds.value,
     },
     ignoreResponseError: true,
     credentials: "include",
+
     onResponse({ response }: any) {
-      const resCode: string = response._data.resCode.toString();
+      const resCode = response?._data?.resCode?.toString();
+      const data = response?._data?.data;
 
       switch (resCode) {
         case "5010":
           alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nemáte oprávnění k této akci." });
           break;
+
         case "5020":
           alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Chybí ID zaměření." });
           break;
-        case "5030":
-          alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Neproběhlo žádné odstranění." });
-          break;
-        case "5041":
-          if ((response._data.data.classIds || []).length >= 1) {
-            alertsStore.addAlert({type: "warning", title: "Odstranění zaměření", message: `Některé zaměření nebyly odstraněny. Tyto zaměření používají některé třídy: ${response._data.data.classIds.join(", ")}`});
-          } else {
-            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byly úspěšně odstraněny. (${response._data.data.goodIds.length})`});
-          }
 
+        case "5030":
+          alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Nepodařilo se odstranit žádné zaměření." });
+          break;
+
+        case "5041":
+          if ((data?.badIds || []).length > 0) {
+            alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: `Některá zaměření nebyla odstraněna. Neplatná ID: ${data.badIds.join(", ")}.` });
+          } else {
+            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byla úspěšně odstraněna. (${data?.goodIds?.length ?? 0})` });
+          }
           specializationRefresh();
           resetSelectedSpecializations();
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nastala neznámá chyba." });
           break;
       }
     },
+
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nastala neznámá chyba." });
     },
-  }).finally((): void => {
+  }).finally(() => {
     loading.value = false;
   });
 };
@@ -115,7 +121,7 @@ const { data: specializationData, pending: specializationTablePending, error: sp
   lazy: true
 });
 
-watchEffect((): void => {
+watch([specializationData, specializationError], (): void => {
   if (specializationError.value) {
     allSpecializations.value = [];
     specializationsCount.value = 0;
@@ -126,7 +132,7 @@ watchEffect((): void => {
 
   allSpecializations.value = specializationData.value.data.specializations;
   specializationsCount.value = specializationData.value.data.count;
-});
+}, { immediate: true });
 
 watchEffect((): void => {
   useLoadingStore().setLoading("dataLoading", specializationData.value === undefined);
@@ -146,8 +152,8 @@ watchEffect((): void => {
       </Navbar>
     </template>
 
-    <template #content v-if="allSpecializations">
-      <div id="specializations">
+    <template #content>
+      <div id="topics" v-if="allSpecializations">
         <div class="content">
           <ActionBar
             class="action-bar"
@@ -198,7 +204,7 @@ watchEffect((): void => {
 </template>
 
 <style lang="scss" scoped>
-#specializations {
+#topics {
   display: flex;
   flex-direction: row;
   gap: 30px;
@@ -302,7 +308,7 @@ watchEffect((): void => {
 }
 
 @media (max-width: 1055px) {
-  #specializations {
+  #topics {
     flex-direction: column;
     gap: 30px;
   }

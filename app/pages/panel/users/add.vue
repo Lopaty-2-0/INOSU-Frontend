@@ -1,19 +1,15 @@
 <script lang="ts" setup>
 import EditFormFooter from "~/components/manage/Footer.vue";
 import Navbar from "~/components/layout/Navbar.vue";
-import {ref, computed, watchEffect, useTemplateRef} from "vue";
+import {ref, computed, useTemplateRef} from "vue";
 import EditFullName from "../../../components/manage/FullName.vue";
 import EditEmail from "../../../components/manage/Email.vue";
 import EditPassword from "../../../components/manage/Password.vue";
 import EditRole from "../../../components/manage/Role.vue";
 import EditAbbreviation from "../../../components/manage/Abbreviation.vue";
 import EditClass from "../../../components/manage/Class.vue";
-import type {ClassData} from "~/types/classes";
 import {useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
-import {useFetch} from "nuxt/app";
-import {useLoadingStore} from "~/stores/loading";
-import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 
 definePageMeta({
   roles: ["admin"],

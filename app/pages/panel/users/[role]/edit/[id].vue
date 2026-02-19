@@ -8,13 +8,14 @@ import EditPassword from "~/components/manage/Password.vue";
 import EditRole from "~/components/manage/Role.vue";
 import EditAbbreviation from "~/components/manage/Abbreviation.vue";
 import EditClass from "~/components/manage/Class.vue";
-import {useAlertsStore} from "~/stores/alerts";
+import {type Alert, useAlertsStore} from "~/stores/alerts";
 import {useRoute, useRouter} from "#app";
 import type {AccountData} from "~/types/account";
 import EditProfilePicture from "~/components/manage/ProfilePicture.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useLoadingStore} from "~/stores/loading";
 import {useFetch} from "nuxt/app";
+import {useUpload} from "~/componsables/useUploader";
 
 definePageMeta({
   roles: ["admin"],
@@ -32,7 +33,9 @@ useHead({
   ],
 });
 
+const config = useRuntimeConfig();
 const alertsStore = useAlertsStore();
+const { progress, upload } = useUpload();
 const submitLoading = ref<boolean>(false);
 const editProfilePicture = useTemplateRef<InstanceType<typeof EditProfilePicture>>("editProfilePicture");
 const editFullName = useTemplateRef<InstanceType<typeof EditFullName>>("editFullName");
@@ -54,7 +57,7 @@ const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string,
   role: "",
   classes: [],
 });
-const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[]}>({
+const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[] | undefined}>({
   profilePicture: undefined,
   name: undefined,
   surname: undefined,
@@ -62,7 +65,7 @@ const newUserData = ref<{ profilePicture: File | undefined; name: string | undef
   password: undefined,
   abbreviation: undefined,
   role: undefined,
-  classes: [],
+  classes: undefined,
 });
 
 const onFullNameUpdate = (fullName: { name: string | undefined, surname: string | undefined }): void => {
@@ -111,79 +114,150 @@ const resetUserData = (): void => {
     password: undefined,
     abbreviation: undefined,
     role: undefined,
-    classes: [],
+    classes: undefined,
   };
 };
 
 const updateUser = async (): Promise<void> => {
   submitLoading.value = true;
 
-  const updateUserForm: FormData = new FormData();
-
-  if (newUserData.value.profilePicture) updateUserForm.append("profilePicture", newUserData.value.profilePicture);
-  if (newUserData.value.name) updateUserForm.append("name", newUserData.value.name);
-  if (newUserData.value.surname) updateUserForm.append("surname", newUserData.value.surname);
-  if (newUserData.value.email) updateUserForm.append("email", newUserData.value.email);
-  if (newUserData.value.abbreviation) updateUserForm.append("abbreviation", newUserData.value.abbreviation);
-  if (newUserData.value.role) updateUserForm.append("role", newUserData.value.role);
-  if (newUserData.value.classes) updateUserForm.append("idClass", JSON.stringify(newUserData.value.classes));
-  updateUserForm.append("idUser", id);
-
   await $fetch("/api/user/update", {
     method: "PUT",
-    body: updateUserForm,
+    body: {
+      idUser: id,
+      profilePicture: newUserData.value.profilePicture ? newUserData.value.profilePicture.name : undefined,
+      size: newUserData.value.profilePicture ? newUserData.value.profilePicture.size : undefined,
+      name: newUserData.value.name,
+      surname: newUserData.value.surname,
+      email: newUserData.value.email,
+      abbreviation: newUserData.value.abbreviation,
+      role: newUserData.value.role,
+      idClass: newUserData.value.classes ? JSON.stringify(newUserData.value.classes) : undefined,
+    },
     credentials: "include",
     ignoreResponseError: true,
     async onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
+      const data: any = response._data.data;
 
       switch (resCode) {
-        case "2050":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nemáte oprávnění k této akci." });
+        case "F15020":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nahraný soubor je příliš velký." });
           break;
-        case "2060":
-        case "2070":
-        case "2080":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatné ID uživatele." });
+        case "2010":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nebylo zadáno nic k úpravě." });
           break;
-        case "2090":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Jméno je příliš dlouhé." });
-          break;
-        case "2100":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Příjmení je příliš dlouhé." });
-          break;
-        case "2110":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je již používána." });
-          break;
-        case "2120":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je příliš dlouhá." });
-          break;
-        case "2130":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát e-mailu." });
-          break;
-        case "2140":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je již používán." });
-          break;
-        case "2150":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je příliš dlouhý." });
-          break;
-        case "2160":
+        case "2020":
           alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát souboru." });
           break;
-        case "2170":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Soubor je příliš veliký." });
-          break;
-        case "2181":
+        case "2031":
           alertsStore.addAlert({ type: "success", title: "Úprava uživatele", message: "Uživatel byl úspěšně upraven." });
+          await refreshUser();
+          resetUserData();
+          break;
+        case "2040":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nemáte oprávnění k této akci." });
+          break;
+        case "2050":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "ID uživatele není číslo." });
+          break;
+        case "2060":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "ID uživatele není platné." });
+          break;
+        case "2070":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Uživatel nebyl nalezen." });
+          break;
+        case "2080":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Jméno je příliš dlouhé." });
+          break;
+        case "2090":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Příjmení je příliš dlouhé." });
+          break;
+        case "2100":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je již používána." });
+          break;
+        case "2110":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je příliš dlouhá." });
+          break;
+        case "2120":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát e-mailu." });
+          break;
+        case "2130":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je již používán." });
+          break;
+        case "2140":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je příliš dlouhý." });
+          break;
+        case "2150":
+          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát souboru." });
+          break;
+        case "2161":
+          if (data.uploadUrl && newUserData.value.profilePicture) {
+            const alert: Alert = {
+              title: "Nahrávání souboru",
+              message: "Probíhá nahrávání souboru...",
+              type: "info",
+              infinite: true,
+              canClose: false,
+              progress: progress
+            };
 
+            const alertIndex: number = alertsStore.addAlert(alert);
+
+            upload(newUserData.value.profilePicture, data.uploadUrl).then(async (): Promise<void> => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Soubor byl úspěšně nahrán.",
+                type: "success"
+              });
+
+              await $fetch("/api/user/put/pfp", {
+                method: "PUT",
+                body: {
+                  idUser: id,
+                  profilePicture: data.user.profilePicture,
+                },
+                credentials: "include",
+                ignoreResponseError: true,
+                async onResponse({ response }: any) {
+                  const resCode: string = response._data.resCode.toString();
+
+                  switch (resCode) {
+                    case "57070":
+                      alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Soubor nebyl nalezen na úložišti." });
+                      return;
+                    case "57081":
+                      oldUserData.value.profilePicture = data.user.profilePicture;
+                      newUserData.value.profilePicture = undefined;
+                      await refreshUser();
+                      resetUserData();
+                      break;
+                    default:
+                      alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nastala neznámá chyba při ukládání." });
+                      break;
+                  }
+                },
+              });
+            }).catch((): void => {
+              alertsStore.removeAlert(alertIndex);
+              alertsStore.addAlert({
+                title: "Nahrávání souboru",
+                message: "Nastala chyba při nahrávání souboru.",
+                type: "error"
+              });
+            });
+          }
+
+          alertsStore.addAlert({ type: "success", title: "Úprava uživatele", message: "Uživatel byl úspěšně upraven." });
           if (newUserData.value.name) oldUserData.value.name = newUserData.value.name;
           if (newUserData.value.surname) oldUserData.value.surname = newUserData.value.surname;
           if (newUserData.value.email) oldUserData.value.email = newUserData.value.email;
           if (newUserData.value.abbreviation) oldUserData.value.abbreviation = newUserData.value.abbreviation;
           if (newUserData.value.role) oldUserData.value.role = newUserData.value.role;
-          if (newUserData.value.profilePicture) oldUserData.value.profilePicture = URL.createObjectURL(newUserData.value.profilePicture);
-          oldUserData.value.classes = newUserData.value.classes;
+          if (newUserData.value.classes) oldUserData.value.classes = newUserData.value.classes;
 
+          await refreshUser();
           resetUserData();
           break;
         default:
@@ -199,7 +273,7 @@ const updateUser = async (): Promise<void> => {
   });
 };
 
-const { data: userData, error: userError } = useFetch("/api/user/get/id", {
+const { data: userData, error: userError, refresh: refreshUser } = useFetch("/api/user/get/id", {
   query: {
     id: id,
   },
@@ -209,11 +283,13 @@ const { data: userData, error: userError } = useFetch("/api/user/get/id", {
   lazy: true
 });
 
-watch([userData, userError], (): void => {
-  if (userError.value || !userData.value) {
-    router.push(`/panel/users/${role}/edit`);
+watch([userData, userError], async (): Promise<void> => {
+  if (userError.value) {
+    router.push(`/panel/users/${role}`);
     return;
   }
+
+  if (!userData.value) return;
 
   const user: AccountData = userData.value.data.user;
 
@@ -224,8 +300,7 @@ watch([userData, userError], (): void => {
   oldUserData.value.abbreviation = user.abbreviation || "";
   oldUserData.value.role = user.role;
   oldUserData.value.classes = user.idClass;
-  newUserData.value.classes = user.idClass;
-  oldUserData.value.profilePicture = "/api/file/pfp/" + user.profilePicture;
+  oldUserData.value.profilePicture = config.public.originUrl + "/api/file/pfp/" + user.profilePicture;
   oldUserData.value.loaded = true;
 }, { immediate: true });
 
@@ -250,7 +325,7 @@ watchEffect((): void => {
     </template>
 
     <template #content>
-      <div id="settings">
+      <div id="settings" v-if="oldUserData.loaded">
         <div class="content">
           <div class="line page-section no-border">
             <EditProfilePicture ref="editProfilePicture" class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate">

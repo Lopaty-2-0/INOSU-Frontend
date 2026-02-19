@@ -35,7 +35,7 @@ watch(() => searchInput.value, (newValue: string) => {
 
 <template>
   <div class="search" :class="{ disabled: props.disabled }">
-    <Input type="text" name="searchInput" :placeholder="props.placeholder" v-model="searchInput" :disabled="props.disabled" @change="onChange" />
+    <Input type="text" name="searchInput" :placeholder="props.placeholder" v-model.trim="searchInput" :disabled="props.disabled" @change="onChange" />
 
     <Icon class="icon" :name="props.icon"></Icon>
   </div>
