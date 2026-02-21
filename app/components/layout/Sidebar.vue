@@ -56,6 +56,18 @@ const sidebarLinks = computed<
             : false,
       },
       {
+        text: "Kalendář",
+        href: "/panel/calendar",
+        iconClass: "material-symbols:calendar-month-rounded",
+        notify: false,
+      },
+      {
+        text: "Chat",
+        href: "/panel/chat",
+        iconClass: "material-symbols:mark-chat-unread-rounded",
+        notify: false,
+      },
+      {
         text: "Zaměření",
         href: "/panel/specializations",
         activeHrefs: [
@@ -87,12 +99,6 @@ const sidebarLinks = computed<
           "/panel/users/edit",
         ],
         iconClass: "material-symbols:supervisor-account-rounded",
-        notify: false,
-      },
-      {
-        text: "Chat",
-        href: "/panel/chat",
-        iconClass: "material-symbols:mark-chat-unread-rounded",
         notify: false,
       },
     ],

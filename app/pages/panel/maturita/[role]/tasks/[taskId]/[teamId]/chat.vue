@@ -268,7 +268,7 @@ watchEffect((): void => {
   flex-direction: column;
   gap: 30px;
   position: relative;
-  height: calc(100vh - 140px);
+  height: calc(100svh - 140px);
 
   .page-navigation {
     height: fit-content;

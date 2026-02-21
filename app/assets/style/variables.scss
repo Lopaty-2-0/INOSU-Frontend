@@ -61,6 +61,18 @@
   --actionBar-actions-edit-border: 21, 23, 162;
   --actionBar-actions-edit-background: 21, 23, 162;
 
+  /* Calendar event types */
+  --calendar-event-default-dot: #6B6B6F;
+  --calendar-event-default: #e6e6e6;
+  --calendar-event-task-dot: #1517A2;
+  --calendar-event-task: #1517A2;
+  --calendar-event-maturita-dot: #FF220C;
+  --calendar-event-maturita: #FF220C;
+  --calendar-event-byOther-dot: #4D8B31;
+  --calendar-event-byOther: #4D8B31;
+  --calendar-event-own-dot: #F75C03;
+  --calendar-event-own: #F75C03;
+
   /* Status colors */
   --error-color: 255, 34, 12;
   --success-color: 77, 139, 49;
@@ -139,6 +151,18 @@
 
   --sidebar-notification-background: rgba(var(--warning-color), 1);
   --sidebar-notification-color: #000000;
+
+  /* Calendar event types */
+  --calendar-event-default-dot: #bfbfc3;
+  --calendar-event-default: #34384a;
+  --calendar-event-task-dot: #838eff;
+  --calendar-event-task: #838eff;
+  --calendar-event-maturita-dot: #ff4d3b;
+  --calendar-event-maturita: #ff4d3b;
+  --calendar-event-byOther-dot: #73b35e;
+  --calendar-event-byOther: #73b35e;
+  --calendar-event-own-dot: #f79046;
+  --calendar-event-own: #f79046;
 
   /* Action bar */
   --actionBar-background: #232530;
