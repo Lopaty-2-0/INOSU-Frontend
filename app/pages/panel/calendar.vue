@@ -105,7 +105,9 @@ const onUsersSearchInputChange = (input: string): void => {
   usersSearchInput.value = input;
 };
 
-const toggleEventInfo = (id: number): void => {
+const toggleEventInfo = (id?: number | null): void => {
+  if (!id) return;
+
   if (showEventInfoId.value === id) {
     showEventInfoId.value = null;
     return;
@@ -391,7 +393,6 @@ const loadEvents = async (): Promise<void> => {
 
     events.value = res.data.events.flat();
     eventsCount.value = res.data.count;
-
   } catch {
     events.value = [];
     eventsCount.value = 0;
@@ -455,6 +456,8 @@ watch([dotsData, dotsError], (): void => {
   if (!dotsData.value) return;
 
   const events: CalendarDotsData[] = dotsData.value.data.events;
+
+  console.log(dotsData.value.data)
 
   attributes.value.splice(0, attributes.value.length, ...[...events].map((event: CalendarDotsData) => {
     return {
@@ -544,7 +547,7 @@ watch(datePicker, (): void => {
 
                   <div class="actions">
                     <Icon class="icon" name="material-symbols:info-rounded" @click="toggleEventInfo(event.idEvent)" v-if="event.idEvent && event.description"></Icon>
-                    <Icon class="icon remove" name="material-symbols:delete-rounded" v-if="event.user.id === userId" @click="removeEvent(event.idEvent)"></Icon>
+                    <Icon class="icon remove" name="material-symbols:delete-rounded" v-if="event.user && event.user.id === userId" @click="removeEvent(event.idEvent)"></Icon>
                   </div>
 
                   <p class="description" v-if="showEventInfoId === event.idEvent && event.description && event.idEvent">
@@ -581,7 +584,7 @@ watch(datePicker, (): void => {
 
                   <div class="actions">
                     <Icon class="icon" name="material-symbols:info-rounded" @click="toggleEventInfo(event.idEvent)" v-if="event.idEvent && event.description"></Icon>
-                    <Icon class="icon remove" name="material-symbols:delete-rounded" @click="removeEvent(event.idEvent)"></Icon>
+                    <Icon class="icon remove" name="material-symbols:delete-rounded" v-if="event.user && event.user.id !== userId" @click="removeEvent(event.idEvent)"></Icon>
                   </div>
 
                   <p class="description" v-if="showEventInfoId === event.idEvent && event.description && event.idEvent">
