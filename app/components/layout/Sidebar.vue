@@ -214,15 +214,22 @@ const sidebarLinks = computed<
         ],
       }
   },
-  ...(role.value === "admin")
+  ...(role.value === "admin" || role.value === "teacher")
       ? [
         {
           name: "Data",
           links: [
             {
               text: "Import",
-              href: "/panel/import",
+              href: role.value === "admin" ? "/panel/import" : `/panel/import/maturitas`,
               iconClass: "material-symbols:upload-2-rounded",
+              activeHrefs: [
+                "/panel/import",
+                "/panel/import/specializations",
+                "/panel/import/classes",
+                "/panel/import/maturitas",
+                "/panel/import/maturitaTopics",
+              ],
               notify: false,
             },
             {

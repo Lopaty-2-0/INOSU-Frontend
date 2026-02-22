@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import {ref, useTemplateRef, watch} from "vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Input from "~/components/ui/Input.vue";
 import FileInput from "~/components/ui/FileInput.vue";
@@ -15,7 +15,7 @@ const props = defineProps({
 const emits = defineEmits(["update"]);
 const profilePictureUrlImage = ref<string>(props.oldProfilePicture);
 const profilePictureFile = ref<File | null>(null);
-const fileInput = ref<InstanceType<typeof FileInput> | null>(null);
+const fileInput = useTemplateRef<InstanceType<typeof FileInput>>("fileInput");
 const urlInput = ref<string>("");
 const errors = ref<{ file: string; url: string }>({ file: "", url: "" });
 
