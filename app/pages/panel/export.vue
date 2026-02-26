@@ -2,8 +2,8 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import checkPermissions from "~/componsables/checkPermissions";
-import ActionBar from "~/components/ui/ActionBar.vue";
 import Loading from "~/components/ui/Loading.vue";
+import { useAlertsStore } from "~/stores/alerts";
 
 useHead({
   title: "Panel | Export dat",
@@ -16,6 +16,7 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const alertsStore = useAlertsStore();
 const loading = ref({
   users: false,
   classes: false,
@@ -25,52 +26,223 @@ const loading = ref({
   maturitaTable: false
 });
 
+const downloadFile = (response: any): void => {
+  const disposition = response.headers.get("content-disposition");
+  let fileName: string = "downloaded_file";
+
+  if (disposition) {
+    const match = disposition.match(/filename="?(.+?)"?$/);
+
+    if (match?.[1]) {
+      fileName = match[1];
+    }
+  }
+
+  const data = response._data;
+
+  const blob: Blob =
+      data instanceof Blob
+          ? data
+          : new Blob(
+              [JSON.stringify(data, null, 4)],
+              { type: "application/json" }
+          );
+
+  const link: HTMLAnchorElement = document.createElement("a");
+  link.href = window.URL.createObjectURL(blob);
+  link.download = fileName;
+
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(link.href);
+};
+
 const exportUsers = async (): Promise<void> => {
   loading.value.users = true;
 
-  setTimeout(() => {
+  try {
+    const response = await $fetch.raw("/api/user/get/file", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const contentDisposition = response.headers.get("content-disposition");
+
+    if (!contentDisposition) {
+      const resCode: string | undefined = response._data.data?.resCode?.toString();
+
+      if (resCode === "107010") {
+        alertsStore.addAlert({type: "error", title: "Export uživatelů", message: "Nemáte oprávnění k této akci.",});
+        return;
+      }
+
+      alertsStore.addAlert({type: "error", title: "Export uživatelů", message: "Nastala neznámá chyba."});
+      return;
+    }
+
+    downloadFile(response);
+  } catch {
+    alertsStore.addAlert({type: "error", title: "Export uživatelů", message: "Nastala neznámá chyba.",});
+  } finally {
     loading.value.users = false;
-  }, 1000);
+  }
 };
 
 const exportClasses = async (): Promise<void> => {
   loading.value.classes = true;
 
-  setTimeout(() => {
+  try {
+    const response = await $fetch.raw("/api/class/get/file", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const contentDisposition = response.headers.get("content-disposition");
+
+    if (!contentDisposition) {
+      const resCode: string | undefined = response._data.data?.resCode?.toString();
+
+      if (resCode === "106010") {
+        alertsStore.addAlert({type: "error", title: "Export tříd", message: "Nemáte oprávnění k této akci.",});
+        return;
+      }
+
+      alertsStore.addAlert({type: "error", title: "Export tříd", message: "Nastala neznámá chyba."});
+      return;
+    }
+
+    downloadFile(response);
+  } catch {
+    alertsStore.addAlert({type: "error", title: "Export tříd", message: "Nastala neznámá chyba.",});
+  } finally {
     loading.value.classes = false;
-  }, 1000);
+  }
 };
 
 const exportSpecializations = async (): Promise<void> => {
   loading.value.specializations = true;
 
-  setTimeout(() => {
+  try {
+    const response = await $fetch.raw("/api/specialization/get/file", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const contentDisposition = response.headers.get("content-disposition");
+
+    if (!contentDisposition) {
+      const resCode: string | undefined = response._data.data?.resCode?.toString();
+
+      if (resCode === "104010") {
+        alertsStore.addAlert({type: "error", title: "Export zaměření", message: "Nemáte oprávnění k této akci.",});
+        return;
+      }
+
+      alertsStore.addAlert({type: "error", title: "Export zaměření", message: "Nastala neznámá chyba."});
+      return;
+    }
+
+    downloadFile(response);
+  } catch {
+    alertsStore.addAlert({type: "error", title: "Export zaměření", message: "Nastala neznámá chyba.",});
+  } finally {
     loading.value.specializations = false;
-  }, 1000);
+  }
 };
 
 const exportMaturitas = async (): Promise<void> => {
   loading.value.maturitas = true;
 
-  setTimeout(() => {
+  try {
+    const response = await $fetch.raw("/api/maturita/get/file", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const contentDisposition = response.headers.get("content-disposition");
+
+    if (!contentDisposition) {
+      const resCode: string | undefined = response._data.data?.resCode?.toString();
+
+      if (resCode === "108010") {
+        alertsStore.addAlert({type: "error", title: "Export maturit", message: "Nemáte oprávnění k této akci.",});
+        return;
+      }
+
+      alertsStore.addAlert({type: "error", title: "Export maturit", message: "Nastala neznámá chyba."});
+      return;
+    }
+
+    downloadFile(response);
+  } catch {
+    alertsStore.addAlert({type: "error", title: "Export maturit", message: "Nastala neznámá chyba.",});
+  } finally {
     loading.value.maturitas = false;
-  }, 1000);
+  }
 };
 
 const exportMaturitaTopics = async (): Promise<void> => {
   loading.value.maturitaTopics = true;
 
-  setTimeout(() => {
+  try {
+    const response = await $fetch.raw("/api/topic/get/file", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const contentDisposition = response.headers.get("content-disposition");
+
+    if (!contentDisposition) {
+      const resCode: string | undefined = response._data.data?.resCode?.toString();
+
+      if (resCode === "107010") {
+        alertsStore.addAlert({type: "error", title: "Export maturitních témat", message: "Nemáte oprávnění k této akci.",});
+        return;
+      }
+
+      alertsStore.addAlert({type: "error", title: "Export maturitních témat", message: "Nastala neznámá chyba."});
+      return;
+    }
+
+    downloadFile(response);
+  } catch {
+    alertsStore.addAlert({type: "error", title: "Export maturitních témat", message: "Nastala neznámá chyba.",});
+  } finally {
     loading.value.maturitaTopics = false;
-  }, 1000);
+  }
 };
 
 const exportMaturitaTable = async (): Promise<void> => {
   loading.value.maturitaTable = true;
 
-  setTimeout(() => {
+  try {
+    const response = await $fetch.raw("/api/topic/get/file", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const contentDisposition = response.headers.get("content-disposition");
+
+    if (!contentDisposition) {
+      const resCode: string | undefined = response._data.data?.resCode?.toString();
+
+      if (resCode === "107010") {
+        alertsStore.addAlert({type: "error", title: "Export maturitní tabulky", message: "Nemáte oprávnění k této akci.",});
+        return;
+      }
+
+      alertsStore.addAlert({type: "error", title: "Export maturitní tabulky", message: "Nastala neznámá chyba."});
+      return;
+    }
+
+    downloadFile(response);
+  } catch {
+    alertsStore.addAlert({type: "error", title: "Export maturitní tabulky", message: "Nastala neznámá chyba.",});
+  } finally {
     loading.value.maturitaTable = false;
-  }, 1000);
+  }
 };
 </script>
 
