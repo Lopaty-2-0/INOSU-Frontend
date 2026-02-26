@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import {ref} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import checkPermissions from "~/componsables/checkPermissions";
@@ -218,7 +219,7 @@ const exportMaturitaTable = async (): Promise<void> => {
   loading.value.maturitaTable = true;
 
   try {
-    const response = await $fetch.raw("/api/topic/get/file", {
+    const response = await $fetch.raw("/api/maturita_task/get/excel", {
       method: "GET",
       credentials: "include",
     });
@@ -228,7 +229,7 @@ const exportMaturitaTable = async (): Promise<void> => {
     if (!contentDisposition) {
       const resCode: string | undefined = response._data.data?.resCode?.toString();
 
-      if (resCode === "107010") {
+      if (resCode === "109010") {
         alertsStore.addAlert({type: "error", title: "Export maturitní tabulky", message: "Nemáte oprávnění k této akci.",});
         return;
       }
