@@ -5,7 +5,8 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 import FileInput from "~/components/ui/FileInput.vue";
 import {computed, ref} from "vue";
-import checkPermissions from "~/componsables/checkPermissions";
+import checkPermissions from "~/componsables/checkPermissions"
+import {useAlertsStore} from "~/stores/alerts";
 
 useHead({
   title: "Panel | Import dat - Zaměření",
@@ -18,6 +19,8 @@ definePageMeta({
   roles: ["admin"],
 });
 
+const alertsStore = useAlertsStore();
+const errors = ref<{ resCode: number | string; message: string; number: number }[]>([]);
 const loading = ref<boolean>(false);
 const selectedFile = ref<File | null>(null);
 const fileInput = ref<InstanceType<typeof FileInput> | null>(null);
@@ -49,13 +52,104 @@ const navigationLinks = computed(() => {
 });
 
 const importFile = async (): Promise<void> => {
-  console.log(selectedFile.value);
+  if (!selectedFile.value) {
+    alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nebyl vybrán žádný soubor." });
+    return;
+  }
 
+  const data = new FormData()
+  data.append("jsonFile", selectedFile.value);
+
+  errors.value = [];
   loading.value = true;
 
-  setTimeout(() => {
+  await $fetch("/api/specialization/add/file", {
+    method: "post",
+    body: data,
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "101010":
+          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Na tuto akci nemáte oprávnění." });
+          break;
+
+        case "101020":
+          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Soubor s daty nebyl nahrán." });
+          break;
+
+        case "101030":
+          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nahraný soubor je ve špatném formátu." });
+          break;
+
+        case "F15020":
+          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nahraný soubor je příliš velký." });
+          break;
+
+        case "101040":
+          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nahraný soubor je prázdný." });
+          break;
+
+        case "101050":
+          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nahraný soubor má neplatný json formát." });
+          break;
+
+        case "101120":
+          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Žádná specializace nebyla vytvořena." });
+          break;
+
+        case "101131":
+          alertsStore.addAlert({ type: "success", title: "Nahrání zaměření", message: "Specializace byly vytvořeny" });
+          const badSpecializations = response._data.data.badSpecializations;
+
+          errors.value = badSpecializations.map((specialization: any) => {
+            const errorResCode = specialization.resCode.toString();
+            let message;
+
+            switch (errorResCode) {
+              case "101060":
+                message = "Není vyplněna žádná hodnota.";
+                break;
+
+              case "101070":
+                message = "Délka studia musí být celé číslo.";
+                break;
+
+              case "101080":
+                message = "Délka studia musí být větší než 0 a v povoleném rozsahu.";
+                break;
+
+              case "101090":
+                message = "Zkratka může mít maximálně 1 znak a nesmí být již použita.";
+                break;
+
+              case "101110":
+                message = "Název může mít maximálně 45 znaků a nesmí být již použit.";
+                break;
+
+              default:
+                message = specialization.data.message;
+            }
+
+            return {resCode: specialization.resCode, message: message, number: specialization.data.specializationNumber};
+          });
+
+          break;
+
+        default:
+          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nastala neznámá chyba." });
+    },
+  }).finally(async (): Promise<void> => {
+    await resetFile();
     loading.value = false;
-  }, 2000);
+  });
 };
 
 const resetFile = async (): Promise<void> => {
@@ -95,8 +189,15 @@ const resetFile = async (): Promise<void> => {
             <FileInput class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" placeholder="Vyberte soubor pro import dat" :title="title"></FileInput>
           </div>
 
+          <div class="page-section" :class="{ 'buttom-line': errors.length > 0 }">
+            <EditFormFooter :submit-function="importFile" :reset-function="resetFile" :is-loading="loading" />
+          </div>
 
-          <EditFormFooter :submit-function="importFile" :reset-function="resetFile" :is-loading="loading" />
+          <div class="page-section" v-if="errors.length > 0">
+            <div class="errors">
+              <p class="error" v-for="error in errors">{{ error.message }} <span class="number">Číslo: {{ error.number }}</span></p>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -133,6 +234,25 @@ const resetFile = async (): Promise<void> => {
       &.bottom-line {
         padding-bottom: 35px;
         border-bottom: 1px solid rgba(var(--border-color), 0.5);
+      }
+
+      .errors {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .error {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          gap: 30px;
+          color: rgba(var(--error-color), 1);
+          font-size: 16px;
+
+          .number {
+            font-weight: 600;
+          }
+        }
       }
     }
 
