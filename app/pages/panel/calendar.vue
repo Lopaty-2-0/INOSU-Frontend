@@ -427,7 +427,7 @@ const loadAuthorEvents = async (): Promise<void> => {
   }
 };
 
-const { data: usersData, error: usersError, pending: usersPending } = useFetch(["admin", "teacher"].includes(role.value) ? "/api/user/get" : "", {
+const { data: usersData, error: usersError, pending: usersPending } = useFetch(() => ["admin", "teacher"].includes(role.value) ? "/api/user/get" : null, {
   query: {
     amountForPaging: amountForUsersPaging,
     pageNumber: currentUsersPage,
@@ -456,8 +456,6 @@ watch([dotsData, dotsError], (): void => {
   if (!dotsData.value) return;
 
   const events: CalendarDotsData[] = dotsData.value.data.events;
-
-  console.log(dotsData.value.data)
 
   attributes.value.splice(0, attributes.value.length, ...[...events].map((event: CalendarDotsData) => {
     return {
