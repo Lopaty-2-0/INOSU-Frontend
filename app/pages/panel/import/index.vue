@@ -207,10 +207,10 @@ const resetFile = async (): Promise<void> => {
               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
             </div>
 
-            <FileInput class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" placeholder="Vyberte soubor pro import dat" :title="title"></FileInput>
+            <FileInput ref="fileInput" class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" placeholder="Vyberte soubor pro import dat" :title="title"></FileInput>
           </div>
 
-          <div class="page-section" :class="{ 'buttom-line': errors.length > 0 }">
+          <div class="page-section" :class="{ 'bottom-line': errors.length > 0 }">
             <EditFormFooter :submit-function="importFile" :reset-function="resetFile" :is-loading="loading" />
           </div>
 
