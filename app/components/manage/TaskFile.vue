@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {ref, useTemplateRef, watch} from "vue";
 import FileInput from "~/components/ui/FileInput.vue";
-import UsersTable from "~/components/tables/Users.vue";
 
 const props = defineProps({
   oldTaskFile: {
