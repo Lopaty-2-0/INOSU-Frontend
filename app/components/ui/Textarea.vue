@@ -5,7 +5,7 @@ const props = defineProps({
   modelValue: {
     type: [Number, String, Object] as PropType<number | string | null | undefined>,
     default: null,
-  }
+  },
 });
 const emits = defineEmits(["update:modelValue"]);
 
@@ -36,6 +36,10 @@ textarea {
   background: var(--input-background);
   color: var(--input-color);
   width: 100%;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
 
   &::placeholder {
     color: var(--input-placeholder-color);

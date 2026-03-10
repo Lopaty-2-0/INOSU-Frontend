@@ -241,8 +241,6 @@ watch([conversationsData, conversationsError], (): void => {
 
   if (!conversationsData.value) return;
 
-  console.log(conversationsData.value.data.conversations);
-
   conversations.value = conversationsData.value.data.conversations;
   conversationsCount.value = conversationsData.value.data.count;
 }, { immediate: true });
@@ -300,7 +298,7 @@ watchEffect((): void => {
 
           <div class="users" v-else>
             <div class="user no-hover">
-              <p class="undefined-account">
+              <p class="no-conversations">
                 Žádné konverzace nenalezeny. Založte novou konverzaci pomocí pole výše.
               </p>
             </div>
@@ -327,7 +325,7 @@ watchEffect((): void => {
   flex-direction: row;
   gap: 30px;
   position: relative;
-  height: calc(100vh - 140px);
+  height: calc(100svh - 140px);
 
   .conversations {
     position: relative;
@@ -437,7 +435,7 @@ watchEffect((): void => {
           }
         }
 
-        .undefined-account {
+        .no-conversations {
           color: var(--mini-title-color);
           font-size: 16px;
         }
@@ -512,7 +510,7 @@ watchEffect((): void => {
   }
 }
 
-@media (max-device-height: 555px) {
+@media (max-height: 555px) {
   #chat {
     height: fit-content;
 

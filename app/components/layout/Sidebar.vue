@@ -56,6 +56,18 @@ const sidebarLinks = computed<
             : false,
       },
       {
+        text: "Kalendář",
+        href: "/panel/calendar",
+        iconClass: "material-symbols:calendar-month-rounded",
+        notify: false,
+      },
+      {
+        text: "Chat",
+        href: "/panel/chat",
+        iconClass: "material-symbols:mark-chat-unread-rounded",
+        notify: false,
+      },
+      {
         text: "Zaměření",
         href: "/panel/specializations",
         activeHrefs: [
@@ -87,12 +99,6 @@ const sidebarLinks = computed<
           "/panel/users/edit",
         ],
         iconClass: "material-symbols:supervisor-account-rounded",
-        notify: false,
-      },
-      {
-        text: "Chat",
-        href: "/panel/chat",
-        iconClass: "material-symbols:mark-chat-unread-rounded",
         notify: false,
       },
     ],
@@ -208,15 +214,22 @@ const sidebarLinks = computed<
         ],
       }
   },
-  ...(role.value === "admin")
+  ...(role.value === "admin" || role.value === "teacher")
       ? [
         {
           name: "Data",
           links: [
             {
               text: "Import",
-              href: "/panel/import",
+              href: role.value === "admin" ? "/panel/import" : `/panel/import/maturitas`,
               iconClass: "material-symbols:upload-2-rounded",
+              activeHrefs: [
+                "/panel/import",
+                "/panel/import/specializations",
+                "/panel/import/classes",
+                "/panel/import/maturitas",
+                "/panel/import/maturitaTopics",
+              ],
               notify: false,
             },
             {

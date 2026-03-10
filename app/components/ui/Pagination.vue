@@ -28,7 +28,11 @@ const modelIndex = () => Math.max(0, (props.modelValue ?? 1) - 1);
 const toModelValue = (index: number) => index + 1;
 
 const setActivePage = (index: number): void => {
-  emits("update:modelValue", toModelValue(index));
+  const value: number = toModelValue(index);
+
+  if (value === props.modelValue) return;
+
+  emits("update:modelValue", value);
 };
 
 const previousPage = (): void => {
@@ -81,12 +85,26 @@ watch([() => props.numberOfPages, () => props.chunkSize], ([newCount, newChunk])
     navigationPages.value = useArrayChunks(pagesArray.value, newChunk);
 
     activePagesIndex.value = 0;
-    emits("update:modelValue", 1);
+    if (props.modelValue === undefined || props.modelValue === null) {
+      emits("update:modelValue", 1);
+    }
   } else {
     pagesArray.value = [];
     navigationPages.value = [];
     activePagesIndex.value = 0;
-    emits("update:modelValue", 1);
+    if (props.modelValue === undefined || props.modelValue === null) {
+      emits("update:modelValue", 1);
+    }
+  }
+}, { immediate: true });
+
+watch(() => props.modelValue, (newValue: number) => {
+  const index: number = (newValue ?? 1) - 1;
+
+  const chunkIndex: number = navigationPages.value.findIndex(chunk => chunk.includes(index));
+
+  if (chunkIndex !== -1) {
+    activePagesIndex.value = chunkIndex;
   }
 }, { immediate: true });
 </script>

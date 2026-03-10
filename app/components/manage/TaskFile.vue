@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import {ref, useTemplateRef, watch} from "vue";
 import FileInput from "~/components/ui/FileInput.vue";
+import UsersTable from "~/components/tables/Users.vue";
 
 const props = defineProps({
   oldTaskFile: {
@@ -16,7 +17,7 @@ const props = defineProps({
 
 const emits = defineEmits(["update"]);
 const errors = ref<{ file: string }>({ file: "" });
-const fileInput = ref<InstanceType<typeof FileInput> | null>(null);
+const fileInput = useTemplateRef<InstanceType<typeof FileInput>>("fileInput");
 const taskFile = ref<File | null>(null);
 const taskTitle = ref<string>(props.oldTaskFile || "");
 
