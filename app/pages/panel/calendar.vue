@@ -427,7 +427,7 @@ const loadAuthorEvents = async (): Promise<void> => {
   }
 };
 
-const { data: usersData, error: usersError, pending: usersPending } = useFetch(["admin", "teacher"].includes(role.value) ? "/api/user/get" : "", {
+const { data: usersData, error: usersError, pending: usersPending } = useFetch(() => ["admin", "teacher"].includes(role.value) ? "/api/user/get" : null, {
   query: {
     amountForPaging: amountForUsersPaging,
     pageNumber: currentUsersPage,
