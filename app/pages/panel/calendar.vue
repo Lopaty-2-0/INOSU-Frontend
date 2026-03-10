@@ -457,8 +457,6 @@ watch([dotsData, dotsError], (): void => {
 
   const events: CalendarDotsData[] = dotsData.value.data.events;
 
-  console.log(dotsData.value.data)
-
   attributes.value.splice(0, attributes.value.length, ...[...events].map((event: CalendarDotsData) => {
     return {
       dot: {
