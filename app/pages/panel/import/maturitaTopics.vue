@@ -6,6 +6,7 @@ import Navigation from "~/components/ui/Navigation.vue";
 import FileInput from "~/components/ui/FileInput.vue";
 import {computed, ref} from "vue";
 import checkPermissions from "~/componsables/checkPermissions";
+import {useAlertsStore} from "~/stores/alerts";
 
 useHead({
   title: "Panel | Import dat - Maturitní témata",
@@ -18,6 +19,8 @@ definePageMeta({
   roles: ["admin", "teacher"],
 });
 
+const alertsStore = useAlertsStore();
+const errors = ref<{ resCode: number | string; message: string; number: number }[]>([]);
 const loading = ref<boolean>(false);
 const selectedFile = ref<File | null>(null);
 const fileInput = ref<InstanceType<typeof FileInput> | null>(null);
@@ -49,13 +52,97 @@ const navigationLinks = computed(() => {
 });
 
 const importFile = async (): Promise<void> => {
-  console.log(selectedFile.value);
+  if (!selectedFile.value) {
+    alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Nebyl vybrán žádný soubor." });
+    return;
+  }
 
+  const data = new FormData();
+  data.append("jsonFile", selectedFile.value);
+
+  errors.value = [];
   loading.value = true;
 
-  setTimeout(() => {
+  await $fetch("/api/topic/add/file", {
+    method: "post",
+    body: data,
+    credentials: "include",
+    ignoreResponseError: true,
+    onResponse({ response }: any) {
+      const resCode: string = response._data.resCode.toString();
+
+      switch (resCode) {
+        case "102010":
+          alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Na tuto akci nemáte oprávnění." });
+          break;
+
+        case "102020":
+          alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Soubor nebyl nahrán." });
+          break;
+
+        case "102030":
+          alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Soubor má špatný formát." });
+          break;
+
+        case "F15020":
+          alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Soubor je příliš velký." });
+          break;
+
+        case "102040":
+          alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Soubor je prázdný." });
+          break;
+
+        case "102050":
+          alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Soubor obsahuje neplatný JSON." });
+          break;
+
+        case "102080":
+          alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Žádné maturitní zadání nebylo vytvořeno." });
+          break;
+
+        case "102091":
+          alertsStore.addAlert({ type: "success", title: "Nahrání maturitních zadání", message: "Maturitní zadání byla úspěšně vytvořena." });
+
+          const badTopics = response._data.data.badTopics;
+
+          errors.value = badTopics.map((badTopic: any) => {
+            const errorResCode = badTopic.resCode.toString();
+            let message;
+
+            switch (errorResCode) {
+              case "102060":
+                message = "Název nebyl zadán.";
+                break;
+
+              case "102070":
+                message = "Název je příliš dlouhý nebo se již používá.";
+                break;
+
+              default:
+                message = badTopic.data.message;
+            }
+
+            return {
+              resCode: badTopic.resCode,
+              message: message,
+              number: badTopic.data.topicNumber
+            };
+          });
+
+          break;
+
+        default:
+          alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Nastala neznámá chyba." });
+          break;
+      }
+    },
+    onRequestError() {
+      alertsStore.addAlert({ type: "error", title: "Nahrání maturitních zadání", message: "Nastala neznámá chyba." });
+    },
+  }).finally(async (): Promise<void> => {
+    await resetFile();
     loading.value = false;
-  }, 2000);
+  });
 };
 
 const resetFile = async (): Promise<void> => {
@@ -95,8 +182,15 @@ const resetFile = async (): Promise<void> => {
             <FileInput class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" placeholder="Vyberte soubor pro import dat" :title="title"></FileInput>
           </div>
 
+          <div class="page-section" :class="{ 'buttom-line': errors.length > 0 }">
+            <EditFormFooter :submit-function="importFile" :reset-function="resetFile" :is-loading="loading" />
+          </div>
 
-          <EditFormFooter :submit-function="importFile" :reset-function="resetFile" :is-loading="loading" />
+          <div class="page-section" v-if="errors.length > 0">
+            <div class="errors">
+              <p class="error" v-for="error in errors">{{ error.message }} <span class="number">Číslo: {{ error.number }}</span></p>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -133,6 +227,25 @@ const resetFile = async (): Promise<void> => {
       &.bottom-line {
         padding-bottom: 35px;
         border-bottom: 1px solid rgba(var(--border-color), 0.5);
+      }
+
+      .errors {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .error {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          gap: 30px;
+          color: rgba(var(--error-color), 1);
+          font-size: 16px;
+
+          .number {
+            font-weight: 600;
+          }
+        }
       }
     }
 
