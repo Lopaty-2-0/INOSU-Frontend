@@ -45,8 +45,8 @@ const downloadFile = (response: any): void => {
       data instanceof Blob
           ? data
           : new Blob(
-              [JSON.stringify(data, null, 4)],
-              { type: "application/json" }
+              [data],
+              { type: response.headers.get("content-type") || "application/json" }
           );
 
   const link: HTMLAnchorElement = document.createElement("a");
@@ -67,6 +67,7 @@ const exportUsers = async (): Promise<void> => {
     const response = await $fetch.raw("/api/user/get/file", {
       method: "GET",
       credentials: "include",
+      responseType: "blob"
     });
 
     const contentDisposition = response.headers.get("content-disposition");
