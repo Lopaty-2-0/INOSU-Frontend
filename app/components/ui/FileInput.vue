@@ -136,7 +136,7 @@ defineExpose({ resetError });
   }
 
   &:hover {
-    background: var(--btn-2-hover-background);
+    background: var(--input-background-hover);
   }
 
   &.error {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, ref, watch} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import { useAlertsStore } from "~/stores/alerts";
@@ -427,7 +427,7 @@ const loadAuthorEvents = async (): Promise<void> => {
   }
 };
 
-const { data: usersData, error: usersError, pending: usersPending } = useFetch(() => ["admin", "teacher"].includes(role.value) ? "/api/user/get" : null, {
+const { data: usersData, error: usersError, pending: usersPending } = useFetch("/api/user/get", {
   query: {
     amountForPaging: amountForUsersPaging,
     pageNumber: currentUsersPage,
@@ -436,7 +436,8 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch((
   method: "get",
   server: true,
   credentials: "include",
-  lazy: true
+  lazy: true,
+  immediate: ["admin", "teacher"].includes(role.value),
 });
 
 const { data: dotsData, error: dotsError, refresh: refreshDots } = useFetch("/api/event/get/week", {
@@ -835,19 +836,22 @@ watch(datePicker, (): void => {
 
           &.byOther .left .icon-div {
             background: var(--calendar-event-byOther);
-            color: var(--title-color);
+            color: var(--calendar-event-byOther-color);
           }
 
           &.own .left .icon-div {
             background: var(--calendar-event-own);
+            color: var(--calendar-event-own-color);
           }
 
           &.task .left .icon-div {
             background: var(--calendar-event-task);
+            color: var(--calendar-event-task-color);
           }
 
           &.maturita .left .icon-div {
             background: var(--calendar-event-maturita);
+            color: var(--calendar-event-maturita-color);
           }
 
           .left {
@@ -860,7 +864,7 @@ watch(datePicker, (): void => {
               padding: 15px;
               border-radius: var(--small-border-radius);
               background: var(--calendar-event-default);
-              color: var(--title-color);
+              color: var(--calendar-event-default-color);
               line-height: 0;
               font-size: 20px;
             }

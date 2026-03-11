@@ -190,6 +190,7 @@ watch(() => props.modelValue, (newValue: number) => {
 
       &:hover {
         background: var(--btn-2-hover-background);
+        color: var(--btn-2-color);
       }
 
       &.active {

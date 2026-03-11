@@ -18,117 +18,130 @@
 
 [data-theme="light"] {
   /* Base */
-  --main-background: 247, 247, 247;
-  --main-color: 21, 23, 162;
+  --main-background: 245, 247, 250;
+  --main-color: 62, 97, 130;
 
-  --title-color: #000000;
-  --mini-title-color: #000000;
-  --description-color: 107, 107, 111;
+  --title-color: #1f2937;
+  --mini-title-color: #1f2937;
+  --description-color: 90, 95, 105;
 
-  --scrollbar-thumb-background: #e6e6e6;
+  /* Scrollbar */
+  --scrollbar-thumb-background: #cfd4da;
   --scrollbar-track-background: #f9fafb;
-  --scrollbar-track-hover-background: #e6e6e6;
+  --scrollbar-track-hover-background: #e5e7eb;
 
   /* Menu */
-  --menu-background: #FFFFFF;
-  --navbar-square-icon-color: rgba(var(--main-color), 0.15);
+  --menu-background: #ffffff;
+  --navbar-square-icon-color: rgba(var(--main-color), 0.2);
 
   /* Sidebar */
-  --sidebar-background: #FFFFFF;
+  --sidebar-background: #ffffff;
 
-  --sidebar-log-out-background: #F7F7F7;
-  --sidebar-log-out-hover-background: #eaeaea;
+  --sidebar-log-out-background: #f3f4f6;
+  --sidebar-log-out-hover-background: #e5e7eb;
 
   --sidebar-notification-background: rgba(var(--warning-color), 1);
-  --sidebar-notification-color: #000000;
+  --sidebar-notification-color: #ffffff;
 
   /* Action bar */
   --actionBar-background: #ffffff;
 
-  --actionBar-actions-default-color: 107, 107, 111;
-  --actionBar-actions-default-border: 193, 193, 193;
-  --actionBar-actions-default-background: 227, 231, 236;
-
-  --actionBar-actions-add-color: #ffffff;
-  --actionBar-actions-add-border: 77, 139, 49;
-  --actionBar-actions-add-background: 77, 139, 49;
-
-  --actionBar-actions-remove-color: #ffffff;
-  --actionBar-actions-remove-border: 255, 34, 12;
-  --actionBar-actions-remove-background: 255, 34, 12;
+  --actionBar-actions-default-color: 90, 95, 105;
+  --actionBar-actions-default-border: 209, 213, 219;
+  --actionBar-actions-default-background: #f9fafb;
 
   --actionBar-actions-edit-color: #ffffff;
-  --actionBar-actions-edit-border: 21, 23, 162;
-  --actionBar-actions-edit-background: 21, 23, 162;
+  --actionBar-actions-edit-border: 63, 111, 160;
+  --actionBar-actions-edit-background: 63, 111, 160;
+
+  --actionBar-actions-remove-color: #ffffff;
+  --actionBar-actions-remove-background: 220, 53, 69;
+  --actionBar-actions-remove-border: 220, 53, 69;
+
+  --actionBar-actions-add-color: #ffffff;
+  --actionBar-actions-add-background: 77, 139, 49;
+  --actionBar-actions-add-border: 77, 139, 49;
 
   /* Calendar event types */
-  --calendar-event-default-dot: #6B6B6F;
-  --calendar-event-default: #e6e6e6;
-  --calendar-event-task-dot: #1517A2;
-  --calendar-event-task: #1517A2;
-  --calendar-event-maturita-dot: #FF220C;
-  --calendar-event-maturita: #FF220C;
+  --calendar-event-default-dot: #6b7280;
+  --calendar-event-default: #f3f4f6;
+  --calendar-event-default-color: #1f2937;
+
+  --calendar-event-task-dot: #3f6fa0;
+  --calendar-event-task: #3f6fa0;
+  --calendar-event-task-color: #FFFFFF;
+
+  --calendar-event-maturita-dot: #d9534f;
+  --calendar-event-maturita: #d9534f;
+  --calendar-event-maturita-color: #ffff;
+
   --calendar-event-byOther-dot: #4D8B31;
   --calendar-event-byOther: #4D8B31;
-  --calendar-event-own-dot: #F75C03;
-  --calendar-event-own: #F75C03;
+  --calendar-event-byOther-color: #ffffff;
+
+  --calendar-event-own-dot: #f5a800;
+  --calendar-event-own: #f5a800;
+  --calendar-event-own-color: #1f2937;
 
   /* Status colors */
-  --error-color: 255, 34, 12;
+  --error-color: 220, 53, 69;
   --success-color: 77, 139, 49;
-  --warning-color: 247, 92, 3;
-  --info-color: 21, 23, 162;
+  --warning-color: 245, 168, 0;
+  --info-color: 63, 111, 160;
 
   /* Alerts */
-  --alert-description-color: #000000;
+  --alert-description-color: #1f2937;
 
-  --alert-success-background: #b1ee9d;
+  --alert-success-background: #eaf6e6;
   --alert-success-color: #4D8B31;
 
-  --alert-error-background: #ef9b94;
-  --alert-error-color: #FF220C;
+  --alert-error-background: #fde8e7;
+  --alert-error-color: #d9534f;
 
-  --alert-warning-background: #efb694;
-  --alert-warning-color: #F75C03;
+  --alert-warning-background: #fff4db;
+  --alert-warning-color: #f5a800;
 
-  --alert-info-background: #aaacf3;
-  --alert-info-color: #1517A2;
+  --alert-info-background: #e6eef6;
+  --alert-info-color: #3f6fa0;
 
   /* Cards */
-  --card-1-background: #FFFFFF;
-  --card-1-hover-background: #f1f1f1;
+  --card-1-background: #ffffff;
+  --card-1-hover-background: #f1f5f9;
 
-  --card-2-background: #F7F7F7;
-  --card-2-hover-background: #eaeaea;
+  --card-2-background: #f9fafb;
+  --card-2-hover-background: #f1f5f9;
 
   /* Borders */
-  --border-color: 193, 193, 193;
+  --border-color: 209, 213, 219;
 
   /* Buttons */
-  --btn-1-background: rgba(var(--main-color), 1);
-  --btn-1-color: #ffffff;
+  --btn-1-background: #f5a800;
+  --btn-1-color: #1f2937;
   --btn-1-font-weight: 700;
-  --btn-1-hover-background: rgba(var(--main-color), 0.8);
+  --btn-1-hover-background: #d99100;
 
-  --btn-2-background: #F0F0F0;
-  --btn-2-color: rgba(var(--description-color), 1);
-  --btn-2-hover-background: #e6e6e6;
+  --btn-2-background: #3f6fa0;
+  --btn-2-color: #ffffff;
+  --btn-2-hover-background: #2f5c8c;
 
   /* Inputs */
-  --input-background: #F0F0F0;
-  --input-background-hover: #e6e6e6;
-  --input-placeholder-color: rgba(var(--description-color), 0.8);
+  --input-background: #ffffff;
+  --input-background-hover: #f3f4f6;
+  --input-border-color: rgba(var(--border-color), 0.5);
+  --input-border-hover-color: rgba(var(--border-color), 0.8);
+
+  --input-placeholder-color: rgba(var(--description-color), 0.6);
   --input-color: rgba(var(--description-color), 1);
 
   --input-checkbox-background: transparent;
   --input-checkbox-checkmark-color: #ffffff;
-  --input-checkbox-checked-background: rgba(var(--main-color), 1);
+  --input-checkbox-checked-background: #3f6fa0;
 }
 
 [data-theme="dark"] {
   /* Base */
   --main-background: 28, 30, 38;
-  --main-color: 131, 142, 255;
+  --main-color: 166, 208, 249;
 
   --title-color: #ffffff;
   --mini-title-color: #ffffff;
@@ -136,73 +149,79 @@
 
   /* Scrollbar */
   --scrollbar-thumb-background: #3a3d45;
-  --scrollbar-track-background: #2a2c34;
-  --scrollbar-track-hover-background: #3a3d45;
+  --scrollbar-track-background: #232530;
+  --scrollbar-track-hover-background: #3f424c;
 
   /* Menu */
   --menu-background: #232530;
-  --navbar-square-icon-color: rgba(var(--main-color), 0.15);
+  --navbar-square-icon-color: rgba(var(--main-color), 0.25);
 
   /* Sidebar */
   --sidebar-background: #232530;
-
   --sidebar-log-out-background: #2a2d38;
   --sidebar-log-out-hover-background: #34384a;
-
   --sidebar-notification-background: rgba(var(--warning-color), 1);
   --sidebar-notification-color: #000000;
 
-  /* Calendar event types */
-  --calendar-event-default-dot: #bfbfc3;
-  --calendar-event-default: #34384a;
-  --calendar-event-task-dot: #838eff;
-  --calendar-event-task: #838eff;
-  --calendar-event-maturita-dot: #ff4d3b;
-  --calendar-event-maturita: #ff4d3b;
-  --calendar-event-byOther-dot: #73b35e;
-  --calendar-event-byOther: #73b35e;
-  --calendar-event-own-dot: #f79046;
-  --calendar-event-own: #f79046;
-
   /* Action bar */
   --actionBar-background: #232530;
-
   --actionBar-actions-default-color: 191, 191, 195;
-  --actionBar-actions-default-border: 100, 100, 100;
-  --actionBar-actions-default-background: 50, 52, 60;
-
-  --actionBar-actions-add-color: #ffffff;
-  --actionBar-actions-add-border: 115, 179, 94;
-  --actionBar-actions-add-background: 115, 179, 94;
-
-  --actionBar-actions-remove-color: #ffffff;
-  --actionBar-actions-remove-border: 255, 77, 59;
-  --actionBar-actions-remove-background: 255, 77, 59;
+  --actionBar-actions-default-border: 80, 82, 96;
+  --actionBar-actions-default-background: 45, 47, 58;
 
   --actionBar-actions-edit-color: #ffffff;
-  --actionBar-actions-edit-border: 131, 142, 255;
-  --actionBar-actions-edit-background: 131, 142, 255;
+  --actionBar-actions-edit-border: 166, 208, 249;
+  --actionBar-actions-edit-background: 166, 208, 249;
+
+  --actionBar-actions-remove-color: #ffffff;
+  --actionBar-actions-remove-background: 240, 80, 95;
+  --actionBar-actions-remove-border: 240, 80, 95;
+
+  --actionBar-actions-add-color: #ffffff;
+  --actionBar-actions-add-background: 102, 175, 67;
+  --actionBar-actions-add-border: 102, 175, 67;
+
+  /* Calendar event types */
+  --calendar-event-default-dot: #9ca3af;
+  --calendar-event-default: #34384a;
+  --calendar-event-default-color: #ffffff;
+
+  --calendar-event-task-dot: #A6D0F9;
+  --calendar-event-task: #A6D0F9;
+  --calendar-event-task-color: #000000;
+
+  --calendar-event-maturita-dot: #f05060;
+  --calendar-event-maturita: #f05060;
+  --calendar-event-maturita-color: #ffffff;
+
+  --calendar-event-byOther-dot: #66b043;
+  --calendar-event-byOther: #66b043;
+  --calendar-event-byOther-color: #ffffff;
+
+  --calendar-event-own-dot: #ffb928;
+  --calendar-event-own: #ffb928;
+  --calendar-event-own-color: #000000;
 
   /* Status colors */
-  --error-color: 255, 77, 59;
-  --success-color: 115, 179, 94;
-  --warning-color: 247, 144, 70;
-  --info-color: 131, 142, 255;
+  --error-color: 240, 80, 95;
+  --success-color: 102, 175, 67;
+  --warning-color: 255, 185, 40;
+  --info-color: 166, 208, 249;
 
   /* Alerts */
   --alert-description-color: #ffffff;
 
-  --alert-success-background: #27472f;
-  --alert-success-color: #73b35e;
+  --alert-success-background: #243a20;
+  --alert-success-color: #66b043;
 
-  --alert-error-background: #4d1f1b;
-  --alert-error-color: #ff4d3b;
+  --alert-error-background: #3d1e22;
+  --alert-error-color: #f05060;
 
-  --alert-warning-background: #4a3224;
-  --alert-warning-color: #f79046;
+  --alert-warning-background: #3f3312;
+  --alert-warning-color: #ffb928;
 
-  --alert-info-background: #2f304d;
-  --alert-info-color: #838eff;
+  --alert-info-background: #1f2c3a;
+  --alert-info-color: #A6D0F9;
 
   /* Cards */
   --card-1-background: #232530;
@@ -212,21 +231,24 @@
   --card-2-hover-background: #34384a;
 
   /* Borders */
-  --border-color: 70, 72, 90;
+  --border-color: 80, 82, 96;
 
   /* Buttons */
-  --btn-1-background: rgba(var(--main-color), 0.9);
-  --btn-1-color: #ffffff;
+  --btn-1-background: #f5a800;
+  --btn-1-color: #000000;
   --btn-1-font-weight: 700;
-  --btn-1-hover-background: rgba(var(--main-color), 1);
+  --btn-1-hover-background: #ffb928;
 
-  --btn-2-background: #232530;
-  --btn-2-color: rgba(var(--description-color), 1);
-  --btn-2-hover-background: #2e3140;
+  --btn-2-background: #A6D0F9;
+  --btn-2-color: #000000;
+  --btn-2-hover-background: #BEDCFF;
 
   /* Inputs */
   --input-background: #232530;
   --input-background-hover: #2e3140;
+  --input-border-color: rgba(var(--border-color), 0.6);
+  --input-border-hover-color: rgba(var(--main-color), 0.6);
+
   --input-placeholder-color: rgba(var(--description-color), 0.7);
   --input-color: rgba(var(--description-color), 1);
 

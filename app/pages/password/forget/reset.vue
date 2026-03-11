@@ -286,8 +286,15 @@ onMounted((): void => {
       font-size: 28px;
     }
 
+    a {
+      text-decoration: none;
+    }
+
     .footer button {
       padding: 15px;
+      outline: none;
+      border: none;
+      cursor: pointer;
       border-radius: var(--normal-border-radius);
       background: rgba(var(--error-color), 1);
       color: var(--btn-1-color);

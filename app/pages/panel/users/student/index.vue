@@ -107,9 +107,9 @@ watchEffect((): void => {
                   </NuxtLink>
                 </template>
 
-                <template #additional>
+                <template #additional v-show="currentPage === numberOfPages">
                   <Card class="card">
-                    <NuxtLink class="class" :to="`/panel/users/student/undefined`" v-show="currentPage === numberOfPages">
+                    <NuxtLink class="class" :to="`/panel/users/student/undefined`">
                       <div class="section-head">
                         <span>Nezařazené</span>
                       </div>
