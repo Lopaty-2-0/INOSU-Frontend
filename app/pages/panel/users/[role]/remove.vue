@@ -74,13 +74,9 @@ const removeUsers = async (): Promise<void> => {
           alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Žádný uživatel nebyl odstraněn."});
           break;
         case "3051":
-          alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: `Uživatelé byli úspěšně odstraněni. (${response._data.data.deletedIds.length}/${selectedUsers.value.length})`});
+          alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: `Uživatelé byli úspěšně odstraněni.`});
           if (users.value) {
-            users.value = users.value.filter((user: AccountData) => {
-              return !selectedUsers.value.some(
-                  (selectedUser: AccountData) => selectedUser.id === user.id
-              );
-            });
+            refreshUsers()
 
             resetSelectedUsers();
           }
@@ -112,7 +108,7 @@ const updateActivePage = (): void => {
   if (usersGrid.value) usersGrid.value.updateSelectedItems(selectedUsers.value);
 };
 
-const { data: usersData, error: usersError, pending: usersPending } = useFetch("/api/user/get/role", {
+const { data: usersData, error: usersError, pending: usersPending, refresh: refreshUsers } = useFetch("/api/user/get/role", {
   query: {
     role: role,
     amountForPaging: amountForPaging,

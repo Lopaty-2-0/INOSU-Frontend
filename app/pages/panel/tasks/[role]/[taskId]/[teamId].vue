@@ -172,52 +172,67 @@ const updateTeam = async (): Promise<void> => {
         case "32010":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID úkolu nebylo zadáno." });
           break;
+
         case "32020":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID týmu nebylo zadáno." });
           break;
+
         case "32030":
         case "32040":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID úkolu je neplatné." });
           break;
+
         case "32050":
         case "32060":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID týmu je neplatné." });
           break;
+
         case "32070":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný úkol neexistuje." });
           break;
+
         case "32080":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný tým neexistuje." });
           break;
+
         case "32090":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Neplatný status." });
           break;
+
         case "32100":
+          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Byl dosažen maximální počet variant pro toto téma." });
+          break;
+
         case "32110":
         case "32120":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů je neplatný." });
           break;
+
         case "32130":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nelze udělit více bodů, než má úkol." });
           break;
+
         case "32140":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Komentář je příliš dlouhý." });
           break;
+
         case "32150":
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Název týmu je příliš dlouhý." });
           break;
-        case "32151":
+
+        case "32161":
           alertsStore.addAlert({ type: "success", title: "Úprava týmu", message: "Tým byl úspěšně aktualizován." });
+
           await refreshTeamData();
           resetInputs();
           errors.value = { points: "", review: "" };
           break;
+
         default:
           alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
           break;
       }
     },
-
     onRequestError() {
       alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
     },

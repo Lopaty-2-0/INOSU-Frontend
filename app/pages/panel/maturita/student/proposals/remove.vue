@@ -99,11 +99,11 @@ const removeTasks = async (): Promise<void> => {
 
         case "81051":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění návrhů maturitních zadání", message: `Některá zadání (${badIds.length}) se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: "Odstranění návrhů maturitních zadání", message: `Některá zadání se nepodařilo odstranit.` });
           }
 
           if (goodIds.length > 0) {
-            alertsStore.addAlert({ type: "success", title: "Odstranění návrhů maturitních zadání", message: `Zadání (${goodIds.length}) byla úspěšně odstraněna.` });
+            alertsStore.addAlert({ type: "success", title: "Odstranění návrhů maturitních zadání", message: `Zadání byla úspěšně odstraněna.` });
           }
 
           tasksRefresh();

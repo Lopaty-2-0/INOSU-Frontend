@@ -41,7 +41,7 @@
   --sidebar-log-out-hover-background: #e5e7eb;
 
   --sidebar-notification-background: rgba(var(--warning-color), 1);
-  --sidebar-notification-color: #ffffff;
+  --sidebar-notification-color: #000000;
 
   /* Action bar */
   --actionBar-background: #ffffff;
@@ -117,7 +117,6 @@
   /* Buttons */
   --btn-1-background: #f5a800;
   --btn-1-color: #1f2937;
-  --btn-1-font-weight: 700;
   --btn-1-hover-background: #d99100;
 
   --btn-2-background: #3f6fa0;
@@ -169,7 +168,7 @@
   --actionBar-actions-default-border: 80, 82, 96;
   --actionBar-actions-default-background: 45, 47, 58;
 
-  --actionBar-actions-edit-color: #ffffff;
+  --actionBar-actions-edit-color: #000000;
   --actionBar-actions-edit-border: 166, 208, 249;
   --actionBar-actions-edit-background: 166, 208, 249;
 
@@ -236,7 +235,6 @@
   /* Buttons */
   --btn-1-background: #f5a800;
   --btn-1-color: #000000;
-  --btn-1-font-weight: 700;
   --btn-1-hover-background: #ffb928;
 
   --btn-2-background: #A6D0F9;

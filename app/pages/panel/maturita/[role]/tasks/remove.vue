@@ -90,10 +90,10 @@ const removeTasks = async (): Promise<void> => {
 
         case "28031":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění maturitních zadání", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: "Odstranění maturitních zadání", message: `Některé úkoly se nepodařilo odstranit.` });
           }
 
-          alertsStore.addAlert({ type: "success", title: "Odstranění maturitních zadání", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
+          alertsStore.addAlert({ type: "success", title: "Odstranění maturitních zadání", message: `Úkoly byly úspěšně odstraněny.` });
 
           tasksRefresh();
           resetSelectedTasks();

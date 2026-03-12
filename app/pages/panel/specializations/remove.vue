@@ -83,7 +83,7 @@ const removeSpecializations = async (): Promise<void> => {
           if ((data?.badIds || []).length > 0) {
             alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: `Některá zaměření nebyla odstraněna. Neplatná ID: ${data.badIds.join(", ")}.` });
           } else {
-            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byla úspěšně odstraněna. (${data?.goodIds?.length ?? 0})` });
+            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byla úspěšně odstraněna.` });
           }
           specializationRefresh();
           resetSelectedSpecializations();

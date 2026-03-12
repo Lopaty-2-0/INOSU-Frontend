@@ -91,11 +91,7 @@ const removeUsers = async (): Promise<void> => {
         case "3051":
           alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: "Uživatelé byli úspěšně odstraněni."});
           if (users.value) {
-            users.value = users.value.filter((user: AccountData) => {
-              return !selectedUsers.value.some(
-                  (selectedUser: AccountData) => selectedUser.id === user.id
-              );
-            });
+            refreshUsers();
             resetSelectedUsers();
           }
           break;
@@ -126,7 +122,7 @@ const onUsersSelect = (usersSelected: AccountData[]): void => {
   selectedUsers.value = usersSelected;
 };
 
-const { data: usersData, error: usersError, pending: usersPending } = useFetch(requests.value.url, {
+const { data: usersData, error: usersError, pending: usersPending, refresh: refreshUsers } = useFetch(requests.value.url, {
   query: {
     amountForPaging: amountForPaging,
     pageNumber: currentPage,
