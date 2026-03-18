@@ -332,21 +332,35 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/maturita/st
   lazy: true
 });
 
-const {data: teamData, error: teamError} = useFetch("/api/team/get/info", {
+const {data: teamData, error: teamError, refresh: refreshTeamData, execute: executeTeamData} = useFetch("/api/team/get/info", {
   method: "get",
   server: false,
+  lazy: true,
+  immediate: false,
   credentials: "include",
   query: teamQuery,
-  watch: [teamQuery],
 });
 
-const {data: versionsData, error: versionsError, pending: versionsLoading, refresh: refreshVersions} = useFetch("/api/version_team/get", {
+const {data: versionsData, error: versionsError, pending: versionsLoading, refresh: refreshVersions, execute: executeVersions} = useFetch("/api/version_team/get", {
   method: "get",
   server: false,
+  lazy: true,
   credentials: "include",
   query: versionsQuery,
-  watch: [versionsQuery],
+  immediate: false
 });
+
+watch(versionsQuery, async (query): Promise<void> => {
+  if (!query) return;
+
+  await executeVersions();
+}, { immediate: true });
+
+watch(teamQuery, async (query): Promise<void> => {
+  if (!query) return;
+
+  await executeTeamData();
+}, { immediate: true });
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {

@@ -29,35 +29,40 @@ const loading = ref({
 
 const downloadFile = (response: any): void => {
   const disposition = response.headers.get("content-disposition");
-  let fileName: string = "downloaded_file";
+  let fileName = "downloaded_file";
 
   if (disposition) {
-    const match = disposition.match(/filename="?(.+?)"?$/);
+    const utf8Match = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+    const asciiMatch = disposition.match(/filename="?([^"]+)"?/i);
 
-    if (match?.[1]) {
-      fileName = match[1];
+    if (utf8Match?.[1]) {
+      fileName = decodeURIComponent(utf8Match[1]);
+    } else if (asciiMatch?.[1]) {
+      fileName = asciiMatch[1];
     }
   }
 
+  const contentType = response.headers.get("content-type") || "application/octet-stream";
   const data = response._data;
 
   const blob: Blob =
       data instanceof Blob
           ? data
-          : new Blob(
-              [data],
-              { type: response.headers.get("content-type") || "application/json" }
-          );
+          : data instanceof ArrayBuffer
+              ? new Blob([data], { type: contentType })
+              : typeof data === "string"
+                  ? new Blob([data], { type: contentType })
+                  : new Blob([JSON.stringify(data)], { type: "application/json;charset=utf-8" });
 
-  const link: HTMLAnchorElement = document.createElement("a");
-  link.href = window.URL.createObjectURL(blob);
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
   link.download = fileName;
 
   document.body.appendChild(link);
   link.click();
-
   document.body.removeChild(link);
-  window.URL.revokeObjectURL(link.href);
+  window.URL.revokeObjectURL(url);
 };
 
 const exportUsers = async (): Promise<void> => {

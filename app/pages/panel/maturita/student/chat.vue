@@ -124,9 +124,10 @@ const createNewConversation = async (): Promise<void> => {
 const { data: conversationsData, error: conversationsError, refresh: refreshConversations } = useFetch("/api/conversation/get/participant", {
   method: "get",
   server: false,
+  lazy: true,
+  immediate: false,
   credentials: "include",
   query: conversationsQuery,
-  watch: [conversationsQuery],
 });
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/maturita/student/approved", {
@@ -135,6 +136,12 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/maturita/st
   credentials: "include",
   lazy: true
 });
+
+watch(conversationsQuery, (query): void => {
+  if (!query) return;
+
+  refreshConversations();
+}, { immediate: true });
 
 watch([conversationsData, conversationsError], (): void => {
   if (!conversationsData.value || conversationsError.value) return;
@@ -242,7 +249,7 @@ watchEffect((): void => {
   flex-direction: column;
   gap: 30px;
   position: relative;
-  height: calc(100vh - 140px);
+  height: calc(100dvh - 140px);
 
   .page-navigation {
     height: fit-content;
@@ -255,6 +262,7 @@ watchEffect((): void => {
   .content {
     width: 100%;
     height: 100%;
+    min-height: 600px;
     display: flex;
     flex-direction: column;
     gap: 35px;
@@ -265,18 +273,19 @@ watchEffect((): void => {
       flex-direction: row;
       gap: 30px;
       flex: 1;
-      min-height: 500px;
-      padding-bottom: 30px;
+      min-height: 0;
+      padding-bottom: 0;
 
       .card {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
         justify-content: center;
         height: 100%;
         text-align: center;
         flex: 1;
         gap: 20px;
+        min-height: 0;
 
         .head {
           width: 100%;
@@ -311,6 +320,8 @@ watchEffect((): void => {
         .chat {
           width: 100%;
           flex: 1;
+          min-height: 0;
+          overflow: hidden;
         }
 
         .chat-box {
@@ -323,6 +334,8 @@ watchEffect((): void => {
           padding: 30px;
           align-items: center;
           justify-content: center;
+          min-height: 0;
+          overflow: auto;
 
           button {
             display: flex;
@@ -472,6 +485,20 @@ watchEffect((): void => {
   }
 }
 
+@media (max-height: 750px) {
+  #maturita-task-chat {
+    height: 100%;
+
+    .content {
+      .chats {
+        .chat, .card {
+          height: 400px;
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 900px) {
   #maturita-task-chat {
     height: 100%;
@@ -481,8 +508,10 @@ watchEffect((): void => {
         flex-direction: column;
         padding-bottom: 0;
 
-        .chat, .card {
-          min-height: 400px;
+        .card .chat {
+          flex: auto;
+          height: 400px;
+          min-height: auto;
         }
       }
     }
