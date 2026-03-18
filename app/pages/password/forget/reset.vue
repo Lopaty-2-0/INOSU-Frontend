@@ -286,11 +286,18 @@ onMounted((): void => {
       font-size: 28px;
     }
 
+    a {
+      text-decoration: none;
+    }
+
     .footer button {
       padding: 15px;
+      outline: none;
+      border: none;
+      cursor: pointer;
       border-radius: var(--normal-border-radius);
       background: rgba(var(--error-color), 1);
-      color: var(--btn-1-color);
+      color: var(--btn-2-color);
       transition: 0.2s;
       font-weight: var(--btn-1-font-weight);
       font-size: 16px;

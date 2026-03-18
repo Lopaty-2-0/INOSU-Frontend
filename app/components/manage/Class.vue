@@ -81,7 +81,7 @@ const { data: classesData, error: classesError, pending: classesPending } = useF
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true,
 });

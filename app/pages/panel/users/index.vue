@@ -18,7 +18,7 @@ const allRoles = ref<string[] | undefined>(undefined);
 
 const {data: usersData} = useFetch("/api/user/get/number", {
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -26,7 +26,7 @@ const {data: usersData} = useFetch("/api/user/get/number", {
 const {data: rolesData, error: rolesError} = useFetch("/api/user/get/roles", {
   method: "get",
   credentials: "include",
-  server: true,
+  server: false,
   lazy: true
 });
 

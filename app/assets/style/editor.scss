@@ -1,4 +1,3 @@
-//Editor
 ::v-deep(.ql-container) {
   font-family: var(--main-font-family), system-ui;
   overflow: auto;
@@ -156,6 +155,7 @@
     border: var(--border-width) solid rgba(var(--border-color), 0.5);
     color: var(--btn-2-color);
     background: var(--btn-2-background);
+    cursor: pointer;
     transition: 0.2s;
 
     ::v-deep(.ql-stroke) {

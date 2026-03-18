@@ -278,7 +278,7 @@ const { data: userData, error: userError, refresh: refreshUser } = useFetch("/ap
     id: id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

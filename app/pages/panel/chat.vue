@@ -202,7 +202,7 @@ const { data: conversationsData, error: conversationsError, pending: conversatio
     pageNumber: currentConversationsPage,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -214,7 +214,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
     searchQuery: usersSearchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

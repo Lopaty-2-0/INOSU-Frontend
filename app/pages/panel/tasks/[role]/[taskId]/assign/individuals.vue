@@ -73,7 +73,6 @@ const assignToTask = async (): Promise<void> => {
     credentials: "include",
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode.toString();
-      const goodIds: any[] = response._data.data?.goodIds || [];
       const badIds: any[] = response._data.data?.badIds || [];
       const differentTeam: any[] = response._data.data?.differentTeam || [];
 
@@ -102,12 +101,12 @@ const assignToTask = async (): Promise<void> => {
 
         case "36081":
           if (differentTeam.length > 0)
-            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Někteří uživatelé (${differentTeam.length}) již byli přiřazeni k jinému týmu.` });
+            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Někteří uživatelé již byli přiřazeni k jinému týmu.` });
 
           if (badIds.length > 0)
-            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Některé položky (${badIds.length}) nebylo možné přiřadit.` });
+            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Některé uživatele nebylo možné přiřadit.` });
 
-          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Úkol byl úspěšně přiřazen (${goodIds.length}).` });
+          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Přiřazení úkolu bylo úspěšně aktualizováno.` });
 
           resetSelection();
           break;
@@ -149,7 +148,7 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -162,7 +161,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
     idClass: selectedClass,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

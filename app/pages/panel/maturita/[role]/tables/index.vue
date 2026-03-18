@@ -34,14 +34,14 @@ const { data: tableData, error: tableError, pending: tablePending } = useFetch("
     pageNumber: currentPage,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
 
 const { data: maturitaData, error: maturitaError } = useFetch("/api/maturita/get/current", {
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

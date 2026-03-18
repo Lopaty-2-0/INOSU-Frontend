@@ -248,7 +248,7 @@ const { data: taskData, error: taskError, refresh: refreshTask } = useFetch("/ap
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true,
 });

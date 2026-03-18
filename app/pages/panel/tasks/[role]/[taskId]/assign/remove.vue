@@ -110,7 +110,6 @@ const removeTeams = async (): Promise<void> => {
 
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode?.toString();
-      const goodIds: number[] = response._data.data?.goodIds || [];
       const badIds: any[] = response._data.data?.badIds || [];
 
       switch (resCode) {
@@ -136,9 +135,9 @@ const removeTeams = async (): Promise<void> => {
 
         case "31071":
           if (badIds.length > 0)
-            alertsStore.addAlert({ type: "warning", title: "Odstranění přiřazení", message: `Některá přiřazení (${badIds.length}) se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: "Odstranění přiřazení", message: `Některá přiřazení se nepodařilo odstranit.` });
 
-          alertsStore.addAlert({ type: "success", title: "Odstranění přiřazení", message: `Přiřazení byla úspěšně odstraněna (${goodIds.length}).` });
+          alertsStore.addAlert({ type: "success", title: "Odstranění přiřazení", message: `Přiřazení byla úspěšně odstraněna.` });
 
           usersRefresh();
           teamsRefresh();
@@ -177,7 +176,7 @@ const { data: usersData, error: usersError, pending: usersPending, refresh: user
   },
   lazy: true,
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
 });
 
@@ -191,7 +190,7 @@ const { data: teamsData, error: teamsError, pending: teamsPending, refresh: team
   },
   lazy: true,
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
 });
 
@@ -201,7 +200,7 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

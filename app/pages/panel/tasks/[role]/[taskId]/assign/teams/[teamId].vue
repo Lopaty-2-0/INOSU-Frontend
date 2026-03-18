@@ -218,14 +218,13 @@ const assignToTeam = async (): Promise<void> => {
           break;
 
         case "43101":
-          (response._data.data?.differentTeam?.length > 0) &&
+          if (response._data.data?.differentTeam?.length > 0)
           alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Někteří žáci již patří do jiného týmu. Počet: ${response._data.data.differentTeam.length}` });
 
-          (response._data.data?.badIds?.length > 0) &&
+          if (response._data.data?.badIds?.length > 0)
           alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Některá ID uživatelů jsou neplatná. Počet: ${response._data.data.badIds.length}` });
 
-          (response._data.data?.goodIds?.length > 0) &&
-          alertsStore.addAlert({ type: "success", title: "Přidání do týmu", message: `Do týmu bylo přidáno ${response._data.data.goodIds.length} žáků.` });
+          alertsStore.addAlert({ type: "success", title: "Přidání do týmu", message: `Tým byl úspěšně aktualizován.` });
 
           teamRefresh();
           break;
@@ -270,7 +269,7 @@ const { data: teamData, error: teamError, refresh: teamRefresh } = useFetch("/ap
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -283,7 +282,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
     idClass: selectedClass,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true,
 });

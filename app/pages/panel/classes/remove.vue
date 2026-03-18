@@ -86,7 +86,7 @@ const removeClasses = async (): Promise<void> => {
           if ((data?.badIds || []).length > 0) {
             alertsStore.addAlert({ type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Neplatná ID: ${data.badIds.join(", ")}.` });
           } else {
-            alertsStore.addAlert({ type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny. (${data?.goodIds?.length ?? 0})` });
+            alertsStore.addAlert({ type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny.` });
           }
 
           classesRefresh();
@@ -113,7 +113,7 @@ const { data: classesData, pending: classesTablePending, error: classesError, re
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

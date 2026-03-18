@@ -327,14 +327,14 @@ const uploadNewVersion = async (): Promise<void> => {
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/maturita/student/approved", {
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
 
 const {data: teamData, error: teamError} = useFetch("/api/team/get/info", {
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   query: teamQuery,
   watch: [teamQuery],
@@ -342,7 +342,7 @@ const {data: teamData, error: teamError} = useFetch("/api/team/get/info", {
 
 const {data: versionsData, error: versionsError, pending: versionsLoading, refresh: refreshVersions} = useFetch("/api/version_team/get", {
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   query: versionsQuery,
   watch: [versionsQuery],

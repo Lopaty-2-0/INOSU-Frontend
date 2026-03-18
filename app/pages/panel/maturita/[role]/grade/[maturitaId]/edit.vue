@@ -248,7 +248,7 @@ const { data: maturitaData, error: maturitaError, refresh: refreshMaturita } = u
     id: maturitaId
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -261,7 +261,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
     searchQuery: searchUsersInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

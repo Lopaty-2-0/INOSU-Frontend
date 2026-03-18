@@ -75,7 +75,6 @@ const removeTasks = async (): Promise<void> => {
 
     onResponse({ response }: any) {
       const resCode: string = response._data.resCode?.toString();
-      const goodIds: number[] = response._data.data?.goodIds || [];
       const badIds: any[] = response._data.data?.badIds || [];
 
       switch (resCode) {
@@ -89,9 +88,9 @@ const removeTasks = async (): Promise<void> => {
 
         case "28031":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění úkolů", message: `Některé úkoly (${badIds.length}) se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: "Odstranění úkolů", message: `Některé úkoly se nepodařilo odstranit.` });
           }
-          alertsStore.addAlert({ type: "success", title: "Odstranění úkolů", message: `Úkoly (${goodIds.length}) byly úspěšně odstraněny.` });
+          alertsStore.addAlert({ type: "success", title: "Odstranění úkolů", message: `Úkoly byly úspěšně odstraněny.` });
 
           tasksRefresh();
           resetSelectedTasks();
@@ -118,7 +117,7 @@ const { data: tasksData, error: tasksError, pending: tasksPending, refresh: task
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
