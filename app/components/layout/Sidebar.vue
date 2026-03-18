@@ -394,7 +394,7 @@ if (!["admin", "teacher"].includes(role.value)) {
 
 <style lang="scss" scoped>
 #sidebar {
-  height: 100svh;
+  height: 100dvh;
   position: fixed;
   background: var(--sidebar-background);
   width: 250px;
