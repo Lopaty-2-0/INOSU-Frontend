@@ -325,7 +325,7 @@ watchEffect((): void => {
   flex-direction: row;
   gap: 30px;
   position: relative;
-  height: calc(100svh - 140px);
+  height: calc(100dvh - 140px);
 
   .conversations {
     position: relative;
