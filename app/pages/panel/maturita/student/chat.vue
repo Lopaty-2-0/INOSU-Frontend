@@ -123,7 +123,7 @@ const createNewConversation = async (): Promise<void> => {
 
 const { data: conversationsData, error: conversationsError, refresh: refreshConversations } = useFetch("/api/conversation/get/participant", {
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   query: conversationsQuery,
   watch: [conversationsQuery],
@@ -131,7 +131,7 @@ const { data: conversationsData, error: conversationsError, refresh: refreshConv
 
 const { data: taskData, error: taskError } = useFetch("/api/task/get/maturita/student/approved", {
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

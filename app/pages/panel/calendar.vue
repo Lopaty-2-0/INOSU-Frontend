@@ -434,7 +434,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
     searchQuery: usersSearchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true,
   immediate: ["admin", "teacher"].includes(role.value),
@@ -443,7 +443,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
 const { data: dotsData, error: dotsError, refresh: refreshDots } = useFetch("/api/event/get/week", {
   query: weekRange,
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true,
   immediate: false

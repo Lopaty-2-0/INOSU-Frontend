@@ -269,7 +269,7 @@ const { data: teamData, error: teamError, refresh: teamRefresh } = useFetch("/ap
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -282,7 +282,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
     idClass: selectedClass,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true,
 });

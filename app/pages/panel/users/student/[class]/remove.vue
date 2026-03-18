@@ -130,7 +130,7 @@ const { data: usersData, error: usersError, pending: usersPending, refresh: refr
     ...requests.value.query
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

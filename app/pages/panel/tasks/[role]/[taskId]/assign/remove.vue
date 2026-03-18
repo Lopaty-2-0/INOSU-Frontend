@@ -176,7 +176,7 @@ const { data: usersData, error: usersError, pending: usersPending, refresh: user
   },
   lazy: true,
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
 });
 
@@ -190,7 +190,7 @@ const { data: teamsData, error: teamsError, pending: teamsPending, refresh: team
   },
   lazy: true,
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
 });
 
@@ -200,7 +200,7 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

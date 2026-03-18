@@ -115,7 +115,7 @@ const { data: maturitaData, pending: maturitaTablePending, error: maturitaError,
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

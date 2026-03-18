@@ -223,7 +223,7 @@ const {data: specializationsData, error: specializationsError} = useFetch("/api/
   },
   method: "get",
   credentials: "include",
-  server: true,
+  server: false,
   ignoreResponseError: true,
   lazy: true
 });

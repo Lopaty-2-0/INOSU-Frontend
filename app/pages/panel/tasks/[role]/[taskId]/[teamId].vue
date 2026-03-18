@@ -248,7 +248,7 @@ const { data: teamData, error: teamError, refresh: refreshTeamData } = useFetch(
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -258,7 +258,7 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -272,7 +272,7 @@ const { data: versionsData, error: versionsError, pending: versionsLoading } = u
     pageNumber: versionsActivePage,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

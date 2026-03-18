@@ -116,7 +116,7 @@ const { data: specializationData, pending: specializationTablePending, error: sp
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

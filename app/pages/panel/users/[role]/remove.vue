@@ -116,7 +116,7 @@ const { data: usersData, error: usersError, pending: usersPending, refresh: refr
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

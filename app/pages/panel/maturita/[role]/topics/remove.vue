@@ -115,7 +115,7 @@ const { data: topicData, pending: topicTablePending, error: topicError, refresh:
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

@@ -41,7 +41,7 @@ const { data: topicData, pending: topicTablePending, error: topicError } = useFe
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

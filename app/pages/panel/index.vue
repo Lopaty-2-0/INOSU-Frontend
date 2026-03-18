@@ -77,6 +77,7 @@ const {data: studentsCount} = useFetch("/api/user/get/count/byRole?role=student"
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  server: false,
   lazy: true
 });
 
@@ -84,6 +85,7 @@ const {data: teachersCount} = useFetch("/api/user/get/count/byRole?role=teacher"
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  server: false,
   lazy: true
 });
 
@@ -91,6 +93,7 @@ const {data: classesCount} = useFetch("/api/class/count", {
   method: "get",
   credentials: "include",
   ignoreResponseError: true,
+  server: false,
   lazy: true
 });
 
@@ -123,6 +126,7 @@ onMounted(async (): Promise<void> => {
       method: "get",
       credentials: "include",
       ignoreResponseError: true,
+      server: false,
       lazy: true,
       onResponse({response}: any) {
         const tasks: TaskData[] = response._data.data.tasks.slice(0, 5) || [];
@@ -140,6 +144,7 @@ onMounted(async (): Promise<void> => {
       method: "get",
       credentials: "include",
       ignoreResponseError: true,
+      server: false,
       lazy: true,
       onResponse({response}: any) {
         const userTeams: TaskData[] = response._data.data.user_teams;

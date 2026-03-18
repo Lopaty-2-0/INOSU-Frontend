@@ -148,7 +148,7 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -161,7 +161,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
     idClass: selectedClass,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

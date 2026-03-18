@@ -237,7 +237,7 @@ const { data: taskData, error: taskError, refresh: refreshTask } = useFetch("/ap
     guarantor: guarantorId,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true,
 });
@@ -249,7 +249,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
     searchQuery: searchUsersInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

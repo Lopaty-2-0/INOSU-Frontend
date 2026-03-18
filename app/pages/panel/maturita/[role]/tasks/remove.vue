@@ -120,14 +120,14 @@ const { data: tasksData, error: tasksError, pending: tasksPending, refresh: task
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
 
 const { data: maturitaData, error: maturitaError, pending: maturitaPending } = useFetch("/api/maturita/get/current", {
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

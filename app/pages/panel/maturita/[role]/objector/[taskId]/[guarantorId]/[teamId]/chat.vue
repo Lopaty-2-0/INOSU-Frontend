@@ -122,7 +122,7 @@ const { data: conversationsData, error: conversationsError, refresh: refreshConv
     guarantor: guarantorId,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -133,7 +133,7 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
     guarantor: guarantorId,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

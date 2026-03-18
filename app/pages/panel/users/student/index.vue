@@ -30,7 +30,7 @@ const { data: classesData, error: classesError } = useFetch("/api/class/get", {
     pageNumber: currentPage,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

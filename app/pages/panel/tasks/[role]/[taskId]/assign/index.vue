@@ -135,7 +135,7 @@ const { data: classesData, pending: classesPending, error: classesError } = useF
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
@@ -146,7 +146,7 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
     guarantor: accountData.value.id,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

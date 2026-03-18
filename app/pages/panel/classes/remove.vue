@@ -113,7 +113,7 @@ const { data: classesData, pending: classesTablePending, error: classesError, re
     searchQuery: searchInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });

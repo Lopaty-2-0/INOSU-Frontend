@@ -240,7 +240,7 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
     searchQuery: searchUsersInput,
   },
   method: "get",
-  server: true,
+  server: false,
   credentials: "include",
   lazy: true
 });
