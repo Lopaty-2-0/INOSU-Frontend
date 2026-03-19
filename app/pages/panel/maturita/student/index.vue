@@ -411,7 +411,7 @@ watch([teamData, teamError], async (): Promise<void> => {
 });
 
 watchEffect((): void => {
-  useLoadingStore().setLoading("dataLoading", !task.value && !taskError.value || !teamError.value && !teamTaskData.value || taskNotExists.value === undefined);
+  useLoadingStore().setLoading("dataLoading", taskNotExists.value === undefined || (!taskNotExists.value && (!task.value && !taskError.value || !teamError.value && !teamTaskData.value)));
 });
 </script>
 

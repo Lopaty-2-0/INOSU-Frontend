@@ -78,23 +78,29 @@ const submitForm = async (): Promise<void> => {
           break;
         case "14020":
           messages.value.form = {
-            message: "Účet nebyl nalezen",
+            message: "E-mail je příliš velký",
             type: "error",
           };
           break;
         case "14030":
           messages.value.form = {
-            message: "Chybí nové heslo",
+            message: "Účet nebyl nalezen",
             type: "error",
           };
           break;
         case "14040":
           messages.value.form = {
+            message: "Chybí nové heslo",
+            type: "error",
+          };
+          break;
+        case "14050":
+          messages.value.form = {
             message: "Nové heslo musí mít nejméně 5 znaků",
             type: "error",
           };
           break;
-        case "14051":
+        case "14061":
           messages.value.form = {
             message: "Heslo bylo úspěšně změněno",
             type: "success",
