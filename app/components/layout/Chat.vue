@@ -540,6 +540,7 @@ watch(conversation, (): void => {
         white-space: pre-wrap;
         max-width: 100%;
         word-wrap: break-word;
+        word-break: break-all;
       }
     }
   }
