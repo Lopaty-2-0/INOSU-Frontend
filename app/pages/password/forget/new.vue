@@ -73,7 +73,13 @@ const submitForm = async (): Promise<void> => {
             message: "Tento e-mail nebyl nalezen",
           };
           break;
-        case "12041":
+        case "12040":
+          messages.value.form = {
+            message: "E-mail není přiřazen k žádnému uživateli",
+            type: "success",
+          };
+          break;
+        case "12051":
           messages.value.form = {
             message: "E-mail byl odeslán",
             type: "success",
