@@ -26,10 +26,12 @@ const route = useRoute();
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Maturitní zadání - " + taskId + " - Úpravení",
+  title: t('pages.maturita.tasksEdit.title'),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.maturita.tasksEdit.description') }
   ],
 });
 
@@ -119,28 +121,28 @@ const updateTask = async (): Promise<void> => {
 
       switch (resCode) {
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Nahraný soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.fileTooBig') });
           break;
         case "74010":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Tato role nemůže upravovat úkol." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.noPermission') });
           break;
 
         case "74020":
         case "74030":
         case "74040":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Chyba ID úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.idError') });
           break;
 
         case "74050":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Úkol nenalezen nebo k němu nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.notFound') });
           break;
 
         case "74060":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Název úkolu je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.nameTooLong') });
           break;
 
         case "74070":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Špatný formát souboru nebo příliš dlouhý název." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.fileBadFormat') });
           break;
 
         case "74080":
@@ -148,12 +150,12 @@ const updateTask = async (): Promise<void> => {
         case "74100":
         case "74110":
         case "74120":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Chyba s datem ukončení nebo uzávěrkou." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.dateError') });
           break;
 
         case "74130":
         case "74140":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Body nejsou platné nebo ve špatném formátu." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.pointsError') });
           break;
 
         case "74150":
@@ -161,14 +163,14 @@ const updateTask = async (): Promise<void> => {
         case "74170":
         case "74180":
         case "74190":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Oponent je neplatný nebo nemá oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.objectorError') });
           break;
 
         case "74201":
           if (data.uploadUrl && newData.value.taskFile) {
             const alert: Alert = {
-              title: "Nahrávání souboru",
-              message: "Probíhá nahrávání souboru...",
+              title: t('settings.info.alerts.uploadFile.title'),
+              message: t('settings.info.alerts.uploadFile.uploading'),
               type: "info",
               infinite: true,
               canClose: false,
@@ -180,8 +182,8 @@ const updateTask = async (): Promise<void> => {
             upload(newData.value.taskFile, data.uploadUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Soubor byl úspěšně nahrán.",
+                title: t('settings.info.alerts.uploadFile.title'),
+                message: t('settings.info.alerts.uploadFile.success'),
                 type: "success"
               });
 
@@ -199,14 +201,14 @@ const updateTask = async (): Promise<void> => {
 
                   switch (resCode) {
                     case "84110":
-                      alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Soubor nebyl nalezen na úložišti." });
+                      alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.fileNotFound') });
                       return;
                     case "84121":
                       await refreshTask();
                       resetUserData();
                       break;
                     default:
-                      alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Nastala neznámá chyba při ukládání." });
+                      alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.savingError') });
                       break;
                   }
                 },
@@ -215,26 +217,26 @@ const updateTask = async (): Promise<void> => {
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Nastala chyba při nahrávání souboru.",
+                title: t('settings.info.alerts.uploadFile.title'),
+                message: t('settings.info.alerts.uploadFile.error'),
                 type: "error"
               });
             });
           }
 
-          alertsStore.addAlert({ type: "success", title: "Úprava maturitního zadání", message: "Maturitní zadání bylo úspěšně upraveno." });
+          alertsStore.addAlert({ type: "success", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.success') });
 
           await refreshTask();
           resetUserData();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Úprava maturitního zadání", message: "Nepodařilo se spojit se serverem." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.tasks.edit.alerts.editMaturitaTask.title'), message: t('maturita.tasks.edit.alerts.editMaturitaTask.serverError') });
     },
   }).finally((): void => {
     loading.value = false;
@@ -320,8 +322,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditName ref="editName" :old-name="oldData.name" @update="onNameUpdate">
               <div class="section-head">
-                <h3>Název <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
-                <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+                <h3>Název <span class="update" v-show="newData.name">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('maturita.tasks.edit.nameDescription') }}</p>
               </div>
             </EditName>
           </div>
@@ -329,8 +331,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditTaskFile ref="editTaskFile" :max-size-m-b="32" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
-                <h3>Zadání <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
-                <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
+                <h3>{{ t('maturita.tasks.edit.fileHeading') }} <span class="update" v-show="newData.taskFile">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('maturita.tasks.edit.fileDescription') }}</p>
               </div>
             </EditTaskFile>
           </div>
@@ -338,10 +340,10 @@ watchEffect((): void => {
           <div class="page-section">
             <div class="line">
               <div class="section-head users">
-                <h3>Oponent <span class="update" v-show="newData.objector?.[0] && newData.objector?.[0] !== oldData.objector?.id">(aktualizováno)</span></h3>
+                <h3>{{ t('maturita.tasks.edit.guarantorHeading') }} <span class="update" v-show="newData.objector?.[0] && newData.objector?.[0] !== oldData.objector?.id">{{ t('common.updated') }}</span></h3>
               </div>
 
-              <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
+              <SearchInput @change="onUsersSearchInputChange" :placeholder="t('maturita.tasks.edit.searchPlaceholder')" />
             </div>
 
             <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="newData.objector" :users="users || []" :loading="usersPending" />

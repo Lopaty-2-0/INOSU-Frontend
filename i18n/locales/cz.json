@@ -28,5 +28,2476 @@
         "unknown": "Nastala neznámá chyba"
       }
     }
+  },
+  "sidebar": {
+    "logo": {
+      "title": "INOSU",
+      "subtitle": "INformační a Organizační Systém Úloh"
+    },
+    "sections": {
+      "main": "Hlavní",
+      "maturita": "Maturita",
+      "data": "Data",
+      "other": "Ostatní"
+    },
+    "links": {
+      "home": "Domů",
+      "tasks": "Úkoly",
+      "calendar": "Kalendář",
+      "chat": "Chat",
+      "specializations": "Zaměření",
+      "classes": "Třídy",
+      "users": "Uživatelé",
+      "maturitas": "Maturity",
+      "assignments": "Zadání",
+      "objector": "Oponentura",
+      "proposals": "Návrhy",
+      "topics": "Témata",
+      "tables": "Tabulky",
+      "import": "Import",
+      "export": "Export",
+      "settings": "Nastavení"
+    },
+    "logout": "Odhlásit se",
+    "alerts": {
+      "logout": {
+        "title": "Odhlášení",
+        "unknown": "Nastala neznámá chyba."
+      }
+    }
+  },
+  "navbar": {
+    "loggedInAs": "Přihlášen jako",
+    "loading": "Načítání"
+  },
+  "home": {
+    "title": "Domů",
+    "infoCards": {
+      "title": "Informativní karty",
+      "description": "Informativní karty slouží k rychlému nalezení zajímavých údajů z panelu.",
+      "students": "Počet studentů",
+      "classes": "Počet tříd",
+      "teachers": "Počet učitelů"
+    },
+    "quickLinks": {
+      "title": "Rychlé odkazy",
+      "createdTasks": "Vytvořené úkoly",
+      "students": "Žáci",
+      "changePassword": "Změna hesla",
+      "activeTasks": "Aktivní úkoly",
+      "teachers": "Učitelé"
+    },
+    "tasks": {
+      "titleTeacher": "Vytvořené úkoly",
+      "titleStudent": "Rozpracované úkoly",
+      "descriptionTeacher": "Rychlý přístup do vašich vytvořených úkolů.",
+      "descriptionStudent": "Rychlý přístup do vašich rozpracovaných úkolů.",
+      "open": "Otevřít",
+      "noAssignment": "Žádné zadání"
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "noConversations": "Žádné konverzace nenalezeny. Založte novou konverzaci pomocí pole výše.",
+    "noConversationSelected": "Žádná konverzace není vybrána. Vyberte konverzaci ze seznamu vlevo nebo založte novou.",
+    "newConversationPlaceholder": "Založte novou konverzaci",
+    "unknown": "Neurčeno",
+    "loadOlder": "Načíst starší",
+    "replyTo": "Odpověď na:",
+    "noMessages": "Zatím nebyly poslány žádné zprávy.",
+    "messagePlaceholder": "Napište zprávu...",
+    "alerts": {
+      "removeConversation": {
+        "title": "Odstranění konverzace",
+        "noId": "ID konverzace nebylo zadáno.",
+        "invalidId": "ID konverzace je neplatné.",
+        "noUserId": "ID uživatele nebylo zadáno.",
+        "invalidUserId": "ID uživatele je neplatné.",
+        "notFound": "Konverzace nebyla nalezena nebo ji nelze odstranit.",
+        "success": "Konverzace byla úspěšně odstraněna.",
+        "unknown": "Nastala neznámá chyba."
+      },
+      "createConversation": {
+        "title": "Vytvoření konverzace",
+        "noUserId": "ID uživatele nebylo zadáno.",
+        "invalidUserId": "ID uživatele je neplatné.",
+        "userNotFound": "Uživatel nebyl nalezen.",
+        "selfConversation": "Nelze vytvořit konverzaci se sebou samým.",
+        "invalidTaskId": "ID úkolu je neplatné.",
+        "invalidGuarantor": "Garant je neplatný.",
+        "taskNotFound": "Úkol nebyl nalezen.",
+        "onlyMaturita": "Konverzaci lze vytvořit pouze pro maturitní úkol.",
+        "archivedTask": "Nelze vytvořit konverzaci k ukončenému zadání.",
+        "forbidden": "Tito uživatelé nemohou vytvořit konverzaci pro tento úkol.",
+        "alreadyExists": "Tito uživatelé již mezi sebou konverzaci mají.",
+        "success": "Konverzace byla úspěšně vytvořena.",
+        "unknown": "Nastala neznámá chyba."
+      },
+      "removeMessage": {
+        "title": "Smazání zprávy",
+        "noConversationId": "ID konverzace nebylo zadáno.",
+        "noMessageId": "ID zprávy nebylo zadáno.",
+        "noUserId": "ID uživatele nebylo zadáno.",
+        "invalidConversationId": "ID konverzace musí být číslo.",
+        "invalidConversationIdValue": "ID konverzace je neplatné.",
+        "invalidMessageId": "ID zprávy musí být číslo.",
+        "invalidMessageIdValue": "ID zprávy je neplatné.",
+        "invalidUserId": "ID uživatele musí být číslo.",
+        "invalidUserIdValue": "ID uživatele je neplatné.",
+        "conversationNotFound": "Konverzace nebyla nalezena.",
+        "archived": "V této archivované konverzaci nelze mazat zprávy.",
+        "messageNotFound": "Zpráva nebyla nalezena.",
+        "forbidden": "Tuto zprávu nelze smazat.",
+        "success": "Zpráva byla úspěšně smazána.",
+        "unknown": "Nastala neznámá chyba."
+      },
+      "sendMessage": {
+        "title": "Odeslání zprávy",
+        "noConversationId": "ID konverzace nebylo zadáno.",
+        "noUserId": "ID uživatele nebylo zadáno.",
+        "invalidConversationId": "ID konverzace musí být číslo.",
+        "invalidConversationIdValue": "ID konverzace je neplatné.",
+        "invalidUserId": "ID uživatele musí být číslo.",
+        "invalidUserIdValue": "ID uživatele je neplatné.",
+        "noMessage": "Zpráva nebyla zadána.",
+        "messageTooLong": "Zpráva je příliš dlouhá.",
+        "conversationNotFound": "Konverzace nebyla nalezena.",
+        "archived": "Do této konverzace nelze psát (je archivovaná).",
+        "invalidReplyId": "Odpovídaná zpráva musí být číslo.",
+        "invalidReplyIdValue": "Odpovídaná zpráva je neplatná.",
+        "replyNotFound": "Zpráva, na kterou odpovídáte, neexistuje.",
+        "success": "Zpráva byla úspěšně odeslána.",
+        "unknown": "Nastala neznámá chyba."
+      }
+    }
+  },
+  "calendar": {
+    "title": "Kalendář",
+    "noDay": "Nebyl vybrán žádný den, pro zobrazování událostí vyberte den z kalendáře.",
+    "noEvents": "Pro tento den nebyly nalezeny žádné události.",
+    "undefined": "Nedefinováno",
+    "requiredNote": "Pole označená * jsou povinná",
+    "timeAt": "v {time}",
+    "timeUntil": "do {time}",
+    "timeFromTo": "od {start} do {end}",
+    "dayNumber": "{day}. den",
+    "form": {
+      "name": "Název *",
+      "nameDescription": "Zadejte název události, který bude zobrazen v kalendáři.",
+      "timeRange": "Časové rozmezí",
+      "timeRangeDescription": "Vyberte den a čas trvání události.",
+      "type": "Typ",
+      "typeDescription": "Vyberte typ události pro lepší přehled v kalendáři.",
+      "user": "Uživatel",
+      "userDescription": "Vyberte uživatele, pro kterého chcete událost vytvořit.",
+      "description": "Popis",
+      "descriptionDescription": "Přidejte nepovinný popis události.",
+      "day": "Den *",
+      "from": "Od",
+      "to": "Do *",
+      "eventTypes": {
+        "personal": "Osobní",
+        "task": "Úkol"
+      },
+      "placeholders": {
+        "type": "Vyberte typ události",
+        "user": "Vyberte uživatele",
+        "name": "Odevzdat úkol",
+        "description": "Zadejte popis události"
+      },
+      "errors": {
+        "nameRequired": "Název události musí být zadán.",
+        "descriptionTooLong": "Popis události je příliš dlouhý (max: 500 znaků)."
+      }
+    },
+    "alerts": {
+      "createEvent": {
+        "title": "Vytvoření události",
+        "formErrors": "Opravte chyby ve formuláři.",
+        "required": "Název a čas ukončení události musí být zadány.",
+        "noName": "Název události nebyl zadán.",
+        "noEndTime": "Čas ukončení události nebyl zadán.",
+        "invalidUserId": "ID uživatele musí být číslo.",
+        "invalidUserIdValue": "ID uživatele je neplatné.",
+        "userNotFound": "Uživatel nebyl nalezen.",
+        "invalidEndDate": "Neplatný formát data ukončení.",
+        "endInPast": "Čas ukončení musí být v budoucnosti.",
+        "invalidStartDate": "Neplatný formát data začátku.",
+        "sameDayRequired": "Začátek a konec musí být ve stejný den.",
+        "startInPast": "Čas začátku musí být v budoucnosti.",
+        "endAfterStart": "Čas ukončení musí být po začátku.",
+        "invalidType": "Neplatný typ události.",
+        "forbiddenType": "Tento typ události nemůžete použít.",
+        "nameTooLong": "Název události je příliš dlouhý.",
+        "descriptionTooLong": "Popis události je příliš dlouhý.",
+        "success": "Událost byla úspěšně vytvořena.",
+        "unknown": "Nastala neznámá chyba."
+      },
+      "removeEvent": {
+        "title": "Odstranění události",
+        "noId": "ID události nebylo zadáno.",
+        "noneRemoved": "Žádná událost nebyla odstraněna.",
+        "success": "Událost byla úspěšně odstraněna.",
+        "unknown": "Nastala neznámá chyba."
+      }
+    }
+  },
+  "settings": {
+    "title": "Nastavení",
+    "tabs": {
+      "info": "Údaje",
+      "security": "Zabezpečení",
+      "customization": "Přizpůsobení"
+    },
+    "info": {
+      "profilePicture": {
+        "title": "Profilová fotka",
+        "description": "Zde můžete změnit svou profilovou fotku. Nahrajte nový obrázek, pokud si přejete aktualizovat stávající profilovou fotografii."
+      },
+      "reminders": {
+        "title": "Připomínky",
+        "description": "Zde můžete zapnout nebo vypnout připomínky na úkoly. Pokud je povolíte, budete dostávat do e-mailu upozornění na nadcházející úkoly a termíny."
+      },
+      "alerts": {
+        "uploadFile": {
+          "title": "Nahrávání souboru",
+          "uploading": "Probíhá nahrávání souboru...",
+          "success": "Soubor byl úspěšně nahrán.",
+          "error": "Nastala chyba při nahrávání souboru."
+        },
+        "updateInfo": {
+          "title": "Změna údajů",
+          "fileTooLarge": "Nahraný soubor je příliš velký.",
+          "nothingToUpdate": "Nic nebylo zadáno k úpravě.",
+          "unsupportedFormat": "Nepodporovaný formát obrázku.",
+          "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+          "savingError": "Nastala neznámá chyba při ukládání.",
+          "success": "Údaje byly úspěšně aktualizovány.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      }
+    },
+    "security": {
+      "passwordReset": {
+        "title": "Resetování hesla",
+        "description": "Zadejte nové heslo podle doporučených pravidel níže.",
+        "rules": {
+          "title": "Doporučená pravidla hesla",
+          "minLength": "Obsahuje minimálně 5 znaků",
+          "charTypes": "Obsahuje 2 až 3 znaky: velké, malé, čísla",
+          "specialChar": "Obsahuje aspoň 1 speciální znak: {'@'}, #, $, %, &, *, +, =",
+          "noSpaces": "Neobsahuje žádné mezery",
+          "noPersonalInfo": "Neobsahuje žádné osobní informace"
+        }
+      },
+      "alerts": {
+        "changePassword": {
+          "title": "Změna hesla",
+          "noOldPassword": "Staré heslo nebylo zadáno.",
+          "noNewPassword": "Nové heslo nebylo zadáno.",
+          "wrongOldPassword": "Nesprávné staré heslo.",
+          "tooShort": "Nové heslo musí mít minimálně 5 znaků.",
+          "success": "Heslo bylo úspěšně změněno.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      }
+    },
+    "customization": {
+      "themeMode": {
+        "title": "Tématický režim",
+        "description": "Zvolte preferovaný vzhled rozhraní. Vyberte si mezi světlým, tmavým nebo systémovým režimem podle svých potřeb.",
+        "light": {
+          "title": "Světlý",
+          "description": "Váš panel bude mít světlý motiv"
+        },
+        "dark": {
+          "title": "Tmavý",
+          "description": "Váš panel bude mít tmavý motiv"
+        },
+        "system": {
+          "title": "Systém",
+          "description": "Motiv bude podle systému vašeho zařízení"
+        }
+      },
+      "language": {
+        "title": "Jazyk rozhraní",
+        "description": "Vyberte preferovaný jazyk pro uživatelské rozhraní aplikace."
+      },
+      "customLinks": {
+        "linkTextPlaceholder": "YouTube",
+        "linkUrlPlaceholder": "https://www.youtube.com/",
+        "title": "Vlastní odkazy",
+        "description": "Zde můžete spravovat své vlastní odkazy, které se zobrazí v uživatelském rozhraní. Přidejte, upravte nebo odeberte odkazy podle svých preferencí.",
+        "count": "Počet odkazů",
+        "noLinks": "Nemáte vytvořené žádné vlastní odkazy.",
+        "labels": {
+          "text": "Text",
+          "link": "Odkaz"
+        },
+        "alerts": {
+          "title": "Vlastní odkazy",
+          "maxLinks": "Nelze přidat více než 5 odkazů."
+        }
+      }
+    }
+  },
+  "export": {
+    "title": "Export",
+    "users": {
+      "title": "Export uživatelů",
+      "description": "Exportujte seznam všech uživatelů systému do souboru."
+    },
+    "classes": {
+      "title": "Export tříd",
+      "description": "Exportujte seznam všech tříd do souboru."
+    },
+    "specializations": {
+      "title": "Export zaměření",
+      "description": "Exportujte seznam všech zaměření do souboru."
+    },
+    "maturitas": {
+      "title": "Export maturit",
+      "description": "Exportujte seznam všech maturit do souboru."
+    },
+    "maturitaTopics": {
+      "title": "Export maturitních témat",
+      "description": "Exportujte seznam všech maturitních témat do souboru."
+    },
+    "maturitaTable": {
+      "title": "Export maturitní tabulky",
+      "description": "Exportujte kompletní maturitní tabulku do formátu Excel."
+    },
+    "exportButton": "Exportovat",
+    "alerts": {
+      "noPermission": "Nemáte oprávnění k této akci.",
+      "unknown": "Nastala neznámá chyba."
+    }
+  },
+  "import": {
+    "title": "Import",
+    "navigation": {
+      "users": "Uživatelé",
+      "classes": "Třídy",
+      "specializations": "Zaměření",
+      "maturitas": "Maturity",
+      "maturitaTopics": "Maturitní témata"
+    },
+    "users": {
+      "title": "Import uživatelů",
+      "description": "Importujte seznam uživatelů ze souboru JSON."
+    },
+    "classes": {
+      "title": "Import tříd",
+      "description": "Importujte seznam tříd ze souboru JSON.",
+      "alerts": {
+        "uploadClasses": {
+          "title": "Nahrání tříd",
+          "noFile": "Nebyl vybrán žádný soubor.",
+          "noPermission": "Na tuto akci nemáte oprávnění.",
+          "fileNotUploaded": "Soubor s daty nebyl nahrán.",
+          "wrongFormat": "Nahraný soubor je ve špatném formátu.",
+          "tooLarge": "Nahraný soubor je příliš velký.",
+          "empty": "Nahraný soubor je prázdný.",
+          "invalidJson": "Nahraný soubor má neplatný json formát.",
+          "noneCreated": "Žádná třída nebyla vytvořena.",
+          "success": "Třídy byly úspěšně vytvořeny.",
+          "unknown": "Nastala neznámá chyba."
+        },
+        "classErrors": {
+          "noValue": "Není vyplněna žádná hodnota.",
+          "gradeNotInteger": "Ročník musí být celé číslo.",
+          "groupInvalid": "Skupina může mít maximálně 1 znak a nesmí být již použita.",
+          "specializationIdNotInteger": "ID zaměření musí být celé číslo.",
+          "specializationNotFound": "Zaměření s tímto ID nebylo nalezeno.",
+          "gradeTooHigh": "Ročník je příliš vysoké číslo.",
+          "nameTooLong": "Název je příliš dlouhý nebo se již používá."
+        }
+      }
+    },
+    "maturitas": {
+      "title": "Import maturit",
+      "description": "Importujte seznam maturitních ročníků ze souboru JSON.",
+      "alerts": {
+        "uploadMaturitas": {
+          "title": "Nahrání maturit",
+          "noFile": "Nebyl vybrán žádný soubor.",
+          "noPermission": "Na tuto akci nemáte oprávnění.",
+          "fileNotUploaded": "Soubor nebyl nahrán.",
+          "wrongFormat": "Soubor má špatný formát.",
+          "tooLarge": "Soubor je příliš velký.",
+          "empty": "Soubor je prázdný.",
+          "invalidJson": "Soubor obsahuje neplatný JSON.",
+          "noneCreated": "Žádný maturitní ročník nebyl vytvořen.",
+          "success": "Maturitní ročníky byly úspěšně vytvořeny.",
+          "unknown": "Nastala neznámá chyba."
+        },
+        "maturitaErrors": {
+          "missingFields": "Některé povinné hodnoty chybí.",
+          "gradeTooLong": "Ročník je příliš dlouhý nebo se již používá.",
+          "maxPointsNotNumber": "Maximální počet bodů musí být číslo.",
+          "maxPointsInvalid": "Maximální počet bodů je neplatný.",
+          "endDateInvalid": "Datum ukončení je neplatné.",
+          "startDateInvalid": "Datum začátku je neplatné.",
+          "endBeforeStart": "Datum ukončení musí být po datu začátku.",
+          "invalidEvaluators": "Někteří hodnotitelé jsou neplatní."
+        }
+      }
+    },
+    "maturitaTopics": {
+      "title": "Import maturitních témat",
+      "description": "Importujte seznam maturitních témat ze souboru JSON.",
+      "alerts": {
+        "uploadMaturitaTopics": {
+          "title": "Nahrání maturitních témat",
+          "noFile": "Nebyl vybrán žádný soubor.",
+          "noPermission": "Na tuto akci nemáte oprávnění.",
+          "fileNotUploaded": "Soubor nebyl nahrán.",
+          "wrongFormat": "Soubor má špatný formát.",
+          "tooLarge": "Soubor je příliš velký.",
+          "empty": "Soubor je prázdný.",
+          "invalidJson": "Soubor obsahuje neplatný JSON.",
+          "noneCreated": "Žádné maturitní zadání nebylo vytvořeno.",
+          "success": "Maturitní zadání byla úspěšně vytvořena.",
+          "unknown": "Nastala neznámá chyba."
+        },
+        "topicErrors": {
+          "noName": "Název nebyl zadán.",
+          "nameTooLong": "Název je příliš dlouhý nebo se již používá."
+        }
+      }
+    },
+    "specializations": {
+      "title": "Import zaměření",
+      "description": "Importujte seznam zaměření ze souboru JSON.",
+      "alerts": {
+        "uploadSpecializations": {
+          "title": "Nahrání zaměření",
+          "noFile": "Nebyl vybrán žádný soubor.",
+          "noPermission": "Na tuto akci nemáte oprávnění.",
+          "fileNotUploaded": "Soubor s daty nebyl nahrán.",
+          "wrongFormat": "Nahraný soubor je ve špatném formátu.",
+          "tooLarge": "Nahraný soubor je příliš velký.",
+          "empty": "Nahraný soubor je prázdný.",
+          "invalidJson": "Nahraný soubor má neplatný json formát.",
+          "noneCreated": "Žádná specializace nebyla vytvořena.",
+          "success": "Specializace byly vytvořeny.",
+          "unknown": "Nastala neznámá chyba."
+        },
+        "specializationErrors": {
+          "noValue": "Není vyplněna žádná hodnota.",
+          "studyLengthNotInteger": "Délka studia musí být celé číslo.",
+          "studyLengthInvalid": "Délka studia musí být větší než 0 a v povoleném rozsahu.",
+          "abbreviationInvalid": "Zkratka může mít maximálně 1 znak a nesmí být již použita.",
+          "nameTooLong": "Název může mít maximálně 45 znaků a nesmí být již použit."
+        }
+      }
+    },
+    "filePlaceholder": "Vyberte soubor pro import dat",
+    "errorNumber": "Číslo:",
+    "updated": "(aktualizováno)",
+    "alerts": {
+      "uploadUsers": {
+        "title": "Nahrání uživatelů",
+        "noFile": "Nebyl vybrán žádný soubor.",
+        "noPermission": "Na tuto akci nemáte oprávnění.",
+        "fileNotUploaded": "Soubor nebyl nahrán.",
+        "wrongFormat": "Soubor má špatný formát.",
+        "tooLarge": "Soubor je příliš velký.",
+        "empty": "Soubor je prázdný.",
+        "invalidJson": "Soubor obsahuje neplatný JSON.",
+        "noneCreated": "Žádný uživatel nebyl vytvořen.",
+        "success": "Uživatelé byli úspěšně vytvořeni.",
+        "unknown": "Nastala neznámá chyba."
+      },
+      "userErrors": {
+        "missingFields": "Některé povinné hodnoty chybí.",
+        "nameTooLong": "Jméno je příliš dlouhé.",
+        "surnameTooLong": "Příjmení je příliš dlouhé.",
+        "invalidRole": "Neplatná role uživatele.",
+        "passwordTooShort": "Heslo je příliš krátké.",
+        "invalidEmail": "Email je neplatný, příliš dlouhý nebo již existuje.",
+        "abbreviationTooLong": "Zkratka je příliš dlouhá.",
+        "abbreviationInUse": "Zkratka se již používá.",
+        "invalidClassIds": "Některé ID tříd jsou neplatné."
+      }
+    }
+  },
+  "pages": {
+    "login": {
+      "title": "Panel | Přihlášení",
+      "description": "Přihlašovací stránka panelu"
+    },
+    "home": {
+      "title": "Panel | Domů",
+      "description": "Domovská stránka panelu"
+    },
+    "chat": {
+      "title": "Panel | Chat",
+      "description": "Chatovací stránka panelu"
+    },
+    "export": {
+      "title": "Panel | Export dat",
+      "description": "Stránka exportu dat"
+    },
+    "error403": {
+      "title": "Panel | Přístup odepřen",
+      "description": "Stránka přístupu odepřen"
+    },
+    "settings": {
+      "info": {
+        "title": "Panel | Nastavení - Údaje",
+        "description": "Stránka nastavení"
+      },
+      "security": {
+        "title": "Panel | Nastavení - Zabezpečení",
+        "description": "Stránka zabezpečení"
+      },
+      "customization": {
+        "title": "Panel | Nastavení - Přizpůsobení",
+        "description": "Stránka přizpůsobení"
+      }
+    },
+    "forgotPassword": {
+      "title": "Panel | Zapomenuté heslo",
+      "description": "Stránka pro zapomenuté heslo"
+    },
+    "resetPassword": {
+      "title": "Panel | Resetování hesla",
+      "description": "Stránka pro resetování hesla"
+    },
+    "import": {
+      "title": "Panel | Import dat - Uživatelé",
+      "description": "Stránka importu dat",
+      "classes": {
+        "title": "Panel | Import dat - Třídy",
+        "description": "Stránka pro import tříd"
+      },
+      "maturitas": {
+        "title": "Panel | Import dat - Maturity",
+        "description": "Stránka pro import maturit"
+      },
+      "maturitaTopics": {
+        "title": "Panel | Import dat - Maturitní témata",
+        "description": "Stránka pro import maturitních témat"
+      },
+      "specializations": {
+        "title": "Panel | Import dat - Zaměření",
+        "description": "Stránka pro import zaměření"
+      }
+    },
+    "calendar": {
+      "title": "Panel | Kalendář",
+      "description": "Stránka kalendáře"
+    },
+    "classes": {
+      "add": {
+        "title": "Panel | Třídy - Přidání",
+        "description": "Stránka pro přidání třídy"
+      },
+      "index": {
+        "title": "Panel | Třídy",
+        "description": "Správa tříd v systému"
+      },
+      "remove": {
+        "title": "Panel | Třídy - Odstranění",
+        "description": "Stránka pro odstranění tříd"
+      }
+    },
+    "specializations": {
+      "index": {
+        "title": "Panel | Zaměření",
+        "description": "Správa zaměření v systému"
+      },
+      "add": {
+        "title": "Panel | Zaměření - Přidání",
+        "description": "Stránka pro přidání zaměření"
+      },
+      "remove": {
+        "title": "Panel | Zaměření - Odstranění",
+        "description": "Stránka pro odstranění zaměření"
+      }
+    },
+    "users": {
+      "index": {
+        "title": "Panel | Uživatelé",
+        "description": "Přehled všech uživatelů v systému"
+      },
+      "studentIndex": {
+        "title": "Panel | Uživatelé - student",
+        "description": "Přehled studentů filtrovaný podle třídy"
+      },
+      "studentClass": {
+        "title": "Panel | Uživatelé - Třída: {classId}",
+        "description": "Přehled uživatelů dané třídy"
+      },
+      "studentClassEdit": {
+        "title": "Panel | Upravení uživatelů - Třída: {classId}",
+        "description": "Stránka pro úpravu uživatelů dané třídy"
+      },
+      "studentClassRemove": {
+        "title": "Panel | Odstranění uživatelů - Třída: {classId}",
+        "description": "Stránka pro odstranění uživatelů dané třídy"
+      },
+      "roleIndex": {
+        "title": "Panel | Uživatelé - {role}",
+        "description": "Přehled uživatelů dané role"
+      },
+      "roleEdit": {
+        "title": "Panel | Upravení uživatelů - {role}",
+        "description": "Stránka pro výběr uživatele k úpravě"
+      },
+      "roleEditDetail": {
+        "title": "Panel | Upravení uživatele - {id}",
+        "description": "Stránka pro úpravu uživatele"
+      },
+      "roleRemove": {
+        "title": "Panel | Odstranění uživatelů - {role}",
+        "description": "Stránka pro odstranění uživatelů dané role"
+      },
+      "add": {
+        "title": "Panel | Uživatelé - Přidání",
+        "description": "Stránka pro přidání uživatele"
+      }
+    },
+    "tasks": {
+      "roleIndex": {
+        "title": "Panel | Úkoly",
+        "description": "Seznam vytvořených úkolů"
+      },
+      "roleAdd": {
+        "title": "Panel | Úkol - Přidání",
+        "description": "Stránka pro přidání úkolu"
+      },
+      "roleRemove": {
+        "title": "Panel | Úkoly - Odstranění",
+        "description": "Stránka pro odstranění úkolů"
+      },
+      "roleTask": {
+        "title": "Panel | Úkol - {taskId}",
+        "description": "Detail úkolu"
+      },
+      "roleTaskEdit": {
+        "title": "Panel | Úkol - {taskId} - Upravení",
+        "description": "Stránka pro úpravu úkolu"
+      },
+      "roleTaskTeam": {
+        "title": "Panel | Úkol - {taskId} - Tým - {teamId}",
+        "description": "Detail týmu přiřazeného k úkolu"
+      },
+      "studentIndex": {
+        "title": "Panel | Úkoly",
+        "description": "Seznam přiřazených úkolů studenta"
+      },
+      "studentTeam": {
+        "title": "Panel | Úkol - {taskId} - Přiřazení",
+        "description": "Detail přiřazení studenta k úkolu"
+      },
+      "assignClasses": {
+        "title": "Panel | Úkol - {taskId} - Přiřazení - Třídy",
+        "description": "Stránka pro přiřazení tříd k úkolu"
+      },
+      "assignIndividuals": {
+        "title": "Panel | Úkol - {taskId} - Přiřazení - Jednotlivci",
+        "description": "Stránka pro přiřazení jednotlivců k úkolu"
+      },
+      "assignRemove": {
+        "title": "Panel | Úkol - {taskId} - Odstranění přiřazení",
+        "description": "Stránka pro odstranění přiřazení k úkolu"
+      },
+      "assignTeams": {
+        "title": "Panel | Úkol - {taskId} - Přiřazení - Týmy",
+        "description": "Stránka pro správu týmů k úkolu"
+      },
+      "assignTeamEdit": {
+        "title": "Panel | Úkol - {taskId} - Upravení týmu",
+        "description": "Stránka pro úpravu týmu"
+      }
+    },
+    "maturita": {
+      "gradeIndex": {
+        "title": "Panel | Maturitní ročníky",
+        "description": "Správa maturitních ročníků v systému"
+      },
+      "gradeAdd": {
+        "title": "Panel | Maturitní ročníky - Přidání",
+        "description": "Stránka pro přidání maturitního ročníku"
+      },
+      "gradeRemove": {
+        "title": "Panel | Maturitní ročníky - Odstranění",
+        "description": "Stránka pro odstranění maturitních ročníků"
+      },
+      "gradeEdit": {
+        "title": "Panel | Maturitní ročník - {maturitaId} - Úpravení",
+        "description": "Stránka pro úpravu maturitního ročníku"
+      },
+      "topicsIndex": {
+        "title": "Panel | Témata maturitních prací",
+        "description": "Správa maturitních témat v systému"
+      },
+      "topicsAdd": {
+        "title": "Panel | Témata maturitních prací - Přidávání",
+        "description": "Stránka pro přidání maturitního tématu"
+      },
+      "topicsRemove": {
+        "title": "Panel | Témata maturitních prací - Odstranění",
+        "description": "Stránka pro odstranění maturitních témat"
+      },
+      "tasksIndex": {
+        "title": "Panel | Maturitní zadání",
+        "description": "Správa maturitních zadání"
+      },
+      "tasksAdd": {
+        "title": "Panel | Maturitní zadání - Přidání",
+        "description": "Stránka pro přidání maturitního zadání"
+      },
+      "tasksRemove": {
+        "title": "Panel | Maturitní zadání - Odstranění",
+        "description": "Stránka pro odstranění maturitních zadání"
+      },
+      "tasksEdit": {
+        "title": "Panel | Maturitní zadání - Úpravení",
+        "description": "Stránka pro úpravu maturitního zadání"
+      },
+      "proposalsIndex": {
+        "title": "Panel | Návrhy maturitních zadání",
+        "description": "Správa návrhů maturitních zadání"
+      },
+      "proposalsAdd": {
+        "title": "Panel | Návrh maturitního zadání - Přidání",
+        "description": "Stránka pro přidání návrhu maturitního zadání"
+      },
+      "proposalsRejected": {
+        "title": "Panel | Návrhy maturitních zadání - Zamítnuté",
+        "description": "Stránka se zamítnutými návrhy maturitních zadání"
+      },
+      "proposalsRemove": {
+        "title": "Panel | Návrhy maturitních zadání - Odstranění",
+        "description": "Stránka pro odstranění návrhů maturitních zadání"
+      },
+      "proposalsEdit": {
+        "title": "Panel | Maturitní zadání - Úpravení",
+        "description": "Stránka pro úpravu návrhu maturitního zadání"
+      },
+      "teamIndex": {
+        "title": "Panel | Maturitní zadání - {taskId}",
+        "description": "Správa maturitního zadání týmu"
+      },
+      "teamChat": {
+        "title": "Panel | Maturitní zadání - {taskId} - Chat",
+        "description": "Chat k maturitnímu zadání"
+      },
+      "objectorIndex": {
+        "title": "Panel | Oponentura",
+        "description": "Seznam maturitních zadání k oponentuře"
+      },
+      "objectorTeam": {
+        "title": "Panel | Oponentura zadání - {taskId}",
+        "description": "Správa oponentury maturitního zadání"
+      },
+      "objectorChat": {
+        "title": "Panel | Oponentura zadání - {taskId} - Chat",
+        "description": "Chat k oponentuře maturitního zadání"
+      },
+      "tablesIndex": {
+        "title": "Panel | Tabulka maturitních zadání",
+        "description": "Tabulka přehledu maturitních zadání"
+      },
+      "tablesEvaluators": {
+        "title": "Panel | Tabulka maturitních hodnotitelů",
+        "description": "Tabulka hodnotitelů maturitních prací"
+      },
+      "proposalsRole": {
+        "title": "Panel | Návrhy maturitních zadání",
+        "description": "Správa návrhů maturitních zadání"
+      },
+      "studentIndex": {
+        "title": "Panel | Maturitní zadání",
+        "description": "Maturitní zadání studenta"
+      },
+      "studentChat": {
+        "title": "Panel | Maturitní zadání - Chat",
+        "description": "Chat k maturitnímu zadání studenta"
+      }
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "Přístup odepřen",
+      "description": "Nemáte dostatečná oprávnění pro zobrazení této stránky.",
+      "back": "Vrátit zpět"
+    }
+  },
+  "common": {
+    "updated": "(aktualizováno)",
+    "unknown": "Nastala neznámá chyba.",
+    "noPermission": "Nemáte oprávnění k této akci.",
+    "undetermined": "Neurčeno",
+    "noAssignment": "Žádné zadání",
+    "noRecords": "Žádný záznam nebyl zobrazen!",
+    "noData": "Žádná data k dispozici",
+    "pasteUrl": {
+      "title": "Vložení URL",
+      "unsupported": "Váš prohlížeč nepodporuje vkládání."
+    }
+  },
+  "localePicker": {
+    "placeholder": "Vyberte jazyk"
+  },
+  "manage": {
+    "class": {
+      "label": "Výběr tříd",
+      "placeholder": "Vyberte třídu",
+      "noData": "Žádná třída nebyla nalezena"
+    },
+    "footer": {
+      "save": "Uložit změny",
+      "reset": "Resetovat změny"
+    },
+    "email": {
+      "label": "E-mail",
+      "placeholder": "example.email{'@'}gmail.com",
+      "errors": {
+        "invalidFormat": "Špatný formát e-mailu"
+      }
+    },
+    "fullName": {
+      "firstName": {
+        "label": "Jméno",
+        "placeholder": "Jan"
+      },
+      "lastName": {
+        "label": "Příjmení",
+        "placeholder": "Novák"
+      }
+    },
+    "abbreviation": {
+      "label": "Přezdívka",
+      "placeholder": "JANO",
+      "errors": {
+        "tooLong": "Délka přezdívky může být max 4 znaky.",
+        "cantGenerate": "Ze jména a příjmení nelze vygenerovat přezdívku."
+      }
+    },
+    "name": {
+      "label": "Název",
+      "placeholder": "Zadejte název"
+    },
+    "role": {
+      "label": "Role"
+    },
+    "reminders": {
+      "label": "Dostávat připomínky"
+    },
+    "password": {
+      "currentLabel": "Staré heslo",
+      "passwordLabel": "Heslo",
+      "newLabel": "Nové heslo",
+      "placeholder": "******",
+      "errors": {
+        "tooShort": "Heslo musí mít alespoň 5 znaků."
+      }
+    },
+    "profilePicture": {
+      "alt": "Profilová fotka",
+      "urlLabel": "URL obrázku",
+      "urlPlaceholder": "https://example.image/image.png",
+      "uploadPlaceholder": "Klikni pro nahrání souboru z počítače",
+      "errors": {
+        "unsupportedType": "Nepodporovaný typ souboru. Povoleny jsou pouze jpg, png nebo gif.",
+        "readFailed": "Nepodařilo se přečíst soubor.",
+        "urlLoadFailed": "Nepodařilo se načíst obrázek z URL adresy."
+      }
+    },
+    "dateTime": {
+      "label": "Datum a čas"
+    }
+  },
+  "tables": {
+    "columns": {
+      "id": "ID",
+      "name": "Název",
+      "start": "Začátek",
+      "end": "Konec",
+      "deadline": "Uzávěrka",
+      "maxPoints": "Max bodů",
+      "assignment": "Zadání",
+      "actions": "Akce",
+      "fullName": "Jméno a příjmení",
+      "email": "E-mail",
+      "abbreviation": "Zkratka",
+      "createdAt": "Vytvořen",
+      "class": "Třída",
+      "grade": "Ročník",
+      "group": "Skupina",
+      "specialization": "Zaměření (zkratka)"
+    }
+  },
+  "actionBar": {
+    "description": "Akční bar",
+    "add": "Přidat",
+    "edit": "Upravit",
+    "remove": "Odstranit"
+  },
+  "pagination": {
+    "back": "Zpět",
+    "next": "Další"
+  },
+  "fileInput": {
+    "placeholder": "Klikni pro nahrání souboru z počítače",
+    "selectedFile": "Soubor: {title}",
+    "errors": {
+      "unsupportedFormat": "Nepodporovaný formát souboru. (povolené: {accept})",
+      "tooLarge": "Soubor je příliš velký. (max: {maxSize}MB)"
+    }
+  },
+  "forgotPassword": {
+    "title": "Zapomenuté heslo",
+    "emailPlaceholder": "example{'@'}email.com",
+    "description": "Zadejte e-mail pro zaslání odkazu pro resetování.",
+    "emailLabel": "E-mail",
+    "submitButton": "Zaslat e-mail",
+    "rememberedLink": "Vzpomněli jste si?",
+    "validation": {
+      "invalidEmail": "Špatný formát e-mailu",
+      "emailRequired": "Zadejte váš e-mail"
+    },
+    "responses": {
+      "noEmail": "E-mail nebyl zadán",
+      "invalidFormat": "Špatný formát e-mailu",
+      "emailNotFound": "Tento e-mail nebyl nalezen",
+      "noUser": "E-mail není přiřazen k žádnému uživateli",
+      "sent": "E-mail byl odeslán",
+      "unknown": "Nastala neznámá chyba"
+    }
+  },
+  "resetPassword": {
+    "title": "Změna hesla",
+    "description": "Resetujte si heslo k vašemu účtu zadáním nového hesla",
+    "newPasswordLabel": "Nové heslo",
+    "repeatPasswordLabel": "Heslo znovu",
+    "submitButton": "Změnit heslo",
+    "doneLink": "Máte změněno?",
+    "invalidToken": {
+      "title": "Token je neplatný",
+      "description": "Token pro resetování hesla je neplatný nebo vypršel, je potřeba vytvořit nový token a zkusit to znovu",
+      "retryButton": "Zkusit znovu"
+    },
+    "validation": {
+      "tooShort": "Nové heslo musí mít nejméně 5 znaků",
+      "required": "Zadejte nové heslo",
+      "repeatRequired": "Zadejte heslo znovu",
+      "mismatch": "Hesla se neshodují"
+    },
+    "responses": {
+      "invalidEmail": "Špatný formát e-mailu",
+      "emailTooLarge": "E-mail je příliš velký",
+      "accountNotFound": "Účet nebyl nalezen",
+      "noNewPassword": "Chybí nové heslo",
+      "tooShort": "Nové heslo musí mít nejméně 5 znaků",
+      "success": "Heslo bylo úspěšně změněno",
+      "unknown": "Nastala neznámá chyba"
+    }
+  },
+  "classes": {
+    "add": {
+      "alerts": {
+        "createClass": {
+          "title": "Vytvoření třídy",
+          "emptyFields": "Některá pole jsou prázdná.",
+          "hasErrors": "Některá pole obsahují chyby.",
+          "noPermission": "Nemáte oprávnění k této akci.",
+          "noGrade": "Ročník chybí.",
+          "noGroup": "Skupina chybí.",
+          "noSpecialization": "Zaměření chybí.",
+          "noName": "Název třídy chybí.",
+          "invalidGrade": "Ročník musí být celé číslo.",
+          "gradeTooLarge": "Ročník musí být kladné číslo v povoleném rozsahu.",
+          "groupTooLong": "Skupina může mít maximálně 1 znak.",
+          "invalidSpecialization": "Zaměření musí být číslo.",
+          "invalidSpecializationValue": "Zaměření má neplatnou hodnotu.",
+          "specializationNotFound": "Zvolené zaměření neexistuje.",
+          "gradeExceedsLength": "Ročník přesahuje délku studia zaměření.",
+          "nameTooLong": "Název třídy je příliš dlouhý.",
+          "nameInUse": "Název třídy je již používán.",
+          "success": "Třída byla úspěšně vytvořena.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      },
+      "errors": {
+        "nameRequired": "Název třídy je povinný.",
+        "gradeRequired": "Ročník třídy je povinný.",
+        "gradeMin": "Ročník třídy musí být větší než 0.",
+        "groupRequired": "Skupina třídy je povinná.",
+        "groupTooLong": "Skupina třídy musí být maximálně 1 znak.",
+        "specializationRequired": "Zaměření třídy je povinné."
+      },
+      "sections": {
+        "name": {
+          "title": "Název *",
+          "description": "Zadejte název nové třídy. Název by měl být unikátní a jasně identifikovat třídu v systému.",
+          "label": "Název"
+        },
+        "specialization": {
+          "title": "Zaměření *",
+          "description": "Vyberte zaměření, ke kterému bude nová třída přiřazena. Můžete filtrovat podle názvu, zkratky nebo délky studia.",
+          "label": "Výběr zaměření",
+          "placeholder": "Vyberte zaměření",
+          "noData": "Žádné zaměření nebylo nalezeno"
+        },
+        "grade": {
+          "title": "Ročník *",
+          "description": "Zadejte ročník, do kterého nová třída patří. Ročník musí být celé číslo větší než 0 a nesmí přesahovat délku studia zvoleného zaměření.",
+          "label": "Ročník"
+        },
+        "group": {
+          "title": "Skupina *",
+          "description": "Zadejte označení skupiny, například písmeno A. Skupina musí být tvořena právě jedním znakem.",
+          "label": "Skupina"
+        }
+      },
+      "actionBar": {
+        "description": "Správa tříd",
+        "add": "Přidat",
+        "remove": "Odebrat"
+      },
+      "breadcrumb": {
+        "create": "Vytvoření"
+      }
+    },
+    "index": {
+      "heading": "Všechny třídy",
+      "description": "Zde najdete seznam všech tříd v systému.",
+      "searchPlaceholder": "Hledat třídy"
+    },
+    "remove": {
+      "heading": "Vybrané třídy: {count}",
+      "description": "Vyberte třídy, které chcete trvale odstranit ze systému.",
+      "searchPlaceholder": "Hledat třídy",
+      "removeBtn": "Odstranit",
+      "cancelBtn": "Zrušit vše",
+      "breadcrumb": "Odstranění",
+      "alerts": {
+        "removeClass": {
+          "title": "Odstranění tříd",
+          "noPermission": "Nemáte oprávnění k této akci.",
+          "noneSelected": "Žádná třída nebyla vybrána.",
+          "noneRemoved": "Některé třídy nebyly odstraněny. Neplatná ID: {ids}.",
+          "success": "Třídy byly úspěšně odstraněny.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      }
+    }
+  },
+  "specializations": {
+    "index": {
+      "heading": "Všechny zaměření",
+      "description": "Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.",
+      "searchPlaceholder": "Hledat zaměření"
+    },
+    "actionBar": {
+      "description": "Správa zaměření",
+      "add": "Přidat",
+      "remove": "Odebrat"
+    },
+    "add": {
+      "breadcrumb": "Vytvoření",
+      "saveBtn": "Uložit změny",
+      "resetBtn": "Resetovat změny",
+      "sections": {
+        "name": {
+          "title": "Název *",
+          "description": "Zadejte název zaměření, které chcete přidat. Název musí být jedinečný.",
+          "label": "Název",
+          "placeholder": "Informační technologie"
+        },
+        "abbreviation": {
+          "title": "Zkratka *",
+          "description": "Zadejte jednopísmennou zkratku zaměření. Zkratka musí být unikátní.",
+          "label": "Zkratka",
+          "placeholder": "V"
+        },
+        "lengthOfStudy": {
+          "title": "Délka studia *",
+          "description": "Zadejte délku studia v letech. Minimální hodnota je 1 rok.",
+          "label": "Délka studia"
+        }
+      },
+      "errors": {
+        "nameRequired": "Název zaměření je povinný.",
+        "lengthOfStudyRequired": "Délka studia je povinná.",
+        "lengthOfStudyMin": "Délka studia musí být větší než 0.",
+        "abbreviationRequired": "Zkratka zaměření je povinná.",
+        "abbreviationTooLong": "Zkratka zaměření může mít maximálně 1 znak."
+      },
+      "alerts": {
+        "addSpecialization": {
+          "title": "Přidání zaměření",
+          "fillRequired": "Vyplňte všechna povinná pole.",
+          "hasErrors": "Opravte chyby ve formuláři.",
+          "noPermission": "Nemáte oprávnění k této akci.",
+          "noName": "Název zaměření chybí.",
+          "noAbbreviation": "Zkratka zaměření chybí.",
+          "abbreviationTooLong": "Zkratka zaměření je příliš dlouhá.",
+          "nameTooLong": "Název zaměření je příliš dlouhý.",
+          "nameInUse": "Název zaměření je již používán.",
+          "abbreviationInUse": "Zkratka zaměření je již používána.",
+          "noLengthOfStudy": "Délka studia chybí.",
+          "invalidLengthOfStudy": "Délka studia musí být celé číslo.",
+          "lengthOfStudyMin": "Délka studia musí být kladné číslo v povoleném rozsahu.",
+          "success": "Zaměření bylo úspěšně vytvořeno.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      }
+    },
+    "remove": {
+      "heading": "Vybraná zaměření: {count}",
+      "description": "Vyberte zaměření, která chcete odstranit ze systému. Po potvrzení budou vybraná zaměření trvale smazána.",
+      "searchPlaceholder": "Hledat zaměření",
+      "removeBtn": "Odstranit",
+      "cancelBtn": "Zrušit vše",
+      "breadcrumb": "Odstranění",
+      "alerts": {
+        "removeSpecialization": {
+          "title": "Odstranění zaměření",
+          "noPermission": "Nemáte oprávnění k této akci.",
+          "noneSelected": "Chybí ID zaměření.",
+          "noneRemoved": "Nepodařilo se odstranit žádné zaměření.",
+          "success": "Zaměření byla úspěšně odstraněna.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      }
+    }
+  },
+  "users": {
+    "add": {
+      "alerts": {
+        "addUser": {
+          "title": "Přidání uživatele",
+          "fillRequired": "Vyplňte všechna povinná pole.",
+          "noPermission": "Nemáte oprávnění k této akci.",
+          "noName": "Jméno nebylo zadáno.",
+          "nameTooLong": "Jméno je příliš dlouhé.",
+          "noSurname": "Příjmení nebylo zadáno.",
+          "surnameTooLong": "Příjmení je příliš dlouhé.",
+          "noRole": "Role nebyla zadána.",
+          "invalidRole": "Role je neplatná.",
+          "noPassword": "Heslo nebylo zadáno.",
+          "passwordTooShort": "Heslo je příliš krátké.",
+          "noEmail": "E-mail nebyl zadán.",
+          "invalidEmail": "Špatný formát e-mailu.",
+          "emailTooLong": "E-mail je příliš dlouhý.",
+          "emailInUse": "E-mail je již používán.",
+          "abbreviationInUse": "Zkratka je již používána.",
+          "abbreviationTooLong": "Zkratka je příliš dlouhá.",
+          "success": "Uživatel byl úspěšně přidán.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      },
+      "sections": {
+        "fullName": {
+          "title": "Jméno a příjmení *",
+          "description": "Zadejte jméno a příjmení nového uživatele. Tato pole jsou povinná."
+        },
+        "email": {
+          "title": "E-mail *",
+          "description": "Zadejte e-mailovou adresu nového uživatele. Toto pole je povinné a musí být ve správném formátu."
+        },
+        "password": {
+          "title": "Heslo k účtu *",
+          "description": "Zadejte silné heslo pro nového uživatele. Heslo musí splňovat bezpečnostní požadavky a je povinné."
+        },
+        "role": {
+          "title": "Role *",
+          "description": "Vyberte roli, kterou má mít nový uživatel. Toto pole je povinné."
+        },
+        "abbreviation": {
+          "title": "Přezdívka",
+          "description": "Zadejte přezdívku (zkratku) pro nového uživatele. Toto pole je volitelné, ale musí být jedinečné."
+        },
+        "classes": {
+          "title": "Třídy",
+          "description": "Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.",
+          "roleError": "Třídy můžete vybírat pouze pokud role uživatele je student."
+        }
+      },
+      "breadcrumb": {
+        "add": "Přidání"
+      },
+      "requiredNote": "Pole označená * jsou povinná"
+    },
+    "index": {
+      "title": "Uživatelé",
+      "heading": "Celkem uživatelů: {count}",
+      "description": "Zde najdete souhrn všech registrovaných uživatelů v systému.",
+      "notLoaded": "nenačteno",
+      "roleHeading": "Role uživatelů",
+      "admins": "Administrátoři",
+      "teachers": "Učitelé",
+      "students": "Studenti"
+    },
+    "student": {
+      "breadcrumb": "Studenti",
+      "index": {
+        "title": "Uživatelé - studenti",
+        "heading": "Celkem tříd: {count}",
+        "description": "Zde vidíte všechny studenty, které můžete filtrovat podle třídy.",
+        "classesHeading": "Třídy",
+        "unassigned": "Nezařazené"
+      },
+      "class": {
+        "index": {
+          "title": "Uživatelé - Třída: {classId}",
+          "heading": "Celkem uživatelů: {count}",
+          "description": "Zde vidíte uživatele dané role a třídě. Použijte vyhledávání pro rychlé filtrování seznamu.",
+          "searchPlaceholder": "Hledat uživatele",
+          "abbreviationLabel": "Přezdívka:",
+          "noAbbreviation": "Není",
+          "createdLabel": "Vytvořen:"
+        },
+        "edit": {
+          "title": "Upravení uživatelů - Třída: {classId}",
+          "heading": "Upravení uživatelů",
+          "description": "Zde si můžete vybrat uživatele, kterého chcete upravit.",
+          "abbreviationLabel": "Přezdívka:",
+          "noAbbreviation": "Není"
+        },
+        "remove": {
+          "title": "Odstranění uživatelů - Třída: {classId}",
+          "heading": "Vybraní uživatelé: {count}",
+          "description": "Vyberte uživatele, které chcete odstranit, nebo použijte vyhledávání pro zúžení výběru.",
+          "searchPlaceholder": "Hledat uživatele",
+          "abbreviationLabel": "Přezdívka:",
+          "noAbbreviation": "Není",
+          "removeBtn": "Odstranit",
+          "cancelBtn": "Zrušit vše",
+          "alerts": {
+            "removeUsers": {
+              "title": "Odstranění uživatelů",
+              "noPermission": "Nemáte oprávnění k této akci.",
+              "noneSelected": "Žádný uživatel nebyl vybrán.",
+              "cannotRemoveSelf": "Nemůžete odstranit sami sebe.",
+              "noneRemoved": "Nebyl odstraněn žádný uživatel.",
+              "success": "Uživatelé byli úspěšně odstraněni.",
+              "unknown": "Nastala neznámá chyba."
+            }
+          }
+        }
+      }
+    },
+    "role": {
+      "index": {
+        "title": "Uživatelé - {role}",
+        "heading": "Celkem uživatelů: {count}",
+        "description": "Zde vidíte uživatele dané role. Použijte vyhledávání pro rychlé filtrování seznamu.",
+        "searchPlaceholder": "Hledat uživatele",
+        "abbreviationLabel": "Přezdívka:",
+        "noAbbreviation": "Není"
+      },
+      "edit": {
+        "index": {
+          "title": "Upravení uživatelů - {role}",
+          "heading": "Upravení uživatelů",
+          "description": "Zde si můžete vybrat uživatele, kterého chcete upravit.",
+          "abbreviationLabel": "Přezdívka:",
+          "noAbbreviation": "Není"
+        },
+        "detail": {
+          "title": "Upravení uživatele - {id}",
+          "profilePicture": {
+            "heading": "Profilová fotka",
+            "description": "Zde můžete změnit profilovou fotku uživatele. Nahrajte novou fotku, pokud si přejete aktualizovat stávající obrázek."
+          },
+          "fullName": {
+            "heading": "Jméno a příjmení",
+            "description": "Zadejte nové jméno a příjmení uživatele, pokud je chcete změnit."
+          },
+          "email": {
+            "heading": "E-mail",
+            "description": "Zadejte novou e-mailovou adresu uživatele, pokud ji chcete změnit."
+          },
+          "password": {
+            "heading": "Heslo k účtu",
+            "description": "Zadejte nové heslo, pokud chcete uživateli změnit přístupové údaje. Heslo musí splňovat bezpečnostní požadavky."
+          },
+          "role": {
+            "heading": "Role",
+            "description": "Zvolte roli, kterou má uživatel mít. Role určuje oprávnění a možnosti uživatele v systému."
+          },
+          "abbreviation": {
+            "heading": "Přezdívka",
+            "description": "Zadejte novou přezdívku uživatele, pokud ji chcete změnit. Přezdívka slouží jako zkratka jména například pro rychlou identifikaci."
+          },
+          "classes": {
+            "heading": "Třídy",
+            "description": "Vyberte třídu nebo více tříd, které chcete uživateli přiřadit.",
+            "roleError": "Třídy můžete vybírat pouze pokud role uživatele je student."
+          },
+          "alerts": {
+            "updateUser": {
+              "title": "Úprava uživatele",
+              "fileTooLarge": "Nahraný soubor je příliš velký.",
+              "nothingToUpdate": "Nebylo zadáno nic k úpravě.",
+              "unsupportedFormat": "Špatný formát souboru.",
+              "success": "Uživatel byl úspěšně upraven.",
+              "noPermission": "Nemáte oprávnění k této akci.",
+              "idNotNumber": "ID uživatele není číslo.",
+              "invalidId": "ID uživatele není platné.",
+              "userNotFound": "Uživatel nebyl nalezen.",
+              "nameTooLong": "Jméno je příliš dlouhé.",
+              "surnameTooLong": "Příjmení je příliš dlouhé.",
+              "abbreviationInUse": "Zkratka je již používána.",
+              "abbreviationTooLong": "Zkratka je příliš dlouhá.",
+              "invalidEmail": "Špatný formát e-mailu.",
+              "emailInUse": "E-mail je již používán.",
+              "emailTooLong": "E-mail je příliš dlouhý.",
+              "unknown": "Nastala neznámá chyba."
+            },
+            "uploadFile": {
+              "title": "Nahrávání souboru",
+              "uploading": "Probíhá nahrávání souboru...",
+              "success": "Soubor byl úspěšně nahrán.",
+              "error": "Nastala chyba při nahrávání souboru."
+            },
+            "savePfp": {
+              "title": "Úprava uživatele",
+              "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+              "savingError": "Nastala neznámá chyba při ukládání."
+            }
+          }
+        }
+      },
+      "remove": {
+        "title": "Odstranění uživatelů - {role}",
+        "heading": "Vybraní uživatelé: {count}",
+        "description": "Vyberte uživatele, které chcete odstranit, nebo použijte vyhledávání pro zúžení výběru.",
+        "searchPlaceholder": "Hledat uživatele",
+        "abbreviationLabel": "Přezdívka:",
+        "noAbbreviation": "Není",
+        "removeBtn": "Odstranit",
+        "cancelBtn": "Zrušit vše",
+        "alerts": {
+          "removeUsers": {
+            "title": "Odstranění uživatelů",
+            "noPermission": "Nemáte oprávnění k této akci.",
+            "noneSelected": "Žádný uživatel nebyl vybrán.",
+            "cannotRemoveSelf": "Nemůžete odstranit sám sebe.",
+            "noneRemoved": "Žádný uživatel nebyl odstraněn.",
+            "success": "Uživatelé byli úspěšně odstraněni.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      }
+    }
+  },
+  "tasks": {
+    "role": {
+      "index": {
+        "heading": "Vytvořené úkoly",
+        "description": "Seznam vašich vytvořených úkolů, s kterými můžete pracovat.",
+        "searchPlaceholder": "Hledat úkol",
+        "openBtn": "Otevřít",
+        "editBtn": "Upravit",
+        "assignBtn": "Přiřadit"
+      },
+      "add": {
+        "heading": "Správa úkolů",
+        "description": "Přidejte nový úkol",
+        "fileHeading": "Zadání *",
+        "fileDescription": "Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.",
+        "timeRangeHeading": "Časové rozmezí úkolu",
+        "timeRangeDescription": "Zadejte časové rozmezí, ve kterém bude úkol aktivní. Studenti budou moci úkol odevzdávat pouze v tomto období. Uzávěrka určuje termín, do kterého lze přiložit vypracování úkolu.",
+        "endLabel": "Konec úkolu *",
+        "deadlineLabel": "Uzávěrka",
+        "pointsHeading": "Maximální počet bodů",
+        "pointsDescription": "Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.",
+        "pointsPlaceholder": "Bez bodů",
+        "requiredNote": "Pole označená * jsou povinná",
+        "nameHeading": "Název *",
+        "nameDescription": "Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.",
+        "alerts": {
+          "addTask": {
+            "title": "Přidání úkolu",
+            "fillRequired": "Vyplňte všechna povinná pole.",
+            "noName": "Název úkolu nebyl zadán.",
+            "noFile": "Soubor úkolu nebyl zadán.",
+            "noPermission": "Tato role nemůže vytvářet úkoly.",
+            "noEndDate": "Datum ukončení nebylo zadáno.",
+            "noDeadline": "Uzávěrka není platná.",
+            "noMaxPoints": "Počet bodů není platný.",
+            "fileTooBig": "Nahraný soubor je příliš velký.",
+            "nameTooLong": "Název úkolu je příliš dlouhý.",
+            "fileBadFormat": "Neplatný formát souboru nebo příliš dlouhý název.",
+            "dateInvalid": "Datum ukončení je neplatné.",
+            "dateOrder": "Datum ukončení je před datem začátku.",
+            "maxPointsInvalid": "Body nejsou ve správném formátu.",
+            "deadlineBeforeStart": "Uzávěrka je před datem začátku.",
+            "deadlineBeforeEnd": "Uzávěrka je před datem ukončení.",
+            "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+            "success": "Úkol byl úspěšně vytvořen.",
+            "unknown": "Nastala neznámá chyba.",
+            "serverError": "Nastala neznámá chyba při ukládání.",
+            "uploading": "Probíhá nahrávání souboru...",
+            "uploadSuccess": "Soubor byl úspěšně nahrán.",
+            "uploadError": "Nastala chyba při nahrávání souboru."
+          }
+        }
+      },
+      "remove": {
+        "heading": "Správa úkolů",
+        "description": "Zde můžete odstranit úkoly, které jste vytvořili. Vyberte úkol ze seznamu a klikněte na tlačítko Odebrat.",
+        "searchPlaceholder": "Hledat úkol",
+        "selectedCount": "Vybrané úkoly: {count}",
+        "removeBtn": "Odstranit",
+        "cancelBtn": "Zrušit vše",
+        "alerts": {
+          "removeTask": {
+            "title": "Odstranění úkolů",
+            "noPermission": "Studenti nemohou mazat úkoly.",
+            "noId": "Chybí ID úkolu.",
+            "noneRemoved": "Některé úkoly se nepodařilo odstranit.",
+            "success": "Úkoly byly úspěšně odstraněny.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      },
+      "task": {
+        "index": {
+          "heading": "Správa úkolu",
+          "description": "Přehled přiřazených žáků a týmů k danému úkolu.",
+          "searchPlaceholder": "Hledat uživatele",
+          "teamsSearchPlaceholder": "Hledat týmy",
+          "openBtn": "Otevřít",
+          "editBtn": "Upravit",
+          "assignBtn": "Přiřadit"
+        },
+        "edit": {
+          "nameHeading": "Název",
+          "nameDescription": "Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.",
+          "fileHeading": "Zadání",
+          "fileDescription": "Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.",
+          "timeRangeHeading": "Časové rozmezí úkolu",
+          "timeRangeDescription": "Zadejte časové rozmezí, ve kterém bude úkol aktivní. Studenti budou moci úkol odevzdávat pouze v tomto období. Uzávěrka určuje termín, do kterého lze přiložit vypracování úkolu.",
+          "endLabel": "Konec úkolu",
+          "deadlineLabel": "Uzávěrka",
+          "pointsHeading": "Maximální počet bodů",
+          "pointsDescription": "Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.",
+          "pointsPlaceholder": "Bez bodů",
+          "alerts": {
+            "editTask": {
+              "title": "Úprava úkolu",
+              "noPermission": "Tato role nemůže upravovat úkol.",
+              "noId": "Nebyl zadán ID úkolu.",
+              "invalidId": "ID úkolu není číslo.",
+              "invalidIdValue": "ID úkolu není platné.",
+              "notFound": "Úkol nenalezen.",
+              "nameTooLong": "Název úkolu je příliš dlouhý.",
+              "fileBadFormat": "Špatný formát souboru nebo příliš dlouhý název.",
+              "dateInvalid": "Datum ukončení není číslo nebo je příliš daleko.",
+              "dateOrder": "Datum ukončení je před datem začátku.",
+              "deadlineBeforeStart": "Uzávěrka je před datem začátku.",
+              "deadlineBeforeEnd": "Uzávěrka je před datem ukončení.",
+              "deadlineInvalid": "Uzávěrka není platná.",
+              "pointsInvalid": "Body nejsou platné.",
+              "fileTooBig": "Nahraný soubor je příliš velký.",
+              "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+              "success": "Úkol byl úspěšně upraven.",
+              "unknown": "Nastala neznámá chyba.",
+              "serverError": "Nastala neznámá chyba při ukládání.",
+              "uploading": "Probíhá nahrávání souboru...",
+              "uploadSuccess": "Soubor byl úspěšně nahrán.",
+              "uploadError": "Nastala chyba při nahrávání souboru."
+            }
+          }
+        },
+        "team": {
+          "taskIdLabel": "Úkol ID:",
+          "guarantorLabel": "Garant:",
+          "startLabel": "Začátek:",
+          "endLabel": "Konec:",
+          "deadlineLabel": "Uzávěrka:",
+          "maxPointsLabel": "Max bodů:",
+          "assignmentLabel": "Zadání:",
+          "studentsHeading": "Žáci",
+          "teamsHeading": "Týmy",
+          "materialsHeading": "Materiály",
+          "materialsDescription": "Zde můžete upravit informace o týmu přiřazeném k úkolu.",
+          "versionsHeading": "Verze vypracování",
+          "versionsDescription": "Zde můžete upravit informace o týmu přiřazeném k úkolu.",
+          "pointsHeading": "Počet bodů",
+          "pointsDescription": "Zde můžete upravit informace o týmu přiřazeném k úkolu.",
+          "guarantorCommentHeading": "Komentář garanta",
+          "guarantorCommentDescription": "Zde můžete upravit informace o týmu přiřazeném k úkolu.",
+          "pointsMaxLabel": "Maximální počet bodů: {max}",
+          "pointsMaxUndetermined": "Maximální počet bodů není určen.",
+          "pointsExceedMax": "Počet bodů nesmí být větší než maximální počet bodů: {max}",
+          "pointsBelowZero": "Počet bodů nesmí být menší než 0",
+          "commentTooLongInline": "Komentář je příliš dlouhý",
+          "pointsPlaceholder": "Zadejte počet bodů",
+          "commentPlaceholder": "Zadejte komentář garanta",
+          "lastEdited": "Poslední úprava: {date}",
+          "notEdited": "Neupraveno",
+          "noAssignment": "Žádné zadání",
+          "noRecord": "Žádný záznam nebyl zobrazen!",
+          "removed": "Odstraněno",
+          "undetermined": "Neurčeno",
+          "studentLabel": "Student:",
+          "teamIdLabel": "ID:",
+          "teamMembersLabel": "Počet členů:",
+          "download": {
+            "title": "Stahování souborů",
+            "error": "Chyba při stahování materiálů úkolu.",
+            "versionUnavailable": "Tato verze není dostupná."
+          },
+          "alerts": {
+            "manageTeam": {
+              "title": "Úprava týmu",
+              "formErrors": "Opravte chyby ve formuláři a zkuste to znovu.",
+              "noTaskId": "ID úkolu nebylo zadáno.",
+              "noTeamId": "ID týmu nebylo zadáno.",
+              "invalidTaskId": "ID úkolu je neplatné.",
+              "invalidTeamId": "ID týmu je neplatné.",
+              "taskNotFound": "Zadaný úkol neexistuje.",
+              "teamNotFound": "Zadaný tým neexistuje.",
+              "invalidStatus": "Neplatný status.",
+              "maxVariants": "Byl dosažen maximální počet variant pro toto téma.",
+              "pointsInvalid": "Počet bodů je neplatný.",
+              "pointsTooHigh": "Nelze udělit více bodů, než má úkol.",
+              "commentTooLong": "Komentář je příliš dlouhý.",
+              "teamNameTooLong": "Název týmu je příliš dlouhý.",
+              "success": "Tým byl úspěšně aktualizován.",
+              "unknown": "Nastala neznámá chyba."
+            }
+          }
+        }
+      }
+    },
+    "student": {
+      "index": {
+        "heading": "Vaše úkoly",
+        "description": "Seznam vašich přiřazených úkolů.",
+        "searchPlaceholder": "Hledat úkol",
+        "openBtn": "Otevřít",
+        "undetermined": "Neurčeno",
+        "noAssignment": "Žádné zadání"
+      },
+      "team": {
+        "taskIdLabel": "Úkol ID:",
+        "guarantorLabel": "Garant:",
+        "startLabel": "Začátek:",
+        "endLabel": "Konec:",
+        "deadlineLabel": "Uzávěrka:",
+        "maxPointsLabel": "Max bodů:",
+        "assignmentLabel": "Zadání:",
+        "versionsHeading": "Verze vypracování",
+        "versionsDescription": "Zde můžete upravit informace o týmu přiřazeném k úkolu.",
+        "materialsHeading": "Materiály",
+        "materialsDescription": "Zde můžete upravit informace o týmu přiřazeném k úkolu.",
+        "guarantorCommentHeading": "Komentář garanta",
+        "guarantorCommentDescription": "Zde můžete upravit informace o týmu přiřazeném k úkolu.",
+        "noVersions": "Žádný záznam nebyl zobrazen!",
+        "guarantorComment": "Zatím žádný komentář...",
+        "noComment": "Zatím žádný komentář...",
+        "lastEdited": "Poslední úprava: {date}",
+        "notEdited": "Neupraveno",
+        "commentPlaceholder": "",
+        "noAssignment": "Žádné zadání",
+        "removed": "Odstraněno",
+        "undetermined": "Neurčeno",
+        "teamIdLabel": "ID:",
+        "teamMembersLabel": "Počet členů:",
+        "guarantorSectionLabel": "Garant:",
+        "download": {
+          "title": "Stahování souborů",
+          "error": "Chyba při stahování materiálů úkolu.",
+          "versionUnavailable": "Tato verze není dostupná."
+        },
+        "alerts": {
+          "removeVersion": {
+            "title": "Odstranění verze",
+            "error": "Chyba při odstraňování verze.",
+            "noTeamId": "ID týmu nebylo zadáno.",
+            "noTaskId": "ID úkolu nebylo zadáno.",
+            "noVersionId": "ID verze nebylo zadáno.",
+            "invalidTeamId": "ID týmu je neplatné.",
+            "invalidTaskId": "ID úkolu je neplatné.",
+            "invalidVersionId": "ID verze je neplatné.",
+            "invalidGuarantor": "Neplatný garant úkolu.",
+            "teamNotFound": "Zadaný tým neexistuje.",
+            "versionNotFound": "Zadaná verze neexistuje.",
+            "noPermission": "Na odstranění verze nemáte oprávnění.",
+            "afterDeadline": "Nelze odstranit verzi po termínu.",
+            "success": "Verze byla úspěšně odstraněna.",
+            "unknown": "Nastala neznámá chyba.",
+            "serverError": "Nepodařilo se spojit se serverem."
+          },
+          "addVersion": {
+            "title": "Přidání verze",
+            "fileTooBig": "Nahraný soubor je příliš velký.",
+            "noTeamId": "ID týmu nebylo zadáno.",
+            "noTaskId": "ID úkolu nebylo zadáno.",
+            "invalidTeamId": "ID týmu je neplatné.",
+            "invalidTaskId": "ID úkolu je neplatné.",
+            "invalidGuarantor": "Neplatný garant úkolu.",
+            "guarantorNotFound": "Zadaný garant neexistuje.",
+            "notGuarantor": "Uživatel není garantem úkolu.",
+            "taskNotFound": "Zadaný úkol neexistuje.",
+            "teamNotFound": "Zadaný tým neexistuje.",
+            "noPermission": "Na přidání verze nemáte oprávnění.",
+            "noElaboration": "Vypracování nebylo zadáno.",
+            "badFormat": "Nepodporovaný formát souboru.",
+            "nameTooLong": "Název souboru je příliš dlouhý.",
+            "afterDeadline": "Nelze odevzdat verzi po termínu.",
+            "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+            "success": "Nová verze byla úspěšně nahrána.",
+            "unknown": "Nastala neznámá chyba.",
+            "serverError": "Nastala neznámá chyba při ukládání.",
+            "serverConnectionError": "Nepodařilo se spojit se serverem.",
+            "uploading": "Probíhá nahrávání souboru...",
+            "uploadSuccess": "Soubor byl úspěšně nahrán.",
+            "uploadError": "Nastala chyba při nahrávání souboru."
+          }
+        }
+      }
+    },
+    "assign": {
+      "taskIdLabel": "Úkol ID:",
+      "taskIdBreadcrumb": "Úkol ID: {taskId}",
+      "guarantorLabel": "Garant:",
+      "startLabel": "Začátek:",
+      "endLabel": "Konec:",
+      "deadlineLabel": "Uzávěrka:",
+      "maxPointsLabel": "Max bodů:",
+      "assignmentLabel": "Zadání:",
+      "noAssignment": "Žádné zadání",
+      "undetermined": "neurčeno",
+      "nav": {
+        "title": "Přiřazení",
+        "classes": "Třídy",
+        "individuals": "Jednotlivci",
+        "teams": "Týmy"
+      },
+      "classes": {
+        "heading": "Vybrané třídy: {count}",
+        "description": "Vyberte třídy, kterým chcete úkol přiřadit, a potvrďte změny.",
+        "searchPlaceholder": "Hledat třídy"
+      },
+      "individuals": {
+        "filterHeading": "Filtrace třídy",
+        "filterDescription": "Vyberte třídu pro filtraci uživatelů. Toto pole je volitelné.",
+        "selectedStudents": "Vybraní žáci: {count}",
+        "searchPlaceholder": "Hledat uživatele"
+      },
+      "remove": {
+        "actionBarDescription": "Správa úkolu",
+        "actionBarAssign": "Přiřadit",
+        "actionBarRemove": "Odstranit přiřazené",
+        "breadcrumb": "Odstranit přiřazené",
+        "heading": "Vybrané přiřazení: {count}",
+        "description": "Vyberte přiřazení, která chcete trvale odstranit.",
+        "removeBtn": "Odstranit",
+        "cancelBtn": "Zrušit vše",
+        "studentsHeading": "Žáci",
+        "teamsHeading": "Týmy",
+        "userSearchPlaceholder": "Hledat uživatele",
+        "teamSearchPlaceholder": "Hledat týmy",
+        "pointsColumn": "Počet bodů",
+        "undetermined": "Neurčeno"
+      },
+      "teams": {
+        "heading": "Týmy",
+        "description": "Spravujte týmy přiřazené k tomuto úkolu.",
+        "searchPlaceholder": "Hledat týmy",
+        "nameLabel": "Název",
+        "namePlaceholder": "Zadejte název týmu pro vytvoření (nebo ponechte prázdný)",
+        "pointsColumn": "Počet bodů",
+        "undetermined": "Neurčeno",
+        "editBtn": "Upravit"
+      },
+      "teamEdit": {
+        "actionBarDescription": "Správa týmů",
+        "actionBarAdd": "Přidat",
+        "breadcrumb": "Upravení týmu: {teamId}",
+        "heading": "Upravení týmu: {name}",
+        "undetermined": "Neurčeno",
+        "teamIdLabel": "Tým ID:",
+        "taskIdLabel": "Úkol ID:",
+        "membersLabel": "Počet členů:",
+        "nameSection": "Název",
+        "nameLabel": "Název",
+        "namePlaceholder": "Zadejte název týmu (nebo ponechte prázdný)",
+        "nameError": "Název týmu nesmí být delší než 255 znaků.",
+        "nameDescription": "Zadejte název týmu pro identifikaci.",
+        "filterHeading": "Filtrace třídy",
+        "filterDescription": "Vyberte třídu pro filtraci uživatelů. Toto pole je volitelné.",
+        "selectedStudents": "Vybraní žáci: {count}",
+        "searchPlaceholder": "Hledat uživatele"
+      },
+      "alerts": {
+        "assignToTask": {
+          "title": "Přiřazení k úkolu",
+          "noClass": "Nebyla vybrána žádná třída.",
+          "invalidTaskId": "ID úkolu je neplatné.",
+          "noUserOrClass": "Nebyl vybrán žádný uživatel ani třída.",
+          "taskNotFound": "Úkol neexistuje nebo nejste jeho garant.",
+          "notForMaturita": "Tento endpoint nelze použít pro maturitní úkol.",
+          "noneAssigned": "Nikomu nebyl úkol přiřazen.",
+          "differentTeam": "Někteří uživatelé již byli přiřazeni k jinému týmu.",
+          "badIds": "Některé uživatele nebylo možné přiřadit.",
+          "success": "Přiřazení úkolu bylo úspěšně aktualizováno.",
+          "unknown": "Nastala neznámá chyba.",
+          "requestError": "Nastala chyba při odesílání požadavku."
+        },
+        "removeAssignment": {
+          "title": "Odstranění přiřazení",
+          "noTaskId": "Chybí ID úkolu.",
+          "noTeamId": "Chybí ID týmů.",
+          "taskIdNotNumber": "ID úkolu musí být číslo.",
+          "taskIdInvalid": "ID úkolu není platné.",
+          "taskNotFound": "Úkol neexistuje nebo nejste jeho garant.",
+          "partialFail": "Některá přiřazení se nepodařilo odstranit.",
+          "success": "Přiřazení byla úspěšně odstraněna.",
+          "unknown": "Nastala neznámá chyba."
+        },
+        "createTeam": {
+          "title": "Vytvoření týmu",
+          "nameTooLongLocal": "Název týmu je příliš dlouhý (max. 255 znaků).",
+          "success": "Tým byl úspěšně vytvořen.",
+          "noTaskId": "ID úkolu nebylo zadáno.",
+          "taskIdNotNumber": "ID úkolu musí být číslo.",
+          "taskIdInvalid": "ID úkolu není platné.",
+          "notForType": "K tomuto typu úkolu nelze přidat tým.",
+          "taskNotFound": "Zadaný úkol neexistuje nebo nejste jeho garant.",
+          "teamNameTooLong": "Název týmu je příliš dlouhý.",
+          "teamNameExists": "Tým s tímto názvem již existuje.",
+          "unknown": "Nastala neznámá chyba."
+        },
+        "updateTeam": {
+          "title": "Upravení týmu",
+          "invalidTaskId": "ID úkolu je neplatné.",
+          "invalidTeamId": "ID týmu je neplatné.",
+          "taskNotFound": "Zadaný úkol neexistuje nebo k němu nemáte oprávnění.",
+          "teamNotFound": "Zadaný tým neexistuje.",
+          "invalidStatus": "Zadaný status není povolený.",
+          "pointsNotNumber": "Body musí být číslo.",
+          "pointsInvalid": "Počet bodů je neplatný.",
+          "pointsTooHigh": "Nelze udělit více bodů, než má úkol.",
+          "commentTooLong": "Komentář je příliš dlouhý.",
+          "teamNameTooLong": "Název týmu je příliš dlouhý.",
+          "success": "Tým byl úspěšně upraven.",
+          "unknown": "Nastala neznámá chyba.",
+          "serverError": "Nepodařilo se spojit se serverem."
+        },
+        "addToTeam": {
+          "title": "Přidání do týmu",
+          "invalidTaskId": "ID úkolu je neplatné.",
+          "invalidTeamId": "ID týmu je neplatné.",
+          "taskNotFound": "Zadaný úkol neexistuje.",
+          "teamNotFound": "Zadaný tým neexistuje nebo k němu nemáte oprávnění.",
+          "maxUsers": "Do tohoto týmu nelze přidat více uživatelů.",
+          "differentTeam": "Někteří žáci již patří do jiného týmu. Počet: {count}",
+          "badIds": "Některá ID uživatelů jsou neplatná. Počet: {count}",
+          "success": "Tým byl úspěšně aktualizován.",
+          "unknown": "Nastala neznámá chyba.",
+          "serverError": "Nepodařilo se spojit se serverem."
+        }
+      }
+    }
+  },
+  "maturita": {
+    "grade": {
+      "index": {
+        "heading": "Maturitní ročníky",
+        "description": "Zde najdete seznam všech maturitních ročníků dostupných v systému.",
+        "searchPlaceholder": "Hledat maturity",
+        "editBtn": "Upravit",
+        "actionBar": {
+          "description": "Správa maturitních ročníků"
+        }
+      },
+      "add": {
+        "heading": "Ročník",
+        "description": "Přidání nového maturitního ročníku do systému.",
+        "nameDescription": "Zadejte název maturitního ročníku, např. školní rok (2024/2025).",
+        "timeRangeHeading": "Časové rozmezí maturity",
+        "timeRangeDescription": "Zadejte časové rozmezí, ve kterém bude maturitní ročník aktivní. Studenti budou moci maturitní práce odevzdávat pouze v tomto období.",
+        "startLabel": "Začátek maturity *",
+        "endLabel": "Konec maturity *",
+        "pointsHeading": "Maximální počet bodů",
+        "pointsDescription": "Zadejte maximální počet bodů, které lze za maturitní práci získat. Tento počet bude použit při hodnocení maturitní práce.",
+        "pointsPlaceholder": "Bez bodů",
+        "evaluatorsHeading": "Vybraní hodnotitelé",
+        "searchPlaceholder": "Hledat uživatele",
+        "rolePlaceholder": "Role uživatelů pro výběr hodnotitelů",
+        "requiredNote": "Pole označená * jsou povinná",
+        "breadcrumbCreate": "Vytvoření",
+        "errors": {
+          "nameTooLong": "Název maturitního ročníku je příliš dlouhý.",
+          "maxPointsNotPositive": "Maximální počet bodů musí být kladné číslo."
+        },
+        "alerts": {
+          "addMaturita": {
+            "title": "Přidání maturity",
+            "fillRequired": "Vyplňte všechna povinná pole.",
+            "noPermission": "Nemáte oprávnění k této akci.",
+            "noGrade": "Ročník nebyl zadán.",
+            "noMaxPoints": "Maximální počet bodů nebyl zadán.",
+            "noStartDate": "Datum začátku nebylo zadáno.",
+            "noEndDate": "Datum ukončení nebylo zadáno.",
+            "nameTooLong": "Název maturitního ročníku je příliš dlouhý.",
+            "gradeExists": "Tento ročník již existuje.",
+            "maxPointsNaN": "Maximální počet bodů není číslo.",
+            "maxPointsInvalid": "Maximální počet bodů není platný.",
+            "endDateInvalid": "Datum ukončení je neplatné.",
+            "startDateInvalid": "Datum začátku je neplatné.",
+            "endBeforeStart": "Datum ukončení je před datem začátku.",
+            "success": "Maturita byla úspěšně vytvořena.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      },
+      "remove": {
+        "heading": "Maturitní ročníky",
+        "selectedCount": "Vybrané maturitní ročníky: {count}",
+        "description": "Zde najdete seznam všech maturitních ročníků dostupných v systému.",
+        "searchPlaceholder": "Hledat maturity",
+        "removeBtn": "Odstranit",
+        "cancelBtn": "Zrušit vše",
+        "breadcrumb": "Odstranění",
+        "alerts": {
+          "removeMaturita": {
+            "title": "Odstranění maturit",
+            "noPermission": "Nemáte oprávnění k této akci.",
+            "noneSelected": "Nebyl vybrána žádný maturitní ročník.",
+            "noneRemoved": "Žádný maturitní ročník nebyl odstraněn.",
+            "success": "Maturitní ročníky byly úspěšně odstraněny.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      },
+      "edit": {
+        "heading": "Ročník",
+        "nameDescription": "Zadejte název maturitního ročníku, např. školní rok (2024/2025).",
+        "timeRangeHeading": "Časové rozmezí maturity",
+        "timeRangeDescription": "Zadejte časové rozmezí, ve kterém bude maturitní ročník aktivní. Studenti budou moci maturitní práce odevzdávat pouze v tomto období.",
+        "startLabel": "Začátek maturity",
+        "endLabel": "Konec maturity",
+        "pointsHeading": "Maximální počet bodů",
+        "pointsDescription": "Zadejte maximální počet bodů, které lze za maturitní práci získat. Tento počet bude použit při hodnocení maturitní práce.",
+        "pointsPlaceholder": "Bez bodů",
+        "evaluatorsHeading": "Vybraní hodnotitelé",
+        "searchPlaceholder": "Hledat uživatele",
+        "rolePlaceholder": "Role uživatelů pro výběr hodnotitelů",
+        "requiredNote": "Pole označená * jsou povinná",
+        "breadcrumb": "Upravení",
+        "breadcrumbId": "Maturita ID: {maturitaId}",
+        "errors": {
+          "nameTooLong": "Název maturitního ročníku je příliš dlouhý.",
+          "maxPointsNotPositive": "Maximální počet bodů musí být kladné číslo."
+        },
+        "alerts": {
+          "editMaturita": {
+            "title": "Úprava maturity",
+            "noPermission": "Nemáte oprávnění k této akci.",
+            "noId": "ID maturity nebylo zadáno.",
+            "nothingToUpdate": "Nebyla zadána žádná hodnota ke změně.",
+            "idNaN": "ID maturity není číslo.",
+            "idInvalid": "ID maturity není platné.",
+            "notFound": "Maturita nebyla nalezena.",
+            "nameTooLong": "Ročník je příliš dlouhý.",
+            "gradeExists": "Tento ročník již existuje.",
+            "maxPointsNaN": "Maximální počet bodů není číslo.",
+            "maxPointsInvalid": "Maximální počet bodů není platný.",
+            "startDateInvalid": "Datum začátku je neplatné.",
+            "endBeforeStart": "Datum ukončení je před datem začátku.",
+            "endDateInvalid2": "Datum ukončení je neplatné.",
+            "success": "Maturita byla úspěšně upravena.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      }
+    },
+    "tasks": {
+      "index": {
+        "heading": "Maturitní zadání",
+        "description": "Seznam maturitních zadání, se kterými můžete pracovat.",
+        "noMaturita": "Aktuálně není dostupný žádný maturitní ročník.",
+        "searchPlaceholder": "Hledat zadání",
+        "undetermined": "Neurčeno",
+        "chatBtn": "Chat",
+        "editBtn": "Upravit",
+        "openBtn": "Otevřít",
+        "gradeLabel": "Ročník:",
+        "endLabelText": "Konec:",
+        "studentColumn": "Student",
+        "objectorColumn": "Oponent",
+        "actionBar": {
+          "description": "Správa maturitních zadání"
+        }
+      },
+      "add": {
+        "nameHeading": "Název *",
+        "nameDescription": "Zadejte název maturitního zadání.",
+        "fileHeading": "Zadání *",
+        "fileDescription": "Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.",
+        "guarantorHeading": "Student *",
+        "breadcrumb": "Přidání",
+        "guarantorDescription": "Vyberte studenta, kterému bude přiřazeno toto maturitní zadání.",
+        "searchPlaceholder": "Hledat uživatele",
+        "topicLabel": "Téma",
+        "topicPlaceholder": "Vyberte téma",
+        "pointsHeading": "Téma *",
+        "pointsDescription": "Vyberte téma maturitního zadání ze seznamu dostupných témat.",
+        "requiredNote": "Pole označená * jsou povinná",
+        "alerts": {
+          "addMaturitaTask": {
+            "title": "Přidání maturitního zadání",
+            "fillRequired": "Vyplňte všechna povinná pole.",
+            "fileTooBig": "Nahraný soubor je příliš velký.",
+            "noPermission": "Tato role nemůže vytvářet maturitní úkoly.",
+            "cannotCreate": "Nelze vytvořit maturitní úkol.",
+            "noGuarantor": "Nemáte oprávnění být garantem maturitního úkolu.",
+            "alreadyAssigned": "Uživatel již má přiřazen maturitní úkol.",
+            "noName": "Název úkolu nebyl zadán.",
+            "noUser": "Uživatel nebyl zadán.",
+            "noTopic": "Téma nebylo zadáno.",
+            "userIdNaN": "ID uživatele není platné číslo.",
+            "userIdInvalid": "ID uživatele není platné.",
+            "userNotFound": "Uživatel nebyl nalezen.",
+            "cannotBeGuarantor": "Tento uživatel nemůže mít přiřazen maturitní úkol.",
+            "userForbidden": "Tento uživatel nemůže mít přiřazen maturitní úkol.",
+            "topicIdNaN": "ID tématu není platné číslo.",
+            "topicIdInvalid": "ID tématu není platné.",
+            "topicNotFound": "Téma nebylo nalezeno.",
+            "nameTooLong": "Název úkolu je příliš dlouhý.",
+            "fileNotUploaded": "Soubor úkolu nebyl nahrán.",
+            "fileBadFormat": "Neplatný formát souboru nebo příliš dlouhý název.",
+            "maxVariants": "Byl dosažen maximální počet variant pro toto téma.",
+            "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+            "success": "Maturitní úkol byl úspěšně vytvořen.",
+            "savingError": "Nastala neznámá chyba při ukládání.",
+            "uploadError": "Nastala chyba při nahrávání souboru.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      },
+      "remove": {
+        "maturitaHeading": "Maturitní zadání",
+        "noMaturita": "Aktuálně není dostupný žádný maturitní ročník.",
+        "selectedCount": "Vybrané maturitní zadání: {count}",
+        "description": "Seznam maturitních zadání, se kterými můžete pracovat.",
+        "searchPlaceholder": "Hledat zadání",
+        "removeBtn": "Odstranit",
+        "cancelBtn": "Zrušit vše",
+        "breadcrumb": "Odstranění",
+        "alerts": {
+          "removeMaturitaTask": {
+            "title": "Odstranění maturitních zadání",
+            "studentsCannotDelete": "Studenti nemohou mazat úkoly.",
+            "noId": "Chybí ID úkolu.",
+            "noneRemoved": "Některé úkoly se nepodařilo odstranit.",
+            "success": "Úkoly byly úspěšně odstraněny.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      },
+      "edit": {
+        "nameDescription": "Zadejte název maturitního zadání.",
+        "fileHeading": "Zadání",
+        "fileDescription": "Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.",
+        "guarantorHeading": "Oponent",
+        "searchPlaceholder": "Hledat uživatele",
+        "alerts": {
+          "editMaturitaTask": {
+            "title": "Úprava maturitního zadání",
+            "fileTooBig": "Nahraný soubor je příliš velký.",
+            "noPermission": "Tato role nemůže upravovat úkol.",
+            "idError": "Chyba ID úkolu.",
+            "notFound": "Úkol nenalezen nebo k němu nemáte oprávnění.",
+            "nameTooLong": "Název úkolu je příliš dlouhý.",
+            "fileBadFormat": "Špatný formát souboru nebo příliš dlouhý název.",
+            "dateError": "Chyba s datem ukončení nebo uzávěrkou.",
+            "pointsError": "Body nejsou platné nebo ve špatném formátu.",
+            "objectorError": "Oponent je neplatný nebo nemá oprávnění.",
+            "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+            "success": "Maturitní zadání bylo úspěšně upraveno.",
+            "savingError": "Nastala neznámá chyba při ukládání.",
+            "uploadError": "Nastala chyba při nahrávání souboru.",
+            "unknown": "Nastala neznámá chyba.",
+            "serverError": "Nepodařilo se spojit se serverem."
+          }
+        }
+      }
+    },
+    "proposals": {
+      "actionBar": {
+        "description": "Správa návrhů maturitních zadání",
+        "addBtn": "Přidat",
+        "rejectedBtn": "Zamítnuté",
+        "removeBtn": "Odstranit"
+      },
+      "maturitaSection": {
+        "heading": "Maturitní zadání",
+        "description": "Zadejte název maturitního zadání.",
+        "noMaturita": "Aktuálně není dostupný žádný maturitní ročník."
+      },
+      "index": {
+        "heading": "Návrhy maturitních zadání",
+        "description": "Seznam vašich návrhů maturitních zadání.",
+        "searchPlaceholder": "Hledat zadání",
+        "editBtn": "Upravit"
+      },
+      "add": {
+        "nameHeading": "Název *",
+        "nameDescription": "Zadejte název maturitního zadání.",
+        "fileHeading": "Zadání *",
+        "fileDescription": "Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.",
+        "guarantorHeading": "Garant *",
+        "guarantorDescription": "Vyberte garanta, který bude zodpovědný za toto maturitní zadání.",
+        "topicLabel": "Téma",
+        "topicPlaceholder": "Vyberte téma",
+        "searchPlaceholder": "Hledat uživatele",
+        "requiredNote": "Pole označená * jsou povinná",
+        "alerts": {
+          "addProposal": {
+            "title": "Přidání návrhu maturitního zadání",
+            "fillRequired": "Vyplňte všechna povinná pole.",
+            "fileTooBig": "Nahraný soubor je příliš velký.",
+            "noPermission": "Tato role nemůže vytvářet maturitní zadání.",
+            "cannotCreate": "Momentálně nelze vytvořit maturitní zadání.",
+            "alreadyAssigned": "Uživatel již má přiřazené maturitní zadání.",
+            "noName": "Název zadání nebyl zadán.",
+            "noGuarantor": "Garant nebyl zadán.",
+            "guarantorIdNaN": "ID garanta není platné číslo.",
+            "guarantorIdInvalid": "ID garanta není platné.",
+            "guarantorNotFound": "Garant nebyl nalezen.",
+            "studentCannotBeGuarantor": "Student nemůže být garantem maturitního zadání.",
+            "userForbidden": "Tento uživatel nemůže být garantem maturitního zadání.",
+            "topicIdNaN": "ID tématu není platné číslo.",
+            "topicIdInvalid": "ID tématu není platné.",
+            "topicNotFound": "Téma nebylo nalezeno.",
+            "nameTooLong": "Název zadání je příliš dlouhý.",
+            "fileNotUploaded": "Soubor zadání nebyl nahrán.",
+            "fileBadFormat": "Neplatný formát souboru nebo příliš dlouhý název.",
+            "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+            "success": "Návrh maturitního zadání byl úspěšně vytvořen.",
+            "savingError": "Nastala neznámá chyba při ukládání.",
+            "uploadError": "Nastala chyba při nahrávání souboru.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      },
+      "rejected": {
+        "heading": "Zamítnuté návrhy maturitních zadání",
+        "description": "Seznam zamítnutých návrhů vašich maturitních zadání.",
+        "searchPlaceholder": "Hledat zadání"
+      },
+      "remove": {
+        "heading": "Vybrané maturitní zadání: {count}",
+        "selectedCount": "Vybrané maturitní zadání: {count}",
+        "description": "Seznam vašich návrhů maturitních zadání, které chcete odstranit.",
+        "searchPlaceholder": "Hledat zadání",
+        "removeBtn": "Odstranit",
+        "cancelBtn": "Zrušit vše",
+        "approved": "Schváleno",
+        "rejected": "Zamítnuto",
+        "pending": "Čeká na schválení",
+        "alerts": {
+          "removeProposal": {
+            "title": "Odstranění návrhů maturitních zadání",
+            "noPermission": "Tato role nemůže mazat maturitní zadání.",
+            "noId": "Nebyl zadán identifikátor zadání.",
+            "noGuarantor": "Nebyl zadán garant.",
+            "countMismatch": "Počet ID zadání neodpovídá počtu garantů.",
+            "noneRemoved": "Některá zadání se nepodařilo odstranit.",
+            "success": "Zadání byla úspěšně odstraněna.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      },
+      "edit": {
+        "nameDescription": "Zadejte název maturitního zadání.",
+        "fileHeading": "Zadání",
+        "fileDescription": "Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.",
+        "searchPlaceholder": "Hledat uživatele",
+        "breadcrumb": {
+          "taskIdLabel": "Zadání ID: {taskId}",
+          "editLabel": "Úpravení"
+        },
+        "alerts": {
+          "editProposal": {
+            "title": "Úprava návrhu maturitního zadání",
+            "fileTooBig": "Nahraný soubor je příliš velký.",
+            "noId": "Nebyl zadán identifikátor zadání.",
+            "noGuarantor": "Nebyl zadán garant.",
+            "noMaturita": "Aktuálně není dostupná žádná maturita.",
+            "idNaN": "ID zadání není číslo.",
+            "idInvalid": "ID zadání není platné.",
+            "guarantorIdNaN": "ID garanta není číslo.",
+            "guarantorIdInvalid": "ID garanta není platné.",
+            "guarantorNotFound": "Garant nebyl nalezen.",
+            "notFound": "Zadání nebylo nalezeno nebo k němu nemáte oprávnění.",
+            "nameTooLong": "Název zadání je příliš dlouhý.",
+            "fileBadFormat": "Neplatný formát souboru nebo příliš dlouhý název.",
+            "fileNotFound": "Soubor nebyl nalezen na úložišti.",
+            "success": "Návrh maturitního zadání byl úspěšně upraven.",
+            "savingError": "Nastala neznámá chyba při ukládání.",
+            "uploadError": "Nastala chyba při nahrávání souboru.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        }
+      }
+    },
+    "team": {
+      "taskIdLabel": "Úkol ID:",
+      "startLabel": "Začátek:",
+      "endLabel": "Konec:",
+      "deadlineLabel": "Uzávěrka:",
+      "maxPointsLabel": "Body:",
+      "noMaxPoints": "Maximální počet bodů není určen.",
+      "assignmentLabel": "Zadání ID:",
+      "studentLabel": "Student:",
+      "objectorLabel": "Oponent:",
+      "guarantorLabel": "Garant:",
+      "undetermined": "Neurčeno",
+      "materialsHeading": "Materiály",
+      "materialsDescription": "Zde najdete zadání maturitní práce.",
+      "noAssignment": "Žádné zadání",
+      "versionsHeading": "Verze vypracování",
+      "versionsDescription": "Zde najdete nahrané verze vypracování.",
+      "removed": "Odstraněno",
+      "noVersions": "Žádná verze nebyla nahrána.",
+      "pointsHeading": "Počet bodů",
+      "pointsDescription": "Zadejte hodnocení a komentář k práci.",
+      "maxPointsLabel2": "Maximální počet bodů: {points}",
+      "noMaxPointsDefined": "Maximální počet bodů není určen.",
+      "commentHeading": "Komentář garanta",
+      "commentDescription": "Komentář garanta k vypracování studenta.",
+      "lastEdited": "Poslední úprava:",
+      "notEdited": "Neupraveno",
+      "commentPlaceholder": "Zadejte komentář garanta",
+      "download": {
+        "title": "Stahování souborů",
+        "error": "Chyba při stahování materiálů úkolu.",
+        "versionUnavailable": "Tato verze není dostupná."
+      },
+      "actionBar": {
+        "description": "Správa maturitního zadání",
+        "openChat": "Otevřít chat"
+      },
+      "alerts": {
+        "manageTeam": {
+          "title": "Úprava týmu",
+          "formErrors": "Opravte chyby ve formuláři a zkuste to znovu.",
+          "noTaskId": "ID úkolu nebylo zadáno.",
+          "noTeamId": "ID týmu nebylo zadáno.",
+          "taskIdInvalid": "ID úkolu je neplatné.",
+          "teamIdInvalid": "ID týmu je neplatné.",
+          "taskNotFound": "Zadaný úkol neexistuje.",
+          "teamNotFound": "Zadaný tým neexistuje.",
+          "invalidStatus": "Neplatný status.",
+          "maxVariants": "Bylo dosaženo max variant pro tento topic.",
+          "pointsNaN": "Počet bodů není platný.",
+          "pointsNaN2": "Počet bodů není platný.",
+          "pointsExceed": "Nelze udělit více bodů, než má úkol.",
+          "commentTooLong": "Komentář je příliš dlouhý.",
+          "nameTooLong": "Název týmu je příliš dlouhý.",
+          "success": "Tým byl úspěšně aktualizován.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      },
+      "errors": {
+        "pointsExceed": "Počet bodů nesmí být větší než maximální počet bodů: {max}",
+        "pointsNegative": "Počet bodů nesmí být menší než 0",
+        "commentTooLong": "Komentář je příliš dlouhý"
+      }
+    },
+    "chat": {
+      "heading": "Chat",
+      "taskIdLabel": "Úkol ID:",
+      "startLabel": "Začátek:",
+      "endLabel": "Konec:",
+      "deadlineLabel": "Uzávěrka:",
+      "studentLabel": "Žák",
+      "objectorLabel": "Oponent",
+      "guarantorLabel": "Garant",
+      "undetermined": "Neurčeno",
+      "archived": "- Archivováno",
+      "open": "- Otevřený",
+      "createConversationBtn": "Založit konverzaci"
+    },
+    "objector": {
+      "index": {
+        "heading": "Oponentura",
+        "description": "Seznam maturitních zadání, ke kterým jste přiřazeni jako oponent.",
+        "noMaturita": "Aktuálně není dostupný žádný maturitní ročník.",
+        "searchPlaceholder": "Hledat zadání",
+        "undetermined": "Neurčeno",
+        "chatBtn": "Chat",
+        "openBtn": "Otevřít",
+        "actionBar": {
+          "description": "Správa oponentury"
+        }
+      },
+      "team": {
+        "taskIdLabel": "Úkol ID:",
+        "startLabel": "Začátek:",
+        "endLabel": "Konec:",
+        "deadlineLabel": "Uzávěrka:",
+        "maxPointsLabel": "Body:",
+        "studentLabel": "Student:",
+        "objectorLabel": "Oponent:",
+        "guarantorLabel": "Garant:",
+        "undetermined": "Neurčeno",
+        "materialsHeading": "Materiály",
+        "materialsDescription": "Zde najdete zadání maturitní práce.",
+        "noAssignment": "Žádné zadání",
+        "versionsHeading": "Verze vypracování",
+        "versionsDescription": "Zde najdete nahrané verze vypracování.",
+        "removed": "Odstraněno",
+        "noVersions": "Žádná verze nebyla nahrána.",
+        "commentHeading": "Komentář garanta",
+        "commentDescription": "Komentář garanta k vypracování studenta.",
+        "lastEdited": "Poslední úprava:",
+        "notEdited": "Neupraveno",
+        "noComment": "Zatím žádný komentář...",
+        "actionBar": {
+          "description": "Správa maturitního zadání",
+          "openChat": "Otevřít chat"
+        },
+        "download": {
+          "title": "Stahování souborů",
+          "error": "Chyba při stahování materiálů úkolu.",
+          "versionUnavailable": "Tato verze není dostupná."
+        }
+      }
+    },
+    "tables": {
+      "index": {
+        "heading": "Tabulka maturitních zadání",
+        "description": "Tabulka maturitních hodnocení.",
+        "noMaturita": "Aktuálně není dostupný žádný maturitní ročník.",
+        "actionBar": {
+          "description": "Správa tabulek maturitních zadání"
+        }
+      },
+      "evaluators": {
+        "heading": "Tabulka maturitních hodnotitelů",
+        "description": "Tabulka hodnotitelů maturitních prací.",
+        "noMaturita": "Aktuálně není dostupný žádný maturitní ročník.",
+        "actionBar": {
+          "description": "Správa tabulky hodnotitelů"
+        }
+      }
+    },
+    "proposals_role": {
+      "maturitaSection": {
+        "heading": "Maturitní zadání",
+        "description": "Návrhy maturitních zadání čekající na schválení.",
+        "noMaturita": "Aktuálně není dostupný žádný maturitní ročník."
+      },
+      "listHeading": "Návrhy maturitních zadání",
+      "listDescription": "Seznam návrhů maturitních zadání čekajících na schválení.",
+      "searchPlaceholder": "Hledat zadání",
+      "acceptBtn": "Přijmout",
+      "rejectBtn": "Zamítnout",
+      "alerts": {
+        "manageProposal": {
+          "title": "Návrhy maturitních prací",
+          "invalidTaskId": "ID úkolu je neplatné nebo nebylo zadáno.",
+          "invalidTeamId": "ID týmu je neplatné nebo nebylo zadáno.",
+          "taskNotFound": "Zadaný úkol neexistuje nebo k němu nemáte oprávnění.",
+          "teamNotFound": "Zadaný tým neexistuje.",
+          "invalidStatus": "Zadaný status není povolený.",
+          "maxVariants": "Bylo dosaženo max variant pro tento topic.",
+          "pointsInvalid": "Body nejsou platné nebo nelze udělit více bodů, než má úkol.",
+          "commentTooLong": "Komentář je příliš dlouhý.",
+          "nameTooLong": "Název týmu je příliš dlouhý.",
+          "accepted": "Návrh maturitní práce byl přijat.",
+          "rejected": "Návrh maturitní práce byl zamítnut.",
+          "unknown": "Nastala neznámá chyba."
+        }
+      }
+    },
+    "student": {
+      "breadcrumb": "Zadání ID: {taskId}",
+      "index": {
+        "heading": "Maturitní zadání",
+        "description": "Správa maturitního zadání studenta.",
+        "actionBarDescription": "Správa maturitního zadání",
+        "openChatBtn": "Otevřít chat",
+        "taskIdLabel": "Úkol ID:",
+        "startLabel": "Začátek:",
+        "endLabel": "Konec:",
+        "deadlineLabel": "Uzávěrka:",
+        "pointsLabel": "Body:",
+        "guarantorLabel": "Garant:",
+        "objectorLabel": "Oponent:",
+        "undetermined": "Neurčeno",
+        "materialsHeading": "Materiály",
+        "materialsDescription": "Soubory s materiály k maturitnímu zadání.",
+        "noMaterial": "Žádný materiál",
+        "versionsHeading": "Verze vypracování",
+        "versionsDescription": "Zde můžete nahrát novou verzi vypracování maturitního zadání.",
+        "filePlaceholder": "Klikni pro nahrání souboru z počítače",
+        "removed": "Odstraněno",
+        "noVersions": "Žádný záznam nebyl zobrazen!",
+        "lastEdited": "Poslední úprava: {date}",
+        "notEdited": "Neupraveno",
+        "guarantorCommentHeading": "Komentář garanta",
+        "guarantorCommentDescription": "Komentář garanta k vašemu vypracování.",
+        "noTask": "Ještě nemáš maturitní zadání. Podej návrh nebo počkej na jeho přidělení.",
+        "noTaskDescription": "Stránka zobrazí vaše maturitní zadání jakmile vám bude přiděleno.",
+        "alerts": {
+          "downloadFiles": {
+            "title": "Stahování souborů",
+            "error": "Chyba při stahování materiálů úkolu."
+          },
+          "downloadVersion": {
+            "title": "Stahování verze",
+            "unavailable": "Tato verze není dostupná."
+          },
+          "uploading": {
+            "title": "Nahrávání souboru"
+          }
+        }
+      },
+      "chat": {
+        "taskIdLabel": "Úkol ID:",
+        "startLabel": "Začátek:",
+        "endLabel": "Konec:",
+        "deadlineLabel": "Uzávěrka:",
+        "objectorLabel": "Oponent:",
+        "undetermined": "Neurčeno",
+        "guarantorTitle": "Garant",
+        "archived": "- Archivováno",
+        "open": "- Otevřený",
+        "createConversationBtn": "Založit konverzaci"
+      }
+    },
+    "topics": {
+      "index": {
+        "heading": "Všechny maturitní témata",
+        "description": "Zde najdete seznam všech maturitních témat dostupných v systému.",
+        "searchPlaceholder": "Hledat témata",
+        "actionBar": {
+          "description": "Správa maturitních témat"
+        }
+      },
+      "add": {
+        "nameHeading": "Název",
+        "nameDescription": "Zadejte název maturitního tématu, který bude jasně vystihovat jeho obsah.",
+        "nameLabel": "Název",
+        "namePlaceholder": "Dynamická webová aplikace",
+        "requiredNote": "Pole označená * jsou povinná",
+        "breadcrumb": "Vytvoření",
+        "alerts": {
+          "addTopic": {
+            "title": "Přidání tématu",
+            "noName": "Název tématu nebyl zadán.",
+            "noPermission": "Nemáte oprávnění k této akci.",
+            "nameTooLong": "Název tématu je příliš dlouhý.",
+            "topicExists": "Téma s tímto názvem již existuje.",
+            "success": "Téma bylo úspěšně vytvořeno.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        },
+        "actionBar": {
+          "description": "Správa maturitních témat"
+        }
+      },
+      "remove": {
+        "selectedCount": "Vybraná maturitní témata: {count}",
+        "description": "Zde najdete seznam všech maturitních témat dostupných v systému.",
+        "searchPlaceholder": "Hledat témata",
+        "removeBtn": "Odstranit",
+        "cancelBtn": "Zrušit vše",
+        "breadcrumb": "Odstranění",
+        "alerts": {
+          "removeTopic": {
+            "title": "Odstranění témat",
+            "noPermission": "Nemáte oprávnění k této akci.",
+            "noneSelected": "Nebyla vybrána žádná témata.",
+            "noneRemoved": "Žádné téma nebylo odstraněno.",
+            "success": "Témata byla úspěšně odstraněna.",
+            "unknown": "Nastala neznámá chyba."
+          }
+        },
+        "actionBar": {
+          "description": "Správa maturitních témat"
+        }
+      }
+    }
+  },
+  "image": {
+    "invalidImage": "Neplatný obrázek"
+  },
+  "editor": {
+    "placeholder": "Zde napište text",
+    "toolbar": {
+      "bold": "Tučné",
+      "underline": "Podtržené",
+      "strike": "Přeškrtnuté",
+      "italic": "Kurzíva",
+      "blockquote": "Citace",
+      "codeBlock": "Kód",
+      "link": "Odkaz",
+      "image": "Obrázek",
+      "headings": "Nadpisy",
+      "heading1": "Nadpis 1",
+      "heading2": "Nadpis 2",
+      "heading3": "Nadpis 3",
+      "heading4": "Nadpis 4",
+      "normal": "Normální",
+      "listOrdered": "Seznam - číslovaný",
+      "listBullet": "Seznam - odrážkový",
+      "listCheck": "Seznam - zaškrtávací",
+      "indentUp": "Odsadit",
+      "indentDown": "Vrátit odsazení",
+      "align": "Zarovnání",
+      "alignLeft": "Levá",
+      "alignCenter": "Střed",
+      "alignRight": "Pravá",
+      "alignJustify": "Zarovnat",
+      "textColor": "Barva textu",
+      "bgColor": "Barva pozadí",
+      "clean": "Vyčistit formátování"
+    }
+  },
+  "inputMenu": {
+    "noData": "Nic nebylo nalezeno.",
+    "placeholder": "Vyberte / Vytvořte položku",
+    "add": "Přidat \"{item}\"",
+    "selected": "Vybráno: {count}"
+  },
+  "tables": {
+    "columns": {
+      "id": "ID",
+      "name": "Název",
+      "abbreviation": "Zkratka",
+      "actions": "Akce",
+      "grade": "Ročník",
+      "group": "Skupina",
+      "class": "Třída",
+      "specializationAbbr": "Zaměření (zkratka)",
+      "lengthOfStudy": "Délka studia (roky)",
+      "memberCount": "Počet členů",
+      "email": "E-mail",
+      "fullName": "Jméno a příjmení",
+      "createdAt": "Vytvořen",
+      "points": "Počet bodů",
+      "maxPoints": "Max bodů",
+      "startDate": "Začátek",
+      "endDate": "Konec",
+      "deadline": "Uzávěrka",
+      "evaluators": "Počet hodnotitelů",
+      "topic": "Téma",
+      "topicNumber": "Téma (číslo)",
+      "variant": "Varianta",
+      "task": "Zadání",
+      "student": "Student",
+      "guarantor": "Garant",
+      "objector": "Oponent",
+      "proposer": "Navrhovatel"
+    }
   }
 }

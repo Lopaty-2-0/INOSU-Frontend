@@ -2,6 +2,9 @@
 import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
 import { ref, watch, computed } from "vue";
 import type { LocaleObject } from "~/types/i18n";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   modelValue: {
@@ -37,6 +40,6 @@ watch(() => newLocale.value, (value: string[]) => {
     class="locale-picker"
     :items="localeItems"
     v-model="newLocale"
-    placeholder="Vyberte jazyk"
+    :placeholder="t('localePicker.placeholder')"
   />
 </template>

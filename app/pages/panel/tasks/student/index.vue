@@ -13,9 +13,11 @@ import type {TaskTeam} from "~/types/team";
 import Image from "~/components/ui/Image.vue";
 import type {AccountData} from "~/types/account";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkoly",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.tasks.studentIndex.title'),
+  meta: [{ name: "description", content: t('pages.tasks.studentIndex.description') }],
 });
 
 definePageMeta({
@@ -94,7 +96,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/student`, active: true, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/student`, active: true, icon: 'material-symbols:folder-copy-rounded' },
           ]"/>
         </template>
       </Navbar>
@@ -107,11 +109,11 @@ watchEffect((): void => {
             <div class="line">
               <div class="line">
                 <div class="section-head">
-                  <h3>Vaše úkoly</h3>
-                  <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+                  <h3>{{ t('tasks.student.index.heading') }}</h3>
+                  <p>{{ t('tasks.student.index.description') }}</p>
                 </div>
 
-                <SearchInput @change="onSearchInputChange" placeholder="Hledat úkol" />
+                <SearchInput @change="onSearchInputChange" :placeholder="t('tasks.student.index.searchPlaceholder')" />
               </div>
 
               <TasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
@@ -119,12 +121,12 @@ watchEffect((): void => {
               ]">
                 <template #task="data">
                   <span class="link limit" @click="downloadTask(data.value.guarantor.id, data.value.id, data.value.task)">
-                    {{ data.value.task || "Žádné zadání" }}
+                    {{ data.value.task || t('tasks.student.index.noAssignment') }}
                   </span>
                 </template>
 
                 <template #points="data">
-                  {{ data.value.points ? `${data.value.team.points ?? "-"} / ${data.value.points}` : "Neurčeno" }}
+                  {{ data.value.points ? `${data.value.team.points ?? "-"} / ${data.value.points}` : t('tasks.student.index.undetermined') }}
                 </template>
 
                 <template #guarantor="data">
@@ -143,7 +145,7 @@ watchEffect((): void => {
 
                 <template #actions="data">
                   <div class="actions">
-                    <button type="button" class="primary" @click="openTask(data.value.id, data.value.team.idTeam, data.value.guarantor.id)">Otevřít</button>
+                    <button type="button" class="primary" @click="openTask(data.value.id, data.value.team.idTeam, data.value.guarantor.id)">{{ t('tasks.student.index.openBtn') }}</button>
                   </div>
                 </template>
               </TasksTable>

@@ -11,10 +11,13 @@ import Card from "~/components/ui/Card.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import TasksTable from "~/components/tables/Tasks.vue";
 import { useLoadingStore } from "~/stores/loading";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Domů",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.home.title'),
+  meta: [{ name: "description", content: t('pages.home.description') }],
 });
 
 const accountStore = useAccountStore();
@@ -33,31 +36,31 @@ const navigationLinks = computed<{
 }[]>(() => {
   if (["admin", "teacher"].includes(role.value)) {
     return [
-      { name: "Vytvořené úkoly", path: `/panel/tasks/${role.value}` },
-      { name: "Žáci", path: `/panel/users/student` },
-      { name: "Změna hesla", path: `/panel/settings/security` },
+      { name: t('home.quickLinks.createdTasks'), path: `/panel/tasks/${role.value}` },
+      { name: t('home.quickLinks.students'), path: `/panel/users/student` },
+      { name: t('home.quickLinks.changePassword'), path: `/panel/settings/security` },
     ];
   }
 
   return [
-    { name: "Aktivní úkoly", path: `/panel/tasks/${role.value}` },
-    { name: "Učitelé", path: `/panel/users/teacher` },
-    { name: "Změna hesla", path: `/panel/settings/security` },
+    { name: t('home.quickLinks.activeTasks'), path: `/panel/tasks/${role.value}` },
+    { name: t('home.quickLinks.teachers'), path: `/panel/users/teacher` },
+    { name: t('home.quickLinks.changePassword'), path: `/panel/settings/security` },
   ];
 });
 const infoCards = computed<{ title: string; icon: string; value: string | number; }[]>(() =>[
   {
-    title: "Počet studentů",
+    title: t('home.infoCards.students'),
     icon: "material-symbols:supervisor-account-rounded",
     value: numbers.value.students || 0,
   },
   {
-    title: "Počet tříd",
+    title: t('home.infoCards.classes'),
     icon: "material-symbols:flight-class-rounded",
     value: numbers.value.classes || 0,
   },
   {
-    title: "Počet učitelů",
+    title: t('home.infoCards.teachers'),
     icon: "material-symbols:supervisor-account-rounded",
     value: numbers.value.teachers || 0,
   },
@@ -171,7 +174,7 @@ onMounted(async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Domů', to: '/panel', active: true, icon: 'material-symbols:home-rounded' }
+            { label: t('home.title'), to: '/panel', active: true, icon: 'material-symbols:home-rounded' }
           ]"/>
         </template>
       </Navbar>
@@ -182,8 +185,8 @@ onMounted(async (): Promise<void> => {
         <div class="info">
           <div class="line">
             <div class="section-head">
-              <h3>Informativní karty</h3>
-              <p>Informativní karty slouží k rychlému nalezení zajímavých údajů z panelu.</p>
+              <h3>{{ t('home.infoCards.title') }}</h3>
+              <p>{{ t('home.infoCards.description') }}</p>
             </div>
           </div>
           <ul class="cards">
@@ -205,26 +208,26 @@ onMounted(async (): Promise<void> => {
         </div>
 
         <div class="line">
-          <Navigation class="navigation" title="Rychlé odkazy" :active-link-id="-1" :links="navigationLinks" />
+          <Navigation class="navigation" :title="t('home.quickLinks.title')" :active-link-id="-1" :links="navigationLinks" />
 
           <div class="column tasks">
             <div class="line">
               <div class="section-head">
-                <h3>{{ ["admin", "teacher"].includes(role) ? "Vytvořené úkoly" : "Rozpracované úkoly" }}</h3>
-                <p>{{ ["admin", "teacher"].includes(role) ? "Rychlý přístup do vašich vytvořených úkolů." : "Rychlý přístup do vašich rozpracovaných úkolů." }}</p>
+                <h3>{{ ["admin", "teacher"].includes(role) ? t('home.tasks.titleTeacher') : t('home.tasks.titleStudent') }}</h3>
+                <p>{{ ["admin", "teacher"].includes(role) ? t('home.tasks.descriptionTeacher') : t('home.tasks.descriptionStudent') }}</p>
               </div>
             </div>
 
             <TasksTable :tasks="allTasks" :loading="!allTasks" :page-size="5" :pagination="false">
               <template #actions="data" v-if="['admin', 'teacher'].includes(role)">
                 <div class="actions">
-                  <button type="button" class="primary" @click="openTask(data.value)">Otevřít</button>
+                  <button type="button" class="primary" @click="openTask(data.value)">{{ t('home.tasks.open') }}</button>
                 </div>
               </template>
 
               <template #task="data" v-if="!['admin', 'teacher'].includes(role)">
                   <span class="link limit" @click="downloadTask(data.value.guarantor.id, data.value.id, data.value.task)">
-                    {{ data.value.task || "Žádné zadání" }}
+                    {{ data.value.task || t('home.tasks.noAssignment') }}
                   </span>
               </template>
             </TasksTable>

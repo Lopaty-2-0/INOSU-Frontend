@@ -15,9 +15,11 @@ import {storeToRefs} from "pinia";
 import Navigation from "~/components/ui/Navigation.vue";
 import MaturitaTable from "~/components/tables/MaturitaTable.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Oponentura",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.objectorIndex.title'),
+  meta: [{ name: "description", content: t('pages.maturita.objectorIndex.description') }],
 });
 
 definePageMeta({
@@ -114,8 +116,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/objector`, icon: 'material-symbols:search-rounded' },
-            { label: 'Oponentura', to: `/panel/maturita/${role}/objector`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/objector`, icon: 'material-symbols:search-rounded' },
+            { label: t('maturita.objector.index.heading'), to: `/panel/maturita/${role}/objector`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -125,11 +127,11 @@ watchEffect((): void => {
       <div id="maturita-tasks" v-if="maturitaNotExists !== undefined && maturitaNotExists">
         <div class="content">
           <div class="section-head">
-            <h3>Maturitní zadání</h3>
-            <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+            <h3>{{ t('maturita.objector.index.heading') }}</h3>
+            <p>{{ t('maturita.objector.index.description') }}</p>
           </div>
 
-          <p class="error message">Žádný maturitní období more.</p>
+          <p class="error message">{{ t('maturita.objector.index.noMaturita') }}</p>
         </div>
       </div>
 
@@ -137,19 +139,19 @@ watchEffect((): void => {
         <div class="content">
           <div class="line">
             <div class="section-head bottom-line">
-              <h3>Oponentura</h3>
-              <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+              <h3>{{ t('maturita.objector.index.heading') }}</h3>
+              <p>{{ t('maturita.objector.index.description') }}</p>
               <br>
-              <p>Ročník: {{ currentMaturita.grade }}</p>
-              <p>Konec: {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('maturita.grade.add.nameDescription').split('.')[0] }}: {{ currentMaturita.grade }}</p>
+              <p>{{ t('maturita.team.endLabel') }} {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.objector.index.searchPlaceholder')" />
           </div>
 
           <MaturitaTasksTable class="datatable" :tasks="allTasks" :loading="tasksPending" :extra-columns="[
-              { title: 'Student', field: 'userData' },
-              { title: 'Garant', field: 'guarantor' }
+              { title: t('maturita.team.studentLabel').replace(':', ''), field: 'userData' },
+              { title: t('maturita.team.guarantorLabel').replace(':', ''), field: 'guarantor' }
           ]">
             <template #userData="data">
               <div class="profile">
@@ -171,14 +173,14 @@ watchEffect((): void => {
               </div>
 
               <div v-else>
-                Neurčeno
+                {{ t('maturita.objector.index.undetermined') }}
               </div>
             </template>
 
             <template #actions="data">
               <div class="actions">
-                <button type="button" class="default" @click="openChat(data.value.id, data.value.idTeam, data.value.guarantor.id)">Chat</button>
-                <button type="button" class="primary" @click="openTask(data.value.id, data.value.idTeam, data.value.guarantor.id)">Otevřít</button>
+                <button type="button" class="default" @click="openChat(data.value.id, data.value.idTeam, data.value.guarantor.id)">{{ t('maturita.objector.index.chatBtn') }}</button>
+                <button type="button" class="primary" @click="openTask(data.value.id, data.value.idTeam, data.value.guarantor.id)">{{ t('maturita.objector.index.openBtn') }}</button>
               </div>
             </template>
           </MaturitaTasksTable>

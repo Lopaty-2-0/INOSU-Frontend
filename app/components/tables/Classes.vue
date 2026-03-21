@@ -4,6 +4,9 @@ import "@bhplugin/vue3-datatable/dist/style.css";
 import type { ClassData } from "~/types/classes";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {SpecializationData} from "~/types/specialization";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
@@ -52,22 +55,22 @@ const slots = useSlots();
 
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
-    { field: "id", title: "ID", width: "90px", type: "number" },
-    { field: "name", title: "Název", type: "string", width: "40%" },
+    { field: "id", title: t('tables.columns.id'), width: "90px", type: "number" },
+    { field: "name", title: t('tables.columns.name'), type: "string", width: "40%" },
     {
-      field: "class", title: "Třída", type: "string", width: "30%", cellRenderer: (item: ClassData) => {
+      field: "class", title: t('tables.columns.class'), type: "string", width: "30%", cellRenderer: (item: ClassData) => {
         return `${item.specialization}${item.grade}${item.group}`.toUpperCase();
       }
     },
-    { field: "grade", title: "Ročník", type: "number", width: "10%" },
-    { field: "group", title: "Skupina", type: "string", width: "10%" },
-    { field: "specialization", title: "Zaměření (zkratka)", type: "string", width: "10%" },
+    { field: "grade", title: t('tables.columns.grade'), type: "number", width: "10%" },
+    { field: "group", title: t('tables.columns.group'), type: "string", width: "10%" },
+    { field: "specialization", title: t('tables.columns.specializationAbbr'), type: "string", width: "10%" },
   ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
 
   if (slots.actions) {
-    merged.push({ field: "actions", title: "Akce" });
+    merged.push({ field: "actions", title: t('tables.columns.actions') });
   }
 
   return merged;
@@ -124,7 +127,7 @@ defineExpose({ clearSelection, updateSelection, getSelectedRowIds });
 </script>
 
 <template>
-  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" :no-data-content="t('common.noData')" @rowClick="onRowClick">
     <template v-for="(_, name) in slots" v-slot:[name]="slotProps">
       <slot :name="name" v-bind="slotProps" />
     </template>

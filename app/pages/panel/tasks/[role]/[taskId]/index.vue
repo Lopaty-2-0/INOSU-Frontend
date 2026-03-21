@@ -21,9 +21,11 @@ const route = useRoute();
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkol - " + taskId,
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.tasks.roleTask.title', { taskId }),
+  meta: [{ name: "description", content: t('pages.tasks.roleTask.description') }],
 });
 
 definePageMeta({
@@ -164,8 +166,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}`, active: true },
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: `${t('tasks.role.task.team.taskIdLabel')} ${taskId}`, to: `/panel/tasks/${role}/${taskId}`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -176,9 +178,9 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa úkolu"
+            :description="t('tasks.role.task.index.heading')"
             :actions="['edit', 'remove']"
-            :texts="['Přiřadit', 'Odstranit přiřazené']"
+            :texts="[t('tasks.role.task.index.assignBtn'), t('actionBar.remove')]"
             :icons="[
               'material-symbols:edit-rounded',
               'material-symbols:delete-rounded',
@@ -192,16 +194,16 @@ watchEffect((): void => {
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
-              <p>Úkol ID: {{ task.id }}</p>
-              <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
+              <p>{{ t('tasks.role.task.team.taskIdLabel') }} {{ task.id }}</p>
+              <p>{{ t('tasks.role.task.team.guarantorLabel') }} {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
+              <p>{{ t('tasks.role.task.team.startLabel') }} {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('tasks.role.task.team.endLabel') }} {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">{{ t('tasks.role.task.team.deadlineLabel') }} {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('tasks.role.task.team.maxPointsLabel') }} {{ task.points ?? t('chat.unknown') }}</p>
               <p>
-                Zadání:
+                {{ t('tasks.role.task.team.assignmentLabel') }}
                 <a :href="task.task ? `/api/file/task/${task.guarantor.id}/${task.id}/${task.task}` : '#'" class="link" download target="_blank">
-                  {{ task.task || "Žádné zadání" }}
+                  {{ task.task || t('home.tasks.noAssignment') }}
                 </a>
               </p>
             </div>
@@ -209,21 +211,21 @@ watchEffect((): void => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Žáci</h3>
+              <h3>{{ t('tasks.role.task.team.studentsHeading') }}</h3>
 
-              <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
+              <SearchInput @change="onUsersSearchInputChange" :placeholder="t('tasks.role.task.index.searchPlaceholder')" />
             </div>
 
             <UsersTable :users="users" :loading="usersPending" :extra-columns="[
-              { field: 'points', title: 'Počet bodů' }
+              { field: 'points', title: t('tables.columns.maxPoints') }
             ]">
               <template #points="data">
-                <span>{{ usersTeam?.filter((soloTeam: Task_Team_Solo_Table) => soloTeam.userData.id === data.value.id)?.[0]?.points || "Neurčeno" }}</span>
+                <span>{{ usersTeam?.filter((soloTeam: Task_Team_Solo_Table) => soloTeam.userData.id === data.value.id)?.[0]?.points || t('tasks.role.task.team.undetermined') }}</span>
               </template>
 
               <template #actions="data">
                 <div class="actions">
-                  <button type="button" class="primary" @click="openUserTask(data.value.id)">Otevřít</button>
+                  <button type="button" class="primary" @click="openUserTask(data.value.id)">{{ t('tasks.role.task.index.openBtn') }}</button>
                 </div>
               </template>
             </UsersTable>
@@ -237,21 +239,21 @@ watchEffect((): void => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Týmy</h3>
+              <h3>{{ t('tasks.role.task.team.teamsHeading') }}</h3>
 
-              <SearchInput @change="onTeamSearchInputChange" placeholder="Hledat týmy" />
+              <SearchInput @change="onTeamSearchInputChange" :placeholder="t('tasks.role.task.index.teamsSearchPlaceholder')" />
             </div>
 
             <TaskTeamsTable v-if="teams" :teams="teams" :loading="teamsPending" :extra-columns="[
-              { field: 'points', title: 'Počet bodů' }
+              { field: 'points', title: t('tables.columns.maxPoints') }
             ]">
               <template #points="data">
-                <span>{{ data.value.points || "Neurčeno" }}</span>
+                <span>{{ data.value.points || t('tasks.role.task.team.undetermined') }}</span>
               </template>
 
               <template #actions="data">
                 <div class="actions">
-                  <button type="button" class="primary" @click="openTeamTask(data.value.idTeam)">Otevřít</button>
+                  <button type="button" class="primary" @click="openTeamTask(data.value.idTeam)">{{ t('tasks.role.task.index.openBtn') }}</button>
                 </div>
               </template>
             </TaskTeamsTable>

@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Přístup odepřen",
+  title: t('pages.error403.title'),
   meta: [
-    { name: "description", content: "Přistup zamítnut page" }
+    { name: "description", content: t('pages.error403.description') }
   ],
 });
 </script>
@@ -16,8 +19,8 @@ useHead({
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Domů', to: '/panel', icon: 'material-symbols:flight-class-rounded' },
-            { label: 'Přístup odepřen', to: '/panel/errors/403', active: true }
+            { label: t('home.title'), to: '/panel', icon: 'material-symbols:flight-class-rounded' },
+            { label: t('errors.403.title'), to: '/panel/errors/403', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -29,11 +32,11 @@ useHead({
           <div class="icon-div"><Icon name="material-symbols:visibility-lock-rounded" class="icon"></Icon></div>
 
           <div class="text">
-            <h1>Přístup odepřen</h1>
-            <p>Nemáte dostatečná oprávnění pro zobrazení této stránky.</p>
+            <h1>{{ t('errors.403.title') }}</h1>
+            <p>{{ t('errors.403.description') }}</p>
           </div>
           <div class="group-btn">
-            <NuxtLink class="primary" href="/panel">Vrátit zpět</NuxtLink>
+            <NuxtLink class="primary" href="/panel">{{ t('errors.403.back') }}</NuxtLink>
           </div>
         </div>
       </div>

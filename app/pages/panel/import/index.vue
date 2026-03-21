@@ -7,18 +7,20 @@ import FileInput from "~/components/ui/FileInput.vue";
 import {computed, ref} from "vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import {useAlertsStore} from "~/stores/alerts";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Import dat - Uživatelé",
+  title: t('pages.import.title'),
   meta: [
-    { name: "description", content: "Přistup zamítnut page" }
+    { name: "description", content: t('pages.import.description') }
   ],
 });
 
 definePageMeta({
   roles: ["admin"],
 });
-
 const alertsStore = useAlertsStore();
 const errors = ref<{ resCode: number | string; message: string; number: number }[]>([]);
 const loading = ref<boolean>(false);
@@ -40,20 +42,20 @@ const navigationLinks = computed(() => {
   const links = [];
 
   if (checkPermissions(["admin"])) {
-    links.push({ name: "Uživatelé", path: "/panel/import" });
-    links.push({ name: "Třídy", path: "/panel/import/classes" });
-    links.push({ name: "Zaměření", path: "/panel/import/specializations" });
+    links.push({ name: t('import.navigation.users'), path: "/panel/import" });
+    links.push({ name: t('import.navigation.classes'), path: "/panel/import/classes" });
+    links.push({ name: t('import.navigation.specializations'), path: "/panel/import/specializations" });
   }
 
-  links.push({ name: "Maturity", path: "/panel/import/maturitas" });
-  links.push({ name: "Maturitní témata", path: "/panel/import/maturitaTopics" });
+  links.push({ name: t('import.navigation.maturitas'), path: "/panel/import/maturitas" });
+  links.push({ name: t('import.navigation.maturitaTopics'), path: "/panel/import/maturitaTopics" });
 
   return links;
 });
 
 const importFile = async (): Promise<void> => {
   if (!selectedFile.value) {
-    alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Nebyl vybrán žádný soubor." });
+    alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.noFile') });
     return;
   }
 
@@ -73,35 +75,35 @@ const importFile = async (): Promise<void> => {
 
       switch (resCode) {
         case "50010":
-          alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Na tuto akci nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.noPermission') });
           break;
 
         case "50020":
-          alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Soubor nebyl nahrán." });
+          alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.fileNotUploaded') });
           break;
 
         case "50030":
-          alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Soubor má špatný formát." });
+          alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.wrongFormat') });
           break;
 
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.tooLarge') });
           break;
 
         case "50040":
-          alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Soubor je prázdný." });
+          alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.empty') });
           break;
 
         case "50050":
-          alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Soubor obsahuje neplatný JSON." });
+          alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.invalidJson') });
           break;
 
         case "50150":
-          alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Žádný uživatel nebyl vytvořen." });
+          alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.noneCreated') });
           break;
 
         case "50161":
-          alertsStore.addAlert({ type: "success", title: "Nahrání uživatelů", message: "Uživatelé byli úspěšně vytvořeni." });
+          alertsStore.addAlert({ type: "success", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.success') });
 
           const badUsers = response._data.data.badUsers;
 
@@ -111,39 +113,39 @@ const importFile = async (): Promise<void> => {
 
             switch (errorResCode) {
               case "50060":
-                message = "Některé povinné hodnoty chybí.";
+                message = t('import.alerts.userErrors.missingFields');
                 break;
 
               case "50070":
-                message = "Jméno je příliš dlouhé.";
+                message = t('import.alerts.userErrors.nameTooLong');
                 break;
 
               case "50080":
-                message = "Příjmení je příliš dlouhé.";
+                message = t('import.alerts.userErrors.surnameTooLong');
                 break;
 
               case "50090":
-                message = "Neplatná role uživatele.";
+                message = t('import.alerts.userErrors.invalidRole');
                 break;
 
               case "50100":
-                message = "Heslo je příliš krátké.";
+                message = t('import.alerts.userErrors.passwordTooShort');
                 break;
 
               case "50110":
-                message = "Email je neplatný, příliš dlouhý nebo již existuje.";
+                message = t('import.alerts.userErrors.invalidEmail');
                 break;
 
               case "50120":
-                message = "Zkratka je příliš dlouhá.";
+                message = t('import.alerts.userErrors.abbreviationTooLong');
                 break;
 
               case "50130":
-                message = "Zkratka se již používá.";
+                message = t('import.alerts.userErrors.abbreviationInUse');
                 break;
 
               case "50140":
-                message = "Některé ID tříd jsou neplatné.";
+                message = t('import.alerts.userErrors.invalidClassIds');
                 break;
 
               default:
@@ -160,12 +162,12 @@ const importFile = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Nahrání uživatelů", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('import.alerts.uploadUsers.title'), message: t('import.alerts.uploadUsers.unknown') });
     },
   }).finally(async (): Promise<void> => {
     await resetFile();
@@ -188,9 +190,9 @@ const resetFile = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Data', to: '/panel/import', icon: 'material-symbols:upload-2-rounded' },
-            { label: 'Import', to: '/panel/import' },
-            { label: 'Uživatelé', to: '/panel/import', active: true }
+            { label: t('sidebar.sections.data'), to: '/panel/import', icon: 'material-symbols:upload-2-rounded' },
+            { label: t('import.title'), to: '/panel/import' },
+            { label: t('import.navigation.users'), to: '/panel/import', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -198,16 +200,16 @@ const resetFile = async (): Promise<void> => {
 
     <template #content>
       <div id="import">
-        <Navigation class="navigation" title="Import" :active-link-id="activeLinkId" :links="navigationLinks" />
+        <Navigation class="navigation" :title="t('import.title')" :active-link-id="activeLinkId" :links="navigationLinks" />
 
         <div class="content">
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Import uživatelů <span class="update" v-if="selectedFile">(aktualizováno)</span></h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+              <h3>{{ t('import.users.title') }} <span class="update" v-if="selectedFile">{{ t('common.updated') }}</span></h3>
+              <p>{{ t('import.users.description') }}</p>
             </div>
 
-            <FileInput ref="fileInput" class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" placeholder="Vyberte soubor pro import dat" :title="title"></FileInput>
+            <FileInput ref="fileInput" class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" :placeholder="t('import.filePlaceholder')" :title="title"></FileInput>
           </div>
 
           <div class="page-section" :class="{ 'bottom-line': errors.length > 0 }">
@@ -216,7 +218,7 @@ const resetFile = async (): Promise<void> => {
 
           <div class="page-section" v-if="errors.length > 0">
             <div class="errors">
-              <p class="error" v-for="error in errors">{{ error.message }} <span class="number">Číslo: {{ error.number }}</span></p>
+              <p class="error" v-for="error in errors">{{ error.message }} <span class="number">{{ t('import.errorNumber') }} {{ error.number }}</span></p>
             </div>
           </div>
         </div>

@@ -7,9 +7,11 @@ import type { LocationQueryValue } from "vue-router";
 import type {LocaleObject} from "~/types/i18n";
 import LocalePicker from "~/components/ui/LocalePicker.vue";
 
+const { setLocale, locale, locales, t } = useI18n();
+
 useHead({
-  title: "Panel | Resetování hesla",
-  meta: [{ name: "description", content: "Resetování hesla" }],
+  title: t('pages.resetPassword.title'),
+  meta: [{ name: "description", content: t('pages.resetPassword.description') }],
 });
 
 const token: LocationQueryValue | LocationQueryValue[] | undefined = useRoute().query.token;
@@ -30,17 +32,16 @@ const formData = ref<{ password: string; passwordAgain: string }>({
   passwordAgain: "",
 });
 const pageLoading = ref<boolean>(true);
-const { setLocale, locale, locales, t } = useI18n();
 const newLocale = ref<string>(locale.value || "cz");
 
 const validateForm = () => {
   if (formData.value.password.length < 5)
-    messages.value.password = "Nové heslo musí mít nejméně 5 znaků";
-  if (!formData.value.password) messages.value.password = "Zadejte nové heslo";
+    messages.value.password = t('resetPassword.validation.tooShort');
+  if (!formData.value.password) messages.value.password = t('resetPassword.validation.required');
   if (!formData.value.passwordAgain)
-    messages.value.passwordAgain = "Zadejte heslo znovu";
+    messages.value.passwordAgain = t('resetPassword.validation.repeatRequired');
   else if (formData.value.passwordAgain !== formData.value.password)
-    messages.value.passwordAgain = "Hesla se neshodují";
+    messages.value.passwordAgain = t('resetPassword.validation.mismatch');
 };
 
 const resetMessages = (): void => {
@@ -72,37 +73,37 @@ const submitForm = async (): Promise<void> => {
       switch (resCode) {
         case "14010":
           messages.value.form = {
-            message: "Špatný formát e-mailu",
+            message: t('resetPassword.responses.invalidEmail'),
             type: "error",
           };
           break;
         case "14020":
           messages.value.form = {
-            message: "E-mail je příliš velký",
+            message: t('resetPassword.responses.emailTooLarge'),
             type: "error",
           };
           break;
         case "14030":
           messages.value.form = {
-            message: "Účet nebyl nalezen",
+            message: t('resetPassword.responses.accountNotFound'),
             type: "error",
           };
           break;
         case "14040":
           messages.value.form = {
-            message: "Chybí nové heslo",
+            message: t('resetPassword.responses.noNewPassword'),
             type: "error",
           };
           break;
         case "14050":
           messages.value.form = {
-            message: "Nové heslo musí mít nejméně 5 znaků",
+            message: t('resetPassword.responses.tooShort'),
             type: "error",
           };
           break;
         case "14061":
           messages.value.form = {
-            message: "Heslo bylo úspěšně změněno",
+            message: t('resetPassword.responses.success'),
             type: "success",
           };
           formData.value.password = "";
@@ -110,7 +111,7 @@ const submitForm = async (): Promise<void> => {
           break;
         default:
           messages.value.form = {
-            message: "Nastala neznámá chyba",
+            message: t('resetPassword.responses.unknown'),
             type: "error",
           };
           break;
@@ -118,7 +119,7 @@ const submitForm = async (): Promise<void> => {
     },
     async onRequestError() {
       messages.value.form = {
-        message: "Nastala neznámá chyba",
+        message: t('resetPassword.responses.unknown'),
         type: "error",
       };
     },
@@ -179,15 +180,12 @@ onMounted((): void => {
 
     <div class="container card" v-if="!loading">
       <div class="head">
-        <h2>Token je neplatný</h2>
-        <p>
-          Token pro resetování hesla je neplatný nebo vypršel, je potřeba
-          vytvořit nový token a zkusit to znovu
-        </p>
+        <h2>{{ t('resetPassword.invalidToken.title') }}</h2>
+        <p>{{ t('resetPassword.invalidToken.description') }}</p>
       </div>
 
       <div class="footer">
-        <a href="/password/forget/new"><button type="submit">Zkusit znovu</button></a>
+        <a href="/password/forget/new"><button type="submit">{{ t('resetPassword.invalidToken.retryButton') }}</button></a>
       </div>
     </div>
   </div>
@@ -202,13 +200,13 @@ onMounted((): void => {
 
     <div class="container">
       <div class="head">
-        <h2>Změna hesla</h2>
-        <p>Resetujte si heslo k vašemu účtu zadáním nového hesla</p>
+        <h2>{{ t('resetPassword.title') }}</h2>
+        <p>{{ t('resetPassword.description') }}</p>
       </div>
 
       <form @submit.prevent="submitForm" @input="resetMessages">
         <div class="section">
-          <label for="password">Nové heslo</label>
+          <label for="password">{{ t('resetPassword.newPasswordLabel') }}</label>
           <Input
             type="password"
             id="password"
@@ -220,7 +218,7 @@ onMounted((): void => {
         </div>
 
         <div class="section">
-          <label for="passwordAgain">Heslo znovu</label>
+          <label for="passwordAgain">{{ t('resetPassword.repeatPasswordLabel') }}</label>
           <Input
             type="password"
             id="passwordAgain"
@@ -234,7 +232,7 @@ onMounted((): void => {
         </div>
 
         <div class="footer">
-          <button type="submit">Změnit heslo</button>
+          <button type="submit">{{ t('resetPassword.submitButton') }}</button>
           <p
             v-if="messages.form.message"
             :class="{
@@ -250,7 +248,7 @@ onMounted((): void => {
           <Loading color="rgba(var(--description-color), 1)" size="6px" />
         </div>
 
-        <a href="/">Máte změněno?</a>
+        <a href="/">{{ t('resetPassword.doneLink') }}</a>
       </form>
     </div>
   </div>

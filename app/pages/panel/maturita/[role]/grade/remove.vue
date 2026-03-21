@@ -13,9 +13,11 @@ import MaturitasTable from "~/components/tables/Maturitas.vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Maturitní ročníky - Odstranění",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.gradeRemove.title'),
+  meta: [{ name: "description", content: t('pages.maturita.gradeRemove.description') }],
 });
 
 definePageMeta({
@@ -77,31 +79,31 @@ const removeMaturitas = async (): Promise<void> => {
 
       switch (resCode) {
         case "71010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.remove.alerts.removeMaturita.title'), message: t('common.noPermission') });
           break;
 
         case "71020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Nebyl vybrána žádný maturitní ročník." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.remove.alerts.removeMaturita.title'), message: t('maturita.grade.remove.alerts.removeMaturita.noneSelected') });
           break;
 
         case "71030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Žádný maturitní ročník nebyl odstraněn." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.remove.alerts.removeMaturita.title'), message: t('maturita.grade.remove.alerts.removeMaturita.noneRemoved') });
           break;
 
         case "71041":
-          alertsStore.addAlert({ type: "success", title: "Odstranění maturit", message: "Maturitní ročníky byly úspěšně odstraněny." });
+          alertsStore.addAlert({ type: "success", title: t('maturita.grade.remove.alerts.removeMaturita.title'), message: t('maturita.grade.remove.alerts.removeMaturita.success') });
           refreshMaturitas();
           resetSelectedMaturitas();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturit", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.remove.alerts.removeMaturita.title'), message: t('common.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění maturity", message: "Nastala neznámá chyba." })
+      alertsStore.addAlert({ type: "error", title: t('maturita.grade.remove.alerts.removeMaturita.title'), message: t('common.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -144,8 +146,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, icon: 'material-symbols:book-2-rounded' },
-            { label: 'Odstranění', to: `/panel/maturita/${role}/grade/remove`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/grade`, icon: 'material-symbols:book-2-rounded' },
+            { label: t('maturita.grade.remove.breadcrumb'), to: `/panel/maturita/${role}/grade/remove`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -156,8 +158,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa maturitních ročníků"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('maturita.grade.index.actionBar.description')"
+            :texts="[t('actionBar.add'), t('actionBar.remove')]"
             :actions="['add', 'remove']"
             :active="1"
             :icons="[
@@ -172,16 +174,16 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybrané maturitní ročníky: {{ selectedMaturitas.length }}</h3>
-              <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
+              <h3>{{ t('maturita.grade.remove.selectedCount', { count: selectedMaturitas.length }) }}</h3>
+              <p>{{ t('maturita.grade.remove.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat maturity" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.grade.remove.searchPlaceholder')" />
           </div>
 
           <div class="buttons">
             <button class="remove" @click="removeMaturitas">
-              Odstranit
+              {{ t('maturita.grade.remove.removeBtn') }}
               <Loading
                   v-show="loading"
                   size="5px"
@@ -189,7 +191,7 @@ watchEffect((): void => {
               />
             </button>
             <button class="reset" @click="resetSelectedMaturitas">
-              Zrušit vše
+              {{ t('maturita.grade.remove.cancelBtn') }}
             </button>
           </div>
 

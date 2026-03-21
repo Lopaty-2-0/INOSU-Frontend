@@ -13,9 +13,11 @@ import Loading from "~/components/ui/Loading.vue";
 import TopicsTable from "~/components/tables/Topics.vue";
 import { useAlertsStore } from "~/stores/alerts";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Témata maturitních prací - Odstranění",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.topicsRemove.title'),
+  meta: [{ name: "description", content: t('pages.maturita.topicsRemove.description') }],
 });
 
 definePageMeta({
@@ -77,31 +79,31 @@ const removeTopics = async (): Promise<void> => {
 
       switch (resCode) {
         case "64010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.remove.alerts.removeTopic.title'), message: t('common.noPermission') });
           break;
 
         case "64020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Nebyla vybrána žádná témata." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.remove.alerts.removeTopic.title'), message: t('maturita.topics.remove.alerts.removeTopic.noneSelected') });
           break;
 
         case "64030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Žádné téma nebylo odstraněno." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.remove.alerts.removeTopic.title'), message: t('maturita.topics.remove.alerts.removeTopic.noneRemoved') });
           break;
 
         case "64041":
-          alertsStore.addAlert({ type: "success", title: "Odstranění témat", message: "Témata byla úspěšně odstraněna." });
+          alertsStore.addAlert({ type: "success", title: t('maturita.topics.remove.alerts.removeTopic.title'), message: t('maturita.topics.remove.alerts.removeTopic.success') });
           refreshTopic();
           resetSelectedTopics();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.remove.alerts.removeTopic.title'), message: t('common.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění témat", message: "Nastala chyba při komunikaci se serverem." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.topics.remove.alerts.removeTopic.title'), message: t('common.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -144,9 +146,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:topic' },
-            { label: 'Témata', to: `/panel/maturita/${role}/topics` },
-            { label: 'Odstranění', to: `/panel/maturita/${role}/topics/remove`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:topic' },
+            { label: t('sidebar.links.topics'), to: `/panel/maturita/${role}/topics` },
+            { label: t('maturita.topics.remove.breadcrumb'), to: `/panel/maturita/${role}/topics/remove`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -157,8 +159,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
               class="action-bar"
-              description="Správa maturitních témat"
-              :texts="['Přidat', 'Odebrat']"
+              :description="t('maturita.topics.remove.actionBar.description')"
+              :texts="[t('actionBar.add'), t('actionBar.remove')]"
               :actions="['add', 'remove']"
               :active="1"
               :icons="[
@@ -173,16 +175,16 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybraná maturitní témata: {{ selectedTopics.length }}</h3>
-              <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
+              <h3>{{ t('maturita.topics.remove.selectedCount', { count: selectedTopics.length }) }}</h3>
+              <p>{{ t('maturita.topics.remove.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat témata" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.topics.remove.searchPlaceholder')" />
           </div>
 
           <div class="buttons">
             <button class="remove" @click="removeTopics">
-              Odstranit
+              {{ t('maturita.topics.remove.removeBtn') }}
               <Loading
                   v-show="loading"
                   size="5px"
@@ -190,7 +192,7 @@ watchEffect((): void => {
               />
             </button>
             <button class="reset" @click="resetSelectedTopics">
-              Zrušit vše
+              {{ t('maturita.topics.remove.cancelBtn') }}
             </button>
           </div>
 

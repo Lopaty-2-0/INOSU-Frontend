@@ -12,14 +12,14 @@ import LocalePicker from "~/components/ui/LocalePicker.vue";
 import { useI18n } from "#imports";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 
+const { setLocale, locale, locales, t } = useI18n();
+
 useHead({
-  title: "Panel | Nastavení - Přizpůsobení",
+  title: t('pages.settings.customization.title'),
   meta: [
-    { name: "description", content: "Panel Customization Page" }
+    { name: "description", content: t('pages.settings.customization.description') }
   ],
 });
-
-const { setLocale, locale, locales } = useI18n();
 const accountStore = useAccountStore();
 const editThemeMode = ref<InstanceType<typeof EditThemeMode> | null>(null);
 const editCustomLinks = ref<InstanceType<typeof EditCustomLinks> | null>(null);
@@ -91,8 +91,8 @@ const updateUserData = () => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Nastavení', to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
-            { label: 'Přizpůsobení', to: '/panel/settings/customization', active: true }
+            { label: t('settings.title'), to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
+            { label: t('settings.tabs.customization'), to: '/panel/settings/customization', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -100,28 +100,28 @@ const updateUserData = () => {
 
     <template #content>
       <div id="settings">
-        <Navigation class="navigation" title="Nastavení" :active-link-id="2" :links="[
-          { name: 'Údaje', path: '/panel/settings' },
-          { name: 'Zabezpečení', path: '/panel/settings/security' },
-          { name: 'Přizpůsobení', path: '/panel/settings/customization' },
+        <Navigation class="navigation" :title="t('settings.title')" :active-link-id="2" :links="[
+          { name: t('settings.tabs.info'), path: '/panel/settings' },
+          { name: t('settings.tabs.security'), path: '/panel/settings/security' },
+          { name: t('settings.tabs.customization'), path: '/panel/settings/customization' },
         ]" />
         <div class="content">
           <EditThemeMode ref="editThemeMode" class="page-section" :old-theme="oldUserData.themeMode" @update="onThemeModeUpdate">
             <div class="section-head">
               <h3>
-                Tématický režim
-                <span class="update" v-show="newUserData.themeMode !== undefined && oldUserData.themeMode !== newUserData.themeMode">(aktualizováno)</span>
+                {{ t('settings.customization.themeMode.title') }}
+                <span class="update" v-show="newUserData.themeMode !== undefined && oldUserData.themeMode !== newUserData.themeMode">{{ t('common.updated') }}</span>
               </h3>
-              <p>Zvolte preferovaný vzhled rozhraní. Vyberte si mezi světlým, tmavým nebo systémovým režimem podle svých potřeb.</p>
+              <p>{{ t('settings.customization.themeMode.description') }}</p>
             </div>
           </EditThemeMode>
 
           <div class="page-section">
             <div class="section-head">
               <h3>
-                Jazyk rozhraní
+                {{ t('settings.customization.language.title') }}
               </h3>
-              <p>Vyberte preferovaný jazyk pro uživatelské rozhraní aplikace.</p>
+              <p>{{ t('settings.customization.language.description') }}</p>
             </div>
 
             <LocalePicker
@@ -134,10 +134,10 @@ const updateUserData = () => {
           <EditCustomLinks ref="editCustomLinks" class="page-section" :old-custom-links="oldUserData.customLinks" @update="onCustomLinksUpdate">
             <div class="section-head">
               <h3>
-                Vlastní odkazy
-                <span class="update" v-show="newUserData.customLinks && JSON.stringify(oldUserData.customLinks) !== JSON.stringify(newUserData.customLinks)">(aktualizováno)</span>
+                {{ t('settings.customization.customLinks.title') }}
+                <span class="update" v-show="newUserData.customLinks && JSON.stringify(oldUserData.customLinks) !== JSON.stringify(newUserData.customLinks)">{{ t('common.updated') }}</span>
               </h3>
-              <p>Zde můžete spravovat své vlastní odkazy, které se zobrazí v uživatelském rozhraní. Přidejte, upravte nebo odeberte odkazy podle svých preferencí.</p>
+              <p>{{ t('settings.customization.customLinks.description') }}</p>
             </div>
           </EditCustomLinks>
 

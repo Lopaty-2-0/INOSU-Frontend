@@ -5,18 +5,20 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Export dat",
+  title: t('pages.export.title'),
   meta: [
-    { name: "description", content: "Přistup zamítnut page" }
+    { name: "description", content: t('pages.export.description') }
   ],
 });
 
 definePageMeta({
   roles: ["admin", "teacher"],
 });
-
 const alertsStore = useAlertsStore();
 const loading = ref({
   users: false,
@@ -81,17 +83,17 @@ const exportUsers = async (): Promise<void> => {
       const resCode: string | undefined = response._data.data?.resCode?.toString();
 
       if (resCode === "107010") {
-        alertsStore.addAlert({type: "error", title: "Export uživatelů", message: "Nemáte oprávnění k této akci.",});
+        alertsStore.addAlert({type: "error", title: t('export.users.title'), message: t('export.alerts.noPermission'),});
         return;
       }
 
-      alertsStore.addAlert({type: "error", title: "Export uživatelů", message: "Nastala neznámá chyba."});
+      alertsStore.addAlert({type: "error", title: t('export.users.title'), message: t('export.alerts.unknown')});
       return;
     }
 
     downloadFile(response);
   } catch {
-    alertsStore.addAlert({type: "error", title: "Export uživatelů", message: "Nastala neznámá chyba.",});
+    alertsStore.addAlert({type: "error", title: t('export.users.title'), message: t('export.alerts.unknown'),});
   } finally {
     loading.value.users = false;
   }
@@ -112,17 +114,17 @@ const exportClasses = async (): Promise<void> => {
       const resCode: string | undefined = response._data.data?.resCode?.toString();
 
       if (resCode === "106010") {
-        alertsStore.addAlert({type: "error", title: "Export tříd", message: "Nemáte oprávnění k této akci.",});
+        alertsStore.addAlert({type: "error", title: t('export.classes.title'), message: t('export.alerts.noPermission'),});
         return;
       }
 
-      alertsStore.addAlert({type: "error", title: "Export tříd", message: "Nastala neznámá chyba."});
+      alertsStore.addAlert({type: "error", title: t('export.classes.title'), message: t('export.alerts.unknown')});
       return;
     }
 
     downloadFile(response);
   } catch {
-    alertsStore.addAlert({type: "error", title: "Export tříd", message: "Nastala neznámá chyba.",});
+    alertsStore.addAlert({type: "error", title: t('export.classes.title'), message: t('export.alerts.unknown'),});
   } finally {
     loading.value.classes = false;
   }
@@ -143,17 +145,17 @@ const exportSpecializations = async (): Promise<void> => {
       const resCode: string | undefined = response._data.data?.resCode?.toString();
 
       if (resCode === "104010") {
-        alertsStore.addAlert({type: "error", title: "Export zaměření", message: "Nemáte oprávnění k této akci.",});
+        alertsStore.addAlert({type: "error", title: t('export.specializations.title'), message: t('export.alerts.noPermission'),});
         return;
       }
 
-      alertsStore.addAlert({type: "error", title: "Export zaměření", message: "Nastala neznámá chyba."});
+      alertsStore.addAlert({type: "error", title: t('export.specializations.title'), message: t('export.alerts.unknown')});
       return;
     }
 
     downloadFile(response);
   } catch {
-    alertsStore.addAlert({type: "error", title: "Export zaměření", message: "Nastala neznámá chyba.",});
+    alertsStore.addAlert({type: "error", title: t('export.specializations.title'), message: t('export.alerts.unknown'),});
   } finally {
     loading.value.specializations = false;
   }
@@ -174,17 +176,17 @@ const exportMaturitas = async (): Promise<void> => {
       const resCode: string | undefined = response._data.data?.resCode?.toString();
 
       if (resCode === "108010") {
-        alertsStore.addAlert({type: "error", title: "Export maturit", message: "Nemáte oprávnění k této akci.",});
+        alertsStore.addAlert({type: "error", title: t('export.maturitas.title'), message: t('export.alerts.noPermission'),});
         return;
       }
 
-      alertsStore.addAlert({type: "error", title: "Export maturit", message: "Nastala neznámá chyba."});
+      alertsStore.addAlert({type: "error", title: t('export.maturitas.title'), message: t('export.alerts.unknown')});
       return;
     }
 
     downloadFile(response);
   } catch {
-    alertsStore.addAlert({type: "error", title: "Export maturit", message: "Nastala neznámá chyba.",});
+    alertsStore.addAlert({type: "error", title: t('export.maturitas.title'), message: t('export.alerts.unknown'),});
   } finally {
     loading.value.maturitas = false;
   }
@@ -205,17 +207,17 @@ const exportMaturitaTopics = async (): Promise<void> => {
       const resCode: string | undefined = response._data.data?.resCode?.toString();
 
       if (resCode === "107010") {
-        alertsStore.addAlert({type: "error", title: "Export maturitních témat", message: "Nemáte oprávnění k této akci.",});
+        alertsStore.addAlert({type: "error", title: t('export.maturitaTopics.title'), message: t('export.alerts.noPermission'),});
         return;
       }
 
-      alertsStore.addAlert({type: "error", title: "Export maturitních témat", message: "Nastala neznámá chyba."});
+      alertsStore.addAlert({type: "error", title: t('export.maturitaTopics.title'), message: t('export.alerts.unknown')});
       return;
     }
 
     downloadFile(response);
   } catch {
-    alertsStore.addAlert({type: "error", title: "Export maturitních témat", message: "Nastala neznámá chyba.",});
+    alertsStore.addAlert({type: "error", title: t('export.maturitaTopics.title'), message: t('export.alerts.unknown'),});
   } finally {
     loading.value.maturitaTopics = false;
   }
@@ -236,17 +238,17 @@ const exportMaturitaTable = async (): Promise<void> => {
       const resCode: string | undefined = response._data.data?.resCode?.toString();
 
       if (resCode === "109010") {
-        alertsStore.addAlert({type: "error", title: "Export maturitní tabulky", message: "Nemáte oprávnění k této akci.",});
+        alertsStore.addAlert({type: "error", title: t('export.maturitaTable.title'), message: t('export.alerts.noPermission'),});
         return;
       }
 
-      alertsStore.addAlert({type: "error", title: "Export maturitní tabulky", message: "Nastala neznámá chyba."});
+      alertsStore.addAlert({type: "error", title: t('export.maturitaTable.title'), message: t('export.alerts.unknown')});
       return;
     }
 
     downloadFile(response);
   } catch {
-    alertsStore.addAlert({type: "error", title: "Export maturitní tabulky", message: "Nastala neznámá chyba.",});
+    alertsStore.addAlert({type: "error", title: t('export.maturitaTable.title'), message: t('export.alerts.unknown'),});
   } finally {
     loading.value.maturitaTable = false;
   }
@@ -259,8 +261,8 @@ const exportMaturitaTable = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Data', to: '/panel/export', icon: 'material-symbols:download-2-rounded' },
-            { label: 'Export', to: '/panel/export', active: true }
+            { label: t('sidebar.sections.data'), to: '/panel/export', icon: 'material-symbols:download-2-rounded' },
+            { label: t('export.title'), to: '/panel/export', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -270,72 +272,72 @@ const exportMaturitaTable = async (): Promise<void> => {
       <div id="export">
         <div class="page-section bottom-line" v-if="checkPermissions(['admin'])">
           <div class="section-head">
-            <h3>Export uživatelů</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+            <h3>{{ t('export.users.title') }}</h3>
+            <p>{{ t('export.users.description') }}</p>
           </div>
 
           <button type="button" class="primary" @click="exportUsers">
-            Exportovat
+            {{ t('export.exportButton') }}
             <Loading size="5px" color="var(--btn-1-color)" v-if="loading.users" />
           </button>
         </div>
 
         <div class="page-section bottom-line" v-if="checkPermissions(['admin'])">
           <div class="section-head">
-            <h3>Export tříd</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+            <h3>{{ t('export.classes.title') }}</h3>
+            <p>{{ t('export.classes.description') }}</p>
           </div>
 
           <button type="button" class="primary" @click="exportClasses">
-            Exportovat
+            {{ t('export.exportButton') }}
             <Loading size="5px" color="var(--btn-1-color)" v-if="loading.classes" />
           </button>
         </div>
 
         <div class="page-section bottom-line" v-if="checkPermissions(['admin'])">
           <div class="section-head">
-            <h3>Export zaměření</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+            <h3>{{ t('export.specializations.title') }}</h3>
+            <p>{{ t('export.specializations.description') }}</p>
           </div>
 
           <button type="button" class="primary" @click="exportSpecializations">
-            Exportovat
+            {{ t('export.exportButton') }}
             <Loading size="5px" color="var(--btn-1-color)" v-if="loading.specializations" />
           </button>
         </div>
 
         <div class="page-section bottom-line">
           <div class="section-head">
-            <h3>Export maturit</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+            <h3>{{ t('export.maturitas.title') }}</h3>
+            <p>{{ t('export.maturitas.description') }}</p>
           </div>
 
           <button type="button" class="primary" @click="exportMaturitas">
-            Exportovat
+            {{ t('export.exportButton') }}
             <Loading size="5px" color="var(--btn-1-color)" v-if="loading.maturitas" />
           </button>
         </div>
 
         <div class="page-section bottom-line">
           <div class="section-head">
-            <h3>Export maturitních témat</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+            <h3>{{ t('export.maturitaTopics.title') }}</h3>
+            <p>{{ t('export.maturitaTopics.description') }}</p>
           </div>
 
           <button type="button" class="primary" @click="exportMaturitaTopics">
-            Exportovat
+            {{ t('export.exportButton') }}
             <Loading size="5px" color="var(--btn-1-color)" v-if="loading.maturitaTopics" />
           </button>
         </div>
 
         <div class="page-section">
           <div class="section-head">
-            <h3>Export maturitní tabulky</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+            <h3>{{ t('export.maturitaTable.title') }}</h3>
+            <p>{{ t('export.maturitaTable.description') }}</p>
           </div>
 
           <button type="button" class="primary" @click="exportMaturitaTable">
-            Exportovat
+            {{ t('export.exportButton') }}
             <Loading size="5px" color="var(--btn-1-color)" v-if="loading.maturitaTable" />
           </button>
         </div>

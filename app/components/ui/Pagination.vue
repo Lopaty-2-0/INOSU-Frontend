@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import useArrayChunks from "../../componsables/useArrayChunks";
 import { ref, watch } from "vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   modelValue: {
@@ -113,7 +116,7 @@ watch(() => props.modelValue, (newValue: number) => {
   <div class="navigation" v-if="props.numberOfPages > 1">
     <button class="back" @click="previousPage">
       <Icon class="icon" name="material-symbols:arrow-left-alt-rounded" />
-      Zpět
+      {{ t('pagination.back') }}
     </button>
 
     <ul class="pages">
@@ -134,7 +137,7 @@ watch(() => props.modelValue, (newValue: number) => {
     </ul>
 
     <button class="next" @click="nextPage">
-      Další
+      {{ t('pagination.next') }}
       <Icon class="icon" name="material-symbols:arrow-right-alt-rounded" />
     </button>
   </div>

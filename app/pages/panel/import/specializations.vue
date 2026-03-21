@@ -7,11 +7,14 @@ import FileInput from "~/components/ui/FileInput.vue";
 import {computed, ref} from "vue";
 import checkPermissions from "~/componsables/checkPermissions"
 import {useAlertsStore} from "~/stores/alerts";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Import dat - Zaměření",
+  title: computed(() => t('pages.import.specializations.title')),
   meta: [
-    { name: "description", content: "Přistup zamítnut page" }
+    { name: "description", content: computed(() => t('pages.import.specializations.description')) }
   ],
 });
 
@@ -40,20 +43,20 @@ const navigationLinks = computed(() => {
   const links = [];
 
   if (checkPermissions(["admin"])) {
-    links.push({ name: "Uživatelé", path: "/panel/import" });
-    links.push({ name: "Třídy", path: "/panel/import/classes" });
-    links.push({ name: "Zaměření", path: "/panel/import/specializations" });
+    links.push({ name: t('import.navigation.users'), path: "/panel/import" });
+    links.push({ name: t('import.navigation.classes'), path: "/panel/import/classes" });
+    links.push({ name: t('import.navigation.specializations'), path: "/panel/import/specializations" });
   }
 
-  links.push({ name: "Maturity", path: "/panel/import/maturitas" });
-  links.push({ name: "Maturitní témata", path: "/panel/import/maturitaTopics" });
+  links.push({ name: t('import.navigation.maturitas'), path: "/panel/import/maturitas" });
+  links.push({ name: t('import.navigation.maturitaTopics'), path: "/panel/import/maturitaTopics" });
 
   return links;
 });
 
 const importFile = async (): Promise<void> => {
   if (!selectedFile.value) {
-    alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nebyl vybrán žádný soubor." });
+    alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.noFile') });
     return;
   }
 
@@ -73,35 +76,35 @@ const importFile = async (): Promise<void> => {
 
       switch (resCode) {
         case "101010":
-          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Na tuto akci nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.noPermission') });
           break;
 
         case "101020":
-          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Soubor s daty nebyl nahrán." });
+          alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.fileNotUploaded') });
           break;
 
         case "101030":
-          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nahraný soubor je ve špatném formátu." });
+          alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.wrongFormat') });
           break;
 
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nahraný soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.tooLarge') });
           break;
 
         case "101040":
-          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nahraný soubor je prázdný." });
+          alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.empty') });
           break;
 
         case "101050":
-          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nahraný soubor má neplatný json formát." });
+          alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.invalidJson') });
           break;
 
         case "101120":
-          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Žádná specializace nebyla vytvořena." });
+          alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.noneCreated') });
           break;
 
         case "101131":
-          alertsStore.addAlert({ type: "success", title: "Nahrání zaměření", message: "Specializace byly vytvořeny" });
+          alertsStore.addAlert({ type: "success", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.success') });
           const badSpecializations = response._data.data.badSpecializations;
 
           errors.value = badSpecializations.map((specialization: any) => {
@@ -110,23 +113,23 @@ const importFile = async (): Promise<void> => {
 
             switch (errorResCode) {
               case "101060":
-                message = "Není vyplněna žádná hodnota.";
+                message = t('import.specializations.alerts.specializationErrors.noValue');
                 break;
 
               case "101070":
-                message = "Délka studia musí být celé číslo.";
+                message = t('import.specializations.alerts.specializationErrors.studyLengthNotInteger');
                 break;
 
               case "101080":
-                message = "Délka studia musí být větší než 0 a v povoleném rozsahu.";
+                message = t('import.specializations.alerts.specializationErrors.studyLengthInvalid');
                 break;
 
               case "101090":
-                message = "Zkratka může mít maximálně 1 znak a nesmí být již použita.";
+                message = t('import.specializations.alerts.specializationErrors.abbreviationInvalid');
                 break;
 
               case "101110":
-                message = "Název může mít maximálně 45 znaků a nesmí být již použit.";
+                message = t('import.specializations.alerts.specializationErrors.nameTooLong');
                 break;
 
               default:
@@ -139,12 +142,12 @@ const importFile = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Nahrání zaměření", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('import.specializations.alerts.uploadSpecializations.title'), message: t('import.specializations.alerts.uploadSpecializations.unknown') });
     },
   }).finally(async (): Promise<void> => {
     await resetFile();
@@ -167,9 +170,9 @@ const resetFile = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Data', to: '/panel/import/specializations', icon: 'material-symbols:upload-2-rounded' },
-            { label: 'Import', to: '/panel/import/specializations' },
-            { label: 'Zaměření', to: '/panel/import/specializations', active: true }
+            { label: t('sidebar.sections.data'), to: '/panel/import/specializations', icon: 'material-symbols:upload-2-rounded' },
+            { label: t('sidebar.links.import'), to: '/panel/import/specializations' },
+            { label: t('import.navigation.specializations'), to: '/panel/import/specializations', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -177,16 +180,16 @@ const resetFile = async (): Promise<void> => {
 
     <template #content>
       <div id="import">
-        <Navigation class="navigation" title="Import" :active-link-id="activeLinkId" :links="navigationLinks" />
+        <Navigation class="navigation" :title="t('import.title')" :active-link-id="activeLinkId" :links="navigationLinks" />
 
         <div class="content">
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Import zaměření <span class="update" v-if="selectedFile">(aktualizováno)</span></h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+              <h3>{{ t('import.specializations.title') }} <span class="update" v-if="selectedFile">{{ t('import.updated') }}</span></h3>
+              <p>{{ t('import.specializations.description') }}</p>
             </div>
 
-            <FileInput ref="fileInput" class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" placeholder="Vyberte soubor pro import dat" :title="title"></FileInput>
+            <FileInput ref="fileInput" class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" :placeholder="t('import.filePlaceholder')" :title="title"></FileInput>
           </div>
 
           <div class="page-section" :class="{ 'bottom-line': errors.length > 0 }">
@@ -195,7 +198,7 @@ const resetFile = async (): Promise<void> => {
 
           <div class="page-section" v-if="errors.length > 0">
             <div class="errors">
-              <p class="error" v-for="error in errors">{{ error.message }} <span class="number">Číslo: {{ error.number }}</span></p>
+              <p class="error" v-for="error in errors">{{ error.message }} <span class="number">{{ t('import.errorNumber') }} {{ error.number }}</span></p>
             </div>
           </div>
         </div>

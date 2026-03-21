@@ -4,6 +4,9 @@ import { useState } from "nuxt/app";
 import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
 import Image from "~/components/ui/Image.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const slots = useSlots();
 const config = useRuntimeConfig();
@@ -54,8 +57,8 @@ onMounted((): void => {
         />
 
         <div class="name">
-          <p class="welcome">Přihlášen jako</p>
-          <p class="account-name" v-if="loading">Načítání</p>
+          <p class="welcome">{{ t('navbar.loggedInAs') }}</p>
+          <p class="account-name" v-if="loading">{{ t('navbar.loading') }}</p>
           <p class="account-name" v-else>
             {{ profileData.name + " " + profileData.surname }}
           </p>

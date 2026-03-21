@@ -2,6 +2,9 @@
 import {ref, watch} from "vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Input from "~/components/ui/Input.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   oldEmail: {
@@ -18,7 +21,7 @@ const email = ref<{ input: string, error: string }>({
 const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const onInput = (): void => {
-  if (email.value.input && !emailRegex.test(email.value.input)) email.value.error = "Špatný formát e-mailu";
+  if (email.value.input && !emailRegex.test(email.value.input)) email.value.error = t('manage.email.errors.invalidFormat');
   else email.value.error = "";
 
   const isUpdated: boolean = email.value.input !== "" && email.value.input !== props.oldEmail && email.value.error === "";
@@ -34,7 +37,7 @@ const pasteEmail = (): void => {
       onInput();
     });
   } catch {
-    useAlertsStore().addAlert({ type: "warning", title: "Vložení URL", message: "Váš prohlížeč nepodporuje vkládání." });
+    useAlertsStore().addAlert({ type: "warning", title: t('common.pasteUrl.title'), message: t('common.pasteUrl.unsupported') });
   }
 };
 
@@ -52,7 +55,7 @@ defineExpose({ reset });
 
     <div class="section url">
       <div class="content">
-        <label for="email">E-mail</label>
+        <label for="email">{{ t('manage.email.label') }}</label>
         <div class="line">
           <Input :class="{ error: email.error }" type="email" id="email" placeholder="example.email@gmail.com" v-model.trim="email.input" @input="onInput" />
           <div class="icon-div" @click="pasteEmail"><Icon class="icon" name="material-symbols:content-paste"></Icon></div>

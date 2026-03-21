@@ -22,14 +22,15 @@ import {storeToRefs} from "pinia";
 import type {MaturitaTaskData} from "~/types/maturita";
 import ActionBar from "~/components/ui/ActionBar.vue";
 
+const { t } = useI18n();
 const route = useRoute();
 const teamId = route.params.teamId as string;
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Maturitní zadání - " + taskId,
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.teamIndex.title', { taskId }),
+  meta: [{ name: "description", content: t('pages.maturita.teamIndex.description') }],
 });
 
 definePageMeta({
@@ -82,13 +83,13 @@ const checkForErrors = (): void => {
   errors.value.review = "";
 
   if (teamTaskPoints.value && task.value && teamTaskPoints.value > task.value.points!) {
-    errors.value.points = `Počet bodů nesmí být větší než maximální počet bodů: ${task.value.points}`;
+    errors.value.points = t('maturita.team.errors.pointsExceed', { max: task.value.points });
   } else if (teamTaskPoints.value && teamTaskPoints.value < 0) {
-    errors.value.points = "Počet bodů nesmí být menší než 0";
+    errors.value.points = t('maturita.team.errors.pointsNegative');
   }
 
   if (guarantorComment.value.length > 65535) {
-    errors.value.review = "Komentář je příliš dlouhý";
+    errors.value.review = t('maturita.team.errors.commentTooLong');
   }
 };
 
@@ -112,7 +113,7 @@ const toggleGuarantorCommentEnabled = (): void => {
 
 const downloadMaterials = async (): Promise<void> => {
   if (!task.value || !task.value.task) {
-    alertsStore.addAlert({ type: "error", title: "Stahování souborů", message: "Chyba při stahování materiálů úkolu." });
+    alertsStore.addAlert({ type: "error", title: t('maturita.team.download.title'), message: t('maturita.team.download.error') });
     return;
   }
   await navigateTo(`${config.public.originUrl}/api/file/task/${accountData.value.id}/${task.value.id}/${task.value.task}`, { external: true });
@@ -120,7 +121,7 @@ const downloadMaterials = async (): Promise<void> => {
 
 const downloadVersion = async (version: Version): Promise<void> => {
   if (!version || !version.elaboration) {
-    alertsStore.addAlert({ type: "warning", title: "Stahování souborů", message: "Tato verze není dostupná." });
+    alertsStore.addAlert({ type: "warning", title: t('maturita.team.download.title'), message: t('maturita.team.download.versionUnavailable') });
     return;
   }
 
@@ -131,7 +132,7 @@ const updateTeam = async (): Promise<void> => {
   checkForErrors();
 
   if (errors.value.points.length > 0 || errors.value.review.length > 0) {
-    alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Opravte chyby ve formuláři a zkuste to znovu." });
+    alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.formErrors') });
     return;
   }
 
@@ -153,60 +154,60 @@ const updateTeam = async (): Promise<void> => {
 
       switch (resCode) {
         case "32010":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID úkolu nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.noTaskId') });
           break;
         case "32020":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID týmu nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.noTeamId') });
           break;
         case "32030":
         case "32040":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.taskIdInvalid') });
           break;
         case "32050":
         case "32060":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "ID týmu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.teamIdInvalid') });
           break;
         case "32070":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný úkol neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.taskNotFound') });
           break;
         case "32080":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Zadaný tým neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.teamNotFound') });
           break;
         case "32090":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Neplatný status." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.invalidStatus') });
           break;
         case "32100":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Bylo dosaženo max variant pro tento topic." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.maxVariants') });
           break;
         case "32110":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů není platný." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.pointsNaN') });
           break;
         case "32120":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Počet bodů není platný." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.pointsNaN2') });
           break;
         case "32130":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nelze udělit více bodů, než má úkol." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.pointsExceed') });
           break;
         case "32140":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Komentář je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.commentTooLong') });
           break;
         case "32150":
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Název týmu je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.nameTooLong') });
           break;
         case "32161":
-          alertsStore.addAlert({ type: "success", title: "Úprava týmu", message: "Tým byl úspěšně aktualizován." });
+          alertsStore.addAlert({ type: "success", title: t('maturita.team.alerts.manageTeam.title'), message: t('maturita.team.alerts.manageTeam.success') });
           await refreshTeamData();
           resetInputs();
           errors.value = { points: "", review: "" };
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('common.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Úprava týmu", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.team.alerts.manageTeam.title'), message: t('common.unknown') });
     },
   }).finally(() => {
     submitLoading.value = false;
@@ -303,10 +304,10 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
-            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}` },
-            { label: `Vypracování ID: ${teamId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('maturita.tasks.index.heading'), to: `/panel/maturita/${role}/tasks` },
+            { label: `${t('maturita.team.assignmentLabel')} ${taskId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}` },
+            { label: `${t('maturita.team.assignmentLabel')} ${teamId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -317,8 +318,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa maturitního zadání"
-            :texts="['Otevřít chat']"
+            :description="t('maturita.team.actionBar.description')"
+            :texts="[t('maturita.team.actionBar.openChat')]"
             :actions="['edit']"
             :icons="[
                 'material-symbols:chat-rounded'
@@ -331,18 +332,18 @@ watchEffect((): void => {
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
-              <p>Úkol ID: {{ task.id }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('maturita.team.taskIdLabel') }} {{ task.id }}</p>
+              <p>{{ t('maturita.team.startLabel') }} {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('maturita.team.endLabel') }} {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">{{ t('maturita.team.deadlineLabel') }} {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.points">
                 <br>
-                Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }} = {{ teamTaskData.points !== null && task.points ? ((teamTaskData.points / task.points) * 100).toFixed(2) : "0" }}%
+                {{ t('maturita.team.maxPointsLabel') }} {{ teamTaskData.points ?? "-" }} / {{ task.points }} = {{ teamTaskData.points !== null && task.points ? ((teamTaskData.points / task.points) * 100).toFixed(2) : "0" }}%
               </p>
             </div>
 
             <div class="user section-head" v-if="task.userData">
-              <span>Student:</span>
+              <span>{{ t('maturita.team.studentLabel') }}</span>
               <div class="profile">
                 <Image :src="config.public.originUrl + '/api/file/pfp/' + task.userData.profilePicture" alt="profile-photo" draggable="false" />
 
@@ -353,7 +354,7 @@ watchEffect((): void => {
             </div>
 
             <div class="user section-head">
-              <span>Oponent:</span>
+              <span>{{ t('maturita.team.objectorLabel') }}</span>
               <div class="profile" v-if="task.objector && task.objector.id">
                 <Image :src="config.public.originUrl + '/api/file/pfp/' + task.objector.profilePicture" alt="profile-photo" draggable="false" />
 
@@ -362,20 +363,20 @@ watchEffect((): void => {
                 </p>
               </div>
 
-              <p v-else>Neurčeno</p>
+              <p v-else>{{ t('maturita.team.undetermined') }}</p>
             </div>
           </div>
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Materiály</h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('maturita.team.materialsHeading') }}</h3>
+              <p>{{ t('maturita.team.materialsDescription') }}</p>
             </div>
 
             <div class="download-input">
               <div class="line">
                 <div class="input">
-                  {{ task.task || "Žádné zadání" }}
+                  {{ task.task || t('maturita.team.noAssignment') }}
                 </div>
                 <div class="icon-div" @click="downloadMaterials">
                   <Icon class="icon" name="material-symbols:download"/>
@@ -386,8 +387,8 @@ watchEffect((): void => {
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Verze vypracování</h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('maturita.team.versionsHeading') }}</h3>
+              <p>{{ t('maturita.team.versionsDescription') }}</p>
             </div>
 
             <div class="versions" v-show="!versionsLoading && versionsCount > 0">
@@ -397,7 +398,7 @@ watchEffect((): void => {
 
                   <div class="line">
                     <div class="input">
-                      {{ version.elaboration || "Odstraněno" }}
+                      {{ version.elaboration || t('maturita.team.removed') }}
                     </div>
                     <div class="icon-div" @click="downloadVersion(version)" v-if="version.elaboration">
                       <Icon class="icon" name="material-symbols:download"/>
@@ -412,7 +413,7 @@ watchEffect((): void => {
             </div>
 
             <div class="versions" v-show="!versionsLoading && versionsCount === 0">
-              <p class="error message">Žádný záznam nebyl zobrazen!</p>
+              <p class="error message">{{ t('maturita.team.noVersions') }}</p>
             </div>
 
             <Pagination :number-of-pages="versionsNumberOfPages" v-model="versionsActivePage" />
@@ -420,33 +421,33 @@ watchEffect((): void => {
 
           <div class="page-section bottom-line" v-if="task.points">
             <div class="section-head">
-              <h3>Počet bodů <span class="update" v-if="teamTaskData.points !== teamTaskPoints">(aktualizováno)</span></h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('maturita.team.pointsHeading') }} <span class="update" v-if="teamTaskData.points !== teamTaskPoints">({{ t('common.updated') }})</span></h3>
+              <p>{{ t('maturita.team.pointsDescription') }}</p>
             </div>
 
             <div class="content">
-              <label for="teamTaskPoints">{{ task.points ? `Maximální počet bodů: ${task.points}` : "Maximální počet bodů není určen." }}</label>
-              <NumberInput id="teamTaskPoints" placeholder="Zadejte počet bodů" v-model="teamTaskPoints" :min="0" :max="task.points || 0" :disabled="!task.points" @update:model-value="checkForErrors"  />
+              <label for="teamTaskPoints">{{ task.points ? t('maturita.team.maxPointsLabel2', { points: task.points }) : t('maturita.team.noMaxPointsDefined') }}</label>
+              <NumberInput id="teamTaskPoints" :placeholder="t('maturita.team.commentPlaceholder')" v-model="teamTaskPoints" :min="0" :max="task.points || 0" :disabled="!task.points" @update:model-value="checkForErrors"  />
               <p class="input-error" v-if="errors.points.length > 0">{{ errors.points }}</p>
             </div>
           </div>
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Komentář garanta <span class="update" v-if="guarantorComment && teamTaskData.review !== guarantorComment">(aktualizováno)</span></h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('maturita.team.commentHeading') }} <span class="update" v-if="guarantorComment && teamTaskData.review !== guarantorComment">({{ t('common.updated') }})</span></h3>
+              <p>{{ t('maturita.team.commentDescription') }}</p>
             </div>
 
             <div class="guarantor-comment download-input">
               <div class="input-div">
-                <span class="label">Poslední úprava: {{ teamTaskData.reviewUpdatedAt ? moment(teamTaskData.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") : "Neupraveno" }}</span>
+                <span class="label">{{ t('maturita.team.lastEdited') }} {{ teamTaskData.reviewUpdatedAt ? moment(teamTaskData.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") : t('maturita.team.notEdited') }}</span>
 
                 <div class="line">
                   <Editor
                       v-model="guarantorComment"
                       class="editor"
                       :enable="isGuarantorCommentEnabled"
-                      placeholder="Zadejte komentář garanta"
+                      :placeholder="t('maturita.team.commentPlaceholder')"
                       :enabled-tools="editorEnabledTools"
                       @update:model-value="checkForErrors"
                   />

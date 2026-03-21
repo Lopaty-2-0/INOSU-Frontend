@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Loading from "~/components/ui/Loading.vue";
 import { useSlots } from "vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const slots = useSlots();
 
@@ -28,7 +31,7 @@ const props = defineProps({
 
     <div class="line">
       <button type="submit" @click="() => props.submitFunction()">
-        Uložit změny
+        {{ t('manage.footer.save') }}
         <Loading
           v-show="props.isLoading"
           size="5px"
@@ -36,7 +39,7 @@ const props = defineProps({
         />
       </button>
       <button type="reset" @click="() => props.resetFunction()">
-        Resetovat změny
+        {{ t('manage.footer.reset') }}
       </button>
     </div>
   </div>

@@ -14,16 +14,18 @@ import {useLoadingStore} from "~/stores/loading";
 import NumberInput from "~/components/ui/NumberInput.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Pagination from "~/components/ui/Pagination.vue";
+import { useI18n } from "#imports";
 
 useHead({
-  title: "Panel | Třídy - Přidání",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: () => t("pages.classes.add.title"),
+  meta: [{ name: "description", content: () => t("pages.classes.add.description") }],
 });
 
 definePageMeta({
   roles: ["admin"],
 });
 
+const { t } = useI18n();
 const alertsStore = useAlertsStore();
 const amountOfSpecializationsForPaging: number = 10;
 const currentSpecializationsPage = ref<number>(1);
@@ -93,34 +95,34 @@ const checkForErrors = (): void => {
   errors.value.specialization = "";
 
   if (!classData.value.name) {
-    errors.value.name = "Název třídy je povinný.";
+    errors.value.name = t('classes.add.errors.nameRequired');
   }
 
   if (!classData.value.grade || classData.value.grade < 1) {
-    errors.value.grade = "Ročník třídy je povinný.";
+    errors.value.grade = t('classes.add.errors.gradeRequired');
   } else if (classData.value.grade < 1) {
-    errors.value.grade = "Ročník třídy musí být větší než 0.";
+    errors.value.grade = t('classes.add.errors.gradeMin');
   }
 
   if (!classData.value.group) {
-    errors.value.group = "Skupina třídy je povinná.";
+    errors.value.group = t('classes.add.errors.groupRequired');
   } else if (classData.value.group.length > 1) {
-    errors.value.group = "Skupina třídy musí být maximálně 1 znak.";
+    errors.value.group = t('classes.add.errors.groupTooLong');
   }
 
   if (classData.value.specialization === null) {
-    errors.value.specialization = "Zaměření třídy je povinné.";
+    errors.value.specialization = t('classes.add.errors.specializationRequired');
   }
 };
 
 const addClass = async (): Promise<void> => {
   if (!classData.value.specialization || !classData.value.group || !classData.value.grade || !classData.value.name) {
-    alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Některá pole jsou prázdná." });
+    alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.emptyFields') });
     return;
   }
 
   if (errors.value.name || errors.value.grade || errors.value.group || errors.value.specialization) {
-    alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Některá pole obsahují chyby." });
+    alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.hasErrors') });
     return;
   }
 
@@ -142,73 +144,73 @@ const addClass = async (): Promise<void> => {
 
       switch (resCode) {
         case "8010":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.noPermission') });
           break;
 
         case "8020":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník chybí." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.noGrade') });
           break;
 
         case "8030":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina chybí." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.noGroup') });
           break;
 
         case "8040":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zaměření chybí." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.noSpecialization') });
           break;
 
         case "8050":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy chybí." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.noName') });
           break;
 
         case "8060":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník musí být celé číslo." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.invalidGrade') });
           break;
 
         case "8070":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník musí být kladné číslo v povoleném rozsahu." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.gradeTooLarge') });
           break;
 
         case "8080":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Skupina může mít maximálně 1 znak." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.groupTooLong') });
           break;
 
         case "8090":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zaměření musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.invalidSpecialization') });
           break;
 
         case "8100":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zaměření má neplatnou hodnotu." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.invalidSpecializationValue') });
           break;
 
         case "8110":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Zvolené zaměření neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.specializationNotFound') });
           break;
 
         case "8120":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Ročník přesahuje délku studia zaměření." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.gradeExceedsLength') });
           break;
 
         case "8130":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.nameTooLong') });
           break;
 
         case "8140":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Název třídy je již používán." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.nameInUse') });
           break;
 
         case "8151":
-          alertsStore.addAlert({ type: "success", title: "Vytvoření třídy", message: "Třída byla úspěšně vytvořena." });
+          alertsStore.addAlert({ type: "success", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.success') });
           resetSelectedClasses();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.unknown') });
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Vytvoření třídy", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -251,8 +253,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Třídy', to: '/panel/classes', icon: 'material-symbols:flight-class-rounded' },
-            { label: 'Vytvoření', to: '/panel/users/add', active: true },
+            { label: t('sidebar.links.classes'), to: '/panel/classes', icon: 'material-symbols:flight-class-rounded' },
+            { label: t('classes.add.breadcrumb.create'), to: '/panel/classes/add', active: true },
           ]"/>
         </template>
       </Navbar>
@@ -263,8 +265,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa tříd"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('classes.add.actionBar.description')"
+            :texts="[t('classes.add.actionBar.add'), t('classes.add.actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -280,12 +282,12 @@ watchEffect((): void => {
           <div class="form">
             <div class="section">
               <div class="section-head">
-                <h3>Název * <span class="update" v-show="classData.name">(aktualizováno)</span></h3>
-                <p>Zadejte název nové třídy. Název by měl být unikátní a jasně identifikovat třídu v systému.</p>
+                <h3>{{ t('classes.add.sections.name.title') }} <span class="update" v-show="classData.name">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('classes.add.sections.name.description') }}</p>
               </div>
 
               <div class="content">
-                <label for="name">Název</label>
+                <label for="name">{{ t('classes.add.sections.name.label') }}</label>
                 <Input type="text" id="name" placeholder="V1B-ANJ1" v-model.trim="classData.name" @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.name.length > 0">{{ errors.name }}</p>
@@ -294,22 +296,22 @@ watchEffect((): void => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Zaměření * <span class="update" v-show="classData.specialization">(aktualizováno)</span></h3>
-                <p>Vyberte zaměření, ke kterému bude nová třída přiřazena. Můžete filtrovat podle názvu, zkratky nebo délky studia.</p>
+                <h3>{{ t('classes.add.sections.specialization.title') }} <span class="update" v-show="classData.specialization">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('classes.add.sections.specialization.description') }}</p>
               </div>
 
               <div class="content">
-                <label>Výběr zaměření</label>
+                <label>{{ t('classes.add.sections.specialization.label') }}</label>
 
                 <InputMenu
                   v-model="selectedSpecialization"
                   :multiple="false"
                   :items="dropDownSpecializations"
                   :create-item="false"
-                  placeholder="Vyberte zaměření"
+                  :placeholder="t('classes.add.sections.specialization.placeholder')"
                   :deselect="true"
                   :disable-item-filtering="true"
-                  no-data-text="Žádné zaměření nebylo nalezeno"
+                  :no-data-text="t('classes.add.sections.specialization.noData')"
                   @update:model-value="onSpecializationSelect"
                   @search:change="onSearchInputChange"
                 >
@@ -323,12 +325,12 @@ watchEffect((): void => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Ročník * <span class="update" v-show="classData.grade">(aktualizováno)</span></h3>
-                <p>Zadejte ročník, do kterého nová třída patří. Ročník musí být celé číslo větší než 0 a nesmí přesahovat délku studia zvoleného zaměření.</p>
+                <h3>{{ t('classes.add.sections.grade.title') }} <span class="update" v-show="classData.grade">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('classes.add.sections.grade.description') }}</p>
               </div>
 
               <div class="content">
-                <label for="grade">Ročník</label>
+                <label for="grade">{{ t('classes.add.sections.grade.label') }}</label>
                 <NumberInput v-model="classData.grade" :min="1" placeholder="1" id="grade" @update:model-value="checkForErrors" />
 
                 <p class="input-error" v-if="errors.grade.length > 0">{{ errors.grade }}</p>
@@ -337,12 +339,12 @@ watchEffect((): void => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Skupina * <span class="update" v-show="classData.group && classData.group.length === 1">(aktualizováno)</span></h3>
-                <p>Zadejte označení skupiny, například písmeno A. Skupina musí být tvořena právě jedním znakem.</p>
+                <h3>{{ t('classes.add.sections.group.title') }} <span class="update" v-show="classData.group && classData.group.length === 1">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('classes.add.sections.group.description') }}</p>
               </div>
 
               <div class="content">
-                <label for="group">Skupina</label>
+                <label for="group">{{ t('classes.add.sections.group.label') }}</label>
                 <Input type="text" id="group" placeholder="A" v-model.trim="classData.group" @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.group.length > 0">{{ errors.group }}</p>
@@ -352,11 +354,11 @@ watchEffect((): void => {
 
           <div class="buttons">
             <button type="submit" @click="addClass">
-              Uložit změny
+              {{ t('manage.footer.save') }}
               <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
             </button>
             <button type="reset" @click="resetSelectedClasses">
-              Resetovat změny
+              {{ t('manage.footer.reset') }}
             </button>
           </div>
         </div>

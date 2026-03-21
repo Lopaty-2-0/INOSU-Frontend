@@ -11,10 +11,13 @@ import type {AccountData} from "~/types/account";
 import type {ConversationData} from "~/types/chat";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Chat",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.chat.title'),
+  meta: [{ name: "description", content: t('pages.chat.description') }],
 });
 
 const config = useRuntimeConfig();
@@ -73,45 +76,45 @@ const removeConversation = async (conversation: ConversationData): Promise<void>
 
       switch (resCode) {
         case "87010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID konverzace nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.noId') });
           break;
 
         case "87020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID konverzace musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.invalidId') });
           break;
 
         case "87030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID konverzace je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.invalidId') });
           break;
 
         case "87040":
-          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID uživatele nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.noUserId') });
           break;
 
         case "87050":
-          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID uživatele musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.invalidUserId') });
           break;
 
         case "87060":
-          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "ID uživatele je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.invalidUserId') });
           break;
 
         case "87070":
-          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "Konverzace nebyla nalezena nebo ji nelze odstranit." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.notFound') });
           break;
 
         case "87081":
           await refreshConversations();
-          alertsStore.addAlert({ type: "success", title: "Odstranění konverzace", message: "Konverzace byla úspěšně odstraněna." });
+          alertsStore.addAlert({ type: "success", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.success') });
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění konverzace", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.unknown') });
     },
   }).finally((): void => {
     conversationsLoading.value = false;
@@ -137,56 +140,56 @@ const createNewConversation = async (userId: string[]): Promise<void> => {
 
       switch (resCode) {
         case "86010":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID uživatele nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.noUserId') });
           break;
         case "86020":
         case "86030":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID uživatele je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.invalidUserId') });
           break;
         case "86040":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Uživatel nebyl nalezen." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.userNotFound') });
           break;
         case "86050":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nelze vytvořit konverzaci se sebou samým." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.selfConversation') });
           break;
 
         case "86060":
         case "86070":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.invalidTaskId') });
           break;
         case "86080":
         case "86090":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Garant je neplatný." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.invalidGuarantor') });
           break;
 
         case "86100":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Úkol nebyl nalezen." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.taskNotFound') });
           break;
         case "86110":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Konverzaci lze vytvořit pouze pro maturitní úkol." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.onlyMaturita') });
           break;
         case "86120":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nelze vytvořit konverzaci k ukončenému zadání." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.archivedTask') });
           break;
         case "86130":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé nemohou vytvořit konverzaci pro tento úkol." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.forbidden') });
           break;
         case "86140":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé již mezi sebou konverzaci mají." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.alreadyExists') });
           break;
 
         case "86151":
           await refreshConversations();
-          alertsStore.addAlert({ type: "success", title: "Vytvoření konverzace", message: "Konverzace byla úspěšně vytvořena." });
+          alertsStore.addAlert({ type: "success", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.success') });
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.unknown') });
     },
   }).finally((): void => {
     conversationsLoading.value = false;
@@ -256,7 +259,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Chat', to: `/panel/chat`, icon: 'material-symbols:mark-chat-unread-rounded', active: true },
+            { label: t('chat.title'), to: `/panel/chat`, icon: 'material-symbols:mark-chat-unread-rounded', active: true },
           ]"/>
         </template>
       </Navbar>
@@ -266,9 +269,9 @@ watchEffect((): void => {
       <div id="chat" v-if="conversations">
         <div class="conversations">
           <div class="head">
-            <h3>Chat</h3>
+            <h3>{{ t('chat.title') }}</h3>
 
-            <InputMenu ref="usersDropdown" v-if="dropDownUsers" :items="dropDownUsers" hide-icons disable-item-filtering placeholder="Založte novou konverzaci" :loading="usersPending" @search:change="onUsersSearchInputChange" @update:model-value="createNewConversation">
+            <InputMenu ref="usersDropdown" v-if="dropDownUsers" :items="dropDownUsers" hide-icons disable-item-filtering :placeholder="t('chat.newConversationPlaceholder')" :loading="usersPending" @search:change="onUsersSearchInputChange" @update:model-value="createNewConversation">
               <template #row-extra v-if="numberOfUsersPages > 1">
                 <Pagination v-model="currentUsersPage" :number-of-pages="numberOfUsersPages" :chunk-size="1" />
               </template>
@@ -287,7 +290,7 @@ watchEffect((): void => {
                   </p>
 
                   <p class="abbreviation no-wrap">
-                    {{ conversation.user.abbreviation || "Neurčeno" }}
+                    {{ conversation.user.abbreviation || t('chat.unknown') }}
                   </p>
                 </div>
               </div>
@@ -299,7 +302,7 @@ watchEffect((): void => {
           <div class="users" v-else>
             <div class="user no-hover">
               <p class="no-conversations">
-                Žádné konverzace nenalezeny. Založte novou konverzaci pomocí pole výše.
+                {{ t('chat.noConversations') }}
               </p>
             </div>
           </div>
@@ -311,7 +314,7 @@ watchEffect((): void => {
           <Chat class="chat" :conversation="selectedConversation" v-if="selectedConversation"  />
 
           <div class="card" v-else>
-            <p class="error">Žádná konverzace není vybrána. Vyberte konverzaci ze seznamu vlevo nebo založte novou.</p>
+            <p class="error">{{ t('chat.noConversationSelected') }}</p>
           </div>
         </div>
       </div>

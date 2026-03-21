@@ -62,7 +62,6 @@ defineExpose({ reset });
           class="content"
           v-model="taskFile"
           :title="taskTitle || null"
-          :placeholder="'Klikni pro nahrání souboru z počítače'"
           :max-size-m-b="props.maxSizeMB"
           accept=".pdf,.docx,.odt,.html,.zip"
         />

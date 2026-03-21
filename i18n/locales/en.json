@@ -28,5 +28,2476 @@
         "unknown": "An unknown error occurred"
       }
     }
+  },
+  "sidebar": {
+    "logo": {
+      "title": "INOSU",
+      "subtitle": "Information and Organizational Task System"
+    },
+    "sections": {
+      "main": "Main",
+      "maturita": "Maturita",
+      "data": "Data",
+      "other": "Other"
+    },
+    "links": {
+      "home": "Home",
+      "tasks": "Tasks",
+      "calendar": "Calendar",
+      "chat": "Chat",
+      "specializations": "Specializations",
+      "classes": "Classes",
+      "users": "Users",
+      "maturitas": "Maturitas",
+      "assignments": "Assignments",
+      "objector": "Objector",
+      "proposals": "Proposals",
+      "topics": "Topics",
+      "tables": "Tables",
+      "import": "Import",
+      "export": "Export",
+      "settings": "Settings"
+    },
+    "logout": "Log out",
+    "alerts": {
+      "logout": {
+        "title": "Logout",
+        "unknown": "An unknown error occurred."
+      }
+    }
+  },
+  "navbar": {
+    "loggedInAs": "Logged in as",
+    "loading": "Loading"
+  },
+  "home": {
+    "title": "Home",
+    "infoCards": {
+      "title": "Info cards",
+      "description": "Info cards provide quick access to key statistics from the panel.",
+      "students": "Number of students",
+      "classes": "Number of classes",
+      "teachers": "Number of teachers"
+    },
+    "quickLinks": {
+      "title": "Quick links",
+      "createdTasks": "Created tasks",
+      "students": "Students",
+      "changePassword": "Change password",
+      "activeTasks": "Active tasks",
+      "teachers": "Teachers"
+    },
+    "tasks": {
+      "titleTeacher": "Created tasks",
+      "titleStudent": "In-progress tasks",
+      "descriptionTeacher": "Quick access to your created tasks.",
+      "descriptionStudent": "Quick access to your in-progress tasks.",
+      "open": "Open",
+      "noAssignment": "No assignment"
+    }
+  },
+  "chat": {
+    "title": "Chat",
+    "noConversations": "No conversations found. Start a new conversation using the field above.",
+    "noConversationSelected": "No conversation selected. Select a conversation from the list on the left or start a new one.",
+    "newConversationPlaceholder": "Start a new conversation",
+    "unknown": "Unknown",
+    "loadOlder": "Load older",
+    "replyTo": "Reply to:",
+    "noMessages": "No messages have been sent yet.",
+    "messagePlaceholder": "Write a message...",
+    "alerts": {
+      "removeConversation": {
+        "title": "Remove conversation",
+        "noId": "Conversation ID was not provided.",
+        "invalidId": "Conversation ID is invalid.",
+        "noUserId": "User ID was not provided.",
+        "invalidUserId": "User ID is invalid.",
+        "notFound": "Conversation was not found or cannot be removed.",
+        "success": "Conversation was successfully removed.",
+        "unknown": "An unknown error occurred."
+      },
+      "createConversation": {
+        "title": "Create conversation",
+        "noUserId": "User ID was not provided.",
+        "invalidUserId": "User ID is invalid.",
+        "userNotFound": "User was not found.",
+        "selfConversation": "Cannot create a conversation with yourself.",
+        "invalidTaskId": "Task ID is invalid.",
+        "invalidGuarantor": "Guarantor is invalid.",
+        "taskNotFound": "Task was not found.",
+        "onlyMaturita": "Conversations can only be created for maturita tasks.",
+        "archivedTask": "Cannot create a conversation for a completed assignment.",
+        "forbidden": "These users cannot create a conversation for this task.",
+        "alreadyExists": "These users already have a conversation.",
+        "success": "Conversation was successfully created.",
+        "unknown": "An unknown error occurred."
+      },
+      "removeMessage": {
+        "title": "Delete message",
+        "noConversationId": "Conversation ID was not provided.",
+        "noMessageId": "Message ID was not provided.",
+        "noUserId": "User ID was not provided.",
+        "invalidConversationId": "Conversation ID must be a number.",
+        "invalidConversationIdValue": "Conversation ID is invalid.",
+        "invalidMessageId": "Message ID must be a number.",
+        "invalidMessageIdValue": "Message ID is invalid.",
+        "invalidUserId": "User ID must be a number.",
+        "invalidUserIdValue": "User ID is invalid.",
+        "conversationNotFound": "Conversation was not found.",
+        "archived": "Messages cannot be deleted in this archived conversation.",
+        "messageNotFound": "Message was not found.",
+        "forbidden": "This message cannot be deleted.",
+        "success": "Message was successfully deleted.",
+        "unknown": "An unknown error occurred."
+      },
+      "sendMessage": {
+        "title": "Send message",
+        "noConversationId": "Conversation ID was not provided.",
+        "noUserId": "User ID was not provided.",
+        "invalidConversationId": "Conversation ID must be a number.",
+        "invalidConversationIdValue": "Conversation ID is invalid.",
+        "invalidUserId": "User ID must be a number.",
+        "invalidUserIdValue": "User ID is invalid.",
+        "noMessage": "Message was not entered.",
+        "messageTooLong": "Message is too long.",
+        "conversationNotFound": "Conversation was not found.",
+        "archived": "This conversation is archived and cannot receive new messages.",
+        "invalidReplyId": "Reply message ID must be a number.",
+        "invalidReplyIdValue": "Reply message ID is invalid.",
+        "replyNotFound": "The message you are replying to does not exist.",
+        "success": "Message was successfully sent.",
+        "unknown": "An unknown error occurred."
+      }
+    }
+  },
+  "calendar": {
+    "title": "Calendar",
+    "noDay": "No day selected. Select a day from the calendar to view events.",
+    "noEvents": "No events found for this day.",
+    "undefined": "Undefined",
+    "requiredNote": "Fields marked with * are required",
+    "timeAt": "at {time}",
+    "timeUntil": "until {time}",
+    "timeFromTo": "from {start} to {end}",
+    "dayNumber": "Day {day}",
+    "form": {
+      "name": "Name *",
+      "nameDescription": "Enter the event name that will be displayed in the calendar.",
+      "timeRange": "Time range",
+      "timeRangeDescription": "Select the day and duration of the event.",
+      "type": "Type",
+      "typeDescription": "Select the event type for better overview in the calendar.",
+      "user": "User",
+      "userDescription": "Select the user for whom you want to create the event.",
+      "description": "Description",
+      "descriptionDescription": "Add an optional description for the event.",
+      "day": "Day *",
+      "from": "From",
+      "to": "To *",
+      "eventTypes": {
+        "personal": "Personal",
+        "task": "Task"
+      },
+      "placeholders": {
+        "type": "Select event type",
+        "user": "Select user",
+        "name": "Submit task",
+        "description": "Enter event description"
+      },
+      "errors": {
+        "nameRequired": "Event name must be provided.",
+        "descriptionTooLong": "Event description is too long (max: 500 characters)."
+      }
+    },
+    "alerts": {
+      "createEvent": {
+        "title": "Create event",
+        "formErrors": "Please fix the errors in the form.",
+        "required": "Event name and end time must be provided.",
+        "noName": "Event name was not provided.",
+        "noEndTime": "Event end time was not provided.",
+        "invalidUserId": "User ID must be a number.",
+        "invalidUserIdValue": "User ID is invalid.",
+        "userNotFound": "User was not found.",
+        "invalidEndDate": "Invalid end date format.",
+        "endInPast": "End time must be in the future.",
+        "invalidStartDate": "Invalid start date format.",
+        "sameDayRequired": "Start and end must be on the same day.",
+        "startInPast": "Start time must be in the future.",
+        "endAfterStart": "End time must be after start time.",
+        "invalidType": "Invalid event type.",
+        "forbiddenType": "You cannot use this event type.",
+        "nameTooLong": "Event name is too long.",
+        "descriptionTooLong": "Event description is too long.",
+        "success": "Event was successfully created.",
+        "unknown": "An unknown error occurred."
+      },
+      "removeEvent": {
+        "title": "Remove event",
+        "noId": "Event ID was not provided.",
+        "noneRemoved": "No event was removed.",
+        "success": "Event was successfully removed.",
+        "unknown": "An unknown error occurred."
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "info": "Info",
+      "security": "Security",
+      "customization": "Customization"
+    },
+    "info": {
+      "profilePicture": {
+        "title": "Profile picture",
+        "description": "Here you can change your profile picture. Upload a new image if you wish to update your current profile photo."
+      },
+      "reminders": {
+        "title": "Reminders",
+        "description": "Here you can enable or disable task reminders. If enabled, you will receive email notifications about upcoming tasks and deadlines."
+      },
+      "alerts": {
+        "uploadFile": {
+          "title": "File upload",
+          "uploading": "Uploading file...",
+          "success": "File was successfully uploaded.",
+          "error": "An error occurred while uploading the file."
+        },
+        "updateInfo": {
+          "title": "Update info",
+          "fileTooLarge": "The uploaded file is too large.",
+          "nothingToUpdate": "Nothing was provided to update.",
+          "unsupportedFormat": "Unsupported image format.",
+          "fileNotFound": "File was not found in storage.",
+          "savingError": "An unknown error occurred while saving.",
+          "success": "Info was successfully updated.",
+          "unknown": "An unknown error occurred."
+        }
+      }
+    },
+    "security": {
+      "passwordReset": {
+        "title": "Password reset",
+        "description": "Enter a new password following the recommended rules below.",
+        "rules": {
+          "title": "Recommended password rules",
+          "minLength": "Contains at least 5 characters",
+          "charTypes": "Contains 2 to 3 character types: uppercase, lowercase, numbers",
+          "specialChar": "Contains at least 1 special character: {'@'}, #, $, %, &, *, +, =",
+          "noSpaces": "Contains no spaces",
+          "noPersonalInfo": "Contains no personal information"
+        }
+      },
+      "alerts": {
+        "changePassword": {
+          "title": "Change password",
+          "noOldPassword": "Old password was not provided.",
+          "noNewPassword": "New password was not provided.",
+          "wrongOldPassword": "Incorrect old password.",
+          "tooShort": "New password must be at least 5 characters long.",
+          "success": "Password was successfully changed.",
+          "unknown": "An unknown error occurred."
+        }
+      }
+    },
+    "customization": {
+      "themeMode": {
+        "title": "Theme mode",
+        "description": "Choose your preferred interface appearance. Select between light, dark, or system mode.",
+        "light": {
+          "title": "Light",
+          "description": "Your panel will have a light theme"
+        },
+        "dark": {
+          "title": "Dark",
+          "description": "Your panel will have a dark theme"
+        },
+        "system": {
+          "title": "System",
+          "description": "Theme will follow your device's system setting"
+        }
+      },
+      "language": {
+        "title": "Interface language",
+        "description": "Select your preferred language for the application interface."
+      },
+      "customLinks": {
+        "linkTextPlaceholder": "YouTube",
+        "linkUrlPlaceholder": "https://www.youtube.com/",
+        "title": "Custom links",
+        "description": "Here you can manage your custom links that will be displayed in the interface. Add, edit, or remove links according to your preferences.",
+        "count": "Number of links",
+        "noLinks": "You have no custom links created.",
+        "labels": {
+          "text": "Text",
+          "link": "Link"
+        },
+        "alerts": {
+          "title": "Custom links",
+          "maxLinks": "Cannot add more than 5 links."
+        }
+      }
+    }
+  },
+  "export": {
+    "title": "Export",
+    "users": {
+      "title": "Export users",
+      "description": "Export the list of all system users to a file."
+    },
+    "classes": {
+      "title": "Export classes",
+      "description": "Export the list of all classes to a file."
+    },
+    "specializations": {
+      "title": "Export specializations",
+      "description": "Export the list of all specializations to a file."
+    },
+    "maturitas": {
+      "title": "Export maturitas",
+      "description": "Export the list of all maturitas to a file."
+    },
+    "maturitaTopics": {
+      "title": "Export maturita topics",
+      "description": "Export the list of all maturita topics to a file."
+    },
+    "maturitaTable": {
+      "title": "Export maturita table",
+      "description": "Export the complete maturita table to Excel format."
+    },
+    "exportButton": "Export",
+    "alerts": {
+      "noPermission": "You do not have permission for this action.",
+      "unknown": "An unknown error occurred."
+    }
+  },
+  "import": {
+    "title": "Import",
+    "navigation": {
+      "users": "Users",
+      "classes": "Classes",
+      "specializations": "Specializations",
+      "maturitas": "Maturitas",
+      "maturitaTopics": "Maturita topics"
+    },
+    "users": {
+      "title": "Import users",
+      "description": "Import a list of users from a JSON file."
+    },
+    "classes": {
+      "title": "Class import",
+      "description": "Import a list of classes from a JSON file.",
+      "alerts": {
+        "uploadClasses": {
+          "title": "Upload classes",
+          "noFile": "No file was selected.",
+          "noPermission": "You do not have permission for this action.",
+          "fileNotUploaded": "Data file was not uploaded.",
+          "wrongFormat": "The uploaded file has an invalid format.",
+          "tooLarge": "The uploaded file is too large.",
+          "empty": "The uploaded file is empty.",
+          "invalidJson": "The uploaded file has an invalid JSON format.",
+          "noneCreated": "No classes were created.",
+          "success": "Classes were successfully created.",
+          "unknown": "An unknown error occurred."
+        },
+        "classErrors": {
+          "noValue": "No value is filled in.",
+          "gradeNotInteger": "Grade must be an integer.",
+          "groupInvalid": "Group can have at most 1 character and must not already be in use.",
+          "specializationIdNotInteger": "Specialization ID must be an integer.",
+          "specializationNotFound": "No specialization with this ID was found.",
+          "gradeTooHigh": "Grade is too high a number.",
+          "nameTooLong": "Name is too long or already in use."
+        }
+      }
+    },
+    "maturitas": {
+      "title": "Maturita import",
+      "description": "Import a list of maturita years from a JSON file.",
+      "alerts": {
+        "uploadMaturitas": {
+          "title": "Upload maturitas",
+          "noFile": "No file was selected.",
+          "noPermission": "You do not have permission for this action.",
+          "fileNotUploaded": "File was not uploaded.",
+          "wrongFormat": "File has an invalid format.",
+          "tooLarge": "File is too large.",
+          "empty": "File is empty.",
+          "invalidJson": "File contains invalid JSON.",
+          "noneCreated": "No maturita year was created.",
+          "success": "Maturita years were successfully created.",
+          "unknown": "An unknown error occurred."
+        },
+        "maturitaErrors": {
+          "missingFields": "Some required fields are missing.",
+          "gradeTooLong": "Grade is too long or already in use.",
+          "maxPointsNotNumber": "Maximum points must be a number.",
+          "maxPointsInvalid": "Maximum points value is invalid.",
+          "endDateInvalid": "End date is invalid.",
+          "startDateInvalid": "Start date is invalid.",
+          "endBeforeStart": "End date must be after start date.",
+          "invalidEvaluators": "Some evaluators are invalid."
+        }
+      }
+    },
+    "maturitaTopics": {
+      "title": "Maturita topics import",
+      "description": "Import a list of maturita topics from a JSON file.",
+      "alerts": {
+        "uploadMaturitaTopics": {
+          "title": "Upload maturita topics",
+          "noFile": "No file was selected.",
+          "noPermission": "You do not have permission for this action.",
+          "fileNotUploaded": "File was not uploaded.",
+          "wrongFormat": "File has an invalid format.",
+          "tooLarge": "File is too large.",
+          "empty": "File is empty.",
+          "invalidJson": "File contains invalid JSON.",
+          "noneCreated": "No maturita assignment was created.",
+          "success": "Maturita assignments were successfully created.",
+          "unknown": "An unknown error occurred."
+        },
+        "topicErrors": {
+          "noName": "Name was not provided.",
+          "nameTooLong": "Name is too long or already in use."
+        }
+      }
+    },
+    "specializations": {
+      "title": "Specialization import",
+      "description": "Import a list of specializations from a JSON file.",
+      "alerts": {
+        "uploadSpecializations": {
+          "title": "Upload specializations",
+          "noFile": "No file was selected.",
+          "noPermission": "You do not have permission for this action.",
+          "fileNotUploaded": "Data file was not uploaded.",
+          "wrongFormat": "The uploaded file has an invalid format.",
+          "tooLarge": "The uploaded file is too large.",
+          "empty": "The uploaded file is empty.",
+          "invalidJson": "The uploaded file has an invalid JSON format.",
+          "noneCreated": "No specialization was created.",
+          "success": "Specializations were created.",
+          "unknown": "An unknown error occurred."
+        },
+        "specializationErrors": {
+          "noValue": "No value is filled in.",
+          "studyLengthNotInteger": "Study length must be an integer.",
+          "studyLengthInvalid": "Study length must be greater than 0 and within the allowed range.",
+          "abbreviationInvalid": "Abbreviation can have at most 1 character and must not already be in use.",
+          "nameTooLong": "Name can have at most 45 characters and must not already be in use."
+        }
+      }
+    },
+    "filePlaceholder": "Select a file to import data",
+    "errorNumber": "Number:",
+    "updated": "(updated)",
+    "alerts": {
+      "uploadUsers": {
+        "title": "Upload users",
+        "noFile": "No file was selected.",
+        "noPermission": "You do not have permission for this action.",
+        "fileNotUploaded": "File was not uploaded.",
+        "wrongFormat": "File has an invalid format.",
+        "tooLarge": "File is too large.",
+        "empty": "File is empty.",
+        "invalidJson": "File contains invalid JSON.",
+        "noneCreated": "No users were created.",
+        "success": "Users were successfully created.",
+        "unknown": "An unknown error occurred."
+      },
+      "userErrors": {
+        "missingFields": "Some required fields are missing.",
+        "nameTooLong": "First name is too long.",
+        "surnameTooLong": "Last name is too long.",
+        "invalidRole": "Invalid user role.",
+        "passwordTooShort": "Password is too short.",
+        "invalidEmail": "Email is invalid, too long, or already in use.",
+        "abbreviationTooLong": "Abbreviation is too long.",
+        "abbreviationInUse": "Abbreviation is already in use.",
+        "invalidClassIds": "Some class IDs are invalid."
+      }
+    }
+  },
+  "pages": {
+    "login": {
+      "title": "Panel | Login",
+      "description": "Panel login page"
+    },
+    "home": {
+      "title": "Panel | Home",
+      "description": "Panel homepage"
+    },
+    "chat": {
+      "title": "Panel | Chat",
+      "description": "Panel chat page"
+    },
+    "export": {
+      "title": "Panel | Data export",
+      "description": "Data export page"
+    },
+    "error403": {
+      "title": "Panel | Access denied",
+      "description": "Access denied page"
+    },
+    "settings": {
+      "info": {
+        "title": "Panel | Settings - Info",
+        "description": "Settings page"
+      },
+      "security": {
+        "title": "Panel | Settings - Security",
+        "description": "Security settings page"
+      },
+      "customization": {
+        "title": "Panel | Settings - Customization",
+        "description": "Customization settings page"
+      }
+    },
+    "forgotPassword": {
+      "title": "Panel | Forgot password",
+      "description": "Forgot password page"
+    },
+    "resetPassword": {
+      "title": "Panel | Password reset",
+      "description": "Password reset page"
+    },
+    "import": {
+      "title": "Panel | Data import - Users",
+      "description": "Data import page",
+      "classes": {
+        "title": "Panel | Import data - Classes",
+        "description": "Page for importing classes"
+      },
+      "maturitas": {
+        "title": "Panel | Import data - Maturitas",
+        "description": "Page for importing maturitas"
+      },
+      "maturitaTopics": {
+        "title": "Panel | Import data - Maturita topics",
+        "description": "Page for importing maturita topics"
+      },
+      "specializations": {
+        "title": "Panel | Import data - Specializations",
+        "description": "Page for importing specializations"
+      }
+    },
+    "calendar": {
+      "title": "Panel | Calendar",
+      "description": "Calendar page"
+    },
+    "classes": {
+      "add": {
+        "title": "Panel | Classes - Add",
+        "description": "Page for adding a class"
+      },
+      "index": {
+        "title": "Panel | Classes",
+        "description": "Class management in the system"
+      },
+      "remove": {
+        "title": "Panel | Classes - Remove",
+        "description": "Page for removing classes"
+      }
+    },
+    "specializations": {
+      "index": {
+        "title": "Panel | Specializations",
+        "description": "Specialization management in the system"
+      },
+      "add": {
+        "title": "Panel | Specializations - Add",
+        "description": "Page for adding a specialization"
+      },
+      "remove": {
+        "title": "Panel | Specializations - Remove",
+        "description": "Page for removing specializations"
+      }
+    },
+    "users": {
+      "index": {
+        "title": "Panel | Users",
+        "description": "Overview of all users in the system"
+      },
+      "studentIndex": {
+        "title": "Panel | Users - student",
+        "description": "Overview of students filtered by class"
+      },
+      "studentClass": {
+        "title": "Panel | Users - Class: {classId}",
+        "description": "Overview of users in the given class"
+      },
+      "studentClassEdit": {
+        "title": "Panel | Edit users - Class: {classId}",
+        "description": "Page for editing users in the given class"
+      },
+      "studentClassRemove": {
+        "title": "Panel | Remove users - Class: {classId}",
+        "description": "Page for removing users in the given class"
+      },
+      "roleIndex": {
+        "title": "Panel | Users - {role}",
+        "description": "Overview of users with the given role"
+      },
+      "roleEdit": {
+        "title": "Panel | Edit users - {role}",
+        "description": "Page for selecting a user to edit"
+      },
+      "roleEditDetail": {
+        "title": "Panel | Edit user - {id}",
+        "description": "Page for editing a user"
+      },
+      "roleRemove": {
+        "title": "Panel | Remove users - {role}",
+        "description": "Page for removing users with the given role"
+      },
+      "add": {
+        "title": "Panel | Users - Add",
+        "description": "Page for adding a user"
+      }
+    },
+    "tasks": {
+      "roleIndex": {
+        "title": "Panel | Tasks",
+        "description": "List of created tasks"
+      },
+      "roleAdd": {
+        "title": "Panel | Task - Add",
+        "description": "Page for adding a task"
+      },
+      "roleRemove": {
+        "title": "Panel | Tasks - Remove",
+        "description": "Page for removing tasks"
+      },
+      "roleTask": {
+        "title": "Panel | Task - {taskId}",
+        "description": "Task detail"
+      },
+      "roleTaskEdit": {
+        "title": "Panel | Task - {taskId} - Edit",
+        "description": "Page for editing a task"
+      },
+      "roleTaskTeam": {
+        "title": "Panel | Task - {taskId} - Team - {teamId}",
+        "description": "Detail of a team assigned to a task"
+      },
+      "studentIndex": {
+        "title": "Panel | Tasks",
+        "description": "List of assigned tasks for the student"
+      },
+      "studentTeam": {
+        "title": "Panel | Task - {taskId} - Assignment",
+        "description": "Detail of student assignment to a task"
+      },
+      "assignClasses": {
+        "title": "Panel | Task - {taskId} - Assignment - Classes",
+        "description": "Page for assigning classes to a task"
+      },
+      "assignIndividuals": {
+        "title": "Panel | Task - {taskId} - Assignment - Individuals",
+        "description": "Page for assigning individuals to a task"
+      },
+      "assignRemove": {
+        "title": "Panel | Task - {taskId} - Remove assignments",
+        "description": "Page for removing task assignments"
+      },
+      "assignTeams": {
+        "title": "Panel | Task - {taskId} - Assignment - Teams",
+        "description": "Page for managing task teams"
+      },
+      "assignTeamEdit": {
+        "title": "Panel | Task - {taskId} - Edit team",
+        "description": "Page for editing a team"
+      }
+    },
+    "maturita": {
+      "gradeIndex": {
+        "title": "Panel | Maturita Years",
+        "description": "Management of maturita years in the system"
+      },
+      "gradeAdd": {
+        "title": "Panel | Maturita Years - Add",
+        "description": "Page for adding a maturita year"
+      },
+      "gradeRemove": {
+        "title": "Panel | Maturita Years - Remove",
+        "description": "Page for removing maturita years"
+      },
+      "gradeEdit": {
+        "title": "Panel | Maturita Year - {maturitaId} - Edit",
+        "description": "Page for editing a maturita year"
+      },
+      "topicsIndex": {
+        "title": "Panel | Maturita Topics",
+        "description": "Management of maturita topics in the system"
+      },
+      "topicsAdd": {
+        "title": "Panel | Maturita Topics - Add",
+        "description": "Page for adding a maturita topic"
+      },
+      "topicsRemove": {
+        "title": "Panel | Maturita Topics - Remove",
+        "description": "Page for removing maturita topics"
+      },
+      "tasksIndex": {
+        "title": "Panel | Maturita Assignments",
+        "description": "Management of maturita assignments"
+      },
+      "tasksAdd": {
+        "title": "Panel | Maturita Assignments - Add",
+        "description": "Page for adding a maturita assignment"
+      },
+      "tasksRemove": {
+        "title": "Panel | Maturita Assignments - Remove",
+        "description": "Page for removing maturita assignments"
+      },
+      "tasksEdit": {
+        "title": "Panel | Maturita Assignments - Edit",
+        "description": "Page for editing a maturita assignment"
+      },
+      "proposalsIndex": {
+        "title": "Panel | Maturita Assignment Proposals",
+        "description": "Management of maturita assignment proposals"
+      },
+      "proposalsAdd": {
+        "title": "Panel | Maturita Assignment Proposal - Add",
+        "description": "Page for adding a maturita assignment proposal"
+      },
+      "proposalsRejected": {
+        "title": "Panel | Maturita Assignment Proposals - Rejected",
+        "description": "Page with rejected maturita assignment proposals"
+      },
+      "proposalsRemove": {
+        "title": "Panel | Maturita Assignment Proposals - Remove",
+        "description": "Page for removing maturita assignment proposals"
+      },
+      "proposalsEdit": {
+        "title": "Panel | Maturita Assignments - Edit",
+        "description": "Page for editing a maturita assignment proposal"
+      },
+      "teamIndex": {
+        "title": "Panel | Maturita Assignment - {taskId}",
+        "description": "Management of maturita team assignment"
+      },
+      "teamChat": {
+        "title": "Panel | Maturita Assignment - {taskId} - Chat",
+        "description": "Chat for maturita assignment"
+      },
+      "objectorIndex": {
+        "title": "Panel | Objector",
+        "description": "List of maturita assignments for objector review"
+      },
+      "objectorTeam": {
+        "title": "Panel | Objector Assignment - {taskId}",
+        "description": "Management of objector maturita assignment"
+      },
+      "objectorChat": {
+        "title": "Panel | Objector Assignment - {taskId} - Chat",
+        "description": "Chat for objector maturita assignment"
+      },
+      "tablesIndex": {
+        "title": "Panel | Maturita Assignments Table",
+        "description": "Overview table of maturita assignments"
+      },
+      "tablesEvaluators": {
+        "title": "Panel | Maturita Evaluators Table",
+        "description": "Table of maturita evaluators"
+      },
+      "proposalsRole": {
+        "title": "Panel | Maturita Assignment Proposals",
+        "description": "Management of maturita assignment proposals"
+      },
+      "studentIndex": {
+        "title": "Panel | Maturita Assignment",
+        "description": "Student maturita assignment"
+      },
+      "studentChat": {
+        "title": "Panel | Maturita Assignment - Chat",
+        "description": "Chat for student maturita assignment"
+      }
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "Access denied",
+      "description": "You do not have sufficient permissions to view this page.",
+      "back": "Go back"
+    }
+  },
+  "common": {
+    "updated": "(updated)",
+    "unknown": "An unknown error occurred.",
+    "noPermission": "You do not have permission for this action.",
+    "undetermined": "Undetermined",
+    "noAssignment": "No assignment",
+    "noRecords": "No records were displayed!",
+    "noData": "No data available",
+    "pasteUrl": {
+      "title": "Paste URL",
+      "unsupported": "Your browser does not support pasting."
+    }
+  },
+  "localePicker": {
+    "placeholder": "Select language"
+  },
+  "manage": {
+    "class": {
+      "label": "Select classes",
+      "placeholder": "Select class",
+      "noData": "No class found"
+    },
+    "footer": {
+      "save": "Save changes",
+      "reset": "Reset changes"
+    },
+    "email": {
+      "label": "E-mail",
+      "placeholder": "example.email{'@'}gmail.com",
+      "errors": {
+        "invalidFormat": "Invalid email format"
+      }
+    },
+    "fullName": {
+      "firstName": {
+        "label": "First name",
+        "placeholder": "John"
+      },
+      "lastName": {
+        "label": "Last name",
+        "placeholder": "Smith"
+      }
+    },
+    "abbreviation": {
+      "label": "Abbreviation",
+      "placeholder": "JANO",
+      "errors": {
+        "tooLong": "Abbreviation can be at most 4 characters long.",
+        "cantGenerate": "Cannot generate abbreviation from the provided name and surname."
+      }
+    },
+    "name": {
+      "label": "Name",
+      "placeholder": "Enter name"
+    },
+    "role": {
+      "label": "Role"
+    },
+    "reminders": {
+      "label": "Receive reminders"
+    },
+    "password": {
+      "currentLabel": "Old password",
+      "passwordLabel": "Password",
+      "newLabel": "New password",
+      "placeholder": "******",
+      "errors": {
+        "tooShort": "Password must be at least 5 characters long."
+      }
+    },
+    "profilePicture": {
+      "alt": "Profile photo",
+      "urlLabel": "Image URL",
+      "urlPlaceholder": "https://example.image/image.png",
+      "uploadPlaceholder": "Click to upload a file from your computer",
+      "errors": {
+        "unsupportedType": "Unsupported file type. Only jpg, png or gif are allowed.",
+        "readFailed": "Failed to read the file.",
+        "urlLoadFailed": "Failed to load image from URL."
+      }
+    },
+    "dateTime": {
+      "label": "Date and time"
+    }
+  },
+  "tables": {
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "start": "Start",
+      "end": "End",
+      "deadline": "Deadline",
+      "maxPoints": "Max points",
+      "assignment": "Assignment",
+      "actions": "Actions",
+      "fullName": "Full name",
+      "email": "E-mail",
+      "abbreviation": "Abbreviation",
+      "createdAt": "Created",
+      "class": "Class",
+      "grade": "Grade",
+      "group": "Group",
+      "specialization": "Specialization (abbr.)"
+    }
+  },
+  "actionBar": {
+    "description": "Action bar",
+    "add": "Add",
+    "edit": "Edit",
+    "remove": "Remove"
+  },
+  "pagination": {
+    "back": "Back",
+    "next": "Next"
+  },
+  "fileInput": {
+    "placeholder": "Click to upload a file from your computer",
+    "selectedFile": "File: {title}",
+    "errors": {
+      "unsupportedFormat": "Unsupported file format. (allowed: {accept})",
+      "tooLarge": "File is too large. (max: {maxSize}MB)"
+    }
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "emailPlaceholder": "example{'@'}email.com",
+    "description": "Enter your e-mail to receive a password reset link.",
+    "emailLabel": "E-mail",
+    "submitButton": "Send e-mail",
+    "rememberedLink": "Remembered your password?",
+    "validation": {
+      "invalidEmail": "Invalid email format",
+      "emailRequired": "Please enter your e-mail"
+    },
+    "responses": {
+      "noEmail": "E-mail was not provided",
+      "invalidFormat": "Invalid email format",
+      "emailNotFound": "This e-mail was not found",
+      "noUser": "E-mail is not assigned to any user",
+      "sent": "E-mail has been sent",
+      "unknown": "An unknown error occurred"
+    }
+  },
+  "resetPassword": {
+    "title": "Change password",
+    "description": "Reset your account password by entering a new password",
+    "newPasswordLabel": "New password",
+    "repeatPasswordLabel": "Repeat password",
+    "submitButton": "Change password",
+    "doneLink": "All done?",
+    "invalidToken": {
+      "title": "Token is invalid",
+      "description": "The password reset token is invalid or has expired. You need to create a new token and try again.",
+      "retryButton": "Try again"
+    },
+    "validation": {
+      "tooShort": "New password must be at least 5 characters long",
+      "required": "Please enter a new password",
+      "repeatRequired": "Please repeat the password",
+      "mismatch": "Passwords do not match"
+    },
+    "responses": {
+      "invalidEmail": "Invalid email format",
+      "emailTooLarge": "E-mail is too long",
+      "accountNotFound": "Account was not found",
+      "noNewPassword": "New password is missing",
+      "tooShort": "New password must be at least 5 characters long",
+      "success": "Password was successfully changed",
+      "unknown": "An unknown error occurred"
+    }
+  },
+  "classes": {
+    "add": {
+      "alerts": {
+        "createClass": {
+          "title": "Create class",
+          "emptyFields": "Some fields are empty.",
+          "hasErrors": "Some fields contain errors.",
+          "noPermission": "You do not have permission for this action.",
+          "noGrade": "Grade is missing.",
+          "noGroup": "Group is missing.",
+          "noSpecialization": "Specialization is missing.",
+          "noName": "Class name is missing.",
+          "invalidGrade": "Grade must be an integer.",
+          "gradeTooLarge": "Grade must be a positive number within the allowed range.",
+          "groupTooLong": "Group can be at most 1 character.",
+          "invalidSpecialization": "Specialization must be a number.",
+          "invalidSpecializationValue": "Specialization has an invalid value.",
+          "specializationNotFound": "The selected specialization does not exist.",
+          "gradeExceedsLength": "Grade exceeds the study length of the specialization.",
+          "nameTooLong": "Class name is too long.",
+          "nameInUse": "Class name is already in use.",
+          "success": "Class was successfully created.",
+          "unknown": "An unknown error occurred."
+        }
+      },
+      "errors": {
+        "nameRequired": "Class name is required.",
+        "gradeRequired": "Class grade is required.",
+        "gradeMin": "Class grade must be greater than 0.",
+        "groupRequired": "Class group is required.",
+        "groupTooLong": "Class group must be at most 1 character.",
+        "specializationRequired": "Class specialization is required."
+      },
+      "sections": {
+        "name": {
+          "title": "Name *",
+          "description": "Enter the name of the new class. The name should be unique and clearly identify the class in the system.",
+          "label": "Name"
+        },
+        "specialization": {
+          "title": "Specialization *",
+          "description": "Select the specialization to which the new class will be assigned. You can filter by name, abbreviation, or length of study.",
+          "label": "Select specialization",
+          "placeholder": "Select specialization",
+          "noData": "No specialization was found"
+        },
+        "grade": {
+          "title": "Grade *",
+          "description": "Enter the grade for the new class. Grade must be a positive integer and must not exceed the study length of the selected specialization.",
+          "label": "Grade"
+        },
+        "group": {
+          "title": "Group *",
+          "description": "Enter the group identifier, for example the letter A. The group must consist of exactly one character.",
+          "label": "Group"
+        }
+      },
+      "actionBar": {
+        "description": "Class management",
+        "add": "Add",
+        "remove": "Remove"
+      },
+      "breadcrumb": {
+        "create": "Create"
+      }
+    },
+    "index": {
+      "heading": "All classes",
+      "description": "Here you can find the list of all classes in the system.",
+      "searchPlaceholder": "Search classes"
+    },
+    "remove": {
+      "heading": "Selected classes: {count}",
+      "description": "Select the classes you want to permanently remove from the system.",
+      "searchPlaceholder": "Search classes",
+      "removeBtn": "Remove",
+      "cancelBtn": "Cancel all",
+      "breadcrumb": "Remove",
+      "alerts": {
+        "removeClass": {
+          "title": "Remove classes",
+          "noPermission": "You do not have permission for this action.",
+          "noneSelected": "No class was selected.",
+          "noneRemoved": "Some classes were not removed. Invalid IDs: {ids}.",
+          "success": "Classes were successfully removed.",
+          "unknown": "An unknown error occurred."
+        }
+      }
+    }
+  },
+  "specializations": {
+    "index": {
+      "heading": "All specializations",
+      "description": "Here you can find the list of all specializations (study fields) available in the system.",
+      "searchPlaceholder": "Search specializations"
+    },
+    "actionBar": {
+      "description": "Specialization management",
+      "add": "Add",
+      "remove": "Remove"
+    },
+    "add": {
+      "breadcrumb": "Create",
+      "saveBtn": "Save changes",
+      "resetBtn": "Reset changes",
+      "sections": {
+        "name": {
+          "title": "Name *",
+          "description": "Enter the name of the specialization you want to add. The name must be unique.",
+          "label": "Name",
+          "placeholder": "Information Technology"
+        },
+        "abbreviation": {
+          "title": "Abbreviation *",
+          "description": "Enter a single-letter abbreviation for the specialization. The abbreviation must be unique.",
+          "label": "Abbreviation",
+          "placeholder": "V"
+        },
+        "lengthOfStudy": {
+          "title": "Length of study *",
+          "description": "Enter the length of study in years. Minimum value is 1 year.",
+          "label": "Length of study"
+        }
+      },
+      "errors": {
+        "nameRequired": "Specialization name is required.",
+        "lengthOfStudyRequired": "Length of study is required.",
+        "lengthOfStudyMin": "Length of study must be greater than 0.",
+        "abbreviationRequired": "Specialization abbreviation is required.",
+        "abbreviationTooLong": "Specialization abbreviation can be at most 1 character."
+      },
+      "alerts": {
+        "addSpecialization": {
+          "title": "Add specialization",
+          "fillRequired": "Please fill in all required fields.",
+          "hasErrors": "Please fix the errors in the form.",
+          "noPermission": "You do not have permission for this action.",
+          "noName": "Specialization name is missing.",
+          "noAbbreviation": "Specialization abbreviation is missing.",
+          "abbreviationTooLong": "Specialization abbreviation is too long.",
+          "nameTooLong": "Specialization name is too long.",
+          "nameInUse": "Specialization name is already in use.",
+          "abbreviationInUse": "Specialization abbreviation is already in use.",
+          "noLengthOfStudy": "Length of study is missing.",
+          "invalidLengthOfStudy": "Length of study must be an integer.",
+          "lengthOfStudyMin": "Length of study must be a positive number within the allowed range.",
+          "success": "Specialization was successfully created.",
+          "unknown": "An unknown error occurred."
+        }
+      }
+    },
+    "remove": {
+      "heading": "Selected specializations: {count}",
+      "description": "Select the specializations you want to remove from the system. After confirmation, the selected specializations will be permanently deleted.",
+      "searchPlaceholder": "Search specializations",
+      "removeBtn": "Remove",
+      "cancelBtn": "Cancel all",
+      "breadcrumb": "Remove",
+      "alerts": {
+        "removeSpecialization": {
+          "title": "Remove specializations",
+          "noPermission": "You do not have permission for this action.",
+          "noneSelected": "Specialization IDs are missing.",
+          "noneRemoved": "No specialization could be removed.",
+          "success": "Specializations were successfully removed.",
+          "unknown": "An unknown error occurred."
+        }
+      }
+    }
+  },
+  "users": {
+    "add": {
+      "alerts": {
+        "addUser": {
+          "title": "Add user",
+          "fillRequired": "Please fill in all required fields.",
+          "noPermission": "You do not have permission for this action.",
+          "noName": "First name was not provided.",
+          "nameTooLong": "First name is too long.",
+          "noSurname": "Last name was not provided.",
+          "surnameTooLong": "Last name is too long.",
+          "noRole": "Role was not provided.",
+          "invalidRole": "Role is invalid.",
+          "noPassword": "Password was not provided.",
+          "passwordTooShort": "Password is too short.",
+          "noEmail": "E-mail was not provided.",
+          "invalidEmail": "Invalid email format.",
+          "emailTooLong": "E-mail is too long.",
+          "emailInUse": "E-mail is already in use.",
+          "abbreviationInUse": "Abbreviation is already in use.",
+          "abbreviationTooLong": "Abbreviation is too long.",
+          "success": "User was successfully added.",
+          "unknown": "An unknown error occurred."
+        }
+      },
+      "sections": {
+        "fullName": {
+          "title": "Full name *",
+          "description": "Enter the first and last name of the new user. These fields are required."
+        },
+        "email": {
+          "title": "E-mail *",
+          "description": "Enter the email address of the new user. This field is required and must be in the correct format."
+        },
+        "password": {
+          "title": "Account password *",
+          "description": "Enter a strong password for the new user. The password must meet security requirements and is required."
+        },
+        "role": {
+          "title": "Role *",
+          "description": "Select the role for the new user. This field is required."
+        },
+        "abbreviation": {
+          "title": "Abbreviation",
+          "description": "Enter the abbreviation for the new user. This field is optional but must be unique."
+        },
+        "classes": {
+          "title": "Classes",
+          "description": "Select the classes the new user (student) will be assigned to. This field is optional.",
+          "roleError": "You can only select classes if the user role is student."
+        }
+      },
+      "breadcrumb": {
+        "add": "Add"
+      },
+      "requiredNote": "Fields marked with * are required"
+    },
+    "index": {
+      "title": "Users",
+      "heading": "Total users: {count}",
+      "description": "Here you can find a summary of all registered users in the system.",
+      "notLoaded": "not loaded",
+      "roleHeading": "User roles",
+      "admins": "Administrators",
+      "teachers": "Teachers",
+      "students": "Students"
+    },
+    "student": {
+      "breadcrumb": "Students",
+      "index": {
+        "title": "Users - students",
+        "heading": "Total classes: {count}",
+        "description": "Here you can see all students, which you can filter by class.",
+        "classesHeading": "Classes",
+        "unassigned": "Unassigned"
+      },
+      "class": {
+        "index": {
+          "title": "Users - Class: {classId}",
+          "heading": "Total users: {count}",
+          "description": "Here you can see users of the given role and class. Use search to quickly filter the list.",
+          "searchPlaceholder": "Search users",
+          "abbreviationLabel": "Abbreviation:",
+          "noAbbreviation": "N/A",
+          "createdLabel": "Created:"
+        },
+        "edit": {
+          "title": "Edit users - Class: {classId}",
+          "heading": "Edit users",
+          "description": "Here you can select a user you want to edit.",
+          "abbreviationLabel": "Abbreviation:",
+          "noAbbreviation": "N/A"
+        },
+        "remove": {
+          "title": "Remove users - Class: {classId}",
+          "heading": "Selected users: {count}",
+          "description": "Select the users you want to remove, or use search to narrow down the selection.",
+          "searchPlaceholder": "Search users",
+          "abbreviationLabel": "Abbreviation:",
+          "noAbbreviation": "N/A",
+          "removeBtn": "Remove",
+          "cancelBtn": "Cancel all",
+          "alerts": {
+            "removeUsers": {
+              "title": "Remove users",
+              "noPermission": "You do not have permission for this action.",
+              "noneSelected": "No user was selected.",
+              "cannotRemoveSelf": "You cannot remove yourself.",
+              "noneRemoved": "No user was removed.",
+              "success": "Users were successfully removed.",
+              "unknown": "An unknown error occurred."
+            }
+          }
+        }
+      }
+    },
+    "role": {
+      "index": {
+        "title": "Users - {role}",
+        "heading": "Total users: {count}",
+        "description": "Here you can see users of the given role. Use search to quickly filter the list.",
+        "searchPlaceholder": "Search users",
+        "abbreviationLabel": "Abbreviation:",
+        "noAbbreviation": "N/A"
+      },
+      "edit": {
+        "index": {
+          "title": "Edit users - {role}",
+          "heading": "Edit users",
+          "description": "Here you can select a user you want to edit.",
+          "abbreviationLabel": "Abbreviation:",
+          "noAbbreviation": "N/A"
+        },
+        "detail": {
+          "title": "Edit user - {id}",
+          "profilePicture": {
+            "heading": "Profile picture",
+            "description": "Here you can change the user's profile picture. Upload a new photo if you wish to update the current image."
+          },
+          "fullName": {
+            "heading": "Full name",
+            "description": "Enter the new first and last name of the user if you want to change them."
+          },
+          "email": {
+            "heading": "E-mail",
+            "description": "Enter the new email address of the user if you want to change it."
+          },
+          "password": {
+            "heading": "Account password",
+            "description": "Enter a new password if you want to change the user's access credentials. The password must meet security requirements."
+          },
+          "role": {
+            "heading": "Role",
+            "description": "Choose the role the user should have. The role determines the user's permissions and capabilities in the system."
+          },
+          "abbreviation": {
+            "heading": "Abbreviation",
+            "description": "Enter a new abbreviation for the user if you want to change it. The abbreviation serves as a shorthand for the name, e.g. for quick identification."
+          },
+          "classes": {
+            "heading": "Classes",
+            "description": "Select one or more classes to assign to the user.",
+            "roleError": "You can only select classes if the user role is student."
+          },
+          "alerts": {
+            "updateUser": {
+              "title": "Edit user",
+              "fileTooLarge": "The uploaded file is too large.",
+              "nothingToUpdate": "Nothing was provided to update.",
+              "unsupportedFormat": "Unsupported file format.",
+              "success": "User was successfully updated.",
+              "noPermission": "You do not have permission for this action.",
+              "idNotNumber": "User ID is not a number.",
+              "invalidId": "User ID is not valid.",
+              "userNotFound": "User was not found.",
+              "nameTooLong": "First name is too long.",
+              "surnameTooLong": "Last name is too long.",
+              "abbreviationInUse": "Abbreviation is already in use.",
+              "abbreviationTooLong": "Abbreviation is too long.",
+              "invalidEmail": "Invalid email format.",
+              "emailInUse": "E-mail is already in use.",
+              "emailTooLong": "E-mail is too long.",
+              "unknown": "An unknown error occurred."
+            },
+            "uploadFile": {
+              "title": "File upload",
+              "uploading": "Uploading file...",
+              "success": "File was successfully uploaded.",
+              "error": "An error occurred while uploading the file."
+            },
+            "savePfp": {
+              "title": "Edit user",
+              "fileNotFound": "File was not found in storage.",
+              "savingError": "An unknown error occurred while saving."
+            }
+          }
+        }
+      },
+      "remove": {
+        "title": "Remove users - {role}",
+        "heading": "Selected users: {count}",
+        "description": "Select the users you want to remove, or use search to narrow down the selection.",
+        "searchPlaceholder": "Search users",
+        "abbreviationLabel": "Abbreviation:",
+        "noAbbreviation": "N/A",
+        "removeBtn": "Remove",
+        "cancelBtn": "Cancel all",
+        "alerts": {
+          "removeUsers": {
+            "title": "Remove users",
+            "noPermission": "You do not have permission for this action.",
+            "noneSelected": "No user was selected.",
+            "cannotRemoveSelf": "You cannot remove yourself.",
+            "noneRemoved": "No user was removed.",
+            "success": "Users were successfully removed.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      }
+    }
+  },
+  "tasks": {
+    "role": {
+      "index": {
+        "heading": "Created tasks",
+        "description": "A list of your created tasks that you can work with.",
+        "searchPlaceholder": "Search task",
+        "openBtn": "Open",
+        "editBtn": "Edit",
+        "assignBtn": "Assign"
+      },
+      "add": {
+        "heading": "Task management",
+        "description": "Add a new task",
+        "fileHeading": "Assignment *",
+        "fileDescription": "Select the assignment file that students will download and use to complete the task. Allowed formats: PDF, DOCX, ODT, HTML or ZIP.",
+        "timeRangeHeading": "Task time range",
+        "timeRangeDescription": "Enter the time range during which the task will be active. Students will only be able to submit the task during this period. The deadline determines the cutoff date for attaching completed work.",
+        "endLabel": "Task end *",
+        "deadlineLabel": "Deadline",
+        "pointsHeading": "Maximum points",
+        "pointsDescription": "Enter the maximum number of points that can be earned for this task. This number will be used when grading the task.",
+        "pointsPlaceholder": "No points",
+        "requiredNote": "Fields marked with * are required",
+        "nameHeading": "Name *",
+        "nameDescription": "Enter the task name that will clearly describe its content and purpose.",
+        "alerts": {
+          "addTask": {
+            "title": "Add task",
+            "fillRequired": "Please fill in all required fields.",
+            "noName": "Task name was not provided.",
+            "noFile": "Task file was not provided.",
+            "noPermission": "This role cannot create tasks.",
+            "noEndDate": "End date was not provided.",
+            "noDeadline": "Deadline is invalid.",
+            "noMaxPoints": "Points are invalid.",
+            "fileTooBig": "The uploaded file is too large.",
+            "nameTooLong": "Task name is too long.",
+            "fileBadFormat": "Invalid file format or name too long.",
+            "dateInvalid": "End date is invalid.",
+            "dateOrder": "End date is before the start date.",
+            "maxPointsInvalid": "Points are in an invalid format.",
+            "deadlineBeforeStart": "Deadline is before the start date.",
+            "deadlineBeforeEnd": "Deadline is before the end date.",
+            "fileNotFound": "File was not found in storage.",
+            "success": "Task was successfully created.",
+            "unknown": "An unknown error occurred.",
+            "serverError": "An unknown error occurred while saving.",
+            "uploading": "Uploading file...",
+            "uploadSuccess": "File was successfully uploaded.",
+            "uploadError": "An error occurred while uploading the file."
+          }
+        }
+      },
+      "remove": {
+        "heading": "Task management",
+        "description": "Here you can remove tasks you have created. Select a task from the list and click the Remove button.",
+        "searchPlaceholder": "Search task",
+        "selectedCount": "Selected tasks: {count}",
+        "removeBtn": "Remove",
+        "cancelBtn": "Cancel all",
+        "alerts": {
+          "removeTask": {
+            "title": "Remove tasks",
+            "noPermission": "Students cannot delete tasks.",
+            "noId": "Task ID is missing.",
+            "noneRemoved": "Some tasks could not be removed.",
+            "success": "Tasks were successfully removed.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      },
+      "task": {
+        "index": {
+          "heading": "Task management",
+          "description": "Overview of students and teams assigned to the task.",
+          "searchPlaceholder": "Search user",
+          "teamsSearchPlaceholder": "Search teams",
+          "openBtn": "Open",
+          "editBtn": "Edit",
+          "assignBtn": "Assign"
+        },
+        "edit": {
+          "nameHeading": "Name",
+          "nameDescription": "Enter the task name that will clearly describe its content and purpose.",
+          "fileHeading": "Assignment",
+          "fileDescription": "Select the assignment file that students will download and use to complete the task. Allowed formats: PDF, DOCX, ODT, HTML or ZIP.",
+          "timeRangeHeading": "Task time range",
+          "timeRangeDescription": "Enter the time range during which the task will be active. Students will only be able to submit the task during this period. The deadline determines the cutoff date for attaching completed work.",
+          "endLabel": "Task end",
+          "deadlineLabel": "Deadline",
+          "pointsHeading": "Maximum points",
+          "pointsDescription": "Enter the maximum number of points that can be earned for this task. This number will be used when grading the task.",
+          "pointsPlaceholder": "No points",
+          "alerts": {
+            "editTask": {
+              "title": "Edit task",
+              "noPermission": "This role cannot edit tasks.",
+              "noId": "Task ID was not provided.",
+              "invalidId": "Task ID is not a number.",
+              "invalidIdValue": "Task ID is invalid.",
+              "notFound": "Task not found.",
+              "nameTooLong": "Task name is too long.",
+              "fileBadFormat": "Invalid file format or name too long.",
+              "dateInvalid": "End date is not a number or is too far in the future.",
+              "dateOrder": "End date is before the start date.",
+              "deadlineBeforeStart": "Deadline is before the start date.",
+              "deadlineBeforeEnd": "Deadline is before the end date.",
+              "deadlineInvalid": "Deadline is invalid.",
+              "pointsInvalid": "Points are invalid.",
+              "fileTooBig": "The uploaded file is too large.",
+              "fileNotFound": "File was not found in storage.",
+              "success": "Task was successfully updated.",
+              "unknown": "An unknown error occurred.",
+              "serverError": "An unknown error occurred while saving.",
+              "uploading": "Uploading file...",
+              "uploadSuccess": "File was successfully uploaded.",
+              "uploadError": "An error occurred while uploading the file."
+            }
+          }
+        },
+        "team": {
+          "taskIdLabel": "Task ID:",
+          "guarantorLabel": "Guarantor:",
+          "startLabel": "Start:",
+          "endLabel": "End:",
+          "deadlineLabel": "Deadline:",
+          "maxPointsLabel": "Max points:",
+          "assignmentLabel": "Assignment:",
+          "studentsHeading": "Students",
+          "teamsHeading": "Teams",
+          "materialsHeading": "Materials",
+          "materialsDescription": "Here you can edit information about the team assigned to the task.",
+          "versionsHeading": "Version history",
+          "versionsDescription": "Here you can edit information about the team assigned to the task.",
+          "pointsHeading": "Points",
+          "pointsDescription": "Here you can edit information about the team assigned to the task.",
+          "guarantorCommentHeading": "Guarantor comment",
+          "guarantorCommentDescription": "Here you can edit information about the team assigned to the task.",
+          "pointsMaxLabel": "Maximum points: {max}",
+          "pointsMaxUndetermined": "Maximum points are not defined.",
+          "pointsExceedMax": "Points cannot exceed the maximum points: {max}",
+          "pointsBelowZero": "Points cannot be less than 0",
+          "commentTooLongInline": "Comment is too long",
+          "pointsPlaceholder": "Enter points",
+          "commentPlaceholder": "Enter guarantor comment",
+          "lastEdited": "Last edited: {date}",
+          "notEdited": "Not edited",
+          "noAssignment": "No assignment",
+          "noRecord": "No records to display!",
+          "removed": "Removed",
+          "undetermined": "Undetermined",
+          "studentLabel": "Student:",
+          "teamIdLabel": "ID:",
+          "teamMembersLabel": "Members:",
+          "download": {
+            "title": "Download files",
+            "error": "Error downloading task materials.",
+            "versionUnavailable": "This version is not available."
+          },
+          "alerts": {
+            "manageTeam": {
+              "title": "Edit team",
+              "formErrors": "Please fix the errors in the form and try again.",
+              "noTaskId": "Task ID was not provided.",
+              "noTeamId": "Team ID was not provided.",
+              "invalidTaskId": "Task ID is invalid.",
+              "invalidTeamId": "Team ID is invalid.",
+              "taskNotFound": "The specified task does not exist.",
+              "teamNotFound": "The specified team does not exist.",
+              "invalidStatus": "Invalid status.",
+              "maxVariants": "Maximum number of variants for this topic has been reached.",
+              "pointsInvalid": "Points are invalid.",
+              "pointsTooHigh": "Cannot award more points than the task maximum.",
+              "commentTooLong": "Comment is too long.",
+              "teamNameTooLong": "Team name is too long.",
+              "success": "Team was successfully updated.",
+              "unknown": "An unknown error occurred."
+            }
+          }
+        }
+      }
+    },
+    "student": {
+      "index": {
+        "heading": "Your tasks",
+        "description": "A list of your assigned tasks.",
+        "searchPlaceholder": "Search task",
+        "openBtn": "Open",
+        "undetermined": "Undetermined",
+        "noAssignment": "No assignment"
+      },
+      "team": {
+        "taskIdLabel": "Task ID:",
+        "guarantorLabel": "Guarantor:",
+        "startLabel": "Start:",
+        "endLabel": "End:",
+        "deadlineLabel": "Deadline:",
+        "maxPointsLabel": "Max points:",
+        "assignmentLabel": "Assignment:",
+        "versionsHeading": "Version history",
+        "versionsDescription": "Here you can edit information about the team assigned to the task.",
+        "materialsHeading": "Materials",
+        "materialsDescription": "Here you can edit information about the team assigned to the task.",
+        "guarantorCommentHeading": "Guarantor comment",
+        "guarantorCommentDescription": "Here you can edit information about the team assigned to the task.",
+        "noVersions": "No records to display!",
+        "guarantorComment": "No comment yet...",
+        "noComment": "No comment yet...",
+        "lastEdited": "Last edited: {date}",
+        "notEdited": "Not edited",
+        "commentPlaceholder": "",
+        "noAssignment": "No assignment",
+        "removed": "Removed",
+        "undetermined": "Undetermined",
+        "teamIdLabel": "ID:",
+        "teamMembersLabel": "Members:",
+        "guarantorSectionLabel": "Guarantor:",
+        "download": {
+          "title": "Download files",
+          "error": "Error downloading task materials.",
+          "versionUnavailable": "This version is not available."
+        },
+        "alerts": {
+          "removeVersion": {
+            "title": "Remove version",
+            "error": "Error while removing version.",
+            "noTeamId": "Team ID was not provided.",
+            "noTaskId": "Task ID was not provided.",
+            "noVersionId": "Version ID was not provided.",
+            "invalidTeamId": "Team ID is invalid.",
+            "invalidTaskId": "Task ID is invalid.",
+            "invalidVersionId": "Version ID is invalid.",
+            "invalidGuarantor": "Invalid task guarantor.",
+            "teamNotFound": "The specified team does not exist.",
+            "versionNotFound": "The specified version does not exist.",
+            "noPermission": "You do not have permission to remove this version.",
+            "afterDeadline": "Cannot remove a version after the deadline.",
+            "success": "Version was successfully removed.",
+            "unknown": "An unknown error occurred.",
+            "serverError": "Failed to connect to the server."
+          },
+          "addVersion": {
+            "title": "Add version",
+            "fileTooBig": "The uploaded file is too large.",
+            "noTeamId": "Team ID was not provided.",
+            "noTaskId": "Task ID was not provided.",
+            "invalidTeamId": "Team ID is invalid.",
+            "invalidTaskId": "Task ID is invalid.",
+            "invalidGuarantor": "Invalid task guarantor.",
+            "guarantorNotFound": "The specified guarantor does not exist.",
+            "notGuarantor": "User is not the task guarantor.",
+            "taskNotFound": "The specified task does not exist.",
+            "teamNotFound": "The specified team does not exist.",
+            "noPermission": "You do not have permission to add a version.",
+            "noElaboration": "Elaboration was not provided.",
+            "badFormat": "Unsupported file format.",
+            "nameTooLong": "File name is too long.",
+            "afterDeadline": "Cannot submit a version after the deadline.",
+            "fileNotFound": "File was not found in storage.",
+            "success": "New version was successfully uploaded.",
+            "unknown": "An unknown error occurred.",
+            "serverError": "An unknown error occurred while saving.",
+            "serverConnectionError": "Failed to connect to the server.",
+            "uploading": "Uploading file...",
+            "uploadSuccess": "File was successfully uploaded.",
+            "uploadError": "An error occurred while uploading the file."
+          }
+        }
+      }
+    },
+    "assign": {
+      "taskIdLabel": "Task ID:",
+      "taskIdBreadcrumb": "Task ID: {taskId}",
+      "guarantorLabel": "Guarantor:",
+      "startLabel": "Start:",
+      "endLabel": "End:",
+      "deadlineLabel": "Deadline:",
+      "maxPointsLabel": "Max points:",
+      "assignmentLabel": "Assignment:",
+      "noAssignment": "No assignment",
+      "undetermined": "undetermined",
+      "nav": {
+        "title": "Assignment",
+        "classes": "Classes",
+        "individuals": "Individuals",
+        "teams": "Teams"
+      },
+      "classes": {
+        "heading": "Selected classes: {count}",
+        "description": "Select the classes you want to assign the task to and confirm the changes.",
+        "searchPlaceholder": "Search classes"
+      },
+      "individuals": {
+        "filterHeading": "Class filter",
+        "filterDescription": "Select a class to filter users. This field is optional.",
+        "selectedStudents": "Selected students: {count}",
+        "searchPlaceholder": "Search users"
+      },
+      "remove": {
+        "actionBarDescription": "Task management",
+        "actionBarAssign": "Assign",
+        "actionBarRemove": "Remove assigned",
+        "breadcrumb": "Remove assigned",
+        "heading": "Selected assignments: {count}",
+        "description": "Select assignments you want to permanently remove.",
+        "removeBtn": "Remove",
+        "cancelBtn": "Cancel all",
+        "studentsHeading": "Students",
+        "teamsHeading": "Teams",
+        "userSearchPlaceholder": "Search users",
+        "teamSearchPlaceholder": "Search teams",
+        "pointsColumn": "Points",
+        "undetermined": "Undetermined"
+      },
+      "teams": {
+        "heading": "Teams",
+        "description": "Manage teams assigned to this task.",
+        "searchPlaceholder": "Search teams",
+        "nameLabel": "Name",
+        "namePlaceholder": "Enter team name to create (or leave empty)",
+        "pointsColumn": "Points",
+        "undetermined": "Undetermined",
+        "editBtn": "Edit"
+      },
+      "teamEdit": {
+        "actionBarDescription": "Team management",
+        "actionBarAdd": "Add",
+        "breadcrumb": "Edit team: {teamId}",
+        "heading": "Edit team: {name}",
+        "undetermined": "Undetermined",
+        "teamIdLabel": "Team ID:",
+        "taskIdLabel": "Task ID:",
+        "membersLabel": "Members:",
+        "nameSection": "Name",
+        "nameLabel": "Name",
+        "namePlaceholder": "Enter team name (or leave empty)",
+        "nameError": "Team name must not be longer than 255 characters.",
+        "nameDescription": "Enter the team name for identification.",
+        "filterHeading": "Class filter",
+        "filterDescription": "Select a class to filter users. This field is optional.",
+        "selectedStudents": "Selected students: {count}",
+        "searchPlaceholder": "Search users"
+      },
+      "alerts": {
+        "assignToTask": {
+          "title": "Task assignment",
+          "noClass": "No class was selected.",
+          "invalidTaskId": "Task ID is invalid.",
+          "noUserOrClass": "No user or class was selected.",
+          "taskNotFound": "Task does not exist or you are not its guarantor.",
+          "notForMaturita": "This endpoint cannot be used for a maturita task.",
+          "noneAssigned": "No one was assigned the task.",
+          "differentTeam": "Some users have already been assigned to a different team.",
+          "badIds": "Some users could not be assigned.",
+          "success": "Task assignment was successfully updated.",
+          "unknown": "An unknown error occurred.",
+          "requestError": "An error occurred while sending the request."
+        },
+        "removeAssignment": {
+          "title": "Remove assignment",
+          "noTaskId": "Task ID is missing.",
+          "noTeamId": "Team IDs are missing.",
+          "taskIdNotNumber": "Task ID must be a number.",
+          "taskIdInvalid": "Task ID is not valid.",
+          "taskNotFound": "Task does not exist or you are not its guarantor.",
+          "partialFail": "Some assignments could not be removed.",
+          "success": "Assignments were successfully removed.",
+          "unknown": "An unknown error occurred."
+        },
+        "createTeam": {
+          "title": "Create team",
+          "nameTooLongLocal": "Team name is too long (max. 255 characters).",
+          "success": "Team was successfully created.",
+          "noTaskId": "Task ID was not provided.",
+          "taskIdNotNumber": "Task ID must be a number.",
+          "taskIdInvalid": "Task ID is not valid.",
+          "notForType": "A team cannot be added to this type of task.",
+          "taskNotFound": "The specified task does not exist or you are not its guarantor.",
+          "teamNameTooLong": "Team name is too long.",
+          "teamNameExists": "A team with this name already exists.",
+          "unknown": "An unknown error occurred."
+        },
+        "updateTeam": {
+          "title": "Edit team",
+          "invalidTaskId": "Task ID is invalid.",
+          "invalidTeamId": "Team ID is invalid.",
+          "taskNotFound": "The specified task does not exist or you do not have permission.",
+          "teamNotFound": "The specified team does not exist.",
+          "invalidStatus": "The specified status is not allowed.",
+          "pointsNotNumber": "Points must be a number.",
+          "pointsInvalid": "Points value is invalid.",
+          "pointsTooHigh": "Cannot award more points than the task has.",
+          "commentTooLong": "Comment is too long.",
+          "teamNameTooLong": "Team name is too long.",
+          "success": "Team was successfully updated.",
+          "unknown": "An unknown error occurred.",
+          "serverError": "Failed to connect to the server."
+        },
+        "addToTeam": {
+          "title": "Add to team",
+          "invalidTaskId": "Task ID is invalid.",
+          "invalidTeamId": "Team ID is invalid.",
+          "taskNotFound": "The specified task does not exist.",
+          "teamNotFound": "The specified team does not exist or you do not have permission.",
+          "maxUsers": "No more users can be added to this team.",
+          "differentTeam": "Some students already belong to a different team. Count: {count}",
+          "badIds": "Some user IDs are invalid. Count: {count}",
+          "success": "Team was successfully updated.",
+          "unknown": "An unknown error occurred.",
+          "serverError": "Failed to connect to the server."
+        }
+      }
+    }
+  },
+  "maturita": {
+    "grade": {
+      "index": {
+        "heading": "Maturita Years",
+        "description": "Here you will find a list of all maturita years available in the system.",
+        "searchPlaceholder": "Search maturitas",
+        "editBtn": "Edit",
+        "actionBar": {
+          "description": "Manage maturita years"
+        }
+      },
+      "add": {
+        "heading": "Year",
+        "description": "Add a new maturita year to the system.",
+        "nameDescription": "Enter the name of the maturita year, e.g. school year (2024/2025).",
+        "timeRangeHeading": "Maturita time range",
+        "timeRangeDescription": "Enter the time range during which the maturita year will be active. Students will only be able to submit maturita work during this period.",
+        "startLabel": "Maturita start *",
+        "endLabel": "Maturita end *",
+        "pointsHeading": "Maximum points",
+        "pointsDescription": "Enter the maximum number of points that can be earned for a maturita work. This number will be used when grading maturita work.",
+        "pointsPlaceholder": "No points",
+        "evaluatorsHeading": "Selected evaluators",
+        "searchPlaceholder": "Search users",
+        "rolePlaceholder": "User role for selecting evaluators",
+        "requiredNote": "Fields marked with * are required",
+        "breadcrumbCreate": "Create",
+        "errors": {
+          "nameTooLong": "Maturita year name is too long.",
+          "maxPointsNotPositive": "Maximum points must be a positive number."
+        },
+        "alerts": {
+          "addMaturita": {
+            "title": "Add maturita",
+            "fillRequired": "Please fill in all required fields.",
+            "noPermission": "You do not have permission to perform this action.",
+            "noGrade": "Year was not provided.",
+            "noMaxPoints": "Maximum points were not provided.",
+            "noStartDate": "Start date was not provided.",
+            "noEndDate": "End date was not provided.",
+            "nameTooLong": "Maturita year name is too long.",
+            "gradeExists": "This year already exists.",
+            "maxPointsNaN": "Maximum points is not a number.",
+            "maxPointsInvalid": "Maximum points is not valid.",
+            "endDateInvalid": "End date is invalid.",
+            "startDateInvalid": "Start date is invalid.",
+            "endBeforeStart": "End date is before the start date.",
+            "success": "Maturita was successfully created.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      },
+      "remove": {
+        "heading": "Maturita Years",
+        "selectedCount": "Selected maturita years: {count}",
+        "description": "Here you will find a list of all maturita years available in the system.",
+        "searchPlaceholder": "Search maturitas",
+        "removeBtn": "Remove",
+        "cancelBtn": "Cancel all",
+        "breadcrumb": "Remove",
+        "alerts": {
+          "removeMaturita": {
+            "title": "Remove maturitas",
+            "noPermission": "You do not have permission to perform this action.",
+            "noneSelected": "No maturita year was selected.",
+            "noneRemoved": "No maturita year was removed.",
+            "success": "Maturita years were successfully removed.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      },
+      "edit": {
+        "heading": "Year",
+        "nameDescription": "Enter the name of the maturita year, e.g. school year (2024/2025).",
+        "timeRangeHeading": "Maturita time range",
+        "timeRangeDescription": "Enter the time range during which the maturita year will be active. Students will only be able to submit maturita work during this period.",
+        "startLabel": "Maturita start",
+        "endLabel": "Maturita end",
+        "pointsHeading": "Maximum points",
+        "pointsDescription": "Enter the maximum number of points that can be earned for a maturita work. This number will be used when grading maturita work.",
+        "pointsPlaceholder": "No points",
+        "evaluatorsHeading": "Selected evaluators",
+        "searchPlaceholder": "Search users",
+        "rolePlaceholder": "User role for selecting evaluators",
+        "requiredNote": "Fields marked with * are required",
+        "breadcrumb": "Edit",
+        "breadcrumbId": "Maturita ID: {maturitaId}",
+        "errors": {
+          "nameTooLong": "Maturita year name is too long.",
+          "maxPointsNotPositive": "Maximum points must be a positive number."
+        },
+        "alerts": {
+          "editMaturita": {
+            "title": "Edit maturita",
+            "noPermission": "You do not have permission to perform this action.",
+            "noId": "Maturita ID was not provided.",
+            "nothingToUpdate": "No value to update was provided.",
+            "idNaN": "Maturita ID is not a number.",
+            "idInvalid": "Maturita ID is not valid.",
+            "notFound": "Maturita was not found.",
+            "nameTooLong": "Year name is too long.",
+            "gradeExists": "This year already exists.",
+            "maxPointsNaN": "Maximum points is not a number.",
+            "maxPointsInvalid": "Maximum points is not valid.",
+            "startDateInvalid": "Start date is invalid.",
+            "endBeforeStart": "End date is before the start date.",
+            "endDateInvalid2": "End date is invalid.",
+            "success": "Maturita was successfully updated.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      }
+    },
+    "tasks": {
+      "index": {
+        "heading": "Maturita Assignments",
+        "description": "List of maturita assignments you can work with.",
+        "noMaturita": "No maturita year is currently available.",
+        "searchPlaceholder": "Search assignments",
+        "undetermined": "Undetermined",
+        "chatBtn": "Chat",
+        "editBtn": "Edit",
+        "openBtn": "Open",
+        "gradeLabel": "Year:",
+        "endLabelText": "End:",
+        "studentColumn": "Student",
+        "objectorColumn": "Objector",
+        "actionBar": {
+          "description": "Manage maturita assignments"
+        }
+      },
+      "add": {
+        "nameHeading": "Name *",
+        "nameDescription": "Enter the name of the maturita assignment.",
+        "fileHeading": "Assignment *",
+        "fileDescription": "Select the assignment file that students will download and use to complete the task. Allowed formats: PDF, DOCX, ODT, HTML or ZIP.",
+        "guarantorHeading": "Student *",
+        "breadcrumb": "Add",
+        "guarantorDescription": "Select the student to whom this maturita assignment will be assigned.",
+        "searchPlaceholder": "Search users",
+        "topicLabel": "Topic",
+        "topicPlaceholder": "Select topic",
+        "pointsHeading": "Topic *",
+        "pointsDescription": "Select the topic of the maturita assignment from the list of available topics.",
+        "requiredNote": "Fields marked with * are required",
+        "alerts": {
+          "addMaturitaTask": {
+            "title": "Add maturita assignment",
+            "fillRequired": "Please fill in all required fields.",
+            "fileTooBig": "The uploaded file is too large.",
+            "noPermission": "This role cannot create maturita assignments.",
+            "cannotCreate": "Cannot create maturita assignment.",
+            "noGuarantor": "You are not authorized to be a guarantor of a maturita assignment.",
+            "alreadyAssigned": "The user already has a maturita assignment assigned.",
+            "noName": "Assignment name was not provided.",
+            "noUser": "User was not provided.",
+            "noTopic": "Topic was not provided.",
+            "userIdNaN": "User ID is not a valid number.",
+            "userIdInvalid": "User ID is not valid.",
+            "userNotFound": "User was not found.",
+            "cannotBeGuarantor": "This user cannot have a maturita assignment assigned.",
+            "userForbidden": "This user cannot have a maturita assignment assigned.",
+            "topicIdNaN": "Topic ID is not a valid number.",
+            "topicIdInvalid": "Topic ID is not valid.",
+            "topicNotFound": "Topic was not found.",
+            "nameTooLong": "Assignment name is too long.",
+            "fileNotUploaded": "Assignment file was not uploaded.",
+            "fileBadFormat": "Invalid file format or name too long.",
+            "maxVariants": "Maximum number of variants for this topic has been reached.",
+            "fileNotFound": "File was not found in storage.",
+            "success": "Maturita assignment was successfully created.",
+            "savingError": "An unknown error occurred while saving.",
+            "uploadError": "An error occurred while uploading the file.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      },
+      "remove": {
+        "maturitaHeading": "Maturita Assignments",
+        "noMaturita": "No maturita year is currently available.",
+        "selectedCount": "Selected maturita assignments: {count}",
+        "description": "List of maturita assignments you can work with.",
+        "searchPlaceholder": "Search assignments",
+        "removeBtn": "Remove",
+        "cancelBtn": "Cancel all",
+        "breadcrumb": "Remove",
+        "alerts": {
+          "removeMaturitaTask": {
+            "title": "Remove maturita assignments",
+            "studentsCannotDelete": "Students cannot delete assignments.",
+            "noId": "Assignment ID is missing.",
+            "noneRemoved": "Some assignments could not be removed.",
+            "success": "Assignments were successfully removed.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      },
+      "edit": {
+        "nameDescription": "Enter the name of the maturita assignment.",
+        "fileHeading": "Assignment",
+        "fileDescription": "Select the assignment file that students will download and use to complete the task. Allowed formats: PDF, DOCX, ODT, HTML or ZIP.",
+        "guarantorHeading": "Opponent",
+        "searchPlaceholder": "Search users",
+        "alerts": {
+          "editMaturitaTask": {
+            "title": "Edit maturita assignment",
+            "fileTooBig": "The uploaded file is too large.",
+            "noPermission": "This role cannot edit the assignment.",
+            "idError": "Assignment ID error.",
+            "notFound": "Assignment not found or you do not have permission.",
+            "nameTooLong": "Assignment name is too long.",
+            "fileBadFormat": "Invalid file format or name too long.",
+            "dateError": "Error with end date or deadline.",
+            "pointsError": "Points are not valid or in wrong format.",
+            "objectorError": "Opponent is invalid or does not have permission.",
+            "fileNotFound": "File was not found in storage.",
+            "success": "Maturita assignment was successfully updated.",
+            "savingError": "An unknown error occurred while saving.",
+            "uploadError": "An error occurred while uploading the file.",
+            "unknown": "An unknown error occurred.",
+            "serverError": "Could not connect to the server."
+          }
+        }
+      }
+    },
+    "proposals": {
+      "actionBar": {
+        "description": "Manage maturita assignment proposals",
+        "addBtn": "Add",
+        "rejectedBtn": "Rejected",
+        "removeBtn": "Remove"
+      },
+      "maturitaSection": {
+        "heading": "Maturita Assignments",
+        "description": "Enter the name of the maturita assignment.",
+        "noMaturita": "No maturita year is currently available."
+      },
+      "index": {
+        "heading": "Maturita Assignment Proposals",
+        "description": "List of your maturita assignment proposals.",
+        "searchPlaceholder": "Search assignments",
+        "editBtn": "Edit"
+      },
+      "add": {
+        "nameHeading": "Name *",
+        "nameDescription": "Enter the name of the maturita assignment.",
+        "fileHeading": "Assignment *",
+        "fileDescription": "Select the assignment file that students will download and use to complete the task. Allowed formats: PDF, DOCX, ODT, HTML or ZIP.",
+        "guarantorHeading": "Guarantor *",
+        "guarantorDescription": "Select the guarantor who will be responsible for this maturita assignment.",
+        "topicLabel": "Topic",
+        "topicPlaceholder": "Select topic",
+        "searchPlaceholder": "Search users",
+        "requiredNote": "Fields marked with * are required",
+        "alerts": {
+          "addProposal": {
+            "title": "Add maturita assignment proposal",
+            "fillRequired": "Please fill in all required fields.",
+            "fileTooBig": "The uploaded file is too large.",
+            "noPermission": "This role cannot create maturita assignments.",
+            "cannotCreate": "Cannot create maturita assignment at this time.",
+            "alreadyAssigned": "The user already has a maturita assignment assigned.",
+            "noName": "Assignment name was not provided.",
+            "noGuarantor": "Guarantor was not provided.",
+            "guarantorIdNaN": "Guarantor ID is not a valid number.",
+            "guarantorIdInvalid": "Guarantor ID is not valid.",
+            "guarantorNotFound": "Guarantor was not found.",
+            "studentCannotBeGuarantor": "A student cannot be a guarantor of a maturita assignment.",
+            "userForbidden": "This user cannot be a guarantor of a maturita assignment.",
+            "topicIdNaN": "Topic ID is not a valid number.",
+            "topicIdInvalid": "Topic ID is not valid.",
+            "topicNotFound": "Topic was not found.",
+            "nameTooLong": "Assignment name is too long.",
+            "fileNotUploaded": "Assignment file was not uploaded.",
+            "fileBadFormat": "Invalid file format or name too long.",
+            "fileNotFound": "File was not found in storage.",
+            "success": "Maturita assignment proposal was successfully created.",
+            "savingError": "An unknown error occurred while saving.",
+            "uploadError": "An error occurred while uploading the file.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      },
+      "rejected": {
+        "heading": "Rejected Maturita Assignment Proposals",
+        "description": "List of your rejected maturita assignment proposals.",
+        "searchPlaceholder": "Search assignments"
+      },
+      "remove": {
+        "heading": "Selected maturita assignments: {count}",
+        "selectedCount": "Selected maturita assignments: {count}",
+        "description": "List of your maturita assignment proposals you want to remove.",
+        "searchPlaceholder": "Search assignments",
+        "removeBtn": "Remove",
+        "cancelBtn": "Cancel all",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "pending": "Pending approval",
+        "alerts": {
+          "removeProposal": {
+            "title": "Remove maturita assignment proposals",
+            "noPermission": "This role cannot delete maturita assignments.",
+            "noId": "Assignment identifier was not provided.",
+            "noGuarantor": "Guarantor was not provided.",
+            "countMismatch": "Number of assignment IDs does not match number of guarantors.",
+            "noneRemoved": "Some assignments could not be removed.",
+            "success": "Assignments were successfully removed.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      },
+      "edit": {
+        "nameDescription": "Enter the name of the maturita assignment.",
+        "fileHeading": "Assignment",
+        "fileDescription": "Select the assignment file that students will download and use to complete the task. Allowed formats: PDF, DOCX, ODT, HTML or ZIP.",
+        "searchPlaceholder": "Search users",
+        "breadcrumb": {
+          "taskIdLabel": "Assignment ID: {taskId}",
+          "editLabel": "Edit"
+        },
+        "alerts": {
+          "editProposal": {
+            "title": "Edit maturita assignment proposal",
+            "fileTooBig": "The uploaded file is too large.",
+            "noId": "Assignment identifier was not provided.",
+            "noGuarantor": "Guarantor was not provided.",
+            "noMaturita": "No maturita is currently available.",
+            "idNaN": "Assignment ID is not a number.",
+            "idInvalid": "Assignment ID is not valid.",
+            "guarantorIdNaN": "Guarantor ID is not a number.",
+            "guarantorIdInvalid": "Guarantor ID is not valid.",
+            "guarantorNotFound": "Guarantor was not found.",
+            "notFound": "Assignment was not found or you do not have permission.",
+            "nameTooLong": "Assignment name is too long.",
+            "fileBadFormat": "Invalid file format or name too long.",
+            "fileNotFound": "File was not found in storage.",
+            "success": "Maturita assignment proposal was successfully updated.",
+            "savingError": "An unknown error occurred while saving.",
+            "uploadError": "An error occurred while uploading the file.",
+            "unknown": "An unknown error occurred."
+          }
+        }
+      }
+    },
+    "team": {
+      "taskIdLabel": "Task ID:",
+      "startLabel": "Start:",
+      "endLabel": "End:",
+      "deadlineLabel": "Deadline:",
+      "maxPointsLabel": "Points:",
+      "noMaxPoints": "Maximum number of points is not defined.",
+      "assignmentLabel": "Assignment ID:",
+      "studentLabel": "Student:",
+      "objectorLabel": "Objector:",
+      "guarantorLabel": "Guarantor:",
+      "undetermined": "Undetermined",
+      "materialsHeading": "Materials",
+      "materialsDescription": "Here you will find the maturita assignment.",
+      "noAssignment": "No assignment",
+      "versionsHeading": "Submission versions",
+      "versionsDescription": "Here you will find uploaded submission versions.",
+      "removed": "Removed",
+      "noVersions": "No version has been uploaded yet.",
+      "pointsHeading": "Points",
+      "pointsDescription": "Enter the grade and comment for the work.",
+      "maxPointsLabel2": "Maximum points: {points}",
+      "noMaxPointsDefined": "Maximum number of points is not defined.",
+      "commentHeading": "Guarantor comment",
+      "commentDescription": "Guarantor's comment on the student's submission.",
+      "lastEdited": "Last edited:",
+      "notEdited": "Not edited",
+      "commentPlaceholder": "Enter guarantor comment",
+      "download": {
+        "title": "Download files",
+        "error": "Error downloading task materials.",
+        "versionUnavailable": "This version is not available."
+      },
+      "actionBar": {
+        "description": "Manage maturita assignment",
+        "openChat": "Open chat"
+      },
+      "alerts": {
+        "manageTeam": {
+          "title": "Edit team",
+          "formErrors": "Please fix the errors in the form and try again.",
+          "noTaskId": "Task ID was not provided.",
+          "noTeamId": "Team ID was not provided.",
+          "taskIdInvalid": "Task ID is invalid.",
+          "teamIdInvalid": "Team ID is invalid.",
+          "taskNotFound": "The specified task does not exist.",
+          "teamNotFound": "The specified team does not exist.",
+          "invalidStatus": "Invalid status.",
+          "maxVariants": "Maximum variants for this topic have been reached.",
+          "pointsNaN": "Points value is invalid.",
+          "pointsNaN2": "Points value is invalid.",
+          "pointsExceed": "Cannot award more points than the task allows.",
+          "commentTooLong": "Comment is too long.",
+          "nameTooLong": "Team name is too long.",
+          "success": "Team was successfully updated.",
+          "unknown": "An unknown error occurred."
+        }
+      },
+      "errors": {
+        "pointsExceed": "Points cannot exceed the maximum: {max}",
+        "pointsNegative": "Points cannot be less than 0",
+        "commentTooLong": "Comment is too long"
+      }
+    },
+    "chat": {
+      "heading": "Chat",
+      "taskIdLabel": "Task ID:",
+      "startLabel": "Start:",
+      "endLabel": "End:",
+      "deadlineLabel": "Deadline:",
+      "studentLabel": "Student",
+      "objectorLabel": "Objector",
+      "guarantorLabel": "Guarantor",
+      "undetermined": "Undetermined",
+      "archived": "- Archived",
+      "open": "- Open",
+      "createConversationBtn": "Start conversation"
+    },
+    "objector": {
+      "index": {
+        "heading": "Objector",
+        "description": "List of maturita assignments you are assigned to as objector.",
+        "noMaturita": "No maturita year is currently available.",
+        "searchPlaceholder": "Search assignments",
+        "undetermined": "Undetermined",
+        "chatBtn": "Chat",
+        "openBtn": "Open",
+        "actionBar": {
+          "description": "Manage objector assignments"
+        }
+      },
+      "team": {
+        "taskIdLabel": "Task ID:",
+        "startLabel": "Start:",
+        "endLabel": "End:",
+        "deadlineLabel": "Deadline:",
+        "maxPointsLabel": "Points:",
+        "studentLabel": "Student:",
+        "objectorLabel": "Objector:",
+        "guarantorLabel": "Guarantor:",
+        "undetermined": "Undetermined",
+        "materialsHeading": "Materials",
+        "materialsDescription": "Here you will find the maturita assignment.",
+        "noAssignment": "No assignment",
+        "versionsHeading": "Submission versions",
+        "versionsDescription": "Here you will find uploaded submission versions.",
+        "removed": "Removed",
+        "noVersions": "No version has been uploaded yet.",
+        "commentHeading": "Guarantor comment",
+        "commentDescription": "Guarantor's comment on the student's submission.",
+        "lastEdited": "Last edited:",
+        "notEdited": "Not edited",
+        "noComment": "No comment yet...",
+        "actionBar": {
+          "description": "Manage maturita assignment",
+          "openChat": "Open chat"
+        },
+        "download": {
+          "title": "Download files",
+          "error": "Error downloading task materials.",
+          "versionUnavailable": "This version is not available."
+        }
+      }
+    },
+    "tables": {
+      "index": {
+        "heading": "Maturita assignments table",
+        "description": "Table of maturita grades.",
+        "noMaturita": "No maturita year is currently available.",
+        "actionBar": {
+          "description": "Manage maturita assignments table"
+        }
+      },
+      "evaluators": {
+        "heading": "Maturita evaluators table",
+        "description": "Table of maturita evaluators.",
+        "noMaturita": "No maturita year is currently available.",
+        "actionBar": {
+          "description": "Manage maturita evaluators table"
+        }
+      }
+    },
+    "proposals_role": {
+      "maturitaSection": {
+        "heading": "Maturita assignments",
+        "description": "Maturita assignment proposals awaiting approval.",
+        "noMaturita": "No maturita year is currently available."
+      },
+      "listHeading": "Maturita assignment proposals",
+      "listDescription": "List of maturita assignment proposals awaiting approval.",
+      "searchPlaceholder": "Search assignments",
+      "acceptBtn": "Accept",
+      "rejectBtn": "Reject",
+      "alerts": {
+        "manageProposal": {
+          "title": "Maturita proposals",
+          "invalidTaskId": "Task ID is invalid or was not provided.",
+          "invalidTeamId": "Team ID is invalid or was not provided.",
+          "taskNotFound": "The specified task does not exist or you do not have permission.",
+          "teamNotFound": "The specified team does not exist.",
+          "invalidStatus": "The specified status is not allowed.",
+          "maxVariants": "Maximum variants for this topic have been reached.",
+          "pointsInvalid": "Points are invalid or cannot exceed the task maximum.",
+          "commentTooLong": "Comment is too long.",
+          "nameTooLong": "Team name is too long.",
+          "accepted": "Maturita proposal was accepted.",
+          "rejected": "Maturita proposal was rejected.",
+          "unknown": "An unknown error occurred."
+        }
+      }
+    },
+    "student": {
+      "breadcrumb": "Assignment ID: {taskId}",
+      "index": {
+        "heading": "Maturita assignment",
+        "description": "Management of the student's maturita assignment.",
+        "actionBarDescription": "Maturita assignment management",
+        "openChatBtn": "Open chat",
+        "taskIdLabel": "Task ID:",
+        "startLabel": "Start:",
+        "endLabel": "End:",
+        "deadlineLabel": "Deadline:",
+        "pointsLabel": "Points:",
+        "guarantorLabel": "Guarantor:",
+        "objectorLabel": "Objector:",
+        "undetermined": "Undetermined",
+        "materialsHeading": "Materials",
+        "materialsDescription": "Files with materials for the maturita assignment.",
+        "noMaterial": "No material",
+        "versionsHeading": "Elaboration versions",
+        "versionsDescription": "Here you can upload a new version of the maturita assignment elaboration.",
+        "filePlaceholder": "Click to upload a file from your computer",
+        "removed": "Removed",
+        "noVersions": "No record was displayed!",
+        "lastEdited": "Last edited: {date}",
+        "notEdited": "Not edited",
+        "guarantorCommentHeading": "Guarantor comment",
+        "guarantorCommentDescription": "Guarantor's comment on your elaboration.",
+        "noTask": "You don't have a maturita assignment yet. Submit a proposal or wait for one to be assigned.",
+        "noTaskDescription": "The page will display your maturita assignment once it has been assigned to you.",
+        "alerts": {
+          "downloadFiles": {
+            "title": "Download files",
+            "error": "Error downloading task materials."
+          },
+          "downloadVersion": {
+            "title": "Download version",
+            "unavailable": "This version is not available."
+          },
+          "uploading": {
+            "title": "Uploading file"
+          }
+        }
+      },
+      "chat": {
+        "taskIdLabel": "Task ID:",
+        "startLabel": "Start:",
+        "endLabel": "End:",
+        "deadlineLabel": "Deadline:",
+        "objectorLabel": "Objector:",
+        "undetermined": "Undetermined",
+        "guarantorTitle": "Guarantor",
+        "archived": "- Archived",
+        "open": "- Open",
+        "createConversationBtn": "Create conversation"
+      }
+    },
+    "topics": {
+      "index": {
+        "heading": "All maturita topics",
+        "description": "Here you will find a list of all maturita topics available in the system.",
+        "searchPlaceholder": "Search topics",
+        "actionBar": {
+          "description": "Manage maturita topics"
+        }
+      },
+      "add": {
+        "nameHeading": "Name",
+        "nameDescription": "Enter the name of the maturita topic that will clearly describe its content.",
+        "nameLabel": "Name",
+        "namePlaceholder": "Dynamic web application",
+        "requiredNote": "Fields marked with * are required",
+        "breadcrumb": "Create",
+        "alerts": {
+          "addTopic": {
+            "title": "Add topic",
+            "noName": "Topic name was not provided.",
+            "noPermission": "You do not have permission to perform this action.",
+            "nameTooLong": "Topic name is too long.",
+            "topicExists": "A topic with this name already exists.",
+            "success": "Topic was successfully created.",
+            "unknown": "An unknown error occurred."
+          }
+        },
+        "actionBar": {
+          "description": "Manage maturita topics"
+        }
+      },
+      "remove": {
+        "selectedCount": "Selected maturita topics: {count}",
+        "description": "Here you will find a list of all maturita topics available in the system.",
+        "searchPlaceholder": "Search topics",
+        "removeBtn": "Remove",
+        "cancelBtn": "Cancel all",
+        "breadcrumb": "Remove",
+        "alerts": {
+          "removeTopic": {
+            "title": "Remove topics",
+            "noPermission": "You do not have permission to perform this action.",
+            "noneSelected": "No topics were selected.",
+            "noneRemoved": "No topic was removed.",
+            "success": "Topics were successfully removed.",
+            "unknown": "An unknown error occurred."
+          }
+        },
+        "actionBar": {
+          "description": "Manage maturita topics"
+        }
+      }
+    }
+  },
+  "image": {
+    "invalidImage": "Invalid image"
+  },
+  "editor": {
+    "placeholder": "Write text here",
+    "toolbar": {
+      "bold": "Bold",
+      "underline": "Underline",
+      "strike": "Strikethrough",
+      "italic": "Italic",
+      "blockquote": "Quote",
+      "codeBlock": "Code",
+      "link": "Link",
+      "image": "Image",
+      "headings": "Headings",
+      "heading1": "Heading 1",
+      "heading2": "Heading 2",
+      "heading3": "Heading 3",
+      "heading4": "Heading 4",
+      "normal": "Normal",
+      "listOrdered": "List - numbered",
+      "listBullet": "List - bulleted",
+      "listCheck": "List - checkbox",
+      "indentUp": "Indent",
+      "indentDown": "Outdent",
+      "align": "Alignment",
+      "alignLeft": "Left",
+      "alignCenter": "Center",
+      "alignRight": "Right",
+      "alignJustify": "Justify",
+      "textColor": "Text color",
+      "bgColor": "Background color",
+      "clean": "Clear formatting"
+    }
+  },
+  "inputMenu": {
+    "noData": "Nothing was found.",
+    "placeholder": "Select / Create item",
+    "add": "Add \"{item}\"",
+    "selected": "Selected: {count}"
+  },
+  "tables": {
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "abbreviation": "Abbreviation",
+      "actions": "Actions",
+      "grade": "Grade",
+      "group": "Group",
+      "class": "Class",
+      "specializationAbbr": "Specialization (abbr.)",
+      "lengthOfStudy": "Length of study (years)",
+      "memberCount": "Member count",
+      "email": "E-mail",
+      "fullName": "Full name",
+      "createdAt": "Created",
+      "points": "Points",
+      "maxPoints": "Max points",
+      "startDate": "Start",
+      "endDate": "End",
+      "deadline": "Deadline",
+      "evaluators": "Evaluator count",
+      "topic": "Topic",
+      "topicNumber": "Topic (number)",
+      "variant": "Variant",
+      "task": "Assignment",
+      "student": "Student",
+      "guarantor": "Guarantor",
+      "objector": "Opponent",
+      "proposer": "Proposer"
+    }
   }
 }

@@ -3,6 +3,7 @@
 .nuxt
 .nitro
 .cache
+.claude
 dist
 .output
 output

@@ -3,6 +3,9 @@ import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {TopicData} from "~/types/maturita";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
@@ -51,14 +54,14 @@ const slots = useSlots();
 
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
-    { field: "id", title: "ID", width: "90px", type: "number" },
-    { field: "name", title: "Název", type: "string", width: "100%" },
+    { field: "id", title: t('tables.columns.id'), width: "90px", type: "number" },
+    { field: "name", title: t('tables.columns.name'), type: "string", width: "100%" },
   ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
 
   if (slots.actions) {
-    merged.push({ field: "actions", title: "Akce" });
+    merged.push({ field: "actions", title: t('tables.columns.actions') });
   }
 
   return merged;
@@ -109,7 +112,7 @@ defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable class="datatable" ref="datatable" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :pagination="props.pagination" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable class="datatable" ref="datatable" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :pagination="props.pagination" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" :no-data-content="t('common.noData')" @rowClick="onRowClick">
     <template v-for="(_, name) in slots" v-slot:[name]="slotProps">
       <slot :name="name" v-bind="slotProps" />
     </template>

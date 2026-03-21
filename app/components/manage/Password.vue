@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import Input from "~/components/ui/Input.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   type: {
@@ -28,9 +31,9 @@ const onInput = (): void => {
   resetErrors();
 
   if (props.type === "new" && (passwords.value.old.input || "").length < 5 && passwords.value.old.input)
-    passwords.value.old.error = "Heslo musí mít alespoň 5 znaků.";
+    passwords.value.old.error = t('manage.password.errors.tooShort');
   else if ((passwords.value.new.input || "").length < 5 && passwords.value.new.input)
-    passwords.value.new.error = "Heslo musí mít alespoň 5 znaků.";
+    passwords.value.new.error = t('manage.password.errors.tooShort');
   else passwords.value.old.error = "";
 
   switch (props.type) {
@@ -71,7 +74,7 @@ defineExpose({ reset });
         <div class="content">
           <label for="oldPassword">
             {{
-                props.type === "new" ? "Heslo" : "Staré heslo"
+                props.type === "new" ? t('manage.password.passwordLabel') : t('manage.password.currentLabel')
             }}
           </label>
           <div class="line">
@@ -111,7 +114,7 @@ defineExpose({ reset });
 
       <div class="section" v-if="props.type !== 'new'">
         <div class="content">
-          <label for="newPassword">Nové heslo</label>
+          <label for="newPassword">{{ t('manage.password.newLabel') }}</label>
           <Input
             type="password"
             id="newPassword"

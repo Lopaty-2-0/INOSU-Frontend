@@ -13,9 +13,11 @@ import moment from "moment";
 import type {MaturitaData, MaturitaTaskData} from "~/types/maturita";
 import MaturitaTasksTable from "~/components/tables/MaturitaTasks.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Maturitní zadání - Odstranění",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.tasksRemove.title'),
+  meta: [{ name: "description", content: t('pages.maturita.tasksRemove.description') }],
 });
 
 definePageMeta({
@@ -81,32 +83,32 @@ const removeTasks = async (): Promise<void> => {
 
       switch (resCode) {
         case "28010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Studenti nemohou mazat úkoly." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.remove.alerts.removeMaturitaTask.title'), message: t('maturita.tasks.remove.alerts.removeMaturitaTask.studentsCannotDelete') });
           break;
 
         case "28020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Chybí ID úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.remove.alerts.removeMaturitaTask.title'), message: t('maturita.tasks.remove.alerts.removeMaturitaTask.noId') });
           break;
 
         case "28031":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění maturitních zadání", message: `Některé úkoly se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: t('maturita.tasks.remove.alerts.removeMaturitaTask.title'), message: t('maturita.tasks.remove.alerts.removeMaturitaTask.noneRemoved') });
           }
 
-          alertsStore.addAlert({ type: "success", title: "Odstranění maturitních zadání", message: `Úkoly byly úspěšně odstraněny.` });
+          alertsStore.addAlert({ type: "success", title: t('maturita.tasks.remove.alerts.removeMaturitaTask.title'), message: t('maturita.tasks.remove.alerts.removeMaturitaTask.success') });
 
           tasksRefresh();
           resetSelectedTasks();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.remove.alerts.removeMaturitaTask.title'), message: t('maturita.tasks.remove.alerts.removeMaturitaTask.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění maturitních zadání", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.tasks.remove.alerts.removeMaturitaTask.title'), message: t('maturita.tasks.remove.alerts.removeMaturitaTask.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -168,9 +170,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
-            { label: 'Odstranění', to: `/panel/maturita/${role}/tasks/remove`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('sidebar.links.assignments'), to: `/panel/maturita/${role}/tasks` },
+            { label: t('maturita.tasks.remove.breadcrumb'), to: `/panel/maturita/${role}/tasks/remove`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -181,11 +183,11 @@ watchEffect((): void => {
         <div class="content">
           <div class="page-section">
             <div class="section-head">
-              <h3>Maturitní zadání</h3>
-              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+              <h3>{{ t('maturita.tasks.remove.maturitaHeading') }}</h3>
+              <p>{{ t('maturita.tasks.remove.description') }}</p>
             </div>
 
-            <p class="error message">Žádný maturitní období more.</p>
+            <p class="error message">{{ t('maturita.tasks.remove.noMaturita') }}</p>
           </div>
         </div>
       </div>
@@ -194,8 +196,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
               class="action-bar"
-              description="Správa maturitních zadání"
-              :texts="['Přidat', 'Odebrat']"
+              :description="t('maturita.tasks.index.actionBar.description')"
+              :texts="[t('actionBar.add'), t('actionBar.remove')]"
               :actions="['add', 'remove']"
               :active="1"
               :icons="[
@@ -210,24 +212,24 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybrané maturitní zadání: {{ selectedTaskIds.length }}</h3>
-              <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+              <h3>{{ t('maturita.tasks.remove.selectedCount', { count: selectedTaskIds.length }) }}</h3>
+              <p>{{ t('maturita.tasks.remove.description') }}</p>
               <br>
-              <p>Ročník: {{ currentMaturita.grade }}</p>
-              <p>Konec: {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('maturita.tasks.index.gradeLabel') }} {{ currentMaturita.grade }}</p>
+              <p>{{ t('maturita.tasks.index.endLabelText') }} {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.tasks.remove.searchPlaceholder')" />
           </div>
 
 
           <div class="buttons">
             <button class="remove" @click="removeTasks">
-              Odstranit
+              {{ t('maturita.tasks.remove.removeBtn') }}
               <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
             </button>
             <button class="reset" @click="resetSelectedTasks">
-              Zrušit vše
+              {{ t('maturita.tasks.remove.cancelBtn') }}
             </button>
           </div>
 

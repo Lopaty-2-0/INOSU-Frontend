@@ -17,15 +17,18 @@ import type {TaskTeam} from "~/types/team";
 import ActionBar from "~/components/ui/ActionBar.vue";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
+import { useI18n } from "#imports";
 
 const route = useRoute();
 const teamId = route.params.teamId as string;
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Upravení týmu",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: computed(() => t('pages.tasks.assignTeamEdit.title', { taskId })),
+  meta: [{ name: "description", content: computed(() => t('pages.tasks.assignTeamEdit.description')) }],
 });
 
 definePageMeta({
@@ -71,7 +74,7 @@ const isEqual = (array1: number[], array2: number[]): boolean => {
 
 const checkForErrors = (): void => {
   if (newTeamNameInput.value && newTeamNameInput.value.length > 255) {
-    newTeamNameInputError.value = "Název týmu nesmí být delší než 255 znaků.";
+    newTeamNameInputError.value = t('tasks.assign.teamEdit.nameError');
     return;
   }
 
@@ -114,60 +117,60 @@ const updateTeamName = async (): Promise<void> => {
         case "32010":
         case "32030":
         case "32040":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.invalidTaskId') });
           break;
 
         case "32020":
         case "32050":
         case "32060":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "ID týmu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.invalidTeamId') });
           break;
 
         case "32070":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Zadaný úkol neexistuje nebo k němu nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.taskNotFound') });
           break;
 
         case "32080":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Zadaný tým neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.teamNotFound') });
           break;
 
         case "32090":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Zadaný status není povolený." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.invalidStatus') });
           break;
 
         case "32100":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Body musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsNotNumber') });
           break;
 
         case "32110":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Počet bodů je neplatný." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsInvalid') });
           break;
 
         case "32120":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Nelze udělit více bodů, než má úkol." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsTooHigh') });
           break;
 
         case "32130":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Komentář je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.commentTooLong') });
           break;
 
         case "32140":
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Název týmu je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.teamNameTooLong') });
           break;
 
         case "32151":
-          alertsStore.addAlert({ type: "success", title: "Upravení týmu", message: "Tým byl úspěšně upraven." });
+          alertsStore.addAlert({ type: "success", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.success') });
           teamRefresh();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Upravení týmu", message: "Nepodařilo se spojit se serverem." });
+      alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.serverError') });
     },
   }).finally(() => {
     submitLoading.value = false;
@@ -196,48 +199,48 @@ const assignToTeam = async (): Promise<void> => {
         case "43010":
         case "43030":
         case "43040":
-          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.invalidTaskId') });
           break;
 
         case "43020":
         case "43050":
         case "43060":
-          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "ID týmu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.invalidTeamId') });
           break;
 
         case "43070":
-          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Zadaný úkol neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.taskNotFound') });
           break;
 
         case "43080":
-          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Zadaný tým neexistuje nebo k němu nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.teamNotFound') });
           break;
 
         case "43090":
-          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Do tohoto týmu nelze přidat více uživatelů." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.maxUsers') });
           break;
 
         case "43101":
           if (response._data.data?.differentTeam?.length > 0)
-          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Někteří žáci již patří do jiného týmu. Počet: ${response._data.data.differentTeam.length}` });
+          alertsStore.addAlert({ type: "warning", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.differentTeam', { count: response._data.data.differentTeam.length }) });
 
           if (response._data.data?.badIds?.length > 0)
-          alertsStore.addAlert({ type: "warning", title: "Přidání do týmu", message: `Některá ID uživatelů jsou neplatná. Počet: ${response._data.data.badIds.length}` });
+          alertsStore.addAlert({ type: "warning", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.badIds', { count: response._data.data.badIds.length }) });
 
-          alertsStore.addAlert({ type: "success", title: "Přidání do týmu", message: `Tým byl úspěšně aktualizován.` });
+          alertsStore.addAlert({ type: "success", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.success') });
 
           teamRefresh();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.unknown') });
           break;
       }
 
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání do týmu", message: "Nepodařilo se spojit se serverem." });
+      alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.serverError') });
     },
   }).finally(() => {
     submitLoading.value = false;
@@ -331,11 +334,11 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
-            { label: 'Přiřazení', to: `/panel/tasks/${role}/${taskId}/assign` },
-            { label: 'Týmy', to: `/panel/tasks/${role}/${taskId}/assign/teams` },
-            { label: `Upravení týmu: ${teamId}`, to: `/panel/tasks/${role}/${taskId}/assign/teams/${teamId}`, active: true },
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('tasks.assign.taskIdBreadcrumb', { taskId }), to: `/panel/tasks/${role}/${taskId}` },
+            { label: t('tasks.assign.nav.title'), to: `/panel/tasks/${role}/${taskId}/assign` },
+            { label: t('tasks.assign.nav.teams'), to: `/panel/tasks/${role}/${taskId}/assign/teams` },
+            { label: t('tasks.assign.teamEdit.breadcrumb', { teamId }), to: `/panel/tasks/${role}/${taskId}/assign/teams/${teamId}`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -344,39 +347,39 @@ watchEffect((): void => {
     <template #content>
       <ActionBar
         class="action-bar"
-        description="Správa týmů"
+        :description="t('tasks.assign.teamEdit.actionBarDescription')"
         :actions="['add', 'remove']"
         :active="1"
-        :texts="['Přidat']"
+        :texts="[t('tasks.assign.teamEdit.actionBarAdd')]"
         :navigate-to="[`/panel/tasks/${role}/${taskId}/assign/teams`]"
       />
 
       <div id="task-assign" v-if="teamTaskData">
-        <Navigation class="page-navigation" title="Přiřazení" :active-link-id="2" :links="[
-          { name: 'Třídy', path: `/panel/tasks/${role}/${taskId}/assign` },
-          { name: 'Jednotlivci', path: `/panel/tasks/${role}/${taskId}/assign/individuals` },
-          { name: 'Týmy', path: `/panel/tasks/${role}/${taskId}/assign/teams` },
+        <Navigation class="page-navigation" :title="t('tasks.assign.nav.title')" :active-link-id="2" :links="[
+          { name: t('tasks.assign.nav.classes'), path: `/panel/tasks/${role}/${taskId}/assign` },
+          { name: t('tasks.assign.nav.individuals'), path: `/panel/tasks/${role}/${taskId}/assign/individuals` },
+          { name: t('tasks.assign.nav.teams'), path: `/panel/tasks/${role}/${taskId}/assign/teams` },
         ]" />
 
         <div class="content">
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Upravení týmu: {{ teamTaskData.name || "Neurčeno" }}</h3>
-              <p>Tým ID: {{ teamTaskData.idTeam }}</p>
-              <p>Úkol ID: {{ teamTaskData.idTask }}</p>
-              <p>Počet členů: {{ (teamTaskData.users || []).length }}</p>
+              <h3>{{ t('tasks.assign.teamEdit.heading', { name: teamTaskData.name || t('tasks.assign.teamEdit.undetermined') }) }}</h3>
+              <p>{{ t('tasks.assign.teamEdit.teamIdLabel') }} {{ teamTaskData.idTeam }}</p>
+              <p>{{ t('tasks.assign.teamEdit.taskIdLabel') }} {{ teamTaskData.idTask }}</p>
+              <p>{{ t('tasks.assign.teamEdit.membersLabel') }} {{ (teamTaskData.users || []).length }}</p>
             </div>
           </div>
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Název <span class="update" v-if="teamTaskData.name ? teamTaskData.name !== newTeamNameInput : newTeamNameInput">(aktualizováno)</span></h3>
-              <p>Zadejte jednopísmennou zkratku zaměření. Zkratka musí být unikátní.</p>
+              <h3>{{ t('tasks.assign.teamEdit.nameSection') }} <span class="update" v-if="teamTaskData.name ? teamTaskData.name !== newTeamNameInput : newTeamNameInput">{{ t('import.updated') }}</span></h3>
+              <p>{{ t('tasks.assign.teamEdit.nameDescription') }}</p>
             </div>
 
             <div class="content">
-              <label for="team-name">Název</label>
-              <Input type="text" id="team-name" placeholder="Zadejte název týmu (nebo ponechte prázdný)" v-model.trim="newTeamNameInput" @update:model-value="checkForErrors" />
+              <label for="team-name">{{ t('tasks.assign.teamEdit.nameLabel') }}</label>
+              <Input type="text" id="team-name" :placeholder="t('tasks.assign.teamEdit.namePlaceholder')" v-model.trim="newTeamNameInput" @update:model-value="checkForErrors" />
 
               <p class="input-error" v-if="newTeamNameInputError">{{ newTeamNameInputError }}</p>
             </div>
@@ -384,8 +387,8 @@ watchEffect((): void => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Filtrace třídy</h3>
-              <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
+              <h3>{{ t('tasks.assign.teamEdit.filterHeading') }}</h3>
+              <p>{{ t('tasks.assign.teamEdit.filterDescription') }}</p>
             </div>
 
             <EditClass ref="editClass" :multiple="false" :old-class-ids="selectedClass ? [selectedClass] : []" @update="onClassUpdate" />
@@ -394,10 +397,10 @@ watchEffect((): void => {
           <div class="page-section bottom-line">
             <div class="line">
               <div class="section-head users">
-                <h3>Vybraní žáci: {{ selectedUsers.length }} <span class="update" v-if="selectedUsers.length > 0 && !isEqual((teamTaskData?.users || []), selectedUsers)">(aktualizováno)</span></h3>
+                <h3>{{ t('tasks.assign.teamEdit.selectedStudents', { count: selectedUsers.length }) }} <span class="update" v-if="selectedUsers.length > 0 && !isEqual((teamTaskData?.users || []), selectedUsers)">{{ t('import.updated') }}</span></h3>
               </div>
 
-              <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
+              <SearchInput @change="onUsersSearchInputChange" :placeholder="t('tasks.assign.teamEdit.searchPlaceholder')" />
             </div>
 
             <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="selectedUsers"  :users="users || []" :loading="usersPending" />

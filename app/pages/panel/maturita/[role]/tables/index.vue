@@ -10,9 +10,11 @@ import type {MaturitaTableData} from "~/types/maturitaTables";
 import MaturitaTable from "~/components/tables/MaturitaTable.vue";
 import Navigation from "~/components/ui/Navigation.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Návrhy maturitních zadání",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.tablesIndex.title'),
+  meta: [{ name: "description", content: t('pages.maturita.tablesIndex.description') }],
 });
 
 const route = useRoute();
@@ -82,9 +84,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tables`, icon: 'material-symbols:table-rows-rounded' },
-            { label: 'Tabulky', to: `/panel/maturita/${role}/tables` },
-            { label: 'Maturitní zadání', to: `/panel/maturita/${role}/tables`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/tables`, icon: 'material-symbols:table-rows-rounded' },
+            { label: t('sidebar.links.tables'), to: `/panel/maturita/${role}/tables` },
+            { label: t('maturita.tables.index.heading'), to: `/panel/maturita/${role}/tables`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -95,28 +97,28 @@ watchEffect((): void => {
         <div class="content">
           <div class="page-section">
             <div class="section-head">
-              <h3>Maturitní zadání</h3>
-              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+              <h3>{{ t('maturita.tables.index.heading') }}</h3>
+              <p>{{ t('maturita.tables.index.description') }}</p>
             </div>
 
-            <p class="error message">Žádný maturitní období more.</p>
+            <p class="error message">{{ t('maturita.tables.index.noMaturita') }}</p>
           </div>
         </div>
       </div>
 
       <div id="maturita-table" v-else-if="allRows && currentMaturita">
-        <Navigation class="navigation" title="Tabulky" :active-link-id="0" :links="[
-          { name: 'Maturitní zadání', path: `/panel/maturita/${role}/tables` },
-          { name: 'Hodnotitelé', path: `/panel/maturita/${role}/tables/evaluators` },
+        <Navigation class="navigation" :title="t('sidebar.links.tables')" :active-link-id="0" :links="[
+          { name: t('maturita.tables.index.heading'), path: `/panel/maturita/${role}/tables` },
+          { name: t('maturita.tables.evaluators.heading'), path: `/panel/maturita/${role}/tables/evaluators` },
         ]" />
 
         <div class="content">
           <div class="section-head bottom-line">
-            <h3>Tabulka maturitních zadání</h3>
-            <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+            <h3>{{ t('maturita.tables.index.heading') }}</h3>
+            <p>{{ t('maturita.tables.index.description') }}</p>
             <br>
-            <p>Ročník: {{ currentMaturita.grade }}</p>
-            <p>Konec: {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+            <p>{{ t('maturita.grade.add.startLabel').replace(' *', '') }}: {{ currentMaturita.grade }}</p>
+            <p>{{ t('maturita.team.endLabel') }} {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
           </div>
 
           <MaturitaTable :role="role" class="datatable" :data-rows="allRows" :loading="tablePending" />

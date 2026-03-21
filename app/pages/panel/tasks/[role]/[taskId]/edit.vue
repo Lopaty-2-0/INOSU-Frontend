@@ -20,10 +20,12 @@ const route = useRoute();
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Upravení",
+  title: t('pages.tasks.roleTaskEdit.title', { taskId }),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.tasks.roleTaskEdit.description') }
   ],
 });
 
@@ -112,70 +114,60 @@ const updateTask = async (): Promise<void> => {
 
       switch (resCode) {
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nahraný soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.fileTooBig') });
           break;
         case "74010":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Tato role nemůže upravovat úkol." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.noPermission') });
           break;
         case "74020":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nebyl zadán ID úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.noId') });
           break;
         case "74030":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "ID úkolu není číslo." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.invalidId') });
           break;
         case "74040":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "ID úkolu není platné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.invalidIdValue') });
           break;
         case "74050":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Úkol nenalezen." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.notFound') });
           break;
         case "74060":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Název úkolu je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.nameTooLong') });
           break;
         case "74070":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Špatný formát souboru nebo příliš dlouhý název." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.fileBadFormat') });
           break;
         case "74080":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Datum ukončení není číslo nebo je příliš daleko." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.dateInvalid') });
           break;
         case "74090":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Datum ukončení je před datem začátku." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.dateOrder') });
           break;
         case "74100":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Uzávěrka je před datem začátku." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.deadlineBeforeStart') });
           break;
         case "74110":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Uzávěrka je před datem ukončení." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.deadlineBeforeEnd') });
           break;
         case "74120":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Uzávěrka není platná." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.deadlineInvalid') });
           break;
         case "74130":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Body nejsou platné." });
-          break;
         case "74140":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Body nejsou platné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.pointsInvalid') });
           break;
         case "74150":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Objector není integer." });
-          break;
         case "74160":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Objector není validní." });
-          break;
         case "74170":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Objector neexistuje." });
-          break;
         case "74180":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Objector není evaluátor maturitního úkolu." });
-          break;
         case "74190":
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nelze nastavit objector sám sobě." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.unknown') });
           break;
         case "74201":
           if (data.uploadUrl && newData.value.taskFile) {
             const alert: Alert = {
-              title: "Nahrávání souboru",
-              message: "Probíhá nahrávání souboru...",
+              title: t('tasks.role.task.edit.alerts.editTask.title'),
+              message: t('tasks.role.task.edit.alerts.editTask.uploading'),
               type: "info",
               infinite: true,
               canClose: false,
@@ -187,8 +179,8 @@ const updateTask = async (): Promise<void> => {
             upload(newData.value.taskFile, data.uploadUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Soubor byl úspěšně nahrán.",
+                title: t('tasks.role.task.edit.alerts.editTask.title'),
+                message: t('tasks.role.task.edit.alerts.editTask.uploadSuccess'),
                 type: "success"
               });
 
@@ -206,14 +198,14 @@ const updateTask = async (): Promise<void> => {
 
                   switch (resCode) {
                     case "84110":
-                      alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Soubor nebyl nalezen na úložišti." });
+                      alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.fileNotFound') });
                       return;
                     case "84121":
                       await refreshTask();
                       resetUserData();
                       break;
                     default:
-                      alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nastala neznámá chyba při ukládání." });
+                      alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.serverError') });
                       break;
                   }
                 },
@@ -221,21 +213,21 @@ const updateTask = async (): Promise<void> => {
             })
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);
-              alertsStore.addAlert({title: "Nahrávání souboru", message: "Nastala chyba při nahrávání souboru.", type: "error"});
+              alertsStore.addAlert({ title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.uploadError'), type: "error" });
             });
           }
-          alertsStore.addAlert({ type: "success", title: "Úprava úkolu", message: "Úkol byl úspěšně upraven." });
+          alertsStore.addAlert({ type: "success", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.success') });
           await refreshTask();
           resetUserData();
 
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Úprava úkolu", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.unknown') });
     },
   }).finally((): void => {
     loading.value = false;
@@ -283,9 +275,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, active: false, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
-            { label: 'Úpravení', to: `/panel/tasks/${role}/${taskId}/edit`, active: true },
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/${role}`, active: false, icon: 'material-symbols:folder-copy-rounded' },
+            { label: `${t('tasks.role.task.team.taskIdLabel')} ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
+            { label: t('actionBar.edit'), to: `/panel/tasks/${role}/${taskId}/edit`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -297,8 +289,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditName ref="editName" :old-name="oldData.name" @update="onNameUpdate">
               <div class="section-head">
-                <h3>Název <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
-                <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+                <h3>{{ t('tasks.role.task.edit.nameHeading') }} <span class="update" v-show="newData.name">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('tasks.role.task.edit.nameDescription') }}</p>
               </div>
             </EditName>
           </div>
@@ -306,31 +298,31 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditTaskFile ref="editTaskFile" :max-size-m-b="32" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
-                <h3>Zadání <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
-                <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
+                <h3>{{ t('tasks.role.task.edit.fileHeading') }} <span class="update" v-show="newData.taskFile">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('tasks.role.task.edit.fileDescription') }}</p>
               </div>
             </EditTaskFile>
           </div>
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Časové rozmezí úkolu</h3>
-              <p>Zadejte časové rozmezí, ve kterém bude úkol aktivní. Studenti budou moci úkol odevzdávat pouze v tomto období. Uzávěrka určuje termín, do kterého lze přiložit vypracování úkolu.</p>
+              <h3>{{ t('tasks.role.task.edit.timeRangeHeading') }}</h3>
+              <p>{{ t('tasks.role.task.edit.timeRangeDescription') }}</p>
             </div>
 
             <div class="line">
-              <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec úkolu" />
-              <EditDateTime ref="editDeadlineDate" @update="onDeadlineDateUpdate" :old-date="oldData.deadline" label="Uzávěrka" />
+              <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" :label="t('tasks.role.task.edit.endLabel')" />
+              <EditDateTime ref="editDeadlineDate" @update="onDeadlineDateUpdate" :old-date="oldData.deadline" :label="t('tasks.role.task.edit.deadlineLabel')" />
             </div>
           </div>
 
           <div class="line page-section">
             <div class="section-head">
-              <h3>Maximální počet bodů <span class="update" v-show="newData.maxPoints !== oldData.maxPoints">(aktualizováno)</span></h3>
-              <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
+              <h3>{{ t('tasks.role.task.edit.pointsHeading') }} <span class="update" v-show="newData.maxPoints !== oldData.maxPoints">{{ t('common.updated') }}</span></h3>
+              <p>{{ t('tasks.role.task.edit.pointsDescription') }}</p>
             </div>
 
-            <NumberInput v-model="newData.maxPoints" :min="0" placeholder="Bez bodů" />
+            <NumberInput v-model="newData.maxPoints" :min="0" :placeholder="t('tasks.role.task.edit.pointsPlaceholder')" />
           </div>
 
           <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="updateTask"></EditFormFooter>

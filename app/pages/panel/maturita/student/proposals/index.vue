@@ -12,9 +12,11 @@ import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
 import ActionBar from "~/components/ui/ActionBar.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Návrhy maturitních zadání - Zamítnuté",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.proposalsIndex.title'),
+  meta: [{ name: "description", content: t('pages.maturita.proposalsIndex.description') }],
 });
 
 definePageMeta({
@@ -113,11 +115,11 @@ watchEffect((): void => {
         <div class="content">
           <div class="page-section">
             <div class="section-head">
-              <h3>Maturitní zadání</h3>
-              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+              <h3>{{ t('maturita.proposals.maturitaSection.heading') }}</h3>
+              <p>{{ t('maturita.proposals.maturitaSection.description') }}</p>
             </div>
 
-            <p class="error message">Žádný maturitní období more.</p>
+            <p class="error message">{{ t('maturita.proposals.maturitaSection.noMaturita') }}</p>
           </div>
         </div>
       </div>
@@ -126,8 +128,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa návrhů maturitních zadání"
-            :texts="['Přidat', 'Zamítnuté', 'Odstranit']"
+            :description="t('maturita.proposals.actionBar.description')"
+            :texts="[t('maturita.proposals.actionBar.addBtn'), t('maturita.proposals.actionBar.rejectedBtn'), t('maturita.proposals.actionBar.removeBtn')]"
             :actions="['add', 'remove', 'remove']"
             :separator-indexes="[1]"
             :icons="[
@@ -144,20 +146,20 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head bottom-line">
-              <h3>Návrhy maturitních zadání</h3>
-              <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+              <h3>{{ t('maturita.proposals.index.heading') }}</h3>
+              <p>{{ t('maturita.proposals.index.description') }}</p>
               <br>
               <p>Ročník: {{ currentMaturita.grade }}</p>
               <p>Konec: {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.proposals.index.searchPlaceholder')" />
           </div>
 
           <MauturitaProposalsTable class="datatable" role="student" :tasks="allTasks" :loading="tasksPending">
             <template #actions="data">
               <div class="actions">
-                <button type="button" class="primary" @click="editTask(data.value.id, data.value.guarantor.id)">Upravit</button>
+                <button type="button" class="primary" @click="editTask(data.value.id, data.value.guarantor.id)">{{ t('maturita.proposals.index.editBtn') }}</button>
               </div>
             </template>
           </MauturitaProposalsTable>

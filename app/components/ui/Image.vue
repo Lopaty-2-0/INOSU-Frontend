@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Loading from "~/components/ui/Loading.vue";
 import {watch, ref} from "vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   src: {
@@ -65,7 +68,7 @@ watch(() => props.src, async () => {
 
     <div class="error" v-if="hasError">
       <Icon class="icon" name="material-symbols:error-outline-rounded" />
-      Neplatný obrázek
+      {{ t('image.invalidImage') }}
     </div>
 
     <NuxtImg

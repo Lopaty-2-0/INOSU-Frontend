@@ -11,9 +11,11 @@ import Pagination from "~/components/ui/Pagination.vue";
 import type {MaturitaData} from "~/types/maturita";
 import MaturitasTable from "~/components/tables/Maturitas.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Maturitní ročníky",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.gradeIndex.title'),
+  meta: [{ name: "description", content: t('pages.maturita.gradeIndex.description') }],
 });
 
 definePageMeta({
@@ -80,7 +82,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, active: true, icon: 'material-symbols:book-2-rounded' },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/grade`, active: true, icon: 'material-symbols:book-2-rounded' },
           ]"/>
         </template>
       </Navbar>
@@ -91,8 +93,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa maturitních ročníků"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('maturita.grade.index.actionBar.description')"
+            :texts="[t('actionBar.add'), t('actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -106,17 +108,17 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Maturitní ročníky</h3>
-              <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
+              <h3>{{ t('maturita.grade.index.heading') }}</h3>
+              <p>{{ t('maturita.grade.index.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat maturity" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.grade.index.searchPlaceholder')" />
           </div>
 
           <MaturitasTable :loading="maturitaTablePending" :maturitas="allMaturitas">
             <template #actions="data">
               <div class="actions">
-                <button type="button" class="primary" @click="editMaturita(data.value.id)">Upravit</button>
+                <button type="button" class="primary" @click="editMaturita(data.value.id)">{{ t('maturita.grade.index.editBtn') }}</button>
               </div>
             </template>
           </MaturitasTable>

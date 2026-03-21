@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import Input from "~/components/ui/Input.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   oldFullName: {
@@ -47,15 +50,15 @@ defineExpose({ reset });
     <div class="items full-name">
       <div class="section">
         <div class="content">
-          <label for="firstName">Jméno <span class="update" v-if="inputData.name.updated">(aktualizováno)</span></label>
-          <Input type="text" id="firstName" name="firstName" :placeholder="props.oldFullName?.name ? props.oldFullName?.name : 'Jan'" v-model.trim="inputData.name.input" @input="onInput" />
+          <label for="firstName">{{ t('manage.fullName.firstName.label') }} <span class="update" v-if="inputData.name.updated">{{ t('common.updated') }}</span></label>
+          <Input type="text" id="firstName" name="firstName" :placeholder="props.oldFullName?.name ? props.oldFullName?.name : t('manage.fullName.firstName.placeholder')" v-model.trim="inputData.name.input" @input="onInput" />
         </div>
       </div>
 
       <div class="section">
         <div class="content">
-          <label for="secondName">Příjmení <span class="update" v-if="inputData.surname.updated">(aktualizováno)</span></label>
-          <Input type="text" id="secondName" name="secondName" :placeholder="props.oldFullName?.surname ? props.oldFullName?.surname : 'Novák'" v-model.trim="inputData.surname.input" @input="onInput" />
+          <label for="secondName">{{ t('manage.fullName.lastName.label') }} <span class="update" v-if="inputData.surname.updated">{{ t('common.updated') }}</span></label>
+          <Input type="text" id="secondName" name="secondName" :placeholder="props.oldFullName?.surname ? props.oldFullName?.surname : t('manage.fullName.lastName.placeholder')" v-model.trim="inputData.surname.input" @input="onInput" />
         </div>
       </div>
     </div>

@@ -5,6 +5,9 @@ import "../../assets/style/datatable.scss";
 import moment from "moment";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {MaturitaTaskData} from "~/types/maturita";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
@@ -53,16 +56,16 @@ const slots = useSlots();
 
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
-    { field: "id", title: "ID", width: "90px", type: "number" },
-    { field: "name", title: "Název", type: "string", width: "20%" },
-    { field: "points", title: "Počet bodů", type: "number" },
-    { field: "task", title: "Zadání", type: "string" },
+    { field: "id", title: t('tables.columns.id'), width: "90px", type: "number" },
+    { field: "name", title: t('tables.columns.name'), type: "string", width: "20%" },
+    { field: "points", title: t('tables.columns.points'), type: "number" },
+    { field: "task", title: t('tables.columns.task'), type: "string" },
   ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
 
   if (slots.actions) {
-    merged.push({ field: "actions", title: "Akce" });
+    merged.push({ field: "actions", title: t('tables.columns.actions') });
   }
 
   return merged;
@@ -119,7 +122,7 @@ defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" :no-data-content="t('common.noData')" @rowClick="onRowClick">
     <template v-for="(_, name) in slots" v-slot:[name]="slotProps">
       <slot :name="name" v-bind="slotProps" />
     </template>
@@ -130,12 +133,12 @@ defineExpose({ clearSelection });
 
     <template #task="data">
       <span class="link limit" @click="downloadTask(data.value.guarantor.id, data.value.id, data.value.task)">
-        {{ data.value.task || "Žádné zadání" }}
+        {{ data.value.task || t('common.noAssignment') }}
       </span>
     </template>
 
     <template #points="data">
-      {{ data.value.points ?? "Neurčeno" }}
+      {{ data.value.points ?? t('common.undetermined') }}
     </template>
 
     <template #actions="data">

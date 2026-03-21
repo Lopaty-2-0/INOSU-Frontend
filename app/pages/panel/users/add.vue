@@ -10,18 +10,20 @@ import EditAbbreviation from "../../../components/manage/Abbreviation.vue";
 import EditClass from "../../../components/manage/Class.vue";
 import {useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import { useI18n } from "#imports";
 
 definePageMeta({
   roles: ["admin"],
 });
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Uživatelé - Přidání",
+  title: t('pages.users.add.title'),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.users.add.description') }
   ],
 });
-
 const alertsStore = useAlertsStore();
 const submitLoading = ref<boolean>(false);
 const editFullName = useTemplateRef<InstanceType<typeof EditFullName>>("editFullName");
@@ -98,7 +100,7 @@ const resetUserData = (): void => {
 
 const createNewUser = async (): Promise<void> => {
   if (!newUserData.value.name || !newUserData.value.surname || !newUserData.value.email || !newUserData.value.password || !newUserData.value.role) {
-    alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Vyplňte všechna povinná pole." });
+    alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.fillRequired') });
     return;
   }
 
@@ -122,61 +124,61 @@ const createNewUser = async (): Promise<void> => {
 
       switch (resCode) {
         case "1010":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.noPermission') });
           break;
         case "1020":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Jméno nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.noName') });
           break;
         case "1030":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Jméno je příliš dlouhé." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.nameTooLong') });
           break;
         case "1040":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Příjmení nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.noSurname') });
           break;
         case "1050":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Příjmení je příliš dlouhé." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.surnameTooLong') });
           break;
         case "1060":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role nebyla zadána." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.noRole') });
           break;
         case "1070":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Role je neplatná." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.invalidRole') });
           break;
         case "1080":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Heslo nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.noPassword') });
           break;
         case "1090":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Heslo je příliš krátké." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.passwordTooShort') });
           break;
         case "1100":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "E-mail nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.noEmail') });
           break;
         case "1110":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Špatný formát e-mailu." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.invalidEmail') });
           break;
         case "1120":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "E-mail je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.emailTooLong') });
           break;
         case "1130":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "E-mail je již používán." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.emailInUse') });
           break;
         case "1140":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Zkratka je již používána." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.abbreviationInUse') });
           break;
         case "1150":
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Zkratka je příliš dlouhá." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.abbreviationTooLong') });
           break;
         case "1161":
-          alertsStore.addAlert({ type: "success", title: "Přidání uživatele", message: "Uživatel byl úspěšně přidán." });
+          alertsStore.addAlert({ type: "success", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.success') });
           resetUserData();
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.unknown') });
           break;
       }
     },
     async onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání uživatele", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.unknown') });
     },
   }).finally((): void => {
     submitLoading.value = false;
@@ -190,8 +192,8 @@ const createNewUser = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
-            { label: 'Přidání', to: '/panel/users/add', active: true },
+            { label: t('sidebar.links.users'), to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: t('users.add.breadcrumb.add'), to: '/panel/users/add', active: true },
           ]"/>
         </template>
       </Navbar>
@@ -203,8 +205,8 @@ const createNewUser = async (): Promise<void> => {
           <div class="line page-section">
             <EditFullName ref="editFullName" :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" @update="onFullNameUpdate">
               <div class="section-head">
-                <h3>Jméno a příjmení *</h3>
-                <p>Zadejte jméno a příjmení nového uživatele. Tato pole jsou povinná.</p>
+                <h3>{{ t('users.add.sections.fullName.title') }}</h3>
+                <p>{{ t('users.add.sections.fullName.description') }}</p>
               </div>
             </EditFullName>
           </div>
@@ -212,8 +214,8 @@ const createNewUser = async (): Promise<void> => {
           <div class="line page-section">
             <EditEmail ref="editEmail" :old-email="oldUserData.email" @update="onEmailUpdate">
               <div class="section-head">
-                <h3>E-mail * <span class="update" v-show="newUserData.email">(aktualizováno)</span></h3>
-                <p>Zadejte e-mailovou adresu nového uživatele. Toto pole je povinné a musí být ve správném formátu.</p>
+                <h3>{{ t('users.add.sections.email.title') }} <span class="update" v-show="newUserData.email">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('users.add.sections.email.description') }}</p>
               </div>
             </EditEmail>
           </div>
@@ -221,8 +223,8 @@ const createNewUser = async (): Promise<void> => {
           <div class="line page-section">
             <EditPassword ref="editPassword" type="new" @update="onPasswordUpdate">
               <div class="section-head">
-                <h3>Heslo k účtu * <span class="update" v-show="newUserData.password">(aktualizováno)</span></h3>
-                <p>Zadejte silné heslo pro nového uživatele. Heslo musí splňovat bezpečnostní požadavky a je povinné.</p>
+                <h3>{{ t('users.add.sections.password.title') }} <span class="update" v-show="newUserData.password">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('users.add.sections.password.description') }}</p>
               </div>
             </EditPassword>
           </div>
@@ -230,8 +232,8 @@ const createNewUser = async (): Promise<void> => {
           <div class="line page-section">
             <EditRole ref="editRole" :roles="allRoles" :old-role="oldUserData.role" @update="onRoleUpdate">
               <div class="section-head">
-                <h3>Role * <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
-                <p>Vyberte roli, kterou má mít nový uživatel. Toto pole je povinné.</p>
+                <h3>{{ t('users.add.sections.role.title') }} <span class="update" v-show="newUserData.role">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('users.add.sections.role.description') }}</p>
               </div>
             </EditRole>
           </div>
@@ -239,26 +241,26 @@ const createNewUser = async (): Promise<void> => {
           <div class="line page-section">
             <EditAbbreviation ref="editAbbreviation" :full-name="{ name: newUserData.name, surname: newUserData.surname }" :old-abbreviation="oldUserData.abbreviation" @update="onAbbreviationUpdate">
               <div class="section-head">
-                <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation">(aktualizováno)</span></h3>
-                <p>Zadejte přezdívku (zkratku) pro nového uživatele. Toto pole je volitelné, ale musí být jedinečné.</p>
+                <h3>{{ t('users.add.sections.abbreviation.title') }} <span class="update" v-show="newUserData.abbreviation">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('users.add.sections.abbreviation.description') }}</p>
               </div>
             </EditAbbreviation>
           </div>
 
           <div class="line page-section class">
             <div class="section-head">
-              <h3>Třídy</h3>
-              <p>Vyberte třídy, do kterých bude nový uživatel (student) zařazen. Toto pole je volitelné.</p>
+              <h3>{{ t('users.add.sections.classes.title') }}</h3>
+              <p>{{ t('users.add.sections.classes.description') }}</p>
             </div>
 
             <EditClass ref="editClass" :old-class-ids="oldUserData.classes" @update="onClassUpdate" v-if="newUserData.role === 'student'" />
             <p class="error" v-else>
-              Třídy můžete vybírat pouze pokud role uživatele je <strong>student</strong>.
+              {{ t('users.add.sections.classes.roleError') }}
             </p>
           </div>
 
           <EditFormFooter :is-loading="submitLoading" :reset-function="resetUserData" :submit-function="createNewUser">
-            Pole označená * jsou povinná
+            {{ t('users.add.requiredNote') }}
           </EditFormFooter>
         </div>
       </div>

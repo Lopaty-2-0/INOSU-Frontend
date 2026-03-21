@@ -12,9 +12,11 @@ import ClassesTable from "~/components/tables/Classes.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Třídy",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: () => t("pages.classes.index.title"),
+  meta: [{ name: "description", content: () => t("pages.classes.index.description") }],
 });
 
 const amountForPaging: number = 10;
@@ -68,7 +70,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Třídy', to: '/panel/classes', active: true, icon: 'material-symbols:flight-class-rounded' },
+            { label: t('sidebar.links.classes'), to: '/panel/classes', active: true, icon: 'material-symbols:flight-class-rounded' },
           ]"/>
         </template>
       </Navbar>
@@ -79,8 +81,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa tříd"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('classes.add.actionBar.description')"
+            :texts="[t('classes.add.actionBar.add'), t('classes.add.actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -95,11 +97,11 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Všechny třídy</h3>
-              <p>Zde najdete seznam všech tříd v systému.</p>
+              <h3>{{ t('classes.index.heading') }}</h3>
+              <p>{{ t('classes.index.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat třídy" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('classes.index.searchPlaceholder')" />
           </div>
 
           <ClassesTable :classes="allClasses" :loading="classesTablePending" />

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import {ref, useTemplateRef, watch} from "vue";
+import {ref, computed, useTemplateRef, watch} from "vue";
 import {QuillEditor} from "@vueup/vue-quill";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
 type Tool = {
@@ -59,7 +62,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: "Zde napište text",
+    default: "",
   },
 });
 
@@ -67,28 +70,51 @@ const localContent = ref<string>(props.modelValue);
 const editor = useTemplateRef<InstanceType<typeof QuillEditor>>("editor");
 const emits = defineEmits(["update:modelValue"]);
 
-const toolbarSections: ToolbarSection[] = [
+const colorOptions = [
+  { value: "", label: "Default" },
+  { value: "#be7272", label: "Red" },
+  { value: "#34a853", label: "Green" },
+  { value: "#4285f4", label: "Blue" },
+  { value: "#fbbc05", label: "Yellow" },
+  { value: "#ff6f00", label: "Orange" },
+  { value: "#e91e63", label: "Pink" },
+  { value: "#9c27b0", label: "Purple" },
+  { value: "#8bc34a", label: "Light Green" },
+  { value: "#00bcd4", label: "Cyan" },
+  { value: "#607d8b", label: "Gray" },
+  { value: "#795548", label: "Brown" },
+  { value: "#ffeb3b", label: "Bright Yellow" },
+  { value: "#ff9800", label: "Bright Orange" },
+  { value: "#00e676", label: "Bright Green" },
+  { value: "#00bfa5", label: "Teal" },
+  { value: "#f44336", label: "Bright Red" },
+  { value: "#d32f2f", label: "Dark Red" },
+  { value: "#1976d2", label: "Dark Blue" },
+  { value: "#303f9f", label: "Indigo" },
+];
+
+const toolbarSections = computed<ToolbarSection[]>(() => [
   {
     section: "text-style",
     tools: [
-      { type: "button", tool: "bold", class: "ql-bold", title: "Tučné" },
-      { type: "button", tool: "underline", class: "ql-underline", title: "Podtržené" },
-      { type: "button", tool: "strike", class: "ql-strike", title: "Přeškrtnuté" },
-      { type: "button", tool: "italic", class: "ql-italic", title: "Kurzíva" },
+      { type: "button", tool: "bold", class: "ql-bold", title: t('editor.toolbar.bold') },
+      { type: "button", tool: "underline", class: "ql-underline", title: t('editor.toolbar.underline') },
+      { type: "button", tool: "strike", class: "ql-strike", title: t('editor.toolbar.strike') },
+      { type: "button", tool: "italic", class: "ql-italic", title: t('editor.toolbar.italic') },
     ],
   },
   {
     section: "block-style",
     tools: [
-      { type: "button", tool: "blockquote", class: "ql-blockquote", title: "Citace" },
-      { type: "button", tool: "code-block", class: "ql-code-block", title: "Kód" },
+      { type: "button", tool: "blockquote", class: "ql-blockquote", title: t('editor.toolbar.blockquote') },
+      { type: "button", tool: "code-block", class: "ql-code-block", title: t('editor.toolbar.codeBlock') },
     ],
   },
   {
     section: "media",
     tools: [
-      { type: "button", tool: "link", class: "ql-link", title: "Odkaz" },
-      { type: "button", tool: "image", class: "ql-image", title: "Obrázek" },
+      { type: "button", tool: "link", class: "ql-link", title: t('editor.toolbar.link') },
+      { type: "button", tool: "image", class: "ql-image", title: t('editor.toolbar.image') },
     ],
   },
   {
@@ -98,13 +124,13 @@ const toolbarSections: ToolbarSection[] = [
         type: "select",
         tool: "header",
         class: "ql-header",
-        title: "Nadpisy",
+        title: t('editor.toolbar.headings'),
         options: [
-          { value: "1", label: "Nadpis 1" },
-          { value: "2", label: "Nadpis 2" },
-          { value: "3", label: "Nadpis 3" },
-          { value: "4", label: "Nadpis 4" },
-          { value: "", label: "Normální" },
+          { value: "1", label: t('editor.toolbar.heading1') },
+          { value: "2", label: t('editor.toolbar.heading2') },
+          { value: "3", label: t('editor.toolbar.heading3') },
+          { value: "4", label: t('editor.toolbar.heading4') },
+          { value: "", label: t('editor.toolbar.normal') },
         ],
       },
     ],
@@ -112,26 +138,26 @@ const toolbarSections: ToolbarSection[] = [
   {
     section: "list-style",
     tools: [
-      { type: "button", tool: "list-ordered", class: "ql-list", value: "ordered", title: "Seznam - číslovaný" },
-      { type: "button", tool: "list-bullet", class: "ql-list", value: "bullet", title: "Seznam - odrážkový" },
-      { type: "button", tool: "list-check", class: "ql-list", value: "check", title: "Seznam - zaškrtávací" },
+      { type: "button", tool: "list-ordered", class: "ql-list", value: "ordered", title: t('editor.toolbar.listOrdered') },
+      { type: "button", tool: "list-bullet", class: "ql-list", value: "bullet", title: t('editor.toolbar.listBullet') },
+      { type: "button", tool: "list-check", class: "ql-list", value: "check", title: t('editor.toolbar.listCheck') },
     ],
   },
   {
     section: "indent-align",
     tools: [
-      { type: "button", tool: "indentUp", class: "ql-indent", value: "-1", title: "Odsadit" },
-      { type: "button", tool: "indentDown", class: "ql-indent", value: "+1", title: "Vrátit odsazení" },
+      { type: "button", tool: "indentUp", class: "ql-indent", value: "-1", title: t('editor.toolbar.indentUp') },
+      { type: "button", tool: "indentDown", class: "ql-indent", value: "+1", title: t('editor.toolbar.indentDown') },
       {
         type: "select",
         tool: "align",
         class: "ql-align",
-        title: "Zarovnání",
+        title: t('editor.toolbar.align'),
         options: [
-          { value: "", label: "Levá" },
-          { value: "center", label: "Střed" },
-          { value: "right", label: "Pravá" },
-          { value: "justify", label: "Zarovnat" },
+          { value: "", label: t('editor.toolbar.alignLeft') },
+          { value: "center", label: t('editor.toolbar.alignCenter') },
+          { value: "right", label: t('editor.toolbar.alignRight') },
+          { value: "justify", label: t('editor.toolbar.alignJustify') },
         ],
       },
     ],
@@ -143,65 +169,23 @@ const toolbarSections: ToolbarSection[] = [
         type: "select",
         tool: "color",
         class: "ql-color",
-        title: "Barva textu",
-        options: [
-          { value: "", label: "Default" },
-          { value: "#be7272", label: "Red" },
-          { value: "#34a853", label: "Green" },
-          { value: "#4285f4", label: "Blue" },
-          { value: "#fbbc05", label: "Yellow" },
-          { value: "#ff6f00", label: "Orange" },
-          { value: "#e91e63", label: "Pink" },
-          { value: "#9c27b0", label: "Purple" },
-          { value: "#8bc34a", label: "Light Green" },
-          { value: "#00bcd4", label: "Cyan" },
-          { value: "#607d8b", label: "Gray" },
-          { value: "#795548", label: "Brown" },
-          { value: "#ffeb3b", label: "Bright Yellow" },
-          { value: "#ff9800", label: "Bright Orange" },
-          { value: "#00e676", label: "Bright Green" },
-          { value: "#00bfa5", label: "Teal" },
-          { value: "#f44336", label: "Bright Red" },
-          { value: "#d32f2f", label: "Dark Red" },
-          { value: "#1976d2", label: "Dark Blue" },
-          { value: "#303f9f", label: "Indigo" }
-        ],
+        title: t('editor.toolbar.textColor'),
+        options: colorOptions,
       },
       {
         type: "select",
         tool: "background",
         class: "ql-background",
-        title: "Barva pozadí",
-        options: [
-          { value: "", label: "Default" },
-          { value: "#be7272", label: "Red" },
-          { value: "#34a853", label: "Green" },
-          { value: "#4285f4", label: "Blue" },
-          { value: "#fbbc05", label: "Yellow" },
-          { value: "#ff6f00", label: "Orange" },
-          { value: "#e91e63", label: "Pink" },
-          { value: "#9c27b0", label: "Purple" },
-          { value: "#8bc34a", label: "Light Green" },
-          { value: "#00bcd4", label: "Cyan" },
-          { value: "#607d8b", label: "Gray" },
-          { value: "#795548", label: "Brown" },
-          { value: "#ffeb3b", label: "Bright Yellow" },
-          { value: "#ff9800", label: "Bright Orange" },
-          { value: "#00e676", label: "Bright Green" },
-          { value: "#00bfa5", label: "Teal" },
-          { value: "#f44336", label: "Bright Red" },
-          { value: "#d32f2f", label: "Dark Red" },
-          { value: "#1976d2", label: "Dark Blue" },
-          { value: "#303f9f", label: "Indigo" }
-        ],
+        title: t('editor.toolbar.bgColor'),
+        options: colorOptions,
       },
     ],
   },
   {
     section: "clean",
-    tools: [{ type: "button", tool: "clean", class: "ql-clean", title: "Vyčistit formátování" }],
+    tools: [{ type: "button", tool: "clean", class: "ql-clean", title: t('editor.toolbar.clean') }],
   },
-];
+]);
 
 const checkIfSectionIsEnabled = (section: ToolbarSection): boolean => {
   return section?.tools.some((tool: Tool) => props.enabledTools.includes(tool.tool));
@@ -261,7 +245,7 @@ watch(() => props.focus, (newVal: boolean): void => {
           theme="snow"
           @update:content="emitInputEvent"
           v-model:content="localContent"
-          :placeholder="props.placeholder"
+          :placeholder="props.placeholder || t('editor.placeholder')"
           :options="{ readOnly: props.readOnly || !props.enabled }"
           content-type="html"
           toolbar="#toolbar"

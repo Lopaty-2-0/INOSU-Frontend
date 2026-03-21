@@ -26,10 +26,12 @@ const router = useRouter();
 const id: string = route.params.id as string;
 const role: string = route.params.role as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Upravení uživatele - " + id,
+  title: t('pages.users.roleEditDetail.title', { id }),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.users.roleEditDetail.description') }
   ],
 });
 
@@ -142,60 +144,60 @@ const updateUser = async (): Promise<void> => {
 
       switch (resCode) {
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nahraný soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.fileTooLarge') });
           break;
         case "2010":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nebylo zadáno nic k úpravě." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.nothingToUpdate') });
           break;
         case "2020":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát souboru." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.unsupportedFormat') });
           break;
         case "2031":
-          alertsStore.addAlert({ type: "success", title: "Úprava uživatele", message: "Uživatel byl úspěšně upraven." });
+          alertsStore.addAlert({ type: "success", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.success') });
           await refreshUser();
           resetUserData();
           break;
         case "2040":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('common.noPermission') });
           break;
         case "2050":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "ID uživatele není číslo." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.idNotNumber') });
           break;
         case "2060":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "ID uživatele není platné." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.invalidId') });
           break;
         case "2070":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Uživatel nebyl nalezen." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.userNotFound') });
           break;
         case "2080":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Jméno je příliš dlouhé." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.nameTooLong') });
           break;
         case "2090":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Příjmení je příliš dlouhé." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.surnameTooLong') });
           break;
         case "2100":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je již používána." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.abbreviationInUse') });
           break;
         case "2110":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Zkratka je příliš dlouhá." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.abbreviationTooLong') });
           break;
         case "2120":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát e-mailu." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.invalidEmail') });
           break;
         case "2130":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je již používán." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.emailInUse') });
           break;
         case "2140":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "E-mail je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.emailTooLong') });
           break;
         case "2150":
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Špatný formát souboru." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.unsupportedFormat') });
           break;
         case "2161":
           if (data.uploadUrl && newUserData.value.profilePicture) {
             const alert: Alert = {
-              title: "Nahrávání souboru",
-              message: "Probíhá nahrávání souboru...",
+              title: t('users.role.edit.detail.alerts.uploadFile.title'),
+              message: t('users.role.edit.detail.alerts.uploadFile.uploading'),
               type: "info",
               infinite: true,
               canClose: false,
@@ -207,8 +209,8 @@ const updateUser = async (): Promise<void> => {
             upload(newUserData.value.profilePicture, data.uploadUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Soubor byl úspěšně nahrán.",
+                title: t('users.role.edit.detail.alerts.uploadFile.title'),
+                message: t('users.role.edit.detail.alerts.uploadFile.success'),
                 type: "success"
               });
 
@@ -225,7 +227,7 @@ const updateUser = async (): Promise<void> => {
 
                   switch (resCode) {
                     case "57070":
-                      alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Soubor nebyl nalezen na úložišti." });
+                      alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.savePfp.title'), message: t('users.role.edit.detail.alerts.savePfp.fileNotFound') });
                       return;
                     case "57081":
                       oldUserData.value.profilePicture = data.user.profilePicture;
@@ -234,7 +236,7 @@ const updateUser = async (): Promise<void> => {
                       resetUserData();
                       break;
                     default:
-                      alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nastala neznámá chyba při ukládání." });
+                      alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.savePfp.title'), message: t('users.role.edit.detail.alerts.savePfp.savingError') });
                       break;
                   }
                 },
@@ -242,14 +244,14 @@ const updateUser = async (): Promise<void> => {
             }).catch((): void => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Nastala chyba při nahrávání souboru.",
+                title: t('users.role.edit.detail.alerts.uploadFile.title'),
+                message: t('users.role.edit.detail.alerts.uploadFile.error'),
                 type: "error"
               });
             });
           }
 
-          alertsStore.addAlert({ type: "success", title: "Úprava uživatele", message: "Uživatel byl úspěšně upraven." });
+          alertsStore.addAlert({ type: "success", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('users.role.edit.detail.alerts.updateUser.success') });
           if (newUserData.value.name) oldUserData.value.name = newUserData.value.name;
           if (newUserData.value.surname) oldUserData.value.surname = newUserData.value.surname;
           if (newUserData.value.email) oldUserData.value.email = newUserData.value.email;
@@ -261,12 +263,12 @@ const updateUser = async (): Promise<void> => {
           resetUserData();
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('common.unknown') });
           break;
       }
     },
     async onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Úprava uživatele", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('common.unknown') });
     },
   }).finally((): void => {
     submitLoading.value = false;
@@ -315,9 +317,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: t('users.index.title'), to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
             { label: role, to: '/panel/users/' + role },
-            { label: 'Upravení', to: role === 'student' ? '/panel/users/' + role : '/panel/users/' + role + '/edit' },
+            { label: t('users.role.edit.index.heading'), to: role === 'student' ? '/panel/users/' + role : '/panel/users/' + role + '/edit' },
             { label: id, to: '/panel/users/' + role + '/edit' + '/' + id, active: true }
           ]"/>
         </template>
@@ -331,10 +333,10 @@ watchEffect((): void => {
             <EditProfilePicture ref="editProfilePicture" class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate">
               <div class="section-head">
                 <h3>
-                  Profilová fotka
-                  <span class="update" v-show="newUserData.profilePicture">(aktualizováno)</span>
+                  {{ t('users.role.edit.detail.profilePicture.heading') }}
+                  <span class="update" v-show="newUserData.profilePicture">{{ t('common.updated') }}</span>
                 </h3>
-                <p>Zde můžete změnit profilovou fotku uživatele. Nahrajte novou fotku, pokud si přejete aktualizovat stávající obrázek.</p>
+                <p>{{ t('users.role.edit.detail.profilePicture.description') }}</p>
               </div>
             </EditProfilePicture>
           </div>
@@ -342,8 +344,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditFullName ref="editFullName" :old-full-name="{ name: oldUserData.name, surname: oldUserData.surname }" @update="onFullNameUpdate">
               <div class="section-head">
-                <h3>Jméno a příjmení</h3>
-                <p>Zadejte nové jméno a příjmení uživatele, pokud je chcete změnit.</p>
+                <h3>{{ t('users.role.edit.detail.fullName.heading') }}</h3>
+                <p>{{ t('users.role.edit.detail.fullName.description') }}</p>
               </div>
             </EditFullName>
           </div>
@@ -351,8 +353,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditEmail ref="editEmail" :old-email="oldUserData.email" @update="onEmailUpdate">
               <div class="section-head">
-                <h3>E-mail <span class="update" v-show="newUserData.email">(aktualizováno)</span></h3>
-                <p>Zadejte novou e-mailovou adresu uživatele, pokud ji chcete změnit.</p>
+                <h3>{{ t('users.role.edit.detail.email.heading') }} <span class="update" v-show="newUserData.email">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('users.role.edit.detail.email.description') }}</p>
               </div>
             </EditEmail>
           </div>
@@ -360,8 +362,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditPassword ref="editPassword" type="new" @update="onPasswordUpdate">
               <div class="section-head">
-                <h3>Heslo k účtu <span class="update" v-show="newUserData.password">(aktualizováno)</span></h3>
-                <p>Zadejte nové heslo, pokud chcete uživateli změnit přístupové údaje. Heslo musí splňovat bezpečnostní požadavky.</p>
+                <h3>{{ t('users.role.edit.detail.password.heading') }} <span class="update" v-show="newUserData.password">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('users.role.edit.detail.password.description') }}</p>
               </div>
             </EditPassword>
           </div>
@@ -369,8 +371,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditRole ref="editRole" :roles="allRoles || []" :old-role="oldUserData.role" @update="onRoleUpdate">
               <div class="section-head">
-                <h3>Role <span class="update" v-show="newUserData.role">(aktualizováno)</span></h3>
-                <p>Zvolte roli, kterou má uživatel mít. Role určuje oprávnění a možnosti uživatele v systému.</p>
+                <h3>{{ t('users.role.edit.detail.role.heading') }} <span class="update" v-show="newUserData.role">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('users.role.edit.detail.role.description') }}</p>
               </div>
             </EditRole>
           </div>
@@ -378,21 +380,21 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditAbbreviation ref="editAbbreviation" :full-name="{ name: newUserData.name ? newUserData.name : oldUserData.name, surname: newUserData.surname ? newUserData.surname : oldUserData.surname }" :old-abbreviation="oldUserData.abbreviation" @update="onAbbreviationUpdate">
               <div class="section-head">
-                <h3>Přezdívka <span class="update" v-show="newUserData.abbreviation !== undefined && newUserData.abbreviation !== oldUserData.abbreviation">(aktualizováno)</span></h3>
-                <p>Zadejte novou přezdívku uživatele, pokud ji chcete změnit. Přezdívka slouží jako zkratka jména například pro rychlou identifikaci.</p>
+                <h3>{{ t('users.role.edit.detail.abbreviation.heading') }} <span class="update" v-show="newUserData.abbreviation !== undefined && newUserData.abbreviation !== oldUserData.abbreviation">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('users.role.edit.detail.abbreviation.description') }}</p>
               </div>
             </EditAbbreviation>
           </div>
 
           <div class="line page-section class">
             <div class="section-head">
-              <h3>Třídy</h3>
-              <p>Vyberte třídu nebo více tříd, které chcete uživateli přiřadit.</p>
+              <h3>{{ t('users.role.edit.detail.classes.heading') }}</h3>
+              <p>{{ t('users.role.edit.detail.classes.description') }}</p>
             </div>
 
             <EditClass ref="editClass" :old-class-ids="oldUserData.classes" @update="onClassUpdate" v-if="newUserData.role ? newUserData.role === 'student' : oldUserData.role === 'student'" />
             <p class="error" v-else>
-              Třídy můžete vybírat pouze pokud role uživatele je <strong>student</strong>.
+              {{ t('users.role.edit.detail.classes.roleError') }}
             </p>
           </div>
 

@@ -11,9 +11,11 @@ import Pagination from "~/components/ui/Pagination.vue";
 import TopicsTable from "~/components/tables/Topics.vue";
 import type {TopicData} from "~/types/maturita";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Témata maturitních prací",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.topicsIndex.title'),
+  meta: [{ name: "description", content: t('pages.maturita.topicsIndex.description') }],
 });
 
 const route = useRoute();
@@ -70,8 +72,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:topic' },
-            { label: 'Témata', to: `/panel/maturita/${role}/topics`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:topic' },
+            { label: t('sidebar.links.topics'), to: `/panel/maturita/${role}/topics`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -82,8 +84,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa maturitních témat"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('maturita.topics.index.actionBar.description')"
+            :texts="[t('actionBar.add'), t('actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -98,11 +100,11 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Všechny maturitní témata</h3>
-              <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
+              <h3>{{ t('maturita.topics.index.heading') }}</h3>
+              <p>{{ t('maturita.topics.index.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat témata" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.topics.index.searchPlaceholder')" />
           </div>
 
           <TopicsTable :loading="topicTablePending" :topics="allTopics" />

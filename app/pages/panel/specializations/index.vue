@@ -11,9 +11,11 @@ import { useLoadingStore } from "~/stores/loading";
 import SpecializationsTable from "~/components/tables/Specializations.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Zaměření",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: () => t("pages.specializations.index.title"),
+  meta: [{ name: "description", content: () => t("pages.specializations.index.description") }],
 });
 
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
@@ -67,7 +69,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Zaměření', to: '/panel/specializations', active: true, icon: 'material-symbols:school' },
+            { label: t('sidebar.links.specializations'), to: '/panel/specializations', active: true, icon: 'material-symbols:school' },
           ]"/>
         </template>
       </Navbar>
@@ -78,8 +80,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa zaměření"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('specializations.add.actionBar.description')"
+            :texts="[t('specializations.add.actionBar.add'), t('specializations.add.actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -94,11 +96,11 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Všechny zaměření</h3>
-              <p>Zde najdete seznam všech zaměření (oborů) na škole dostupných v systému.</p>
+              <h3>{{ t('specializations.index.heading') }}</h3>
+              <p>{{ t('specializations.index.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat zaměření" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('specializations.index.searchPlaceholder')" />
           </div>
 
           <SpecializationsTable :loading="specializationTablePending" :specializations="allSpecializations" />

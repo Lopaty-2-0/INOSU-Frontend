@@ -8,6 +8,9 @@ import {useAlertsStore} from "~/stores/alerts";
 import type {ConversationData, ConversationMessageData} from "~/types/chat";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   conversation: {
@@ -89,55 +92,55 @@ const removeMessage = async (message: ConversationMessageData): Promise<void> =>
 
       switch (resCode) {
         case "88010":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID konverzace nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.noConversationId') });
           break;
 
         case "88020":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID zprávy nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.noMessageId') });
           break;
 
         case "88030":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID uživatele nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.noUserId') });
           break;
 
         case "88040":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID konverzace musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.invalidConversationId') });
           break;
 
         case "88050":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID konverzace je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.invalidConversationIdValue') });
           break;
 
         case "88060":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID zprávy musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.invalidMessageId') });
           break;
 
         case "88070":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID zprávy je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.invalidMessageIdValue') });
           break;
 
         case "88080":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID uživatele musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.invalidUserId') });
           break;
 
         case "88090":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "ID uživatele je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.invalidUserIdValue') });
           break;
 
         case "88110":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Konverzace nebyla nalezena." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.conversationNotFound') });
           break;
 
         case "88120":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "V této archivované konverzaci nelze mazat zprávy." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.archived') });
           break;
 
         case "88130":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Zpráva nebyla nalezena." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.messageNotFound') });
           break;
 
         case "88140":
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Tuto zprávu nelze smazat." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.forbidden') });
           break;
 
         case "88151":
@@ -149,16 +152,16 @@ const removeMessage = async (message: ConversationMessageData): Promise<void> =>
             return m;
           });
 
-          alertsStore.addAlert({ type: "success", title: "Smazání zprávy", message: "Zpráva byla úspěšně smazána." });
+          alertsStore.addAlert({ type: "success", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.success') });
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Smazání zprávy", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.unknown') });
     },
   }).finally((): void => {
     messageLoadingId.value = null;
@@ -185,55 +188,55 @@ const addMessage = async (): Promise<void> => {
 
       switch (resCode) {
         case "87010":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID konverzace nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.noConversationId') });
           break;
 
         case "87020":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID uživatele nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.noUserId') });
           break;
 
         case "87030":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID konverzace musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.invalidConversationId') });
           break;
 
         case "87040":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID konverzace je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.invalidConversationIdValue') });
           break;
 
         case "87050":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID uživatele musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.invalidUserId') });
           break;
 
         case "87060":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "ID uživatele je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.invalidUserIdValue') });
           break;
 
         case "87070":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Zpráva nebyla zadána." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.noMessage') });
           break;
 
         case "87080":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Zpráva je příliš dlouhá." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.messageTooLong') });
           break;
 
         case "87090":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Konverzace nebyla nalezena." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.conversationNotFound') });
           break;
 
         case "87100":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Do této konverzace nelze psát (je archivovaná)." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.archived') });
           break;
 
         case "87110":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Odpovídaná zpráva musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.invalidReplyId') });
           break;
 
         case "87120":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Odpovídaná zpráva je neplatná." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.invalidReplyIdValue') });
           break;
 
         case "87130":
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Zpráva, na kterou odpovídáte, neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.replyNotFound') });
           break;
 
         case "87141":
@@ -241,16 +244,16 @@ const addMessage = async (): Promise<void> => {
           messages.value = [...messages.value, newMessage];
           textMessage.value = "";
           replyingToMessage.value = null;
-          alertsStore.addAlert({ type: "success", title: "Odeslání zprávy", message: "Zpráva byla úspěšně odeslána." });
+          alertsStore.addAlert({ type: "success", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.success') });
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odeslání zprávy", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.unknown') });
     },
   }).finally((): void => {
     sendLoading.value = false;
@@ -319,13 +322,13 @@ watch(conversation, (): void => {
     </div>
 
     <button type="button" class="load-messages-btn" @click="loadNextPage" v-if="allMessagesCount > messagesCount">
-      Načíst starší
+      {{ t('chat.loadOlder') }}
     </button>
 
     <div class="messages" v-if="messages.length > 0">
       <div v-for="message in messages" :key="message.idMessage" :class="['message', { right: isCurrentUser(message.sender?.id) }]" :style="getMessageStyles(message.sender?.id)">
         <p class="reply" v-if="message.replyToMessage">
-          <span>Odpověď na:</span> {{ message.replyToMessage.message.substring(0, 50) }}{{ message.replyToMessage.message.length > 50 ? "..." : "" }}
+          <span>{{ t('chat.replyTo') }}</span> {{ message.replyToMessage.message.substring(0, 50) }}{{ message.replyToMessage.message.length > 50 ? "..." : "" }}
         </p>
 
         <p class="text" v-if="message.idMessage !== messageLoadingId">
@@ -348,12 +351,12 @@ watch(conversation, (): void => {
     </div>
 
     <div class="messages center" v-else>
-      <p class="description">Zatím nebyly poslány žádné zprávy.</p>
+      <p class="description">{{ t('chat.noMessages') }}</p>
     </div>
 
     <div class="bottom">
       <div class="reply" v-if="replyingToMessage">
-        <p><span>Odpověď na:</span> {{ replyingToMessage.message.substring(0, 30) }}{{ replyingToMessage.message.length > 30 ? "..." : "" }}</p>
+        <p><span>{{ t('chat.replyTo') }}</span> {{ replyingToMessage.message.substring(0, 30) }}{{ replyingToMessage.message.length > 30 ? "..." : "" }}</p>
         <div class="icon">
           <Icon name="material-symbols:close-rounded" @click="setReplyMessage(null)"></Icon>
         </div>
@@ -362,7 +365,7 @@ watch(conversation, (): void => {
       <div class="input">
         <button type="button" @click="refreshMessagesAndReset"><Icon class="icon" name="material-symbols:refresh-rounded"></Icon></button>
 
-        <Textarea class="textarea" placeholder="Napište zprávu..." v-model.trim="textMessage" />
+        <Textarea class="textarea" :placeholder="t('chat.messagePlaceholder')" v-model.trim="textMessage" />
 
         <div class="send-message">
           <button type="button" class="primary" @click="addMessage"><Icon class="icon" name="material-symbols:send-rounded"></Icon></button>
@@ -540,6 +543,7 @@ watch(conversation, (): void => {
         white-space: pre-wrap;
         max-width: 100%;
         word-wrap: break-word;
+        word-break: break-all;
       }
     }
   }

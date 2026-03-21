@@ -20,10 +20,12 @@ const route = useRoute();
 const taskId = route.params.taskId as string;
 const guarantorId = route.params.guarantorId as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Maturitní zadání - " + taskId + " - Úpravení",
+  title: t('pages.maturita.proposalsEdit.title'),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.maturita.proposalsEdit.description') }
   ],
 });
 
@@ -111,57 +113,57 @@ const updateTask = async (): Promise<void> => {
 
       switch (resCode) {
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nahraný soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.fileTooBig') });
           break;
         case "80010":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nebyl zadán identifikátor zadání." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.noId') });
           break;
 
         case "80020":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nebyl zadán garant." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.noGuarantor') });
           break;
 
         case "80030":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Aktuálně není dostupná žádná maturita." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.noMaturita') });
           break;
 
         case "80040":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "ID zadání není číslo." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.idNaN') });
           break;
 
         case "80050":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "ID zadání není platné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.idInvalid') });
           break;
 
         case "80060":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "ID garanta není číslo." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.guarantorIdNaN') });
           break;
 
         case "80070":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "ID garanta není platné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.guarantorIdInvalid') });
           break;
 
         case "80080":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Garant nebyl nalezen." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.guarantorNotFound') });
           break;
 
         case "80090":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Zadání nebylo nalezeno nebo k němu nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.notFound') });
           break;
 
         case "80100":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Název zadání je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.nameTooLong') });
           break;
 
         case "80110":
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Neplatný formát souboru nebo příliš dlouhý název." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.fileBadFormat') });
           break;
 
         case "80121":
           if (data.uploadUrl && newData.value.taskFile) {
             const alert: Alert = {
-              title: "Nahrávání souboru",
-              message: "Probíhá nahrávání souboru...",
+              title: t('settings.info.alerts.uploadFile.title'),
+              message: t('settings.info.alerts.uploadFile.uploading'),
               type: "info",
               infinite: true,
               canClose: false,
@@ -173,8 +175,8 @@ const updateTask = async (): Promise<void> => {
             upload(newData.value.taskFile, data.uploadUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Soubor byl úspěšně nahrán.",
+                title: t('settings.info.alerts.uploadFile.title'),
+                message: t('settings.info.alerts.uploadFile.success'),
                 type: "success"
               });
 
@@ -192,16 +194,16 @@ const updateTask = async (): Promise<void> => {
 
                   switch (resCode) {
                     case "84110":
-                      alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Soubor nebyl nalezen na úložišti." });
+                      alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.fileNotFound') });
                       return;
                     case "84121":
-                      alertsStore.addAlert({ type: "success", title: "Úprava návrhu maturitního zadání", message: "Návrh maturitního zadání byl úspěšně upraven." });
+                      alertsStore.addAlert({ type: "success", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.success') });
 
                       await refreshTask();
                       resetUserData();
                       break;
                     default:
-                      alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nastala neznámá chyba při ukládání." });
+                      alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.savingError') });
                       break;
                   }
                 },
@@ -210,8 +212,8 @@ const updateTask = async (): Promise<void> => {
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Nastala chyba při nahrávání souboru.",
+                title: t('settings.info.alerts.uploadFile.title'),
+                message: t('settings.info.alerts.uploadFile.error'),
                 type: "error"
               });
             });
@@ -219,12 +221,12 @@ const updateTask = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Úprava návrhu maturitního zadání", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.unknown') });
     },
   }).finally((): void => {
     loading.value = false;
@@ -296,8 +298,8 @@ watchEffect((): void => {
           <Breadcrumb :items="[
             { label: 'Maturity', to: `/panel/maturita/student/proposals`, icon: 'material-symbols:lightbulb-rounded' },
             { label: 'Návrhy', to: `/panel/maturita/student/proposals` },
-            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/student/proposals` },
-            { label: 'Úpravení', to: `/panel/maturita/student/proposals/${taskId}/${guarantorId}`, active: true },
+            { label: t('maturita.proposals.edit.breadcrumb.taskIdLabel', { taskId }), to: `/panel/maturita/student/proposals` },
+            { label: t('maturita.proposals.edit.breadcrumb.editLabel'), to: `/panel/maturita/student/proposals/${taskId}/${guarantorId}`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -309,8 +311,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditName ref="editName" :old-name="oldData.name" @update="onNameUpdate">
               <div class="section-head">
-                <h3>Název <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
-                <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+                <h3>Název <span class="update" v-show="newData.name">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('maturita.proposals.edit.nameDescription') }}</p>
               </div>
             </EditName>
           </div>
@@ -318,8 +320,8 @@ watchEffect((): void => {
           <div class="line page-section">
             <EditTaskFile ref="editTaskFile" :max-size-m-b="32" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
-                <h3>Zadání <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
-                <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
+                <h3>{{ t('maturita.proposals.edit.fileHeading') }} <span class="update" v-show="newData.taskFile">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('maturita.proposals.edit.fileDescription') }}</p>
               </div>
             </EditTaskFile>
           </div>
@@ -327,10 +329,10 @@ watchEffect((): void => {
           <div class="page-section">
             <div class="line">
               <div class="section-head users">
-                <h3>Garant <span class="update" v-show="newData.guarantor?.[0] && newData.guarantor?.[0] !== oldData.guarantor?.id">(aktualizováno)</span></h3>
+                <h3>Garant <span class="update" v-show="newData.guarantor?.[0] && newData.guarantor?.[0] !== oldData.guarantor?.id">{{ t('common.updated') }}</span></h3>
               </div>
 
-              <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
+              <SearchInput @change="onUsersSearchInputChange" :placeholder="t('maturita.proposals.edit.searchPlaceholder')" />
             </div>
 
             <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="newData.guarantor" :users="users || []" :loading="usersPending" />

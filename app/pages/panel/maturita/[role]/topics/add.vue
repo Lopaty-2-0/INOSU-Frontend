@@ -9,10 +9,12 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import Input from "~/components/ui/Input.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Témata maturitních prací - Přidávání",
+  title: t('pages.maturita.topicsAdd.title'),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.maturita.topicsAdd.description') }
   ],
 });
 
@@ -40,7 +42,7 @@ const resetUserData = (): void => {
 
 const addTopic = async (): Promise<void> => {
   if (!newData.value.name) {
-    alertsStore.addAlert({ type: "error", title: "Přidání tématu", message: "Název tématu nebyl zadán." });
+    alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('maturita.topics.add.alerts.addTopic.noName') });
     return;
   }
 
@@ -59,34 +61,34 @@ const addTopic = async (): Promise<void> => {
 
       switch (resCode) {
         case "63010":
-          alertsStore.addAlert({ type: "error", title: "Přidání tématu", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('common.noPermission') });
           break;
 
         case "63020":
-          alertsStore.addAlert({ type: "error", title: "Přidání tématu", message: "Název tématu nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('maturita.topics.add.alerts.addTopic.noName') });
           break;
 
         case "63030":
-          alertsStore.addAlert({ type: "error", title: "Přidání tématu", message: "Název tématu je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('maturita.topics.add.alerts.addTopic.nameTooLong') });
           break;
 
         case "63040":
-          alertsStore.addAlert({ type: "error", title: "Přidání tématu", message: "Téma s tímto názvem již existuje." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('maturita.topics.add.alerts.addTopic.topicExists') });
           break;
 
         case "63051":
-          alertsStore.addAlert({ type: "success", title: "Přidání tématu", message: "Téma bylo úspěšně vytvořeno." });
+          alertsStore.addAlert({ type: "success", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('maturita.topics.add.alerts.addTopic.success') });
           resetUserData();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání tématu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('common.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání tématu", message: "Nastala chyba při komunikaci se serverem." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('common.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -100,9 +102,9 @@ const addTopic = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:topic' },
-            { label: 'Témata', to: `/panel/maturita/${role}/topics` },
-            { label: 'Vytvoření', to: `/panel/maturita/${role}/topics/add`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/topics`, icon: 'material-symbols:topic' },
+            { label: t('sidebar.links.topics'), to: `/panel/maturita/${role}/topics` },
+            { label: t('maturita.topics.add.breadcrumb'), to: `/panel/maturita/${role}/topics/add`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -113,8 +115,8 @@ const addTopic = async (): Promise<void> => {
         <div class="content">
           <ActionBar
               class="action-bar"
-              description="Správa maturitních témat"
-              :texts="['Přidat', 'Odebrat']"
+              :description="t('maturita.topics.add.actionBar.description')"
+              :texts="[t('actionBar.add'), t('actionBar.remove')]"
               :actions="['add', 'remove']"
               :active="0"
               :icons="[
@@ -129,18 +131,18 @@ const addTopic = async (): Promise<void> => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Název * <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
-              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+              <h3>{{ t('maturita.topics.add.nameHeading') }} * <span class="update" v-show="newData.name">{{ t('common.updated') }}</span></h3>
+              <p>{{ t('maturita.topics.add.nameDescription') }}</p>
             </div>
 
             <div class="section-content">
-              <label for="name">Název</label>
-              <Input type="text" id="name" placeholder="Dynamická webová aplikace" v-model.trim="newData.name" />
+              <label for="name">{{ t('maturita.topics.add.nameLabel') }}</label>
+              <Input type="text" id="name" :placeholder="t('maturita.topics.add.namePlaceholder')" v-model.trim="newData.name" />
             </div>
           </div>
 
           <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="addTopic">
-            Pole označená * jsou povinná
+            {{ t('maturita.topics.add.requiredNote') }}
           </EditFormFooter>
         </div>
       </div>

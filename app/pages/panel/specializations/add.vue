@@ -9,9 +9,11 @@ import Input from "~/components/ui/Input.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import NumberInput from "~/components/ui/NumberInput.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Zaměření - Přidání",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: () => t("pages.specializations.add.title"),
+  meta: [{ name: "description", content: () => t("pages.specializations.add.description") }],
 });
 
 definePageMeta({
@@ -37,19 +39,19 @@ const checkForErrors = (): void => {
   errors.value.abbreviation = "";
 
   if (!specializationData.value.name) {
-    errors.value.name = "Název třídy je povinný.";
+    errors.value.name = t("specializations.add.errors.nameRequired");
   }
 
   if (specializationData.value.lengthOfStudy === null) {
-    errors.value.lengthOfStudy = "Délka studia je povinná.";
+    errors.value.lengthOfStudy = t("specializations.add.errors.lengthOfStudyRequired");
   } else if (specializationData.value.lengthOfStudy < 1) {
-    errors.value.lengthOfStudy = "Délka studia musí být větší než 0.";
+    errors.value.lengthOfStudy = t("specializations.add.errors.lengthOfStudyMin");
   }
 
   if (!specializationData.value.abbreviation) {
-    errors.value.abbreviation = "Zkratka zaměření je povinná.";
+    errors.value.abbreviation = t("specializations.add.errors.abbreviationRequired");
   } else if (specializationData.value.abbreviation.length > 1) {
-    errors.value.abbreviation = "Zkratka zaměření může mít maximálně 1 znak.";
+    errors.value.abbreviation = t("specializations.add.errors.abbreviationTooLong");
   }
 };
 
@@ -69,12 +71,12 @@ const addSpecialization = async (): Promise<void> => {
       specializationData.value.lengthOfStudy === null ||
       !specializationData.value.abbreviation
   ) {
-    alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Vyplňte všechna povinná pole." });
+    alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.fillRequired") });
     return;
   }
 
   if (errors.value.name || errors.value.lengthOfStudy || errors.value.abbreviation) {
-    alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Opravte chyby ve formuláři." });
+    alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.hasErrors") });
     return;
   }
 
@@ -95,57 +97,57 @@ const addSpecialization = async (): Promise<void> => {
 
       switch (resCode) {
         case "4010":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.noPermission") });
           break;
 
         case "4020":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia chybí." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.noLengthOfStudy") });
           break;
 
         case "4030":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření chybí." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.noAbbreviation") });
           break;
 
         case "4040":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření chybí." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.noName") });
           break;
 
         case "4050":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být celé číslo." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.invalidLengthOfStudy") });
           break;
 
         case "4060":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Délka studia musí být kladné číslo v povoleném rozsahu." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.lengthOfStudyMin") });
           break;
 
         case "4070":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je příliš dlouhá." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.abbreviationTooLong") });
           break;
 
         case "4080":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Zkratka zaměření je již používána." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.abbreviationInUse") });
           break;
 
         case "4090":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.nameTooLong") });
           break;
 
         case "4100":
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Název zaměření je již používán." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.nameInUse") });
           break;
 
         case "4111":
-          alertsStore.addAlert({ type: "success", title: "Přidání zaměření", message: "Zaměření bylo úspěšně vytvořeno." });
+          alertsStore.addAlert({ type: "success", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.success") });
           resetInputs();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.unknown") });
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání zaměření", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t("specializations.add.alerts.addSpecialization.title"), message: t("specializations.add.alerts.addSpecialization.unknown") });
     },
   }).finally(() => {
     loading.value = false;
@@ -159,8 +161,8 @@ const addSpecialization = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Zaměření', to: '/panel/specializations', icon: 'material-symbols:school' },
-            { label: 'Vytvoření', to: '/panel/specializations/add', active: true }
+            { label: t('sidebar.links.specializations'), to: '/panel/specializations', icon: 'material-symbols:school' },
+            { label: t('specializations.add.breadcrumb'), to: '/panel/specializations/add', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -171,8 +173,8 @@ const addSpecialization = async (): Promise<void> => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa zaměření"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('specializations.actionBar.description')"
+            :texts="[t('specializations.actionBar.add'), t('specializations.actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -188,13 +190,13 @@ const addSpecialization = async (): Promise<void> => {
           <div class="form">
             <div class="section">
               <div class="section-head">
-                <h3>Název * <span class="update" v-show="specializationData.name">(aktualizováno)</span></h3>
-                <p>Zadejte název zaměření, které chcete přidat. Název musí být jedinečný.</p>
+                <h3>{{ t('specializations.add.sections.name.title') }} <span class="update" v-show="specializationData.name">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('specializations.add.sections.name.description') }}</p>
               </div>
 
               <div class="content">
-                <label for="name">Název</label>
-                <Input type="text" id="name" placeholder="Informační technologie" v-model.trim="specializationData.name" @input="checkForErrors" />
+                <label for="name">{{ t('specializations.add.sections.name.label') }}</label>
+                <Input type="text" id="name" :placeholder="t('specializations.add.sections.name.placeholder')" v-model.trim="specializationData.name" @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.name.length > 0">{{ errors.name }}</p>
               </div>
@@ -202,13 +204,13 @@ const addSpecialization = async (): Promise<void> => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Zkratka * <span class="update" v-show="specializationData.abbreviation && specializationData.abbreviation.length === 1">(aktualizováno)</span></h3>
-                <p>Zadejte jednopísmennou zkratku zaměření. Zkratka musí být unikátní.</p>
+                <h3>{{ t('specializations.add.sections.abbreviation.title') }} <span class="update" v-show="specializationData.abbreviation && specializationData.abbreviation.length === 1">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('specializations.add.sections.abbreviation.description') }}</p>
               </div>
 
               <div class="content">
-                <label for="abbreviation">Zkratka</label>
-                <Input type="text" id="abbreviation" placeholder="V" v-model.trim="specializationData.abbreviation " @input="checkForErrors" />
+                <label for="abbreviation">{{ t('specializations.add.sections.abbreviation.label') }}</label>
+                <Input type="text" id="abbreviation" :placeholder="t('specializations.add.sections.abbreviation.placeholder')" v-model.trim="specializationData.abbreviation " @input="checkForErrors" />
 
                 <p class="input-error" v-if="errors.abbreviation.length > 0">{{ errors.abbreviation }}</p>
               </div>
@@ -216,12 +218,12 @@ const addSpecialization = async (): Promise<void> => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Délka studia * <span class="update" v-show="specializationData.lengthOfStudy">(aktualizováno)</span></h3>
-                <p>Zadejte délku studia v letech. Minimální hodnota je 1 rok.</p>
+                <h3>{{ t('specializations.add.sections.lengthOfStudy.title') }} <span class="update" v-show="specializationData.lengthOfStudy">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('specializations.add.sections.lengthOfStudy.description') }}</p>
               </div>
 
               <div class="content">
-                <label for="lengthOfStudy">Délka studia</label>
+                <label for="lengthOfStudy">{{ t('specializations.add.sections.lengthOfStudy.label') }}</label>
                 <NumberInput v-model="specializationData.lengthOfStudy" :min="1" placeholder="1" id="lengthOfStudy" @update:model-value="checkForErrors" />
 
                 <p class="input-error" v-if="errors.lengthOfStudy.length > 0">{{ errors.lengthOfStudy }}</p>
@@ -231,11 +233,11 @@ const addSpecialization = async (): Promise<void> => {
 
           <div class="buttons">
             <button type="submit" @click="addSpecialization">
-              Uložit změny
+              {{ t('specializations.add.saveBtn') }}
               <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
             </button>
             <button type="reset" @click="resetInputs">
-              Resetovat změny
+              {{ t('specializations.add.resetBtn') }}
             </button>
           </div>
         </div>

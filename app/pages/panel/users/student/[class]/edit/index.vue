@@ -20,9 +20,11 @@ definePageMeta({
 const route = useRoute();
 const classId = route.params.class as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Upravení uživatelů - Třída: " + classId,
-  meta: [{ name: "description", content: "Panel Settings User Information" }],
+  title: t('pages.users.studentClassEdit.title', { classId }),
+  meta: [{ name: "description", content: t('pages.users.studentClassEdit.description') }],
 });
 
 const config = useRuntimeConfig();
@@ -96,10 +98,10 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
-            { label: 'student', to: '/panel/users/student' },
-            { label: 'Třída: ' + classId, to: '/panel/users/student/' + classId },
-            { label: 'Upravení', to: '/panel/users/student/' + classId + '/edit', active: true }
+            { label: t('users.index.title'), to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: t('users.student.breadcrumb'), to: '/panel/users/student' },
+            { label: t('users.student.class.index.title', { classId }), to: '/panel/users/student/' + classId },
+            { label: t('users.student.class.edit.heading'), to: '/panel/users/student/' + classId + '/edit', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -110,9 +112,9 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa uživatelů"
+            :description="t('actionBar.description')"
             :active="1"
-            :texts="['Přidat', 'Upravit', 'Odebrat']"
+            :texts="[t('actionBar.add'), t('actionBar.edit'), t('actionBar.remove')]"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:edit-rounded',
@@ -127,11 +129,11 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Upravení uživatelů</h3>
-              <p>Zde si můžete vybrat uživatele, kterého chcete upravit.</p>
+              <h3>{{ t('users.student.class.edit.heading') }}</h3>
+              <p>{{ t('users.student.class.edit.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat uživatele" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('users.student.class.remove.searchPlaceholder')" />
           </div>
 
           <div class="users">
@@ -153,10 +155,10 @@ watchEffect((): void => {
                       E-mail: <span>{{ item.data.email }}</span>
                     </p>
                     <p>
-                      Přezdívka: <span>{{ item.data.abbreviation || "Není" }}</span>
+                      {{ t('users.student.class.edit.abbreviationLabel') }} <span>{{ item.data.abbreviation || t('users.student.class.edit.noAbbreviation') }}</span>
                     </p>
                     <p>
-                      Vytvořen:
+                      {{ t('users.student.class.index.createdLabel') }}
                       <span>{{ moment(item.data.createdAt).format("DD. MM. YYYY") }}</span>
                     </p>
                   </div>
