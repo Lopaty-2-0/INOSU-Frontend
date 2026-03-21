@@ -11,9 +11,11 @@ import {useFetch} from "nuxt/app";
 import Pagination from "~/components/ui/Pagination.vue";
 import CardsGrid from "~/components/ui/CardsGrid.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Uživatelé - student",
-  meta: [{ name: "description", content: "Panel Settings User Information" }],
+  title: t('pages.users.studentIndex.title'),
+  meta: [{ name: "description", content: t('pages.users.studentIndex.description') }],
 });
 
 const amountForPaging: number = 6;
@@ -59,8 +61,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
-            { label: 'student', to: '/panel/users/student', active: true }
+            { label: t('users.index.title'), to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: t('users.student.breadcrumb'), to: '/panel/users/student', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -71,8 +73,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa uživatelů"
-            :texts="['Přidat']"
+            :description="t('actionBar.description')"
+            :texts="[t('actionBar.add')]"
             :icons="[
               'material-symbols:add-rounded',
             ]"
@@ -84,14 +86,14 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Celkem tříd: {{ classesCount }}</h3>
-              <p>Zde vidíte všechny studenty, které můžete filtrovat podle třídy.</p>
+              <h3>{{ t('users.student.index.heading', { count: classesCount }) }}</h3>
+              <p>{{ t('users.student.index.description') }}</p>
             </div>
           </div>
 
           <div class="classes-section">
             <div class="section-head">
-              <h4>Třídy</h4>
+              <h4>{{ t('users.student.index.classesHeading') }}</h4>
             </div>
 
             <div class="classes">
@@ -111,7 +113,7 @@ watchEffect((): void => {
                   <Card class="card">
                     <NuxtLink class="class" :to="`/panel/users/student/undefined`">
                       <div class="section-head">
-                        <span>Nezařazené</span>
+                        <span>{{ t('users.student.index.unassigned') }}</span>
                       </div>
                     </NuxtLink>
                     </Card>

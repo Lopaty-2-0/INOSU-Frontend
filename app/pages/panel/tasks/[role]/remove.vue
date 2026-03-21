@@ -14,9 +14,11 @@ import TasksTable from "~/components/tables/Tasks.vue";
 import Loading from "~/components/ui/Loading.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkoly - Odstranění",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.tasks.roleRemove.title'),
+  meta: [{ name: "description", content: t('pages.tasks.roleRemove.description') }],
 });
 
 definePageMeta({
@@ -79,31 +81,31 @@ const removeTasks = async (): Promise<void> => {
 
       switch (resCode) {
         case "28010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Studenti nemohou mazat úkoly." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.remove.alerts.removeTask.title'), message: t('tasks.role.remove.alerts.removeTask.noPermission') });
           break;
 
         case "28020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Chybí ID úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.remove.alerts.removeTask.title'), message: t('tasks.role.remove.alerts.removeTask.noId') });
           break;
 
         case "28031":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění úkolů", message: `Některé úkoly se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: t('tasks.role.remove.alerts.removeTask.title'), message: t('tasks.role.remove.alerts.removeTask.noneRemoved') });
           }
-          alertsStore.addAlert({ type: "success", title: "Odstranění úkolů", message: `Úkoly byly úspěšně odstraněny.` });
+          alertsStore.addAlert({ type: "success", title: t('tasks.role.remove.alerts.removeTask.title'), message: t('tasks.role.remove.alerts.removeTask.success') });
 
           tasksRefresh();
           resetSelectedTasks();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.remove.alerts.removeTask.title'), message: t('tasks.role.remove.alerts.removeTask.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění úkolů", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('tasks.role.remove.alerts.removeTask.title'), message: t('tasks.role.remove.alerts.removeTask.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -146,8 +148,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, active: false, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Odstranění', to: `/panel/tasks/${role}/remove`, active: true }
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/${role}`, active: false, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('actionBar.remove'), to: `/panel/tasks/${role}/remove`, active: true }
           ]"/>
         </template>
       </Navbar>
@@ -158,8 +160,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa úkolů"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('tasks.role.remove.heading')"
+            :texts="[t('actionBar.add'), t('actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -174,21 +176,21 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybrané úkoly: {{ selectedTaskIds.length }}</h3>
-              <p>Zde můžete odstranit úkoly, které jste vytvořili. Vyberte úkol ze seznamu a klikněte na tlačítko Odebrat.</p>
+              <h3>{{ t('tasks.role.remove.selectedCount', { count: selectedTaskIds.length }) }}</h3>
+              <p>{{ t('tasks.role.remove.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat úkol" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('tasks.role.remove.searchPlaceholder')" />
           </div>
 
 
           <div class="buttons">
             <button class="remove" @click="removeTasks">
-              Odstranit
+              {{ t('tasks.role.remove.removeBtn') }}
               <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
             </button>
             <button class="reset" @click="resetSelectedTasks">
-              Zrušit vše
+              {{ t('tasks.role.remove.cancelBtn') }}
             </button>
           </div>
 

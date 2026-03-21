@@ -8,9 +8,11 @@ import {watchEffect} from "vue";
 import {useLoadingStore} from "~/stores/loading";
 import Card from "~/components/ui/Card.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Uživatelé - role",
-  meta: [{name: "description", content: "Panel Settings User Information"}],
+  title: t('pages.users.index.title'),
+  meta: [{name: "description", content: t('pages.users.index.description')}],
 });
 
 const numberOfUsers = ref<number>(-1);
@@ -54,7 +56,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', active: true, icon: 'material-symbols:supervisor-account-rounded' }
+            { label: t('users.index.title'), to: '/panel/users', active: true, icon: 'material-symbols:supervisor-account-rounded' }
           ]"/>
         </template>
       </Navbar>
@@ -65,8 +67,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa uživatelů"
-            :texts="['Přidat']"
+            :description="t('actionBar.description')"
+            :texts="[t('actionBar.add')]"
             :icons="[
               'material-symbols:add-rounded',
             ]"
@@ -78,14 +80,14 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Celkem uživatelů: {{ numberOfUsers < 0 ? "nenačteno" : numberOfUsers }}</h3>
-              <p>Zde najdete souhrn všech registrovaných uživatelů v systému.</p>
+              <h3>{{ t('users.index.heading', { count: numberOfUsers < 0 ? t('users.index.notLoaded') : numberOfUsers }) }}</h3>
+              <p>{{ t('users.index.description') }}</p>
             </div>
           </div>
 
           <div class="roles-section">
             <div class="section-head">
-              <h4>Role uživatelů</h4>
+              <h4>{{ t('users.index.roleHeading') }}</h4>
             </div>
 
             <div class="roles">
@@ -98,7 +100,7 @@ watchEffect((): void => {
                   <div class="section-head">
                   <span>
                     {{
-                      role === "admin" ? "Administrátoři" : role === "teacher" ? "Učitelé" : role === "student" ? "Studenti" : role.charAt(0).toUpperCase() + role.slice(1)
+                      role === "admin" ? t('users.index.admins') : role === "teacher" ? t('users.index.teachers') : role === "student" ? t('users.index.students') : role.charAt(0).toUpperCase() + role.slice(1)
                     }}
                   </span>
                   </div>

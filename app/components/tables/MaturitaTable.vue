@@ -5,6 +5,9 @@ import "../../assets/style/datatable.scss";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {MaturitaTableData} from "~/types/maturitaTables";
 import Image from "~/components/ui/Image.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
@@ -54,19 +57,19 @@ const config = useRuntimeConfig();
 
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
-    { field: "topic.id", title: "Téma (číslo)", type: "number" },
-    { field: "topic.name", title: "Téma", type: "string" },
-    { field: "variant", title: "Varianta", type: "string" },
-    { field: "task", title: "Zadání", type: "string" },
-    { field: "user", title: "Student", type: "object" },
-    { field: "guarantor", title: "Garant", type: "object" },
-    { field: "objector", title: "Oponent", type: "object" },
+    { field: "topic.id", title: t('tables.columns.topicNumber'), type: "number" },
+    { field: "topic.name", title: t('tables.columns.topic'), type: "string" },
+    { field: "variant", title: t('tables.columns.variant'), type: "string" },
+    { field: "task", title: t('tables.columns.task'), type: "string" },
+    { field: "user", title: t('tables.columns.student'), type: "object" },
+    { field: "guarantor", title: t('tables.columns.guarantor'), type: "object" },
+    { field: "objector", title: t('tables.columns.objector'), type: "object" },
   ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
 
   if (slots.actions) {
-    merged.push({ field: "actions", title: "Akce" });
+    merged.push({ field: "actions", title: t('tables.columns.actions') });
   }
 
   return merged;
@@ -117,7 +120,7 @@ defineExpose({ clearSelection });
 </script>
 
 <template>
-  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" :no-data-content="t('common.noData')" @rowClick="onRowClick">
     <template v-for="(_, name) in slots" v-slot:[name]="slotProps">
       <slot :name="name" v-bind="slotProps" />
     </template>
@@ -131,7 +134,7 @@ defineExpose({ clearSelection });
             {{ data.value.user.name + " " + data.value.user.surname }}
           </p>
           <p class="abbreviation no-wrap">
-            {{ data.value.user.abbreviation || "Neurčeno" }}
+            {{ data.value.user.abbreviation || t('common.undetermined') }}
           </p>
         </div>
       </div>
@@ -146,13 +149,13 @@ defineExpose({ clearSelection });
             {{ data.value.guarantor.name + " " + data.value.guarantor.surname }}
           </p>
           <p class="abbreviation no-wrap">
-            {{ data.value.guarantor.abbreviation || "Neurčeno" }}
+            {{ data.value.guarantor.abbreviation || t('common.undetermined') }}
           </p>
         </div>
       </div>
 
       <div v-else>
-        Neurčeno
+        {{ t('common.undetermined') }}
       </div>
     </template>
 
@@ -165,13 +168,13 @@ defineExpose({ clearSelection });
             {{ data.value.objector.name + " " + data.value.objector.surname }}
           </p>
           <p class="abbreviation no-wrap">
-            {{ data.value.objector.abbreviation || "Neurčeno" }}
+            {{ data.value.objector.abbreviation || t('common.undetermined') }}
           </p>
         </div>
       </div>
 
       <div v-else>
-        Neurčeno
+        {{ t('common.undetermined') }}
       </div>
     </template>
 

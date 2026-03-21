@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   modelValue: {
@@ -19,8 +22,8 @@ const props = defineProps({
     default: "*"
   },
   placeholder: {
-    type: String,
-    default: "Klikni pro nahrání souboru z počítače"
+    type: String as () => string | null,
+    default: null
   },
   disabled: {
     type: Boolean,
@@ -29,6 +32,7 @@ const props = defineProps({
 });
 
 const errorText = ref<string | null>(null);
+const resolvedPlaceholder = computed<string>(() => props.placeholder ?? t('fileInput.placeholder'));
 const fileInput = ref<HTMLInputElement | null>(null);
 const maxSizeBytes = computed<number>(() => props.maxSizeMB * 1024 * 1024);
 const acceptedTypes = computed<string[]>(() => {
@@ -55,13 +59,13 @@ const uploadFile = (event: Event): void => {
   const hasValidExtension: boolean = allowedExtensions.some((ext: string) => fileName.endsWith(ext));
 
   if (!acceptedTypes.value.includes("*") && !hasValidExtension) {
-    errorText.value = `Nepodporovaný formát souboru. (povolené: ${props.accept})`;
+    errorText.value = t('fileInput.errors.unsupportedFormat', { accept: props.accept });
     emits("update:modelValue", null);
     return;
   }
 
   if (selectedFile.size > maxSizeBytes.value) {
-    errorText.value = `Soubor je příliš velký. (max: ${props.maxSizeMB}MB)`;
+    errorText.value = t('fileInput.errors.tooLarge', { maxSize: props.maxSizeMB });
     emits("update:modelValue", null);
     return;
   }
@@ -85,12 +89,12 @@ defineExpose({ resetError });
     </p>
     <p v-else>
       <Icon class="icon" name="material-symbols:cloud-upload"/>
-      {{ props.title ? "Soubor: " + props.title : props.placeholder }}
+      {{ props.title ? t('fileInput.selectedFile', { title: props.title }) : resolvedPlaceholder }}
     </p>
     <input
       type="file"
       :size="maxSizeBytes"
-      :placeholder="props.placeholder"
+      :placeholder="resolvedPlaceholder"
       ref="fileInput"
       :accept="props.accept"
       @change="uploadFile($event)"

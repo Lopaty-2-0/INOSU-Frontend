@@ -13,9 +13,11 @@ import moment from "moment";
 import type {MaturitaData, MaturitaTaskData} from "~/types/maturita";
 import MaturitaProposalsTable from "~/components/tables/MaturitaProposals.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Návrhy maturitních zadání - Odstranění",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.proposalsRemove.title'),
+  meta: [{ name: "description", content: t('pages.maturita.proposalsRemove.description') }],
 });
 
 definePageMeta({
@@ -82,28 +84,28 @@ const removeTasks = async (): Promise<void> => {
 
       switch (resCode) {
         case "81010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Tato role nemůže mazat maturitní zadání." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.remove.alerts.removeProposal.title'), message: t('maturita.proposals.remove.alerts.removeProposal.noPermission') });
           break;
 
         case "81020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Nebyl zadán identifikátor zadání." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.remove.alerts.removeProposal.title'), message: t('maturita.proposals.remove.alerts.removeProposal.noId') });
           break;
 
         case "81030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Nebyl zadán garant." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.remove.alerts.removeProposal.title'), message: t('maturita.proposals.remove.alerts.removeProposal.noGuarantor') });
           break;
 
         case "81040":
-          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Počet ID zadání neodpovídá počtu garantů." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.remove.alerts.removeProposal.title'), message: t('maturita.proposals.remove.alerts.removeProposal.countMismatch') });
           break;
 
         case "81051":
           if (badIds.length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění návrhů maturitních zadání", message: `Některá zadání se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: t('maturita.proposals.remove.alerts.removeProposal.title'), message: t('maturita.proposals.remove.alerts.removeProposal.noneRemoved') });
           }
 
           if (goodIds.length > 0) {
-            alertsStore.addAlert({ type: "success", title: "Odstranění návrhů maturitních zadání", message: `Zadání byla úspěšně odstraněna.` });
+            alertsStore.addAlert({ type: "success", title: t('maturita.proposals.remove.alerts.removeProposal.title'), message: t('maturita.proposals.remove.alerts.removeProposal.success') });
           }
 
           tasksRefresh();
@@ -111,13 +113,13 @@ const removeTasks = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.remove.alerts.removeProposal.title'), message: t('maturita.proposals.remove.alerts.removeProposal.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění návrhů maturitních zadání", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.proposals.remove.alerts.removeProposal.title'), message: t('maturita.proposals.remove.alerts.removeProposal.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -181,7 +183,7 @@ watchEffect((): void => {
           <Breadcrumb :items="[
             { label: 'Maturity', to: `/panel/maturita/student/proposals`, icon: 'material-symbols:lightbulb-rounded' },
             { label: 'Návrhy', to: `/panel/maturita/student/proposals` },
-            { label: 'Zamítnuté', to: `/panel/maturita/student/proposals/rejected`, active: true },
+            { label: t('maturita.proposals.actionBar.removeBtn'), to: `/panel/maturita/student/proposals/remove`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -192,11 +194,11 @@ watchEffect((): void => {
         <div class="content">
           <div class="page-section">
             <div class="section-head">
-              <h3>Maturitní zadání</h3>
-              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+              <h3>{{ t('maturita.proposals.maturitaSection.heading') }}</h3>
+              <p>{{ t('maturita.proposals.maturitaSection.description') }}</p>
             </div>
 
-            <p class="error message">Žádný maturitní období more.</p>
+            <p class="error message">{{ t('maturita.proposals.maturitaSection.noMaturita') }}</p>
           </div>
         </div>
       </div>
@@ -205,8 +207,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa návrhů maturitních zadání"
-            :texts="['Přidat', 'Zamítnuté', 'Odstranit']"
+            :description="t('maturita.proposals.actionBar.description')"
+            :texts="[t('maturita.proposals.actionBar.addBtn'), t('maturita.proposals.actionBar.rejectedBtn'), t('maturita.proposals.actionBar.removeBtn')]"
             :actions="['add', 'remove', 'remove']"
             :active="2"
             :separator-indexes="[1]"
@@ -224,24 +226,24 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybrané maturitní zadání: {{ selectedRows.length }}</h3>
-              <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+              <h3>{{ t('maturita.proposals.remove.selectedCount', { count: selectedRows.length }) }}</h3>
+              <p>{{ t('maturita.proposals.remove.description') }}</p>
               <br>
               <p>Ročník: {{ currentMaturita.grade }}</p>
               <p>Konec: {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.proposals.remove.searchPlaceholder')" />
           </div>
 
 
           <div class="buttons">
             <button class="remove" @click="removeTasks">
-              Odstranit
+              {{ t('maturita.proposals.remove.removeBtn') }}
               <Loading v-show="loading" size="5px" color="var(--actionBar-actions-remove-color)"/>
             </button>
             <button class="reset" @click="resetSelectedTasks">
-              Zrušit vše
+              {{ t('maturita.proposals.remove.cancelBtn') }}
             </button>
           </div>
 
@@ -254,9 +256,9 @@ watchEffect((): void => {
             <template #status="data">
               <p class="status" :class="[data.value.status]">
                 {{
-                  data.value.status === "approved" ? "Schváleno" :
-                  data.value.status === "rejected" ? "Zamítnuto" :
-                  data.value.status === "pending" ? "Čeká na schválení" :
+                  data.value.status === "approved" ? t('maturita.proposals.remove.approved') :
+                  data.value.status === "rejected" ? t('maturita.proposals.remove.rejected') :
+                  data.value.status === "pending" ? t('maturita.proposals.remove.pending') :
                   data.value.status
                 }}
               </p>

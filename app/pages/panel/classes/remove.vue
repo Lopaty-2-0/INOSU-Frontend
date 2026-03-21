@@ -13,9 +13,11 @@ import ClassesTable from "~/components/tables/Classes.vue";
 import SearchInput from "~/components/ui/SearchInput.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Třídy - Odstranění",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: () => t("pages.classes.remove.title"),
+  meta: [{ name: "description", content: () => t("pages.classes.remove.description") }],
 });
 
 definePageMeta({
@@ -75,18 +77,18 @@ const removeClasses = async (): Promise<void> => {
 
       switch (resCode) {
         case "9010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění tříd", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t("classes.remove.alerts.removeClass.title"), message: t("classes.remove.alerts.removeClass.noPermission") });
           break;
 
         case "9020":
-          alertsStore.addAlert({ type: "warning", title: "Odstranění tříd", message: "Žádná třída nebyla vybrána." });
+          alertsStore.addAlert({ type: "warning", title: t("classes.remove.alerts.removeClass.title"), message: t("classes.remove.alerts.removeClass.noneSelected") });
           break;
 
         case "9031":
           if ((data?.badIds || []).length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění tříd", message: `Některé třídy nebyly odstraněny. Neplatná ID: ${data.badIds.join(", ")}.` });
+            alertsStore.addAlert({ type: "warning", title: t("classes.remove.alerts.removeClass.title"), message: t("classes.remove.alerts.removeClass.noneRemoved", { ids: data.badIds.join(", ") }) });
           } else {
-            alertsStore.addAlert({ type: "success", title: "Odstranění tříd", message: `Třídy byly úspěšně odstraněny.` });
+            alertsStore.addAlert({ type: "success", title: t("classes.remove.alerts.removeClass.title"), message: t("classes.remove.alerts.removeClass.success") });
           }
 
           classesRefresh();
@@ -94,12 +96,12 @@ const removeClasses = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t("classes.remove.alerts.removeClass.title"), message: t("classes.remove.alerts.removeClass.unknown") });
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění tříd", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t("classes.remove.alerts.removeClass.title"), message: t("classes.remove.alerts.removeClass.unknown") });
     },
   }).finally(() => {
     loading.value = false;
@@ -142,8 +144,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Třídy', to: '/panel/classes', icon: 'material-symbols:flight-class-rounded' },
-            { label: 'Odstranění', to: '/panel/classes/remove', active: true }
+            { label: t('sidebar.links.classes'), to: '/panel/classes', icon: 'material-symbols:flight-class-rounded' },
+            { label: t('classes.remove.breadcrumb'), to: '/panel/classes/remove', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -154,8 +156,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa tříd"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('classes.add.actionBar.description')"
+            :texts="[t('classes.add.actionBar.add'), t('classes.add.actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -170,16 +172,16 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybrané třídy: {{ selectedClasses.length }}</h3>
-              <p>Vyberte třídy, které chcete trvale odstranit ze systému.</p>
+              <h3>{{ t('classes.remove.heading', { count: selectedClasses.length }) }}</h3>
+              <p>{{ t('classes.remove.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat třídy" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('classes.remove.searchPlaceholder')" />
           </div>
 
           <div class="buttons">
             <button class="remove" @click="removeClasses">
-              Odstranit
+              {{ t('classes.remove.removeBtn') }}
               <Loading
                 v-show="loading"
                 size="5px"
@@ -187,7 +189,7 @@ watchEffect((): void => {
               />
             </button>
             <button class="reset" @click="resetSelectedClasses">
-              Zrušit vše
+              {{ t('classes.remove.cancelBtn') }}
             </button>
           </div>
 

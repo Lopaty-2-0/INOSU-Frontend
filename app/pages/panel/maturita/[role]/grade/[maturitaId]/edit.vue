@@ -22,14 +22,16 @@ import type {TaskData} from "~/types/tasks";
 import type {MaturitaData} from "~/types/maturita";
 import InputMenu from "~/components/ui/InputMenu.vue";
 
+const { t } = useI18n();
+
 const route = useRoute();
 const maturitaId = route.params.maturitaId as string;
 const role = route.params.role as string;
 
 useHead({
-  title: "Panel | Maturitní ročník - " + maturitaId + " - Úpravení",
+  title: t('pages.maturita.gradeEdit.title', { maturitaId }),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.maturita.gradeEdit.description') }
   ],
 });
 
@@ -116,8 +118,8 @@ const onEndDateUpdate = (endDate: Date | undefined): void => {
 };
 
 const checkForErrors = (): void => {
-  errors.value.grade = newData.value.grade && newData.value.grade.length > 9 ? "Název maturitního ročníku je příliš dlouhý." : "";
-  errors.value.maxPoints = newData.value.maxPoints !== null && (isNaN(newData.value.maxPoints) || newData.value.maxPoints < 0) ? "Maximální počet bodů musí být kladné číslo." : "";
+  errors.value.grade = newData.value.grade && newData.value.grade.length > 9 ? t('maturita.grade.edit.errors.nameTooLong') : "";
+  errors.value.maxPoints = newData.value.maxPoints !== null && (isNaN(newData.value.maxPoints) || newData.value.maxPoints < 0) ? t('maturita.grade.edit.errors.maxPointsNotPositive') : "";
 };
 
 const resetUserData = (): void => {
@@ -169,74 +171,74 @@ const updateMaturita = async (): Promise<void> => {
 
       switch (resCode) {
         case "68010":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('common.noPermission') });
           break;
 
         case "68020":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "ID maturity nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.noId') });
           break;
 
         case "68030":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Nebyla zadána žádná hodnota ke změně." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.nothingToUpdate') });
           break;
 
         case "68040":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "ID maturity není číslo." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.idNaN') });
           break;
 
         case "68050":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "ID maturity není platné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.idInvalid') });
           break;
 
         case "68060":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Maturita nebyla nalezena." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.notFound') });
           break;
 
         case "68070":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Ročník je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.nameTooLong') });
           break;
 
         case "68080":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Tento ročník již existuje." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.gradeExists') });
           break;
 
         case "68090":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Maximální počet bodů není číslo." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.maxPointsNaN') });
           break;
 
         case "68100":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Maximální počet bodů není platný." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.maxPointsInvalid') });
           break;
 
         case "68110":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Datum začátku je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.startDateInvalid') });
           break;
 
         case "68120":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Datum ukončení je před datem začátku." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.endBeforeStart') });
           break;
 
         case "68130":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Datum ukončení je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.endDateInvalid2') });
           break;
 
         case "68140":
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Datum ukončení je před datem začátku." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.endBeforeStart') });
           break;
 
         case "68151":
-          alertsStore.addAlert({ type: "success", title: "Úprava maturity", message: "Maturita byla úspěšně upravena." });
+          alertsStore.addAlert({ type: "success", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('maturita.grade.edit.alerts.editMaturita.success') });
           await refreshMaturita();
           resetUserData();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('common.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Úprava maturity", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('common.unknown') });
     },
   }).finally((): void => {
     loading.value = false;
@@ -310,9 +312,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/grade`, icon: 'material-symbols:book-2-rounded' },
-            { label: 'Upravení', to: `/panel/maturita/${role}/grade` },
-            { label: `Maturita ID: ${maturitaId}`, to: `/panel/maturita/${role}/grade/${maturitaId}/edit`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/grade`, icon: 'material-symbols:book-2-rounded' },
+            { label: t('maturita.grade.edit.breadcrumb'), to: `/panel/maturita/${role}/grade` },
+            { label: t('maturita.grade.edit.breadcrumbId', { maturitaId }), to: `/panel/maturita/${role}/grade/${maturitaId}/edit`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -323,8 +325,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
               class="action-bar"
-              description="Správa maturitních ročníků"
-              :texts="['Přidat', 'Odebrat']"
+              :description="t('maturita.grade.index.actionBar.description')"
+              :texts="[t('actionBar.add'), t('actionBar.remove')]"
               :actions="['add', 'remove']"
               :icons="[
               'material-symbols:add-rounded',
@@ -337,12 +339,12 @@ watchEffect((): void => {
           />
           <div class="page-section">
             <div class="section-head">
-              <h3>Ročník <span class="update" v-show="newData.grade !== oldData.grade && errors.grade.length <= 0">(aktualizováno)</span></h3>
-              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+              <h3>{{ t('maturita.grade.edit.heading') }} <span class="update" v-show="newData.grade !== oldData.grade && errors.grade.length <= 0">{{ t('common.updated') }}</span></h3>
+              <p>{{ t('maturita.grade.edit.nameDescription') }}</p>
             </div>
 
             <div class="section-content">
-              <label for="grade">Ročník</label>
+              <label for="grade">{{ t('maturita.grade.edit.heading') }}</label>
               <Input type="text" id="grade" placeholder="2024/2025" v-model.trim="newData.grade" @input="checkForErrors" />
 
               <p class="input-error" v-if="errors.grade.length > 0">{{ errors.grade }}</p>
@@ -351,19 +353,19 @@ watchEffect((): void => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Časové rozmezí úkolu</h3>
-              <p>Zadejte časové rozmezí, ve kterém bude úkol aktivní. Studenti budou moci úkol odevzdávat pouze v tomto období. Uzávěrka určuje termín, do kterého lze přiložit vypracování úkolu.</p>
+              <h3>{{ t('maturita.grade.edit.timeRangeHeading') }}</h3>
+              <p>{{ t('maturita.grade.edit.timeRangeDescription') }}</p>
             </div>
 
             <div class="line">
               <div class="section-content">
-                <EditDateTime ref="editStartDate" @update="onStartDateUpdate" :old-date="oldData.startDate" label="Začátek maturity" />
+                <EditDateTime ref="editStartDate" @update="onStartDateUpdate" :old-date="oldData.startDate" :label="t('maturita.grade.edit.startLabel')" />
 
                 <p class="input-error" v-if="errors.startDate.length > 0">{{ errors.startDate }}</p>
               </div>
 
               <div class="section-content">
-                <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" label="Konec maturity" />
+                <EditDateTime ref="editEndDate" @update="onEndDateUpdate" :old-date="oldData.endDate" :label="t('maturita.grade.edit.endLabel')" />
 
                 <p class="input-error" v-if="errors.endDate.length > 0">{{ errors.endDate }}</p>
               </div>
@@ -372,12 +374,12 @@ watchEffect((): void => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Maximální počet bodů <span class="update" v-show="newData.maxPoints !== oldData.maxPoints && errors.maxPoints.length <= 0">(aktualizováno)</span></h3>
-              <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
+              <h3>{{ t('maturita.grade.edit.pointsHeading') }} <span class="update" v-show="newData.maxPoints !== oldData.maxPoints && errors.maxPoints.length <= 0">{{ t('common.updated') }}</span></h3>
+              <p>{{ t('maturita.grade.edit.pointsDescription') }}</p>
             </div>
 
             <div class="section-content">
-              <NumberInput v-model="newData.maxPoints" :min="0" placeholder="Bez bodů" @input="checkForErrors" />
+              <NumberInput v-model="newData.maxPoints" :min="0" :placeholder="t('maturita.grade.edit.pointsPlaceholder')" @input="checkForErrors" />
 
               <p class="input-error" v-if="errors.maxPoints.length > 0">{{ errors.maxPoints }}</p>
             </div>
@@ -386,13 +388,13 @@ watchEffect((): void => {
           <div class="page-section">
             <div class="line">
               <div class="section-head users">
-                <h3>Vybraní hodnotitelé: {{ newData.evaluators.length }} <span class="update" v-show="!isEqual(newData.evaluators, oldData.evaluators)">(aktualizováno)</span></h3>
+                <h3>{{ t('maturita.grade.edit.evaluatorsHeading') }}: {{ newData.evaluators.length }} <span class="update" v-show="!isEqual(newData.evaluators, oldData.evaluators)">{{ t('common.updated') }}</span></h3>
               </div>
 
-              <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
+              <SearchInput @change="onUsersSearchInputChange" :placeholder="t('maturita.grade.edit.searchPlaceholder')" />
             </div>
 
-            <InputMenu :items="['teacher', 'admin']" deselect placeholder="Role uživatelů pro výběr hodnotitelů" @update:model-value="onRoleSelectChange" />
+            <InputMenu :items="['teacher', 'admin']" deselect :placeholder="t('maturita.grade.edit.rolePlaceholder')" @update:model-value="onRoleSelectChange" />
 
             <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="newData.evaluators"  :users="users || []" :loading="usersPending" />
 
@@ -404,7 +406,7 @@ watchEffect((): void => {
           </div>
 
           <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="updateMaturita">
-            Pole označená * jsou povinná
+            {{ t('maturita.grade.edit.requiredNote') }}
           </EditFormFooter>
         </div>
       </div>

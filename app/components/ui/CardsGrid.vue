@@ -2,6 +2,9 @@
 import {watch, shallowRef} from "vue";
 import Card from "~/components/ui/Card.vue";
 import Loading from "~/components/ui/Loading.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   items: {
@@ -86,7 +89,7 @@ defineExpose({ reset, updateSelectedItems });
       <slot name="additional" />
     </div>
 
-    <p class="error message" v-else>Žádný záznam nebyl zobrazen!</p>
+    <p class="error message" v-else>{{ t('common.noRecords') }}</p>
   </div>
 </template>
 

@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from "#imports";
+import { computed } from "vue";
+
+const { t } = useI18n();
+
 const props = defineProps({
   icons: {
     type: Array as () => string[],
@@ -10,7 +15,7 @@ const props = defineProps({
   },
   texts: {
     type: Array as () => string[],
-    default: ["Přidat", "Upravit", "Odstranit"],
+    default: null,
   },
   actions: {
     type: Array as () => string[],
@@ -25,8 +30,8 @@ const props = defineProps({
     default: "material-symbols:square-rounded",
   },
   description: {
-    type: String,
-    default: "Akční bar",
+    type: String as () => string | null,
+    default: null,
   },
   active: {
     type: Number,
@@ -37,15 +42,18 @@ const props = defineProps({
   },
 });
 const emits = defineEmits(["selected"]);
+
+const resolvedTexts = computed(() => props.texts ?? [t('actionBar.add'), t('actionBar.edit'), t('actionBar.remove')]);
+const resolvedDescription = computed(() => props.description ?? t('actionBar.description'));
 </script>
 
 <template>
   <div id="action-bar">
-    <p class="description">{{ props.description }}</p>
+    <p class="description">{{ resolvedDescription }}</p>
 
     <div class="actions">
       <div class="action"
-       v-for="(_, index) in props.texts.length"
+       v-for="(_, index) in resolvedTexts.length"
        :key="index"
       >
         <a
@@ -62,7 +70,7 @@ const emits = defineEmits(["selected"]);
             props.icons[index] || 'material-symbols:radio-button-unchecked'
           "
           ></Icon>
-          {{ props.texts[index] }}
+          {{ resolvedTexts[index] }}
         </a>
 
         <Icon v-if="props.separatorIndexes.includes(index)" :name="separatorIcon" class="separator icon" />

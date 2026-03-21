@@ -18,14 +18,17 @@ import Loading from "~/components/ui/Loading.vue";
 import SpecializationsTable from "~/components/tables/Specializations.vue";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
+import { useI18n } from "#imports";
 
 const route = useRoute();
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Odstranění přiřazení",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: computed(() => t('pages.tasks.assignRemove.title', { taskId })),
+  meta: [{ name: "description", content: computed(() => t('pages.tasks.assignRemove.description')) }],
 });
 
 definePageMeta({
@@ -114,30 +117,30 @@ const removeTeams = async (): Promise<void> => {
 
       switch (resCode) {
         case "31010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Chybí ID úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.noTaskId') });
           break;
 
         case "31020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Chybí ID týmů." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.noTeamId') });
           break;
 
         case "31030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "ID úkolu musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.taskIdNotNumber') });
           break;
 
         case "31040":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "ID úkolu není platné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.taskIdInvalid') });
           break;
 
         case "31050":
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Úkol neexistuje nebo nejste jeho garant." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.taskNotFound') });
           break;
 
         case "31071":
           if (badIds.length > 0)
-            alertsStore.addAlert({ type: "warning", title: "Odstranění přiřazení", message: `Některá přiřazení se nepodařilo odstranit.` });
+            alertsStore.addAlert({ type: "warning", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.partialFail') });
 
-          alertsStore.addAlert({ type: "success", title: "Odstranění přiřazení", message: `Přiřazení byla úspěšně odstraněna.` });
+          alertsStore.addAlert({ type: "success", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.success') });
 
           usersRefresh();
           teamsRefresh();
@@ -145,13 +148,13 @@ const removeTeams = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění přiřazení", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -254,9 +257,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
-            { label: `Odstranit přiřazené`, to: `/panel/tasks/${role}/${taskId}/assign/remove`, active: true },
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('tasks.assign.taskIdBreadcrumb', { taskId }), to: `/panel/tasks/${role}/${taskId}` },
+            { label: t('tasks.assign.remove.breadcrumb'), to: `/panel/tasks/${role}/${taskId}/assign/remove`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -267,10 +270,10 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa úkolu"
+            :description="t('tasks.assign.remove.actionBarDescription')"
             :actions="['edit', 'remove']"
             :active="1"
-            :texts="['Přiřadit', 'Odstranit přiřazené']"
+            :texts="[t('tasks.assign.remove.actionBarAssign'), t('tasks.assign.remove.actionBarRemove')]"
             :icons="[
               'material-symbols:edit-rounded',
               'material-symbols:delete-rounded',
@@ -283,29 +286,29 @@ watchEffect((): void => {
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
-              <p>Úkol ID: {{ task.id }}</p>
-              <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
+              <p>{{ t('tasks.assign.taskIdLabel') }} {{ task.id }}</p>
+              <p>{{ t('tasks.assign.guarantorLabel') }} {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
+              <p>{{ t('tasks.assign.startLabel') }} {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('tasks.assign.endLabel') }} {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">{{ t('tasks.assign.deadlineLabel') }} {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('tasks.assign.maxPointsLabel') }} {{ task.points ?? t('tasks.assign.undetermined') }}</p>
               <p>
-                Zadání:
+                {{ t('tasks.assign.assignmentLabel') }}
                 <a :href="task.task ? `/api/file/task/${task.guarantor.id}/${task.id}/${task.task}` : '#'" class="link" download target="_blank">
-                  {{ task.task || "Žádné zadání" }}
+                  {{ task.task || t('tasks.assign.noAssignment') }}
                 </a>
               </p>
             </div>
           </div>
 
           <div class="section-head">
-            <h3>Vybrané přiřazení: {{ selectedTeams.length }}</h3>
-            <p>Vyberte třídy, které chcete trvale odstranit ze systému.</p>
+            <h3>{{ t('tasks.assign.remove.heading', { count: selectedTeams.length }) }}</h3>
+            <p>{{ t('tasks.assign.remove.description') }}</p>
           </div>
 
           <div class="buttons">
             <button class="remove" @click="removeTeams">
-              Odstranit
+              {{ t('tasks.assign.remove.removeBtn') }}
               <Loading
                 v-show="loading"
                 size="5px"
@@ -313,22 +316,22 @@ watchEffect((): void => {
               />
             </button>
             <button class="reset" @click="resetSelectedTeams">
-              Zrušit vše
+              {{ t('tasks.assign.remove.cancelBtn') }}
             </button>
           </div>
 
           <div class="page-section" v-if="users">
             <div class="section-head">
-              <h3>Žáci</h3>
+              <h3>{{ t('tasks.assign.remove.studentsHeading') }}</h3>
 
-              <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
+              <SearchInput @change="onUsersSearchInputChange" :placeholder="t('tasks.assign.remove.userSearchPlaceholder')" />
             </div>
 
             <UsersTable ref="usersDatatable" @row-clicked="onUsersRowClicked" :has-checkbox="true" :selected-ids="selectedUsers" :users="users" :loading="usersPending" :extra-columns="[
-              { field: 'points', title: 'Počet bodů' }
+              { field: 'points', title: t('tasks.assign.remove.pointsColumn') }
             ]">
               <template #points="data">
-                <span>{{ usersTeam?.filter((soloTeam: Task_Team_Solo_Table) => soloTeam.userData.id === data.value.id)?.[0]?.points ?? "Neurčeno" }}</span>
+                <span>{{ usersTeam?.filter((soloTeam: Task_Team_Solo_Table) => soloTeam.userData.id === data.value.id)?.[0]?.points ?? t('tasks.assign.remove.undetermined') }}</span>
               </template>
             </UsersTable>
 
@@ -341,16 +344,16 @@ watchEffect((): void => {
 
           <div class="page-section" v-if="teams">
             <div class="section-head">
-              <h3>Týmy</h3>
+              <h3>{{ t('tasks.assign.remove.teamsHeading') }}</h3>
 
-              <SearchInput @change="onTeamSearchInputChange" placeholder="Hledat týmy" />
+              <SearchInput @change="onTeamSearchInputChange" :placeholder="t('tasks.assign.remove.teamSearchPlaceholder')" />
             </div>
 
             <TaskTeamsTable ref="teamsDatatable" @row-clicked="onTeamsRowClicked" :has-checkbox="true" :selected-ids="selectedTeams" :teams="teams" :loading="teamsPending" :extra-columns="[
-              { field: 'points', title: 'Počet bodů' }
+              { field: 'points', title: t('tasks.assign.remove.pointsColumn') }
             ]">
               <template #points="data">
-                <span>{{ data.value.points || "Neurčeno" }}</span>
+                <span>{{ data.value.points || t('tasks.assign.remove.undetermined') }}</span>
               </template>
             </TaskTeamsTable>
 

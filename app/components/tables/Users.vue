@@ -5,6 +5,9 @@ import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {AccountData} from "~/types/account";
 import Image from "~/components/ui/Image.vue";
 import moment from "moment/moment";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
@@ -54,17 +57,17 @@ const slots = useSlots();
 
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
-    { field: "id", title: "ID", width: "90px", type: "number" },
-    { field: "profile", title: "Jméno a příjmení", type: "string", width: "50%" },
-    { field: "email", title: "E-mail", type: "string", width: "50%" },
-    { field: "abbreviation", title: "Zkratka", type: "string" },
-    { field: "createdAt", title: "Vytvořen", type: "string" },
+    { field: "id", title: t('tables.columns.id'), width: "90px", type: "number" },
+    { field: "profile", title: t('tables.columns.fullName'), type: "string", width: "50%" },
+    { field: "email", title: t('tables.columns.email'), type: "string", width: "50%" },
+    { field: "abbreviation", title: t('tables.columns.abbreviation'), type: "string" },
+    { field: "createdAt", title: t('tables.columns.createdAt'), type: "string" },
   ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
 
   if (slots.actions) {
-    merged.push({ field: "actions", title: "Akce" });
+    merged.push({ field: "actions", title: t('tables.columns.actions') });
   }
 
   return merged;
@@ -115,7 +118,7 @@ defineExpose({ clearSelection, updateSelection });
 </script>
 
 <template>
-  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" :no-data-content="t('common.noData')" @rowClick="onRowClick">
     <template v-for="(_, name) in slots" v-slot:[name]="slotProps">
       <slot :name="name" v-bind="slotProps" />
     </template>
@@ -135,7 +138,7 @@ defineExpose({ clearSelection, updateSelection });
     </template>
 
     <template #abbreviation="data">
-      {{ data.value.abbreviation || "Neurčeno" }}
+      {{ data.value.abbreviation || t('common.undetermined') }}
     </template>
 
     <template #createdAt="data">

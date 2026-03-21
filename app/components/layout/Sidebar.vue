@@ -5,6 +5,9 @@ import { storeToRefs } from "pinia";
 import { useAccountStore } from "~/stores/account";
 import Loading from "~/components/ui/Loading.vue";
 import {useAlertsStore} from "~/stores/alerts";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const route = useRoute();
 const alertStore = useAlertsStore();
@@ -32,16 +35,16 @@ const sidebarLinks = computed<
     }[]
 >(() => [
   {
-    name: "Hlavní",
+    name: t('sidebar.sections.main'),
     links: [
       {
-        text: "Domů",
+        text: t('sidebar.links.home'),
         href: "/panel",
         iconClass: "material-symbols:home-rounded",
         notify: false,
       },
       {
-        text: "Úkoly",
+        text: t('sidebar.links.tasks'),
         href: `/panel/tasks/${role.value}`,
         activeHrefs: [
           `/panel/tasks/${role.value}`,
@@ -56,19 +59,19 @@ const sidebarLinks = computed<
             : false,
       },
       {
-        text: "Kalendář",
+        text: t('sidebar.links.calendar'),
         href: "/panel/calendar",
         iconClass: "material-symbols:calendar-month-rounded",
         notify: false,
       },
       {
-        text: "Chat",
+        text: t('sidebar.links.chat'),
         href: "/panel/chat",
         iconClass: "material-symbols:mark-chat-unread-rounded",
         notify: false,
       },
       {
-        text: "Zaměření",
+        text: t('sidebar.links.specializations'),
         href: "/panel/specializations",
         activeHrefs: [
           "/panel/specializations",
@@ -79,7 +82,7 @@ const sidebarLinks = computed<
         notify: false,
       },
       {
-        text: "Třídy",
+        text: t('sidebar.links.classes'),
         href: "/panel/classes",
         activeHrefs: [
           "/panel/classes",
@@ -90,7 +93,7 @@ const sidebarLinks = computed<
         notify: false,
       },
       {
-        text: "Uživatelé",
+        text: t('sidebar.links.users'),
         href: "/panel/users",
         activeHrefs: [
           "/panel/users",
@@ -104,13 +107,13 @@ const sidebarLinks = computed<
     ],
   },
   {
-    name: "Maturita",
+    name: t('sidebar.sections.maturita'),
     ...(role.value === "admin" || role.value === "teacher")
     ?
       {
         links: [
           {
-            text: "Maturity",
+            text: t('sidebar.links.maturitas'),
             href: `/panel/maturita/${role.value}/grade`,
             iconClass: "material-symbols:book-2-rounded",
             notify: false,
@@ -121,7 +124,7 @@ const sidebarLinks = computed<
             ],
           },
           {
-            text: "Zadání",
+            text: t('sidebar.links.assignments'),
             href: `/panel/maturita/${role.value}/tasks`,
             iconClass: "material-symbols:folder-copy-rounded",
             notify: false,
@@ -132,7 +135,7 @@ const sidebarLinks = computed<
             ],
           },
           {
-            text: "Oponentura",
+            text: t('sidebar.links.objector'),
             href: `/panel/maturita/${role.value}/objector`,
             iconClass: "material-symbols:search-rounded",
             activeHrefs: [
@@ -141,13 +144,13 @@ const sidebarLinks = computed<
             notify: false,
           },
           {
-            text: "Návrhy",
+            text: t('sidebar.links.proposals'),
             href: `/panel/maturita/${role.value}/proposals`,
             iconClass: "material-symbols:lightbulb-rounded",
             notify: false,
           },
           {
-            text: "Témata",
+            text: t('sidebar.links.topics'),
             href: `/panel/maturita/${role.value}/topics`,
             activeHrefs: [
               `/panel/maturita/${role.value}/topics`,
@@ -158,7 +161,7 @@ const sidebarLinks = computed<
             notify: false,
           },
           {
-            text: "Tabulky",
+            text: t('sidebar.links.tables'),
             href: `/panel/maturita/${role.value}/tables`,
             activeHrefs: [
               `/panel/maturita/${role.value}/tables`,
@@ -173,13 +176,13 @@ const sidebarLinks = computed<
       {
         links: [
           {
-            text: "Zadání",
+            text: t('sidebar.links.assignments'),
             href: `/panel/maturita/${role.value}`,
             iconClass: "material-symbols:folder-copy-rounded",
             notify: false,
           },
           {
-            text: "Návrhy",
+            text: t('sidebar.links.proposals'),
             href: `/panel/maturita/${role.value}/proposals`,
             activeHrefs: [
               `/panel/maturita/${role.value}/proposals`,
@@ -190,19 +193,19 @@ const sidebarLinks = computed<
             notify: false,
           },
           {
-            text: "Témata",
+            text: t('sidebar.links.topics'),
             href: `/panel/maturita/${role.value}/topics`,
             iconClass: "material-symbols:topic",
             notify: false,
           },
           {
-            text: "Chat",
+            text: t('sidebar.links.chat'),
             href: `/panel/maturita/${role.value}/chat`,
             iconClass: "material-symbols:chat-rounded",
             notify: false,
           },
           {
-            text: "Tabulky",
+            text: t('sidebar.links.tables'),
             href: `/panel/maturita/${role.value}/tables`,
             activeHrefs: [
               `/panel/maturita/${role.value}/tables`,
@@ -217,10 +220,10 @@ const sidebarLinks = computed<
   ...(role.value === "admin" || role.value === "teacher")
       ? [
         {
-          name: "Data",
+          name: t('sidebar.sections.data'),
           links: [
             {
-              text: "Import",
+              text: t('sidebar.links.import'),
               href: role.value === "admin" ? "/panel/import" : `/panel/import/maturitas`,
               iconClass: "material-symbols:upload-2-rounded",
               activeHrefs: [
@@ -233,7 +236,7 @@ const sidebarLinks = computed<
               notify: false,
             },
             {
-              text: "Export",
+              text: t('sidebar.links.export'),
               href: "/panel/export",
               iconClass: "material-symbols:download-2-rounded",
               notify: false,
@@ -243,10 +246,10 @@ const sidebarLinks = computed<
       ]
       : [],
   {
-    name: "Ostatní",
+    name: t('sidebar.sections.other'),
     links: [
       {
-        text: "Nastavení",
+        text: t('sidebar.links.settings'),
         href: "/panel/settings",
         activeHrefs: [
           "/panel/settings",
@@ -289,10 +292,10 @@ const logOut = async (): Promise<void> => {
       }
     },
     onResponseError() {
-      alertStore.addAlert({ type: "error", title: "Odhlášení", message: "Nastala neznámá chyba." });
+      alertStore.addAlert({ type: "error", title: t('sidebar.alerts.logout.title'), message: t('sidebar.alerts.logout.unknown') });
     },
     onRequestError() {
-      alertStore.addAlert({ type: "error", title: "Odhlášení", message: "Nastala neznámá chyba." });
+      alertStore.addAlert({ type: "error", title: t('sidebar.alerts.logout.title'), message: t('sidebar.alerts.logout.unknown') });
     }
   }).finally((): void => {
     logoutLoading.value = false;
@@ -323,8 +326,8 @@ if (!["admin", "teacher"].includes(role.value)) {
   <div id="sidebar" :class="{ 'active-sidebar': isHamburgerClicked }">
     <div class="header">
       <div class="sidebar-logo">
-        <h2>INOSU</h2>
-        <p>INformační a Organizační Systém Úloh</p>
+        <h2>{{ t('sidebar.logo.title') }}</h2>
+        <p>{{ t('sidebar.logo.subtitle') }}</p>
       </div>
 
       <div class="items">
@@ -380,7 +383,7 @@ if (!["admin", "teacher"].includes(role.value)) {
         <li class="log-out" @click="logOut">
           <button v-if="!logoutLoading">
             <Icon size="16px" class="icon" name="material-symbols:logout-rounded"></Icon>
-            Odhlásit se
+            {{ t('sidebar.logout') }}
           </button>
 
           <button class="loading" v-else>

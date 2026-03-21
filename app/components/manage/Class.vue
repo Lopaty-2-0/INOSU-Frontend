@@ -5,6 +5,9 @@ import {useFetch} from "nuxt/app";
 import ClassesTable from "~/components/tables/Classes.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   oldClassIds: {
@@ -111,17 +114,17 @@ defineExpose({ reset });
     <slot />
 
     <div class="section content">
-      <label>Výběr tříd</label>
+      <label>{{ t('manage.class.label') }}</label>
 
       <InputMenu
           v-model="selectedClasses"
           :multiple="props.multiple"
           :items="dropDownClasses"
           :create-item="false"
-          placeholder="Vyberte třídu"
+          :placeholder="t('manage.class.placeholder')"
           :deselect="true"
           :disable-item-filtering="true"
-          no-data-text="Žádná třída nebyla nalezena"
+          :no-data-text="t('manage.class.noData')"
           @update:model-value="onSelect"
           @search:change="onSearchInputChange"
           :loading="classesPending"

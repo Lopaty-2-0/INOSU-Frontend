@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import Input from "~/components/ui/Input.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   oldName: {
@@ -33,8 +36,8 @@ defineExpose({ reset })
     <div class="items name">
       <div class="section">
         <div class="content">
-          <label for="name">Název</label>
-          <Input type="text" id="name" name="name" :placeholder="props.oldName ? props.oldName : 'Zadejte název'" v-model.trim="name.input" @input="onInput" />
+          <label for="name">{{ t('manage.name.label') }}</label>
+          <Input type="text" id="name" name="name" :placeholder="props.oldName ? props.oldName : t('manage.name.placeholder')" v-model.trim="name.input" @input="onInput" />
         </div>
       </div>
     </div>

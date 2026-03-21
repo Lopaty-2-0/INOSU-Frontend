@@ -23,9 +23,11 @@ const teamId = route.params.teamId as string;
 const taskId = route.params.taskId as string;
 const guarantorId = route.params.guarantorId as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Přiřazení - Jednotlivci",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.tasks.studentTeam.title', { taskId }),
+  meta: [{ name: "description", content: t('pages.tasks.studentTeam.description') }],
 });
 
 definePageMeta({
@@ -57,7 +59,7 @@ const resetInputs = (): void => {
 
 const downloadMaterials = async (): Promise<void> => {
   if (!task.value || !task.value.task) {
-    alertsStore.addAlert({ type: "error", title: "Stahování souborů", message: "Chyba při stahování materiálů úkolu." });
+    alertsStore.addAlert({ type: "error", title: t('tasks.student.team.download.title'), message: t('tasks.student.team.download.error') });
     return;
   }
 
@@ -66,7 +68,7 @@ const downloadMaterials = async (): Promise<void> => {
 
 const downloadVersion = async (version: Version): Promise<void> => {
   if (!version || !version.elaboration) {
-    alertsStore.addAlert({ type: "warning", title: "Stahování verze", message: "Tato verze není dostupná." });
+    alertsStore.addAlert({ type: "warning", title: t('tasks.student.team.download.title'), message: t('tasks.student.team.download.versionUnavailable') });
     return;
   }
 
@@ -75,7 +77,7 @@ const downloadVersion = async (version: Version): Promise<void> => {
 
 const removeVersion = async (version: Version): Promise<void> => {
   if (!version || !version.idVersion) {
-    alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Chyba při odstraňování verze." });
+    alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.error') });
     return;
   }
 
@@ -97,66 +99,66 @@ const removeVersion = async (version: Version): Promise<void> => {
 
       switch (resCode) {
         case "49010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID týmu nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.noTeamId') });
           break;
 
         case "49020":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID úkolu nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.noTaskId') });
           break;
 
         case "49030":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID verze nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.noVersionId') });
           break;
 
         case "49040":
         case "49050":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID týmu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.invalidTeamId') });
           break;
 
         case "49060":
         case "49070":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.invalidTaskId') });
           break;
 
         case "49080":
         case "49090":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "ID verze je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.invalidVersionId') });
           break;
 
         case "49100":
         case "49110":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Neplatný garant úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.invalidGuarantor') });
           break;
 
         case "49120":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Zadaný tým neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.teamNotFound') });
           break;
 
         case "49130":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Zadaná verze neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.versionNotFound') });
           break;
 
         case "49140":
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Na odstranění verze nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.noPermission') });
           break;
 
         case "49150":
-          alertsStore.addAlert({ type: "warning", title: "Odstranění verze", message: "Nelze odstranit verzi po termínu." });
+          alertsStore.addAlert({ type: "warning", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.afterDeadline') });
           break;
 
         case "4961":
-          alertsStore.addAlert({ type: "success", title: "Odstranění verze", message: "Verze byla úspěšně odstraněna." });
+          alertsStore.addAlert({ type: "success", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.success') });
           refreshVersions();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění verze", message: "Nepodařilo se spojit se serverem." });
+      alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.serverError') });
     },
   }).finally(() => {
     specificVersionLoading.value = undefined;
@@ -187,58 +189,58 @@ const uploadNewVersion = async (): Promise<void> => {
 
       switch (resCode) {
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nahraný soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.fileTooBig') });
           break;
         case "38010":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID týmu nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.noTeamId') });
           break;
         case "38020":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID úkolu nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.noTaskId') });
           break;
         case "38030":
         case "38040":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID týmu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.invalidTeamId') });
           break;
         case "38050":
         case "38060":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.invalidTaskId') });
           break;
         case "38070":
         case "38080":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Neplatný garant úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.invalidGuarantor') });
           break;
         case "38090":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný garant neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.guarantorNotFound') });
           break;
         case "38100":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Uživatel není garantem úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.notGuarantor') });
           break;
         case "38110":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný úkol neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.taskNotFound') });
           break;
         case "38120":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Zadaný tým neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.teamNotFound') });
           break;
         case "38130":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Na přidání verze nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.noPermission') });
           break;
         case "38140":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Vypracování nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.noElaboration') });
           break;
         case "38150":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nepodporovaný formát souboru." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.badFormat') });
           break;
         case "38160":
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Název souboru je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.nameTooLong') });
           break;
         case "38170":
-          alertsStore.addAlert({ type: "warning", title: "Přidání verze", message: "Nelze odevzdat verzi po termínu." });
+          alertsStore.addAlert({ type: "warning", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.afterDeadline') });
           break;
         case "38181":
           if (data.redirectUrl && newVersionFile.value) {
             const alert: Alert = {
-              title: "Nahrávání souboru",
-              message: "Probíhá nahrávání souboru...",
+              title: t('tasks.student.team.alerts.addVersion.title'),
+              message: t('tasks.student.team.alerts.addVersion.uploading'),
               type: "info",
               infinite: true,
               canClose: false,
@@ -249,7 +251,7 @@ const uploadNewVersion = async (): Promise<void> => {
 
             upload(newVersionFile.value, data.redirectUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
-              alertsStore.addAlert({ title: "Nahrávání souboru", message: "Soubor byl úspěšně nahrán.", type: "success" });
+              alertsStore.addAlert({ title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.uploadSuccess'), type: "success" });
 
               await $fetch("/api/version_team/put/elaboration", {
                 method: "PUT",
@@ -267,34 +269,34 @@ const uploadNewVersion = async (): Promise<void> => {
 
                   switch (resCode) {
                     case "85190":
-                      alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Soubor nebyl nalezen na úložišti." });
+                      alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.fileNotFound') });
                       return;
                     case "85201":
-                      alertsStore.addAlert({ type: "success", title: "Přidání verze", message: "Nová verze byla úspěšně nahrána." });
+                      alertsStore.addAlert({ type: "success", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.success') });
 
                       resetInputs();
                       await refreshVersions();
                       break;
                     default:
-                      alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nastala neznámá chyba při ukládání." });
+                      alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.serverError') });
                       break;
                   }
                 },
               });
             }).catch(() => {
               alertsStore.removeAlert(alertIndex);
-              alertsStore.addAlert({ title: "Nahrávání souboru", message: "Nastala chyba při nahrávání souboru.", type: "error" });
+              alertsStore.addAlert({ title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.uploadError'), type: "error" });
             });
           }
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání verze", message: "Nepodařilo se spojit se serverem." });
+      alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.serverConnectionError') });
     },
   }).finally(() => {
     submitLoading.value = false;
@@ -381,7 +383,7 @@ watch(teamData, async (newValue: any): Promise<void> => {
   }
 
   teamTaskPoints.value = teamData.value.data.team.points ?? null;
-  guarantorComment.value = teamData.value.data.team.review || "Zatím žádný komentář...";
+  guarantorComment.value = teamData.value.data.team.review || t('tasks.student.team.guarantorComment');
 
 }, { immediate: true });
 
@@ -396,8 +398,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/student`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/student/${taskId}/${teamId}`, active: true },
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/student`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: `${t('tasks.student.team.taskIdLabel')} ${taskId}`, to: `/panel/tasks/student/${taskId}/${teamId}`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -409,11 +411,11 @@ watchEffect((): void => {
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
-              <p>Úkol ID: {{ task.id }}</p>
-              <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('tasks.student.team.taskIdLabel') }} {{ task.id }}</p>
+              <p>{{ t('tasks.student.team.guarantorLabel') }} {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
+              <p>{{ t('tasks.student.team.startLabel') }} {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('tasks.student.team.endLabel') }} {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">{{ t('tasks.student.team.deadlineLabel') }} {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.points">
                 <br>
                 Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }} = {{ teamTaskData.points !== null && task.points ? ((teamTaskData.points / task.points) * 100).toFixed(2) : "0" }}%
@@ -422,15 +424,15 @@ watchEffect((): void => {
 
             <Card class="team-card section-head" variant="outlined" v-if="teamTaskData.isTeam">
               <div class="content">
-                <p class="name"><span>{{ teamTaskData.name || "Neurčeno" }}</span></p>
-                <p><span>ID:</span> {{ teamTaskData.idTeam }}</p>
-                <p><span>Počet členů:</span> {{ (teamTaskData.users || []).length }}</p>
+                <p class="name"><span>{{ teamTaskData.name || t('tasks.student.team.undetermined') }}</span></p>
+                <p><span>{{ t('tasks.student.team.teamIdLabel') }}</span> {{ teamTaskData.idTeam }}</p>
+                <p><span>{{ t('tasks.student.team.teamMembersLabel') }}</span> {{ (teamTaskData.users || []).length }}</p>
                 <p></p>
               </div>
             </Card>
 
             <div class="user section-head">
-              <span>Garant:</span>
+              <span>{{ t('tasks.student.team.guarantorSectionLabel') }}</span>
               <div class="profile">
                 <Image
                   :src="config.public.originUrl + '/api/file/pfp/' + task.guarantor.profilePicture"
@@ -447,14 +449,14 @@ watchEffect((): void => {
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Materiály</h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('tasks.student.team.materialsHeading') }}</h3>
+              <p>{{ t('tasks.student.team.materialsDescription') }}</p>
             </div>
 
             <div class="download-input">
               <div class="line">
                 <div class="input">
-                  {{ task.task || "Žádné zadání" }}
+                  {{ task.task || t('tasks.student.team.noAssignment') }}
                 </div>
                 <div class="icon-div" @click="downloadMaterials">
                   <Icon class="icon" name="material-symbols:download"/>
@@ -465,8 +467,8 @@ watchEffect((): void => {
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Verze vypracování <span class="update" v-if="newVersionFile">(aktualizováno)</span></h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('tasks.student.team.versionsHeading') }} <span class="update" v-if="newVersionFile">{{ t('common.updated') }}</span></h3>
+              <p>{{ t('tasks.student.team.versionsDescription') }}</p>
             </div>
 
             <FileInput
@@ -488,7 +490,7 @@ watchEffect((): void => {
                     <div class="input">
                       <Loading class="loading" color="rgba(var(--description-color), 1)" size="6px" v-if="specificVersionLoading && specificVersionLoading.idVersion === version.idVersion && specificVersionLoading.loading" />
 
-                      <p v-else>{{ version.elaboration || "Odstraněno" }}</p>
+                      <p v-else>{{ version.elaboration || t('tasks.student.team.removed') }}</p>
                     </div>
                     <div class="icon-div" @click="downloadVersion(version)" v-if="version.elaboration">
                       <Icon class="icon" name="material-symbols:download"/>
@@ -506,7 +508,7 @@ watchEffect((): void => {
             </div>
 
             <div class="versions" v-show="!versionsLoading && versionsCount === 0">
-              <p class="error message">Žádný záznam nebyl zobrazen!</p>
+              <p class="error message">{{ t('tasks.student.team.noVersions') }}</p>
             </div>
 
             <Pagination :number-of-pages="versionsNumberOfPages" v-model="versionsActivePage" />
@@ -514,13 +516,13 @@ watchEffect((): void => {
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Komentář garanta</h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('tasks.student.team.guarantorCommentHeading') }}</h3>
+              <p>{{ t('tasks.student.team.guarantorCommentDescription') }}</p>
             </div>
 
             <div class="guarantor-comment download-input">
               <div class="input-div">
-                <span class="label">Poslední úprava: {{ teamTaskData.reviewUpdatedAt ? moment(teamTaskData.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") : "Neupraveno" }}</span>
+                <span class="label">{{ teamTaskData.reviewUpdatedAt ? t('tasks.student.team.lastEdited', { date: moment(teamTaskData.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") }) : t('tasks.student.team.notEdited') }}</span>
 
                 <div class="line">
                   <Editor

@@ -10,11 +10,14 @@ import {useAccountStore} from "~/stores/account";
 import {type Alert, useAlertsStore} from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import {useUpload} from "~/componsables/useUploader";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Nastavení - Údaje",
+  title: t('pages.settings.info.title'),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.settings.info.description') }
   ],
 });
 
@@ -78,19 +81,19 @@ const updateUserData = async (): Promise<void> => {
 
       switch (resCode) {
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nahraný soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.fileTooLarge') });
           break;
         case "2010":
-          alertsStore.addAlert({ type: "warning", title: "Změna údajů", message: "Nic nebylo zadáno k úpravě." });
+          alertsStore.addAlert({ type: "warning", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.nothingToUpdate') });
           break;
         case "2020":
-          alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nepodporovaný formát obrázku." });
+          alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.unsupportedFormat') });
           break;
         case "2031":
           if (data.uploadUrl && newUserData.value.profilePicture) {
             const alert: Alert = {
-              title: "Nahrávání souboru",
-              message: "Probíhá nahrávání souboru...",
+              title: t('settings.info.alerts.uploadFile.title'),
+              message: t('settings.info.alerts.uploadFile.uploading'),
               type: "info",
               infinite: true,
               canClose: false,
@@ -102,8 +105,8 @@ const updateUserData = async (): Promise<void> => {
             upload(newUserData.value.profilePicture, data.uploadUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Soubor byl úspěšně nahrán.",
+                title: t('settings.info.alerts.uploadFile.title'),
+                message: t('settings.info.alerts.uploadFile.success'),
                 type: "success"
               });
 
@@ -120,7 +123,7 @@ const updateUserData = async (): Promise<void> => {
 
                   switch (resCode) {
                     case "57070":
-                      alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Soubor nebyl nalezen na úložišti." });
+                      alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.fileNotFound') });
                       return;
                     case "57081":
                       accountStore.updateProfilePicture(data.user.profilePicture);
@@ -128,7 +131,7 @@ const updateUserData = async (): Promise<void> => {
                       newUserData.value.profilePicture = undefined;
                       break;
                     default:
-                      alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nastala neznámá chyba při ukládání." });
+                      alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.savingError') });
                       break;
                   }
                 },
@@ -137,23 +140,23 @@ const updateUserData = async (): Promise<void> => {
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Nastala chyba při nahrávání souboru.",
+                title: t('settings.info.alerts.uploadFile.title'),
+                message: t('settings.info.alerts.uploadFile.error'),
                 type: "error"
               });
             });
           }
 
-          alertsStore.addAlert({ type: "success", title: "Změna údajů", message: "Údaje byly úspěšně aktualizovány." });
+          alertsStore.addAlert({ type: "success", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.success') });
           oldUserData.value.reminders = data.user.reminders;
           break;
         default:
-          alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.unknown') });
           break;
       }
     },
     async onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Změna údajů", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.unknown') });
     }
   });
 
@@ -167,8 +170,8 @@ const updateUserData = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Nastavení', to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
-            { label: 'Údaje', to: '/panel/settings', active: true }
+            { label: t('settings.title'), to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
+            { label: t('settings.tabs.info'), to: '/panel/settings', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -176,32 +179,30 @@ const updateUserData = async (): Promise<void> => {
 
     <template #content>
       <div id="settings">
-        <Navigation class="navigation" title="Nastavení" :active-link-id="0" :links="[
-          { name: 'Údaje', path: '/panel/settings' },
-          { name: 'Zabezpečení', path: '/panel/settings/security' },
-          { name: 'Přizpůsobení', path: '/panel/settings/customization' },
+        <Navigation class="navigation" :title="t('settings.title')" :active-link-id="0" :links="[
+          { name: t('settings.tabs.info'), path: '/panel/settings' },
+          { name: t('settings.tabs.security'), path: '/panel/settings/security' },
+          { name: t('settings.tabs.customization'), path: '/panel/settings/customization' },
         ]" />
 
         <div class="content">
           <EditProfilePicture ref="editProfilePicture" class="page-section" :old-profile-picture="oldUserData.profilePicture" @update="onProfilePictureUpdate">
             <div class="section-head">
               <h3>
-                Profilová fotka
-                <span class="update" v-show="newUserData.profilePicture">(aktualizováno)</span>
+                {{ t('settings.info.profilePicture.title') }}
+                <span class="update" v-show="newUserData.profilePicture">{{ t('common.updated') }}</span>
               </h3>
-              <p>Zde můžete změnit svou profilovou fotku. Nahrajte nový obrázek, pokud si přejete aktualizovat stávající profilovou fotografii.</p>
+              <p>{{ t('settings.info.profilePicture.description') }}</p>
             </div>
           </EditProfilePicture>
 
           <EditReminders ref="editReminders" class="page-section" :old-reminders-value="oldUserData.reminders" @update="onRemindersUpdate">
             <div class="section-head">
               <h3>
-                Připomínky
-                <span class="update" v-show="newUserData.reminders !== oldUserData.reminders">(aktualizováno)</span>
+                {{ t('settings.info.reminders.title') }}
+                <span class="update" v-show="newUserData.reminders !== oldUserData.reminders">{{ t('common.updated') }}</span>
               </h3>
-              <p>
-                Zde můžete zapnout nebo vypnout připomínky na úkoly. Pokud je povolíte, budete dostávat do e-mailu upozornění na nadcházející úkoly a termíny.
-              </p>
+              <p>{{ t('settings.info.reminders.description') }}</p>
             </div>
           </EditReminders>
 

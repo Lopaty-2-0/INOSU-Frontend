@@ -6,9 +6,11 @@ import type {LocaleObject} from "~/types/i18n";
 import { useI18n } from "#imports";
 import LocalePicker from "~/components/ui/LocalePicker.vue";
 
+const { setLocale, locale, locales, t } = useI18n();
+
 useHead({
-  title: "Panel | Zapomenuté heslo",
-  meta: [{ name: "description", content: "Zapomenuté heslo" }],
+  title: t('pages.forgotPassword.title'),
+  meta: [{ name: "description", content: t('pages.forgotPassword.description') }],
 });
 
 const messages = ref<{
@@ -19,7 +21,6 @@ const email = ref<string>("");
 const loading = ref<boolean>(false);
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const pageLoading = ref<boolean>(true);
-const { setLocale, locale, locales, t } = useI18n();
 const newLocale = ref<string>(locale.value || "cz");
 
 //check user inputs
@@ -27,8 +28,8 @@ const validateForm = (): void => {
   resetMessages();
 
   if (!emailRegex.test(email.value))
-    messages.value.email = "Špatný formát e-mailu";
-  if (!email.value) messages.value.email = "Zadejte váš e-mail";
+    messages.value.email = t('forgotPassword.validation.invalidEmail');
+  if (!email.value) messages.value.email = t('forgotPassword.validation.emailRequired');
 };
 
 //reset messages when user start typing
@@ -58,43 +59,43 @@ const submitForm = async (): Promise<void> => {
         case "12010":
           messages.value.form = {
             type: "error",
-            message: "E-mail nebyl zadán",
+            message: t('forgotPassword.responses.noEmail'),
           };
           break;
         case "12020":
           messages.value.form = {
             type: "error",
-            message: "Špatný formát e-mailu",
+            message: t('forgotPassword.responses.invalidFormat'),
           };
           break;
         case "12030":
           messages.value.form = {
             type: "error",
-            message: "Tento e-mail nebyl nalezen",
+            message: t('forgotPassword.responses.emailNotFound'),
           };
           break;
         case "12040":
           messages.value.form = {
-            message: "E-mail není přiřazen k žádnému uživateli",
+            message: t('forgotPassword.responses.noUser'),
             type: "success",
           };
           break;
         case "12051":
           messages.value.form = {
-            message: "E-mail byl odeslán",
+            message: t('forgotPassword.responses.sent'),
             type: "success",
           };
           break;
         default:
           messages.value.form = {
             type: "error",
-            message: "Nastala neznámá chyba",
+            message: t('forgotPassword.responses.unknown'),
           };
           break;
       }
     },
     async onRequestError() {
-      messages.value.form = { message: "Nastala neznámá chyba", type: "error" };
+      messages.value.form = { message: t('forgotPassword.responses.unknown'), type: "error" };
     },
   });
 
@@ -124,25 +125,25 @@ onMounted((): void => {
 
     <div class="container">
       <div class="head">
-        <h2>Zapomenuté heslo</h2>
-        <p>Zadejte e-mail pro zaslání odkazu pro resetování.</p>
+        <h2>{{ t('forgotPassword.title') }}</h2>
+        <p>{{ t('forgotPassword.description') }}</p>
       </div>
 
       <form @submit.prevent="submitForm" @input="resetMessages">
         <div class="section">
-          <label for="email">E-mail</label>
+          <label for="email">{{ t('forgotPassword.emailLabel') }}</label>
           <Input
             type="text"
             id="email"
             name="email"
-            placeholder="test@test.com"
+            :placeholder="t('forgotPassword.emailPlaceholder')"
             v-model.trim="email"
           />
           <p v-if="messages.email" class="error">{{ messages.email }}</p>
         </div>
 
         <div class="footer">
-          <button type="submit">Zaslat e-mail</button>
+          <button type="submit">{{ t('forgotPassword.submitButton') }}</button>
           <p
             v-if="messages.form.message"
             :class="{
@@ -158,7 +159,7 @@ onMounted((): void => {
           <Loading color="rgba(var(--description-color), 1)" size="6px" />
         </div>
 
-        <a href="/">Vzpomněli jste si?</a>
+        <a href="/">{{ t('forgotPassword.rememberedLink') }}</a>
       </form>
     </div>
   </div>

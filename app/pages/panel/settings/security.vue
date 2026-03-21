@@ -6,11 +6,14 @@ import Navbar from "~/components/layout/Navbar.vue";
 import { ref } from "vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Nastavení - Zabezpečení",
+  title: t('pages.settings.security.title'),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.settings.security.description') }
   ],
 });
 
@@ -88,27 +91,27 @@ const updateUserData = async (): Promise<void> => {
 
         switch (resCode) {
           case "11010":
-            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Staré heslo nebylo zadáno."});
+            alertsStore.addAlert({type: "error", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.noOldPassword')});
             break;
           case "11020":
-            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nové heslo nebylo zadáno."});
+            alertsStore.addAlert({type: "error", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.noNewPassword')});
             break;
           case "11030":
-            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nesprávné staré heslo."});
+            alertsStore.addAlert({type: "error", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.wrongOldPassword')});
             break;
           case "11040":
-            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nové heslo musí mít minimálně 5 znaků."});
+            alertsStore.addAlert({type: "error", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.tooShort')});
             break;
           case "11051":
-            alertsStore.addAlert({type: "success", title: "Změna hesla", message: "Heslo bylo úspěšně změněno."});
+            alertsStore.addAlert({type: "success", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.success')});
             break;
           default:
-            alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nastala neznámá chyba."});
+            alertsStore.addAlert({type: "error", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.unknown')});
             break;
         }
       },
       async onRequestError() {
-        alertsStore.addAlert({type: "error", title: "Změna hesla", message: "Nastala neznámá chyba."});
+        alertsStore.addAlert({type: "error", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.unknown')});
       }
     });
   }
@@ -123,8 +126,8 @@ const updateUserData = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Nastavení', to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
-            { label: 'Zabezpečeí', to: '/panel/settings/security', active: true }
+            { label: t('settings.title'), to: '/panel/settings', icon: 'material-symbols:settings-rounded' },
+            { label: t('settings.tabs.security'), to: '/panel/settings/security', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -132,26 +135,26 @@ const updateUserData = async (): Promise<void> => {
 
     <template #content>
       <div id="settings">
-        <Navigation class="navigation" title="Nastavení" :active-link-id="1" :links="[
-          { name: 'Údaje', path: '/panel/settings' },
-          { name: 'Zabezpečení', path: '/panel/settings/security' },
-          { name: 'Přizpůsobení', path: '/panel/settings/customization' },
+        <Navigation class="navigation" :title="t('settings.title')" :active-link-id="1" :links="[
+          { name: t('settings.tabs.info'), path: '/panel/settings' },
+          { name: t('settings.tabs.security'), path: '/panel/settings/security' },
+          { name: t('settings.tabs.customization'), path: '/panel/settings/customization' },
         ]" />
 
         <div class="content">
           <EditPassword ref="editPassword" class="page-section" @update="onPasswordsUpdate">
             <div class="section-head">
-              <h3>Resetování hesla <span class="update" v-if="userData.passwords.new !== userData.passwords.old && passwordRulesCheck[0] && userData.passwords.old !== ''">(aktualizováno)</span></h3>
-              <p>Zadejte nové heslo podle doporučených pravidel níže.</p>
+              <h3>{{ t('settings.security.passwordReset.title') }} <span class="update" v-if="userData.passwords.new !== userData.passwords.old && passwordRulesCheck[0] && userData.passwords.old !== ''">{{ t('common.updated') }}</span></h3>
+              <p>{{ t('settings.security.passwordReset.description') }}</p>
 
               <div class="password-rules">
-                <h4>Doporučená pravidla hesla</h4>
+                <h4>{{ t('settings.security.passwordReset.rules.title') }}</h4>
                 <ul>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje minimálně 5 znaků <Icon size="16px" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[0]"></Icon></p></li>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje 2 až 3 znaky: velké, malé, čísla <Icon size="16px" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[1]"></Icon></p></li>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Obsahuje aspoň 1 speciální znak: @, #, $, %, &, *, +, = <Icon size="16px" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[2]"></Icon></p></li>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Neobsahuje žádné mezery <Icon size="16px" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[3]"></Icon></p></li>
-                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>Neobsahuje žádné osobní informace</p></li>
+                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>{{ t('settings.security.passwordReset.rules.minLength') }} <Icon size="16px" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[0]"></Icon></p></li>
+                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>{{ t('settings.security.passwordReset.rules.charTypes') }} <Icon size="16px" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[1]"></Icon></p></li>
+                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>{{ t('settings.security.passwordReset.rules.specialChar') }} <Icon size="16px" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[2]"></Icon></p></li>
+                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>{{ t('settings.security.passwordReset.rules.noSpaces') }} <Icon size="16px" name="material-symbols:check-rounded" class="icon" v-if="passwordRulesCheck[3]"></Icon></p></li>
+                  <li><Icon class="icon" size="16px" name="material-symbols:play-arrow-rounded"></Icon> <p>{{ t('settings.security.passwordReset.rules.noPersonalInfo') }}</p></li>
                 </ul>
               </div>
             </div>

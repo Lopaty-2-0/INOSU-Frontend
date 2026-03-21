@@ -6,6 +6,9 @@ import Image from "~/components/ui/Image.vue";
 import themeSystem from "~/assets/images/theme-system.svg?url";
 import themeDark from "~/assets/images/theme-dark.svg?url";
 import themeLight from "~/assets/images/theme-light.svg?url";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   oldTheme: {
@@ -38,8 +41,8 @@ defineExpose({ reset });
       <Card class="card" :class="{ active: activeTheme === 'light' }" @click="setTheme('light')">
         <div class="body">
           <div class="info">
-            <h4>Světlý</h4>
-            <p>Váš panel bude mít světlý motiv</p>
+            <h4>{{ t('settings.customization.themeMode.light.title') }}</h4>
+            <p>{{ t('settings.customization.themeMode.light.description') }}</p>
           </div>
           <Image :src="themeLight" alt="Světlý režim" />
         </div>
@@ -48,8 +51,8 @@ defineExpose({ reset });
       <Card class="card" :class="{ active: activeTheme === 'dark' }" @click="setTheme('dark')">
         <div class="body">
           <div class="info">
-            <h4>Tmavý</h4>
-            <p>Váš panel bude mít tmavý motiv</p>
+            <h4>{{ t('settings.customization.themeMode.dark.title') }}</h4>
+            <p>{{ t('settings.customization.themeMode.dark.description') }}</p>
           </div>
           <Image :src="themeDark" alt="Tmavý režim" />
         </div>
@@ -58,8 +61,8 @@ defineExpose({ reset });
       <Card class="card" :class="{ active: activeTheme === 'system' }" @click="setTheme('system')">
         <div class="body">
           <div class="info">
-            <h4>Systém</h4>
-            <p>Motiv bude podle systému vašeho zařízení</p>
+            <h4>{{ t('settings.customization.themeMode.system.title') }}</h4>
+            <p>{{ t('settings.customization.themeMode.system.description') }}</p>
           </div>
           <Image :src="themeSystem" alt="Systémový režim"/>
         </div>

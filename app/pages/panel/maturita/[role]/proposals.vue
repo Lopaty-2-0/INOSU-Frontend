@@ -13,9 +13,11 @@ import {storeToRefs} from "pinia";
 import {useAlertsStore} from "~/stores/alerts";
 import Loading from "~/components/ui/Loading.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Návrhy maturitních zadání",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.proposalsRole.title'),
+  meta: [{ name: "description", content: t('pages.maturita.proposalsRole.description') }],
 });
 
 definePageMeta({
@@ -68,60 +70,60 @@ const changeTaskStatus = async (id: number, teamId: number, status: "approved" |
         case "32010":
         case "32030":
         case "32040":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "ID úkolu je neplatné nebo nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.invalidTaskId') });
           break;
 
         case "32020":
         case "32050":
         case "32060":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "ID týmu je neplatné nebo nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.invalidTeamId') });
           break;
 
         case "32070":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Zadaný úkol neexistuje nebo k němu nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.taskNotFound') });
           break;
 
         case "32080":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Zadaný tým neexistuje." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.teamNotFound') });
           break;
 
         case "32090":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Zadaný status není povolený." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.invalidStatus') });
           break;
 
         case "32100":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Bylo dosaženo max variant pro tento topic." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.maxVariants') });
           break;
 
         case "32110":
         case "32120":
         case "32130":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Body nejsou platné nebo nelze udělit více bodů, než má úkol." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.pointsInvalid') });
           break;
 
         case "32140":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Komentář je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.commentTooLong') });
           break;
 
         case "32150":
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Název týmu je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('maturita.proposals_role.alerts.manageProposal.nameTooLong') });
           break;
 
         case "32161":
-          alertsStore.addAlert({type: "success", title: "Návrhy maturitních prací",
-            message: status === "approved" ? "Návrh maturitní práce byl přijat." : "Návrh maturitní práce byl zamítnut."
+          alertsStore.addAlert({type: "success", title: t('maturita.proposals_role.alerts.manageProposal.title'),
+            message: status === "approved" ? t('maturita.proposals_role.alerts.manageProposal.accepted') : t('maturita.proposals_role.alerts.manageProposal.rejected')
           });
           refreshTasks();
         break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('common.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Návrhy maturitních prací", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.proposals_role.alerts.manageProposal.title'), message: t('common.unknown') });
     },
   }).finally(() => {
     loading.value = { isLoading: false, id: null, teamId: null };
@@ -188,8 +190,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/proposals`, icon: 'material-symbols:lightbulb-rounded' },
-            { label: 'Návrhy', to: `/panel/maturita/${role}/proposals`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/proposals`, icon: 'material-symbols:lightbulb-rounded' },
+            { label: t('sidebar.links.proposals'), to: `/panel/maturita/${role}/proposals`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -200,11 +202,11 @@ watchEffect((): void => {
         <div class="content">
           <div class="page-section">
             <div class="section-head">
-              <h3>Maturitní zadání</h3>
-              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+              <h3>{{ t('maturita.proposals_role.maturitaSection.heading') }}</h3>
+              <p>{{ t('maturita.proposals_role.maturitaSection.description') }}</p>
             </div>
 
-            <p class="error message">Žádný maturitní období more.</p>
+            <p class="error message">{{ t('maturita.proposals_role.maturitaSection.noMaturita') }}</p>
           </div>
         </div>
       </div>
@@ -213,14 +215,14 @@ watchEffect((): void => {
         <div class="content">
           <div class="line">
             <div class="section-head bottom-line">
-              <h3>Návrhy maturitních zadání</h3>
-              <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+              <h3>{{ t('maturita.proposals_role.listHeading') }}</h3>
+              <p>{{ t('maturita.proposals_role.listDescription') }}</p>
               <br>
-              <p>Ročník: {{ currentMaturita.grade }}</p>
-              <p>Konec: {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('maturita.grade.add.startLabel').replace(' *', '') }}: {{ currentMaturita.grade }}</p>
+              <p>{{ t('maturita.team.endLabel') }} {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat zadání" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('maturita.proposals_role.searchPlaceholder')" />
           </div>
 
           <MauturitaProposalsTable :role="role" class="datatable" :tasks="allTasks" :loading="tasksPending">
@@ -228,8 +230,8 @@ watchEffect((): void => {
               <Loading color="var(--actionBar-actions-add-color)" size="6px" v-if="loading.isLoading && loading.id === data.value.id && loading.teamId === data.value.idTeam" />
 
               <div class="actions" v-else>
-                <button type="button" class="approved" @click="changeTaskStatus(data.value.id, data.value.idTeam, 'approved')">Přijmout</button>
-                <button type="button" class="rejected" @click="changeTaskStatus(data.value.id, data.value.idTeam, 'rejected')">Zamítnout</button>
+                <button type="button" class="approved" @click="changeTaskStatus(data.value.id, data.value.idTeam, 'approved')">{{ t('maturita.proposals_role.acceptBtn') }}</button>
+                <button type="button" class="rejected" @click="changeTaskStatus(data.value.id, data.value.idTeam, 'rejected')">{{ t('maturita.proposals_role.rejectBtn') }}</button>
               </div>
             </template>
           </MauturitaProposalsTable>

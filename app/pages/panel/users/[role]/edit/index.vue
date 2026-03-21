@@ -20,9 +20,11 @@ definePageMeta({
 const route = useRoute();
 const role = route.params.role as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Upravení uživatelů - " + role,
-  meta: [{ name: "description", content: "Panel Settings User Information" }],
+  title: t('pages.users.roleEdit.title', { role }),
+  meta: [{ name: "description", content: t('pages.users.roleEdit.description') }],
 });
 
 const config = useRuntimeConfig();
@@ -81,9 +83,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: t('users.index.title'), to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
             { label: role, to: '/panel/users/' + role },
-            { label: 'Upravení', to: '/panel/users/' + role + '/edit', active: true }
+            { label: t('users.role.edit.index.heading'), to: '/panel/users/' + role + '/edit', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -94,9 +96,9 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa uživatelů"
+            :description="t('actionBar.description')"
             :active="1"
-            :texts="['Přidat', 'Upravit', 'Odebrat']"
+            :texts="[t('actionBar.add'), t('actionBar.edit'), t('actionBar.remove')]"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:edit-rounded',
@@ -111,11 +113,11 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Upravení uživatelů</h3>
-              <p>Zde si můžete vybrat uživatele, kterého chcete upravit.</p>
+              <h3>{{ t('users.role.edit.index.heading') }}</h3>
+              <p>{{ t('users.role.edit.index.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat uživatele" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('users.role.index.searchPlaceholder')" />
           </div>
 
           <div class="users">
@@ -137,10 +139,10 @@ watchEffect((): void => {
                       E-mail: <span>{{ item.data.email }}</span>
                     </p>
                     <p>
-                      Přezdívka: <span>{{ item.data.abbreviation || "Není" }}</span>
+                      {{ t('users.role.edit.index.abbreviationLabel') }} <span>{{ item.data.abbreviation || t('users.role.edit.index.noAbbreviation') }}</span>
                     </p>
                     <p>
-                      Vytvořen:
+                      {{ t('users.student.class.index.createdLabel') }}
                       <span>{{ moment(item.data.createdAt).format("DD. MM. YYYY") }}</span>
                     </p>
                   </div>

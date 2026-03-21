@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import Checkbox from "~/components/ui/Checkbox.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   oldRemindersValue: {
@@ -31,7 +34,7 @@ defineExpose({ reset });
       <div class="section">
         <div class="content">
           <Checkbox type="checkbox" id="reminder" name="reminder" :value="props.oldRemindersValue" v-model="reminder" />
-          <label for="reminder">Dostávat připomínky</label>
+          <label for="reminder">{{ t('manage.reminders.label') }}</label>
         </div>
       </div>
     </div>

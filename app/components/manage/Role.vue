@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import InputMenu from "~/components/ui/InputMenu.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   roles: {
@@ -46,7 +49,7 @@ defineExpose({ reset });
 
     <div class="section">
       <div class="content">
-        <label for="roleInput">Role</label>
+        <label for="roleInput">{{ t('manage.role.label') }}</label>
 
         <InputMenu
           :items="roles"

@@ -15,14 +15,17 @@ import CardsGrid from "~/components/ui/CardsGrid.vue";
 import ActionFooter from "~/components/manage/Footer.vue";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
+import { useI18n } from "#imports";
 
 const route = useRoute();
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkol - " + taskId + " - Přiřazení - Třídy",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: computed(() => t('pages.tasks.assignClasses.title', { taskId })),
+  meta: [{ name: "description", content: computed(() => t('pages.tasks.assignClasses.description')) }],
 });
 
 definePageMeta({
@@ -60,7 +63,7 @@ const resetSelection = (): void => {
 
 const assignToTask = async (): Promise<void> => {
   if (!selectedClasses.value || selectedClasses.value.length === 0) {
-    alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nebyla vybrána žádná třída." });
+    alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.noClass') });
     return;
   }
 
@@ -83,45 +86,45 @@ const assignToTask = async (): Promise<void> => {
         case "36010":
         case "36030":
         case "36040":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.invalidTaskId') });
           break;
 
         case "36020":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Nebyl vybrán žádný uživatel ani třída." });
+          alertsStore.addAlert({ type: "warning", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.noUserOrClass') });
           break;
 
         case "36050":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Úkol neexistuje nebo nejste jeho garant." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.taskNotFound') });
           break;
 
         case "36060":
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Tento endpoint nelze použít pro maturitní úkol." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.notForMaturita') });
           break;
 
         case "36070":
-          alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: "Nikomu nebyl úkol přiřazen." });
+          alertsStore.addAlert({ type: "warning", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.noneAssigned') });
           break;
 
         case "36081":
           if (differentTeam.length > 0)
-            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Někteří uživatelé již byli přiřazeni k jinému týmu.` });
+            alertsStore.addAlert({ type: "warning", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.differentTeam') });
 
           if (badIds.length > 0)
-            alertsStore.addAlert({ type: "warning", title: "Přiřazení k úkolu", message: `Některé uživatele nebylo možné přiřadit.` });
+            alertsStore.addAlert({ type: "warning", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.badIds') });
 
-          alertsStore.addAlert({ type: "success", title: "Přiřazení k úkolu", message: `Přiřazení úkolu bylo úspěšně aktualizováno.` });
+          alertsStore.addAlert({ type: "success", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.success') });
 
           resetSelection();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přiřazení k úkolu", message: "Nastala chyba při odesílání požadavku." });
+      alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.requestError') });
     },
   }).finally(() => {
     submitLoading.value = false;
@@ -186,10 +189,10 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: `Úkol ID: ${taskId}`, to: `/panel/tasks/${role}/${taskId}` },
-            { label: 'Přiřazení', to: `/panel/tasks/${role}/${taskId}/assign` },
-            { label: 'Třídy', to: `/panel/tasks/${role}/${taskId}/assign`, active: true },
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/${role}`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('tasks.assign.taskIdBreadcrumb', { taskId }), to: `/panel/tasks/${role}/${taskId}` },
+            { label: t('tasks.assign.nav.title'), to: `/panel/tasks/${role}/${taskId}/assign` },
+            { label: t('tasks.assign.nav.classes'), to: `/panel/tasks/${role}/${taskId}/assign`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -197,26 +200,26 @@ watchEffect((): void => {
 
     <template #content>
       <div id="task-assign">
-        <Navigation class="page-navigation" title="Přiřazení" :active-link-id="0" :links="[
-          { name: 'Třídy', path: `/panel/tasks/${role}/${taskId}/assign` },
-          { name: 'Jednotlivci', path: `/panel/tasks/${role}/${taskId}/assign/individuals` },
-          { name: 'Týmy', path: `/panel/tasks/${role}/${taskId}/assign/teams` },
+        <Navigation class="page-navigation" :title="t('tasks.assign.nav.title')" :active-link-id="0" :links="[
+          { name: t('tasks.assign.nav.classes'), path: `/panel/tasks/${role}/${taskId}/assign` },
+          { name: t('tasks.assign.nav.individuals'), path: `/panel/tasks/${role}/${taskId}/assign/individuals` },
+          { name: t('tasks.assign.nav.teams'), path: `/panel/tasks/${role}/${taskId}/assign/teams` },
         ]" />
 
         <div class="content" v-if="task">
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
-              <p>Úkol ID: {{ task.id }}</p>
-              <p>Garant: {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Max bodů: {{ task.points ?? "neurčeno" }}</p>
+              <p>{{ t('tasks.assign.taskIdLabel') }} {{ task.id }}</p>
+              <p>{{ t('tasks.assign.guarantorLabel') }} {{ task.guarantor.name }} {{ task.guarantor.surname }}</p>
+              <p>{{ t('tasks.assign.startLabel') }} {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('tasks.assign.endLabel') }} {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">{{ t('tasks.assign.deadlineLabel') }} {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('tasks.assign.maxPointsLabel') }} {{ task.points ?? t('tasks.assign.undetermined') }}</p>
               <p>
-                Zadání:
+                {{ t('tasks.assign.assignmentLabel') }}
                 <a :href="task.task ? `/api/file/task/${task.guarantor.id}/${task.id}/${task.task}` : '#'" class="link" download target="_blank">
-                  {{ task.task || "Žádné zadání" }}
+                  {{ task.task || t('tasks.assign.noAssignment') }}
                 </a>
               </p>
             </div>
@@ -225,11 +228,11 @@ watchEffect((): void => {
           <div class="page-section bottom-line">
             <div class="line">
               <div class="section-head">
-                <h3>Vybrané třídy: {{ selectedClasses.length }}</h3>
-                <p>Vyberte třídy, kterým chcete úkol přiřadit, a potvrďte změny.</p>
+                <h3>{{ t('tasks.assign.classes.heading', { count: selectedClasses.length }) }}</h3>
+                <p>{{ t('tasks.assign.classes.description') }}</p>
               </div>
 
-              <SearchInput @change="onSearchInputChange" placeholder="Hledat třídy" />
+              <SearchInput @change="onSearchInputChange" :placeholder="t('tasks.assign.classes.searchPlaceholder')" />
             </div>
 
             <div class="classes">

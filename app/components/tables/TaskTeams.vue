@@ -3,6 +3,9 @@ import Vue3Datatable from "@bhplugin/vue3-datatable";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import {computed, nextTick, ref, useSlots, watch} from "vue";
 import type {TaskTeam} from "~/types/team";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 type Column = { field: string; title: string; type?: string; width?: string; filter?: boolean; cellRenderer?: Function };
 
@@ -51,15 +54,15 @@ const slots = useSlots();
 
 const cols = computed<Column[]>(() => {
   const base: Column[] = [
-    { field: "idTeam", title: "ID", width: "90px", type: "number" },
-    { field: "name", title: "Název", type: "string", width: "80%" },
-    { field: "count", title: "Počet členů", type: "string", width: "20%" },
+    { field: "idTeam", title: t('tables.columns.id'), width: "90px", type: "number" },
+    { field: "name", title: t('tables.columns.name'), type: "string", width: "80%" },
+    { field: "count", title: t('tables.columns.memberCount'), type: "string", width: "20%" },
   ];
 
   const merged: Column[] = [...base, ...(props.extraColumns || [])];
 
   if (slots.actions) {
-    merged.push({ field: "actions", title: "Akce" });
+    merged.push({ field: "actions", title: t('tables.columns.actions') });
   }
 
   return merged;
@@ -110,13 +113,13 @@ defineExpose({ clearSelection, updateSelection });
 </script>
 
 <template>
-  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" no-data-content="Žádná data k dispozici" @rowClick="onRowClick">
+  <Vue3Datatable ref="datatable" class="datatable" :pagination="props.pagination" :rows="rows" :loading="props.loading" :showFirstPage="false" :showLastPage="false" :hasCheckbox="props.hasCheckbox" :columns="cols" :pageSize="props.pageSize" :sortable="false" :search="props.searchInput" :selectRowOnClick="selectRowOnClick" :no-data-content="t('common.noData')" @rowClick="onRowClick">
     <template v-for="(_, name) in slots" v-slot:[name]="slotProps">
       <slot :name="name" v-bind="slotProps" />
     </template>
 
     <template #name="data">
-      <span class="limit">{{ data.value.name || "Neurčeno" }}</span>
+      <span class="limit">{{ data.value.name || t('common.undetermined') }}</span>
     </template>
 
     <template #actions="data">

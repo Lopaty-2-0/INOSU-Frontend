@@ -9,9 +9,11 @@ import LocalePicker from "~/components/ui/LocalePicker.vue";
 import { useI18n } from "#imports";
 import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
 
+const { setLocale, locale, locales, t } = useI18n();
+
 useHead({
-  title: "Panel | Přihlášení",
-  meta: [{ name: "description", content: "Panel Login Page" }],
+  title: t('pages.login.title'),
+  meta: [{ name: "description", content: t('pages.login.description') }],
 });
 
 const { encodeData } = useSimpleDataCipher();
@@ -27,7 +29,6 @@ const errors = ref<{ login: string | null; password: string | null; req: string 
 });
 const loading = ref<boolean>(false);
 const pageLoading = ref<boolean>(true);
-const { setLocale, locale, locales, t } = useI18n();
 const newLocale = ref<string>(locale.value || "cz");
 
 const validateLogin = (): void => {

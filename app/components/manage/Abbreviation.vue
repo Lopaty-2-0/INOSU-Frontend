@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
 import Input from "~/components/ui/Input.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   fullName: {
@@ -19,7 +22,7 @@ const abbreviation = ref<{ input: string, error: string }>({ input: props.oldAbb
 const onInput = (): void => {
   if (!abbreviation.value.input) abbreviation.value.input = "";
 
-  if (abbreviation.value.input.length > 4) abbreviation.value.error = "Délka přezdívky může být max 4 znaky.";
+  if (abbreviation.value.input.length > 4) abbreviation.value.error = t('manage.abbreviation.errors.tooLong');
   else abbreviation.value.error = "";
 
   const isUpdated: boolean = abbreviation.value.input.toLowerCase() !== props.oldAbbreviation.toLowerCase() && abbreviation.value.error === "";
@@ -35,7 +38,7 @@ const generateAbbreviation = (): void => {
     abbreviation.value.input = `${name[0]?.toUpperCase() || ""}${name[1]?.toUpperCase() || ""}${surname[0]?.toUpperCase() || ""}${surname[1]?.toUpperCase() || ""}`;
     onInput();
   } else {
-    abbreviation.value.error = "Ze jména a příjmení nelze vygenerovat přezdívku.";
+    abbreviation.value.error = t('manage.abbreviation.errors.cantGenerate');
     abbreviation.value.input = "";
   }
 };
@@ -54,9 +57,9 @@ defineExpose({ reset });
 
     <div class="section url">
       <div class="content">
-        <label for="abbreviation">Přezdívka</label>
+        <label for="abbreviation">{{ t('manage.abbreviation.label') }}</label>
         <div class="line">
-          <Input :class="{ error: abbreviation.error }" type="text" id="abbreviation" placeholder="JANO" v-model.trim="abbreviation.input" @input="onInput" />
+          <Input :class="{ error: abbreviation.error }" type="text" id="abbreviation" :placeholder="t('manage.abbreviation.placeholder')" v-model.trim="abbreviation.input" @input="onInput" />
           <div class="icon-div" @click="generateAbbreviation"><Icon class="icon" name="material-symbols:wand-stars-rounded"></Icon></div>
         </div>
 

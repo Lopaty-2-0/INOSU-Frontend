@@ -11,9 +11,11 @@ import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import TasksTable from "~/components/tables/Tasks.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Úkoly",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.tasks.roleIndex.title'),
+  meta: [{ name: "description", content: t('pages.tasks.roleIndex.description') }],
 });
 
 definePageMeta({
@@ -92,7 +94,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Úkoly', to: `/panel/tasks/${role}`, active: true, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('sidebar.links.tasks'), to: `/panel/tasks/${role}`, active: true, icon: 'material-symbols:folder-copy-rounded' },
           ]"/>
         </template>
       </Navbar>
@@ -103,8 +105,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa úkolů"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('tasks.role.index.heading')"
+            :texts="[t('actionBar.add'), t('actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -120,19 +122,19 @@ watchEffect((): void => {
             <div class="line">
               <div class="line">
                 <div class="section-head">
-                  <h3>Vytvořené úkoly</h3>
-                  <p>Seznam vašich vytvořených úkolů, s kterými můžete pracovat.</p>
+                  <h3>{{ t('tasks.role.index.heading') }}</h3>
+                  <p>{{ t('tasks.role.index.description') }}</p>
                 </div>
 
-                <SearchInput @change="onSearchInputChange" placeholder="Hledat úkol" />
+                <SearchInput @change="onSearchInputChange" :placeholder="t('tasks.role.index.searchPlaceholder')" />
               </div>
 
               <TasksTable :tasks="allTasks" :loading="tasksPending">
                 <template #actions="data">
                   <div class="actions">
-                    <button type="button" class="default" @click="openTask(data.value.id)">Otevřít</button>
-                    <button type="button" class="default" @click="editTask(data.value.id)">Upravit</button>
-                    <button type="button" class="assign" @click="assignTask(data.value.id)">Přiřadit</button>
+                    <button type="button" class="default" @click="openTask(data.value.id)">{{ t('tasks.role.index.openBtn') }}</button>
+                    <button type="button" class="default" @click="editTask(data.value.id)">{{ t('tasks.role.index.editBtn') }}</button>
+                    <button type="button" class="assign" @click="assignTask(data.value.id)">{{ t('tasks.role.index.assignBtn') }}</button>
                   </div>
                 </template>
               </TasksTable>

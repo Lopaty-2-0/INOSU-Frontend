@@ -2,6 +2,9 @@
 import {ref, computed, watch, useSlots} from "vue";
 import Input from "~/components/ui/Input.vue";
 import Loading from "~/components/ui/Loading.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 export type InputMenuItem = {
   value: string;
@@ -48,11 +51,11 @@ const props = defineProps({
   },
   noDataText: {
     type: String,
-    default: "Nic nebylo nalezeno.",
+    default: "",
   },
   placeholder: {
     type: String,
-    default: "Vyberte / Vytvořte položku",
+    default: "",
   },
   title: {
     type: String,
@@ -93,10 +96,10 @@ const normalizedItems = computed<InputMenuItem[]>(() => {
 });
 const placeholder = computed<string>(() => {
   if (props.multiple) {
-    return selectedItems.value.length > 0 ? `Vybráno: ${selectedItems.value.length}` : props.title || props.placeholder;
+    return selectedItems.value.length > 0 ? t('inputMenu.selected', { count: selectedItems.value.length }) : props.title || props.placeholder || t('inputMenu.placeholder');
   } else {
     const selected: InputMenuItem | undefined = normalizedItems.value.find((i) => i.value === selectedItems.value[0]);
-    let text: string = selected ? selected.label : props.title || props.placeholder;
+    let text: string = selected ? selected.label : props.title || props.placeholder || t('inputMenu.placeholder');
 
     if (props.uppercase) text = text.toUpperCase();
     if (props.lowercase) text = text.toLowerCase();
@@ -216,7 +219,7 @@ defineExpose({ resetSelection });
       </div>
 
       <div v-if="canCreateItem" class="section" @click="createItem">
-        <span>Přidat "{{ input }}"</span>
+        <span>{{ t('inputMenu.add', { item: input }) }}</span>
       </div>
 
       <span class="section no-hover" v-if="slots['row-extra']">
@@ -224,7 +227,7 @@ defineExpose({ resetSelection });
       </span>
 
       <div v-if="filteredItems.length <= 0 && !canCreateItem" class="section no-hover">
-        <span class="no-data-text">{{ props.noDataText }}</span>
+        <span class="no-data-text">{{ props.noDataText || t('inputMenu.noData') }}</span>
       </div>
     </div>
   </div>

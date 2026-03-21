@@ -3,6 +3,7 @@ import {computed, ref, watch} from "vue";
 import Navbar from "~/components/layout/Navbar.vue";
 import Breadcrumb from "~/components/ui/Breadcrumb.vue";
 import { useAlertsStore } from "~/stores/alerts";
+import { useI18n } from "#imports";
 import Input from "~/components/ui/Input.vue";
 import EditFormFooter from "~/components/manage/Footer.vue";
 import InputMenu from "~/components/ui/InputMenu.vue";
@@ -17,11 +18,12 @@ import moment from "moment";
 import type {VDatePicker} from "~/../.nuxt/components";
 import Loading from "~/components/ui/Loading.vue";
 
-useHead({
-  title: "Panel | Kalendář",
-  meta: [{ name: "description", content: "Panel Homepage" }],
-});
+const { t } = useI18n();
 
+useHead({
+  title: computed(() => t('pages.calendar.title')),
+  meta: [{ name: "description", content: computed(() => t('pages.calendar.description')) }],
+});
 const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();
 const { getId: userId, getRole: role } = storeToRefs(accountStore);
@@ -118,13 +120,13 @@ const toggleEventInfo = (id?: number | null): void => {
 
 const checkForErrors = (): void => {
   if (!newEventData.value.name) {
-    errors.value.name = "Název události musí být zadán.";
+    errors.value.name = t('calendar.form.errors.nameRequired');
   } else {
     errors.value.name = "";
   }
 
   if (newEventData.value.description && newEventData.value.description.length > 500) {
-    errors.value.description = "Popis události je příliš dlouhý (max: 500 znaků).";
+    errors.value.description = t('calendar.form.errors.descriptionTooLong');
   } else {
     errors.value.description = "";
   }
@@ -164,20 +166,20 @@ const onUserSelect = (user: string[]): void => {
 };
 
 const getEventTimeText = (startDate: Date | number | string | undefined, endDate: Date | number | string | undefined): string => {
-  if (!endDate) return "Nedefinováno";
+  if (!endDate) return t('calendar.undefined');
 
   const end = moment(endDate);
   const start = startDate ? moment(startDate) : null;
 
   if (start && start.isSame(end)) {
-    return `v ${end.format("HH:mm")}`;
+    return t('calendar.timeAt', { time: end.format("HH:mm") });
   }
 
   if (!start) {
-    return `do ${end.format("HH:mm")}`;
+    return t('calendar.timeUntil', { time: end.format("HH:mm") });
   }
 
-  return `od ${start.format("HH:mm")} do ${end.format("HH:mm")}`;
+  return t('calendar.timeFromTo', { start: start.format("HH:mm"), end: end.format("HH:mm") });
 };
 
 const resetNewEventData = (): void => {
@@ -237,15 +239,15 @@ const removeEvent = async (idEvent?: number | null): Promise<void> => {
 
       switch (resCode) {
         case "93010":
-          alertsStore.addAlert({type: "error", title: "Odstranění události", message: "ID události nebylo zadáno."});
+          alertsStore.addAlert({type: "error", title: t('calendar.alerts.removeEvent.title'), message: t('calendar.alerts.removeEvent.noId')});
           break;
 
         case "93021":
-          alertsStore.addAlert({type: "info", title: "Odstranění události", message: "Žádná událost nebyla odstraněna."});
+          alertsStore.addAlert({type: "info", title: t('calendar.alerts.removeEvent.title'), message: t('calendar.alerts.removeEvent.noneRemoved')});
           break;
 
         case "93031":
-          alertsStore.addAlert({type: "success", title: "Odstranění události", message: "Událost byla úspěšně odstraněna."});
+          alertsStore.addAlert({type: "success", title: t('calendar.alerts.removeEvent.title'), message: t('calendar.alerts.removeEvent.success')});
 
           await loadEvents();
           await loadAuthorEvents();
@@ -253,12 +255,12 @@ const removeEvent = async (idEvent?: number | null): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({type: "error", title: "Odstranění události", message: "Nastala neznámá chyba."});
+          alertsStore.addAlert({type: "error", title: t('calendar.alerts.removeEvent.title'), message: t('calendar.alerts.removeEvent.unknown')});
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({type: "error", title: "Odstranění události", message: "Nastala neznámá chyba."});
+      alertsStore.addAlert({type: "error", title: t('calendar.alerts.removeEvent.title'), message: t('calendar.alerts.removeEvent.unknown')});
     },
   }).finally((): void => {
     loadingEventId.value = null;
@@ -267,12 +269,12 @@ const removeEvent = async (idEvent?: number | null): Promise<void> => {
 
 const addNewEvent = async (): Promise<void> => {
   if (errors.value.name || errors.value.description) {
-    alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Opravte chyby ve formuláři." });
+    alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.formErrors') });
     return;
   }
 
   if (!newEventData.value.name || !newEventData.value.endTime) {
-    alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Název a čas ukončení události musí být zadány." });
+    alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.required') });
     return;
   }
 
@@ -295,67 +297,67 @@ const addNewEvent = async (): Promise<void> => {
 
       switch (resCode) {
         case "92010":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Název události nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.noName') });
           break;
 
         case "92020":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Čas ukončení události nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.noEndTime') });
           break;
 
         case "92030":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "ID uživatele musí být číslo." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.invalidUserId') });
           break;
 
         case "92040":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "ID uživatele je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.invalidUserIdValue') });
           break;
 
         case "92050":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Uživatel nebyl nalezen." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.userNotFound') });
           break;
 
         case "92060":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Neplatný formát data ukončení." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.invalidEndDate') });
           break;
 
         case "92070":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Čas ukončení musí být v budoucnosti." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.endInPast') });
           break;
 
         case "92080":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Neplatný formát data začátku." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.invalidStartDate') });
           break;
 
         case "92090":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Začátek a konec musí být ve stejný den." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.sameDayRequired') });
           break;
 
         case "92100":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Čas začátku musí být v budoucnosti." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.startInPast') });
           break;
 
         case "92110":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Čas ukončení musí být po začátku." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.endAfterStart') });
           break;
 
         case "92120":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Neplatný typ události." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.invalidType') });
           break;
 
         case "92130":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Tento typ události nemůžete použít." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.forbiddenType') });
           break;
 
         case "92140":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Název události je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.nameTooLong') });
           break;
 
         case "92150":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Popis události je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.descriptionTooLong') });
           break;
 
         case "92161":
-          alertsStore.addAlert({ type: "success", title: "Vytvoření události", message: "Událost byla úspěšně vytvořena." });
+          alertsStore.addAlert({ type: "success", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.success') });
           resetNewEventData();
           await loadEvents();
           await loadAuthorEvents();
@@ -363,12 +365,12 @@ const addNewEvent = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Vytvoření události", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.unknown') });
     },
   }).finally((): void => {
     loading.value = false;
@@ -502,7 +504,7 @@ watch(datePicker, (): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Kalendář', to: `/panel/calendar`, icon: 'material-symbols:calendar-month-rounded', active: true },
+            { label: t('calendar.title'), to: `/panel/calendar`, icon: 'material-symbols:calendar-month-rounded', active: true },
           ]"/>
         </template>
       </Navbar>
@@ -519,7 +521,7 @@ watch(datePicker, (): void => {
             <div class="events" v-if="selectedDate && (events.length > 0 || authorEvents.length > 0) && !eventsPending && !authorEventsPending">
               <div class="date">
                 <h3>{{ selectedDate ? new Intl.DateTimeFormat("cs-CZ", { month: "long", year: "numeric" }).format(selectedDate) : "" }}</h3>
-                <h3>{{ selectedDate ? `${selectedDate.getDate()}. den` : "" }}</h3>
+                <h3>{{ selectedDate ? t('calendar.dayNumber', { day: selectedDate.getDate() }) : "" }}</h3>
               </div>
 
               <div class="list">
@@ -598,7 +600,7 @@ watch(datePicker, (): void => {
             <div class="events" v-else-if="selectedDate && (eventsPending || authorEventsPending)">
               <div class="date">
                 <h3>{{ selectedDate ? new Intl.DateTimeFormat("cs-CZ", { month: "long", year: "numeric" }).format(selectedDate) : "" }}</h3>
-                <h3>{{ selectedDate ? `${selectedDate.getDate()}. den` : "" }}</h3>
+                <h3>{{ selectedDate ? t('calendar.dayNumber', { day: selectedDate.getDate() }) : "" }}</h3>
               </div>
 
               <div class="loading">
@@ -609,14 +611,14 @@ watch(datePicker, (): void => {
             <div class="events" v-else-if="selectedDate && events.length === 0 && authorEvents.length === 0 && !eventsPending && !authorEventsPending">
               <div class="date">
                 <h3>{{ selectedDate ? new Intl.DateTimeFormat("cs-CZ", { month: "long", year: "numeric" }).format(selectedDate) : "" }}</h3>
-                <h3>{{ selectedDate ? `${selectedDate.getDate()}. den` : "" }}</h3>
+                <h3>{{ selectedDate ? t('calendar.dayNumber', { day: selectedDate.getDate() }) : "" }}</h3>
               </div>
 
-              <p class="error info">Pro tento den nebyly nalezeny žádné události.</p>
+              <p class="error info">{{ t('calendar.noEvents') }}</p>
             </div>
 
             <div class="events" v-else-if="!selectedDate && (!eventsPending || !authorEventsPending)">
-              <p class="error">Nebyl vybrán žádný den, pro zobrazování událostí vyberte den z kalendáře.</p>
+              <p class="error">{{ t('calendar.noDay') }}</p>
             </div>
           </div>
         </div>
@@ -625,12 +627,12 @@ watch(datePicker, (): void => {
           <div class="card">
             <div class="section">
               <div class="section-head">
-                <h3>Název * <span class="update" v-if="newEventData.name">(aktualizováno)</span></h3>
-                <p>Zadejte název zaměření, které chcete přidat. Název musí být jedinečný.</p>
+                <h3>{{ t('calendar.form.name') }} <span class="update" v-if="newEventData.name">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('calendar.form.nameDescription') }}</p>
               </div>
 
               <div class="section-content">
-                <Input type="text" id="name" placeholder="Odevzdat úkol" v-model.trim="newEventData.name" @update:model-value="checkForErrors" />
+                <Input type="text" id="name" :placeholder="t('calendar.form.placeholders.name')" v-model.trim="newEventData.name" @update:model-value="checkForErrors" />
 
                 <p class="input-error" v-if="errors.name.length > 0">{{ errors.name }}</p>
               </div>
@@ -638,12 +640,12 @@ watch(datePicker, (): void => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Časové rozmezí <span class="update" v-if="newEventData.endTime || newEventData.startTime">(aktualizováno)</span></h3>
-                <p>Zadejte název zaměření, které chcete přidat. Název musí být jedinečný.</p>
+                <h3>{{ t('calendar.form.timeRange') }} <span class="update" v-if="newEventData.endTime || newEventData.startTime">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('calendar.form.timeRangeDescription') }}</p>
               </div>
 
               <div class="section-content">
-                <span class="label">Den *</span>
+                <span class="label">{{ t('calendar.form.day') }}</span>
                 <VDatePicker expanded transparent bordeless view="weekly" title-position="left" hide-time-header is24hr @update:model-value="onNewEventDaySelect" />
               </div>
 
@@ -651,7 +653,7 @@ watch(datePicker, (): void => {
                 <div class="line">
                   <div class="start">
                     <span class="label">
-                      Od
+                      {{ t('calendar.form.from') }}
                       <Icon class="icon" name="material-symbols:close-rounded" @click="toggleStartTime" v-if="newEventData.startTime"></Icon>
                       <Icon class="icon" name="material-symbols:add-rounded" @click="toggleStartTime" v-else></Icon>
                     </span>
@@ -659,7 +661,7 @@ watch(datePicker, (): void => {
                   </div>
 
                   <div class="end">
-                    <span class="label">Do *</span>
+                    <span class="label">{{ t('calendar.form.to') }}</span>
                     <VDatePicker class="time" expanded transparent bordeless mode="time" hide-time-header is24hr v-model="newEventData.endTime" @update:model-value="checkForErrors" />
                   </div>
                 </div>
@@ -668,26 +670,26 @@ watch(datePicker, (): void => {
 
             <div class="section" v-if="!newEventData.user || newEventData.user === userId.toString()">
               <div class="section-head">
-                <h3>Typ <span class="update" v-if="newEventData.type">(aktualizováno)</span></h3>
-                <p>Zadejte název zaměření, které chcete přidat. Název musí být jedinečný.</p>
+                <h3>{{ t('calendar.form.type') }} <span class="update" v-if="newEventData.type">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('calendar.form.typeDescription') }}</p>
               </div>
 
               <div class="section-content">
                 <InputMenu :items="[
-                  { label: 'Osobní', value: 'own' },
-                  { label: 'Úkol', value: 'task' },
-                ]" placeholder="Vyberte typ události" deselect @update:model-value="onTypeSelect" />
+                  { label: t('calendar.form.eventTypes.personal'), value: 'own' },
+                  { label: t('calendar.form.eventTypes.task'), value: 'task' },
+                ]" :placeholder="t('calendar.form.placeholders.type')" deselect @update:model-value="onTypeSelect" />
               </div>
             </div>
 
             <div class="section" v-if="checkPermissions(['admin', 'teacher'])">
               <div class="section-head">
-                <h3>Uživatel <span class="update" v-if="newEventData.user">(aktualizováno)</span></h3>
-                <p>Zadejte název zaměření, které chcete přidat. Název musí být jedinečný.</p>
+                <h3>{{ t('calendar.form.user') }} <span class="update" v-if="newEventData.user">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('calendar.form.userDescription') }}</p>
               </div>
 
               <div class="section-content">
-                <InputMenu ref="usersDropdown" v-if="dropDownUsers" :items="dropDownUsers" disable-item-filtering placeholder="Vyberte uživatele" :loading="usersPending" @search:change="onUsersSearchInputChange" deselect @update:model-value="onUserSelect">
+                <InputMenu ref="usersDropdown" v-if="dropDownUsers" :items="dropDownUsers" disable-item-filtering :placeholder="t('calendar.form.placeholders.user')" :loading="usersPending" @search:change="onUsersSearchInputChange" deselect @update:model-value="onUserSelect">
                   <template #row-extra v-if="numberOfUsersPages > 1">
                     <Pagination v-model="currentUsersPage" :number-of-pages="numberOfUsersPages" :chunk-size="1" />
                   </template>
@@ -697,19 +699,19 @@ watch(datePicker, (): void => {
 
             <div class="section">
               <div class="section-head">
-                <h3>Popis <span class="update" v-if="newEventData.description">(aktualizováno)</span></h3>
-                <p>Zadejte název zaměření, které chcete přidat. Název musí být jedinečný.</p>
+                <h3>{{ t('calendar.form.description') }} <span class="update" v-if="newEventData.description">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('calendar.form.descriptionDescription') }}</p>
               </div>
 
               <div class="section-content">
-                <Textarea class="textarea" placeholder="Zadejte popis události" v-model.trim="newEventData.description" @update:model-value="checkForErrors" />
+                <Textarea class="textarea" :placeholder="t('calendar.form.placeholders.description')" v-model.trim="newEventData.description" @update:model-value="checkForErrors" />
 
                 <p class="input-error" v-if="errors.description.length > 0">{{ errors.description }}</p>
               </div>
             </div>
 
             <EditFormFooter :is-loading="loading" :reset-function="resetNewEventData" :submit-function="addNewEvent">
-              Pole označená * jsou povinná
+              {{ t('calendar.requiredNote') }}
             </EditFormFooter>
           </div>
         </div>

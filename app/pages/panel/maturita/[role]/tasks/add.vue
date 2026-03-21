@@ -23,10 +23,12 @@ import type {ClassData} from "~/types/classes";
 import type {TopicData} from "~/types/maturita";
 import {useUpload} from "~/componsables/useUploader";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Maturitní zadání - Přidání",
+  title: t('pages.maturita.tasksAdd.title'),
   meta: [
-    { name: "description", content: "Panel Settings User Information" }
+    { name: "description", content: t('pages.maturita.tasksAdd.description') }
   ],
 });
 
@@ -131,7 +133,7 @@ const resetUserData = (): void => {
 
 const addMaturitaTask = async (): Promise<void> => {
   if (!newData.value.name || !newData.value.taskFile || !selectedTopicId.value[0] || !selectedUserId.value[0]) {
-    alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Vyplňte všechna povinná pole." });
+    alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.fillRequired') });
     return;
   }
 
@@ -154,85 +156,85 @@ const addMaturitaTask = async (): Promise<void> => {
 
       switch (resCode) {
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Nahraný soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.fileTooBig') });
           break;
         case "61010":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Tato role nemůže vytvářet maturitní úkoly." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.noPermission') });
           break;
 
         case "61020":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Nelze vytvořit maturitní úkol." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.cannotCreate') });
           break;
 
         case "61030":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Nemáte oprávnění být garantem maturitního úkolu." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.noGuarantor') });
           break;
 
         case "61040":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Název úkolu nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.noName') });
           break;
 
         case "61050":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Uživatel nebyl zadán." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.noUser') });
           break;
 
         case "61060":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Téma nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.noTopic') });
           break;
 
         case "61070":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "ID uživatele není platné číslo." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.userIdNaN') });
           break;
 
         case "61080":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "ID uživatele není platné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.userIdInvalid') });
           break;
 
         case "61090":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Uživatel nebyl nalezen." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.userNotFound') });
           break;
 
         case "61100":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Tento uživatel nemůže mít přiřazen maturitní úkol." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.cannotBeGuarantor') });
           break;
 
         case "61110":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Uživatel již má přiřazen maturitní úkol." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.alreadyAssigned') });
           break;
 
         case "61120":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "ID tématu není platné číslo." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.topicIdNaN') });
           break;
 
         case "61130":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "ID tématu není platné." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.topicIdInvalid') });
           break;
 
         case "61140":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Téma nebylo nalezeno." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.topicNotFound') });
           break;
 
         case "61150":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Název úkolu je příliš dlouhý." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.nameTooLong') });
           break;
 
         case "61160":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Soubor úkolu nebyl nahrán." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.fileNotUploaded') });
           break;
 
         case "61170":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Neplatný formát souboru nebo příliš dlouhý název." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.fileBadFormat') });
           break;
 
         case "61180":
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Byl dosažen maximální počet variant pro toto téma." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.maxVariants') });
           break;
 
         case "61191":
           if (data.uploadUrl && newData.value.taskFile) {
             const alert: Alert = {
-              title: "Nahrávání souboru",
-              message: "Probíhá nahrávání souboru...",
+              title: t('settings.info.alerts.uploadFile.title'),
+              message: t('settings.info.alerts.uploadFile.uploading'),
               type: "info",
               infinite: true,
               canClose: false,
@@ -244,8 +246,8 @@ const addMaturitaTask = async (): Promise<void> => {
             upload(newData.value.taskFile, data.uploadUrl).then(async (): Promise<void> => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Soubor byl úspěšně nahrán.",
+                title: t('settings.info.alerts.uploadFile.title'),
+                message: t('settings.info.alerts.uploadFile.success'),
                 type: "success"
               });
 
@@ -263,14 +265,14 @@ const addMaturitaTask = async (): Promise<void> => {
 
                   switch (resCode) {
                     case "84110":
-                      alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Soubor nebyl nalezen na úložišti." });
+                      alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.fileNotFound') });
                       return;
                     case "84121":
-                      alertsStore.addAlert({ type: "success", title: "Přidání maturitního zadání", message: "Maturitní úkol byl úspěšně vytvořen." });
+                      alertsStore.addAlert({ type: "success", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.success') });
                       resetUserData();
                       break;
                     default:
-                      alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Nastala neznámá chyba při ukládání." });
+                      alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.savingError') });
                       break;
                   }
                 },
@@ -279,8 +281,8 @@ const addMaturitaTask = async (): Promise<void> => {
             .catch((): void => {
               alertsStore.removeAlert(alertIndex);
               alertsStore.addAlert({
-                title: "Nahrávání souboru",
-                message: "Nastala chyba při nahrávání souboru.",
+                title: t('settings.info.alerts.uploadFile.title'),
+                message: t('settings.info.alerts.uploadFile.error'),
                 type: "error"
               });
             });
@@ -288,13 +290,13 @@ const addMaturitaTask = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.unknown') });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Přidání maturitního zadání", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.unknown') });
     },
   }).finally(() => {
     loading.value = false;
@@ -361,9 +363,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
-            { label: 'Přidáni', to: `/panel/maturita/${role}/tasks/add`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('sidebar.links.assignments'), to: `/panel/maturita/${role}/tasks` },
+            { label: t('maturita.tasks.add.breadcrumb'), to: `/panel/maturita/${role}/tasks/add`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -374,8 +376,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
               class="action-bar"
-              description="Správa maturitních zadání"
-              :texts="['Přidat', 'Odebrat']"
+              :description="t('maturita.tasks.index.actionBar.description')"
+              :texts="[t('actionBar.add'), t('actionBar.remove')]"
               :actions="['add', 'remove']"
               :icons="[
               'material-symbols:add-rounded',
@@ -391,21 +393,21 @@ watchEffect((): void => {
           <div class="page-section">
             <EditName ref="editName" :old-name="oldData.name" @update="onNameUpdate">
               <div class="section-head">
-                <h3>Název * <span class="update" v-show="newData.name">(aktualizováno)</span></h3>
-                <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+                <h3>{{ t('maturita.tasks.add.nameHeading') }} <span class="update" v-show="newData.name">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('maturita.tasks.add.nameDescription') }}</p>
               </div>
             </EditName>
           </div>
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Téma * <span class="update" v-show="selectedTopicId.length > 0">(aktualizováno)</span></h3>
-              <p>Zadejte název úkolu, který bude jasně vystihovat jeho obsah a účel.</p>
+              <h3>{{ t('maturita.tasks.add.pointsHeading') }} <span class="update" v-show="selectedTopicId.length > 0">{{ t('common.updated') }}</span></h3>
+              <p>{{ t('maturita.tasks.add.pointsDescription') }}</p>
             </div>
 
             <div class="section-content">
-              <label for="grade">Téma</label>
-              <InputMenu :items="dropDownTopics" deselect v-model="selectedTopicId" placeholder="Vyberte téma" :loading="topicsPending" @search:change="onTopicsSearchInputChange">
+              <label for="grade">{{ t('maturita.tasks.add.topicLabel') }}</label>
+              <InputMenu :items="dropDownTopics" deselect v-model="selectedTopicId" :placeholder="t('maturita.tasks.add.topicPlaceholder')" :loading="topicsPending" @search:change="onTopicsSearchInputChange">
                 <template #row-extra v-if="numberOfTopicsPages > 1">
                   <Pagination v-model="currentTopicsPage" :number-of-pages="numberOfTopicsPages" :chunk-size="2" />
                 </template>
@@ -416,8 +418,8 @@ watchEffect((): void => {
           <div class="page-section">
             <EditTaskFile ref="editTaskFile" :max-size-m-b="32" @update="onTaskFileUpdate" :old-check="oldData.taskFile">
               <div class="section-head">
-                <h3>Zadání * <span class="update" v-show="newData.taskFile">(aktualizováno)</span></h3>
-                <p>Vyberte soubor se zadáním úkolu, který budou studenti stahovat a podle něj úkol plnit. Povolené formáty: PDF, DOCX, ODT, HTML nebo ZIP.</p>
+                <h3>{{ t('maturita.tasks.add.fileHeading') }} <span class="update" v-show="newData.taskFile">{{ t('common.updated') }}</span></h3>
+                <p>{{ t('maturita.tasks.add.fileDescription') }}</p>
               </div>
             </EditTaskFile>
           </div>
@@ -425,11 +427,11 @@ watchEffect((): void => {
           <div class="page-section">
             <div class="line">
               <div class="section-head">
-                <h3>Student *</h3>
-                <p>Zadejte maximální počet bodů, které lze za úkol získat. Tento počet bude použit při hodnocení úkolu.</p>
+                <h3>{{ t('maturita.tasks.add.guarantorHeading') }}</h3>
+                <p>{{ t('maturita.tasks.add.guarantorDescription') }}</p>
               </div>
 
-              <SearchInput @change="onUsersSearchInputChange" placeholder="Hledat uživatele" />
+              <SearchInput @change="onUsersSearchInputChange" :placeholder="t('maturita.tasks.add.searchPlaceholder')" />
             </div>
 
             <EditClass ref="editClass" :multiple="false" :old-class-ids="selectedClass ? [selectedClass] : []" @update="onClassUpdate" />
@@ -444,7 +446,7 @@ watchEffect((): void => {
           </div>
 
           <EditFormFooter :is-loading="loading" :reset-function="resetUserData" :submit-function="addMaturitaTask">
-            Pole označená * jsou povinná
+            {{ t('maturita.tasks.add.requiredNote') }}
           </EditFormFooter>
         </div>
       </div>

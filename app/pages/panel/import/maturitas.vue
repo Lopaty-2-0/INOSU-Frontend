@@ -7,11 +7,14 @@ import FileInput from "~/components/ui/FileInput.vue";
 import {computed, ref} from "vue";
 import checkPermissions from "~/componsables/checkPermissions";
 import {useAlertsStore} from "~/stores/alerts";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 useHead({
-  title: "Panel | Import dat - Maturity",
+  title: computed(() => t('pages.import.maturitas.title')),
   meta: [
-    { name: "description", content: "Přistup zamítnut page" }
+    { name: "description", content: computed(() => t('pages.import.maturitas.description')) }
   ],
 });
 
@@ -40,20 +43,20 @@ const navigationLinks = computed(() => {
   const links = [];
 
   if (checkPermissions(["admin"])) {
-    links.push({ name: "Uživatelé", path: "/panel/import" });
-    links.push({ name: "Třídy", path: "/panel/import/classes" });
-    links.push({ name: "Zaměření", path: "/panel/import/specializations" });
+    links.push({ name: t('import.navigation.users'), path: "/panel/import" });
+    links.push({ name: t('import.navigation.classes'), path: "/panel/import/classes" });
+    links.push({ name: t('import.navigation.specializations'), path: "/panel/import/specializations" });
   }
 
-  links.push({ name: "Maturity", path: "/panel/import/maturitas" });
-  links.push({ name: "Maturitní témata", path: "/panel/import/maturitaTopics" });
+  links.push({ name: t('import.navigation.maturitas'), path: "/panel/import/maturitas" });
+  links.push({ name: t('import.navigation.maturitaTopics'), path: "/panel/import/maturitaTopics" });
 
   return links;
 });
 
 const importFile = async (): Promise<void> => {
   if (!selectedFile.value) {
-    alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Nebyl vybrán žádný soubor." });
+    alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.noFile') });
     return;
   }
 
@@ -73,35 +76,35 @@ const importFile = async (): Promise<void> => {
 
       switch (resCode) {
         case "103010":
-          alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Na tuto akci nemáte oprávnění." });
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.noPermission') });
           break;
 
         case "103020":
-          alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Soubor nebyl nahrán." });
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.fileNotUploaded') });
           break;
 
         case "103030":
-          alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Soubor má špatný formát." });
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.wrongFormat') });
           break;
 
         case "F15020":
-          alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Soubor je příliš velký." });
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.tooLarge') });
           break;
 
         case "103040":
-          alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Soubor je prázdný." });
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.empty') });
           break;
 
         case "103050":
-          alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Soubor obsahuje neplatný JSON." });
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.invalidJson') });
           break;
 
         case "103140":
-          alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Žádný maturitní ročník nebyl vytvořen." });
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.noneCreated') });
           break;
 
         case "103151":
-          alertsStore.addAlert({ type: "success", title: "Nahrání maturit", message: "Maturitní ročníky byly úspěšně vytvořeny." });
+          alertsStore.addAlert({ type: "success", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.success') });
 
           const badMaturitas = response._data.data.badMaturitas;
 
@@ -111,35 +114,35 @@ const importFile = async (): Promise<void> => {
 
             switch (errorResCode) {
               case "103060":
-                message = "Některé povinné hodnoty chybí.";
+                message = t('import.maturitas.alerts.maturitaErrors.missingFields');
                 break;
 
               case "103070":
-                message = "Ročník je příliš dlouhý nebo se již používá.";
+                message = t('import.maturitas.alerts.maturitaErrors.gradeTooLong');
                 break;
 
               case "103080":
-                message = "Maximální počet bodů musí být číslo.";
+                message = t('import.maturitas.alerts.maturitaErrors.maxPointsNotNumber');
                 break;
 
               case "103090":
-                message = "Maximální počet bodů je neplatný.";
+                message = t('import.maturitas.alerts.maturitaErrors.maxPointsInvalid');
                 break;
 
               case "103100":
-                message = "Datum ukončení je neplatné.";
+                message = t('import.maturitas.alerts.maturitaErrors.endDateInvalid');
                 break;
 
               case "103110":
-                message = "Datum začátku je neplatné.";
+                message = t('import.maturitas.alerts.maturitaErrors.startDateInvalid');
                 break;
 
               case "103120":
-                message = "Datum ukončení musí být po datu začátku.";
+                message = t('import.maturitas.alerts.maturitaErrors.endBeforeStart');
                 break;
 
               case "103130":
-                message = "Někteří hodnotitelé jsou neplatní.";
+                message = t('import.maturitas.alerts.maturitaErrors.invalidEvaluators');
                 break;
 
               default:
@@ -156,12 +159,12 @@ const importFile = async (): Promise<void> => {
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Nahrání maturit", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.unknown') });
     },
   }).finally(async (): Promise<void> => {
     await resetFile();
@@ -184,9 +187,9 @@ const resetFile = async (): Promise<void> => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Data', to: '/panel/import/maturitas', icon: 'material-symbols:upload-2-rounded' },
-            { label: 'Import', to: '/panel/import/maturitas' },
-            { label: 'Maturity', to: '/panel/import/maturitas', active: true }
+            { label: t('sidebar.sections.data'), to: '/panel/import/maturitas', icon: 'material-symbols:upload-2-rounded' },
+            { label: t('sidebar.links.import'), to: '/panel/import/maturitas' },
+            { label: t('import.navigation.maturitas'), to: '/panel/import/maturitas', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -194,16 +197,16 @@ const resetFile = async (): Promise<void> => {
 
     <template #content>
       <div id="import">
-        <Navigation class="navigation" title="Import" :active-link-id="activeLinkId" :links="navigationLinks" />
+        <Navigation class="navigation" :title="t('import.title')" :active-link-id="activeLinkId" :links="navigationLinks" />
 
         <div class="content">
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Import maturit <span class="update" v-if="selectedFile">(aktualizováno)</span></h3>
-              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci, aliquam aliquid amet aut consequuntur cum deleniti enim exercitationem fuga.</p>
+              <h3>{{ t('import.maturitas.title') }} <span class="update" v-if="selectedFile">{{ t('import.updated') }}</span></h3>
+              <p>{{ t('import.maturitas.description') }}</p>
             </div>
 
-            <FileInput ref="fileInput" class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" placeholder="Vyberte soubor pro import dat" :title="title"></FileInput>
+            <FileInput ref="fileInput" class="fileInput" :max-size-m-b="10" accept=".json" v-model="selectedFile" :placeholder="t('import.filePlaceholder')" :title="title"></FileInput>
           </div>
 
           <div class="page-section" :class="{ 'bottom-line': errors.length > 0 }">
@@ -212,7 +215,7 @@ const resetFile = async (): Promise<void> => {
 
           <div class="page-section" v-if="errors.length > 0">
             <div class="errors">
-              <p class="error" v-for="error in errors">{{ error.message }} <span class="number">Číslo: {{ error.number }}</span></p>
+              <p class="error" v-for="error in errors">{{ error.message }} <span class="number">{{ t('import.errorNumber') }} {{ error.number }}</span></p>
             </div>
           </div>
         </div>

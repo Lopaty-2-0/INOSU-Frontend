@@ -4,6 +4,9 @@ import { useAlertsStore } from "~/stores/alerts";
 import Input from "~/components/ui/Input.vue";
 import FileInput from "~/components/ui/FileInput.vue";
 import Image from "~/components/ui/Image.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   oldProfilePicture: {
@@ -43,7 +46,7 @@ const convertFileToBase64 = async (file: File): Promise<string> => {
 
   if (!validExtensions.includes(file.type)) {
     throw {
-      customMessage: "Nepodporovaný typ souboru. Povoleny jsou pouze jpg, png nebo gif.",
+      customMessage: t('manage.profilePicture.errors.unsupportedType'),
     };
   }
 
@@ -51,7 +54,7 @@ const convertFileToBase64 = async (file: File): Promise<string> => {
     const reader: FileReader = new FileReader();
 
     reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject("Nepodařilo se přečíst soubor.");
+    reader.onerror = () => reject(t('manage.profilePicture.errors.readFailed'));
     reader.readAsDataURL(file);
   });
 };
@@ -64,8 +67,7 @@ const convertUrlToFile = async (url: string): Promise<File> => {
 
   if (!allowedMimeTypes.includes(mimeType)) {
     throw {
-      customMessage:
-        "Nepodporovaný typ souboru. Povoleny jsou pouze jpg, png nebo gif.",
+      customMessage: t('manage.profilePicture.errors.unsupportedType'),
     };
   }
 
@@ -83,7 +85,7 @@ const processUrlInput = async (url: string): Promise<void> => {
     profilePictureFile.value = file;
   } catch (error: any) {
     handleError(
-      error.customMessage || "Nepodařilo se načíst obrázek z URL adresy.",
+      error.customMessage || t('manage.profilePicture.errors.urlLoadFailed'),
       "url"
     );
   }
@@ -106,8 +108,8 @@ const pasteUrl = async (): Promise<void> => {
   } catch {
     useAlertsStore().addAlert({
       type: "warning",
-      title: "Vložení URL",
-      message: "Váš prohlížeč nepodporuje vkládání.",
+      title: t('common.pasteUrl.title'),
+      message: t('common.pasteUrl.unsupported'),
     });
   }
 };
@@ -127,7 +129,7 @@ watch(() => profilePictureFile.value, async (newFile: File | null): Promise<void
       profilePictureUrlImage.value = await convertFileToBase64(newFile);
       urlInput.value = "";
     } catch (error: any) {
-      handleError(error.customMessage || "Nepodařilo se přečíst soubor.", "file");
+      handleError(error.customMessage || t('manage.profilePicture.errors.readFailed'), "file");
     }
   }
 });
@@ -152,14 +154,14 @@ defineExpose({ reset });
           <Image
             :src="profilePictureUrlImage"
             class-name="img"
-            alt="Profile photo"
+            :alt="t('manage.profilePicture.alt')"
           />
 
           <FileInput
             ref="fileInput"
             class="content"
             v-model="profilePictureFile"
-            :placeholder="'Klikni pro nahrání souboru z počítače'"
+            :placeholder="t('manage.profilePicture.uploadPlaceholder')"
             :max-size-m-b="2"
             accept=".png,.jpg,.jpeg,.gif"
           />
@@ -168,14 +170,14 @@ defineExpose({ reset });
 
       <div class="section url">
         <div class="content">
-          <label for="image">URL obrázku</label>
+          <label for="image">{{ t('manage.profilePicture.urlLabel') }}</label>
           <div class="line">
             <Input
               :class="{ error: errors.url }"
               type="url"
               id="image"
               name="image"
-              placeholder="https://example.image/image.png"
+              :placeholder="t('manage.profilePicture.urlPlaceholder')"
               v-model.trim="urlInput"
               @change="onUrlInput"
             />

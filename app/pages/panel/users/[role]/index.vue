@@ -17,9 +17,11 @@ import Image from "~/components/ui/Image.vue";
 const route = useRoute();
 const role = route.params.role as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Uživatelé - " + role,
-  meta: [{ name: "description", content: "Panel Settings User Information" }],
+  title: t('pages.users.roleIndex.title', { role }),
+  meta: [{ name: "description", content: t('pages.users.roleIndex.description') }],
 });
 
 const config = useRuntimeConfig();
@@ -78,7 +80,7 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: t('users.index.title'), to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
             { label: role, to: '/panel/users/' + role, active: true },
           ]"/>
         </template>
@@ -90,8 +92,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa uživatelů"
-            :texts="['Přidat', 'Upravit', 'Odebrat']"
+            :description="t('actionBar.description')"
+            :texts="[t('actionBar.add'), t('actionBar.edit'), t('actionBar.remove')]"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:edit-rounded',
@@ -107,11 +109,11 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Celkem uživatelů: {{ usersCount }}</h3>
-              <p>Zde vidíte uživatele dané role. Použijte vyhledávání pro rychlé filtrování seznamu.</p>
+              <h3>{{ t('users.role.index.heading', { count: usersCount }) }}</h3>
+              <p>{{ t('users.role.index.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat uživatele" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('users.role.index.searchPlaceholder')" />
           </div>
 
           <div class="users">
@@ -133,10 +135,10 @@ watchEffect((): void => {
                       E-mail: <span>{{ item.data.email }}</span>
                     </p>
                     <p>
-                      Přezdívka: <span>{{ item.data.abbreviation || "Není" }}</span>
+                      {{ t('users.role.index.abbreviationLabel') }} <span>{{ item.data.abbreviation || t('users.role.index.noAbbreviation') }}</span>
                     </p>
                     <p>
-                      Vytvořen:
+                      {{ t('users.student.class.index.createdLabel') }}
                       <span>{{ moment(item.data.createdAt).format("DD. MM. YYYY") }}</span>
                     </p>
                   </div>

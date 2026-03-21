@@ -12,9 +12,11 @@ import {useFetch} from "nuxt/app";
 import SpecializationsTable from "~/components/tables/Specializations.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Zaměření - Odstranění",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: () => t("pages.specializations.remove.title"),
+  meta: [{ name: "description", content: () => t("pages.specializations.remove.description") }],
 });
 
 definePageMeta({
@@ -68,35 +70,35 @@ const removeSpecializations = async (): Promise<void> => {
 
       switch (resCode) {
         case "5010":
-          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.remove.alerts.removeSpecialization.title"), message: t("specializations.remove.alerts.removeSpecialization.noPermission") });
           break;
 
         case "5020":
-          alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Chybí ID zaměření." });
+          alertsStore.addAlert({ type: "warning", title: t("specializations.remove.alerts.removeSpecialization.title"), message: t("specializations.remove.alerts.removeSpecialization.noneSelected") });
           break;
 
         case "5030":
-          alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: "Nepodařilo se odstranit žádné zaměření." });
+          alertsStore.addAlert({ type: "warning", title: t("specializations.remove.alerts.removeSpecialization.title"), message: t("specializations.remove.alerts.removeSpecialization.noneRemoved") });
           break;
 
         case "5041":
           if ((data?.badIds || []).length > 0) {
-            alertsStore.addAlert({ type: "warning", title: "Odstranění zaměření", message: `Některá zaměření nebyla odstraněna. Neplatná ID: ${data.badIds.join(", ")}.` });
+            alertsStore.addAlert({ type: "warning", title: t("specializations.remove.alerts.removeSpecialization.title"), message: `${t("specializations.remove.alerts.removeSpecialization.noneRemoved")} ${data.badIds.join(", ")}.` });
           } else {
-            alertsStore.addAlert({ type: "success", title: "Odstranění zaměření", message: `Zaměření byla úspěšně odstraněna.` });
+            alertsStore.addAlert({ type: "success", title: t("specializations.remove.alerts.removeSpecialization.title"), message: t("specializations.remove.alerts.removeSpecialization.success") });
           }
           specializationRefresh();
           resetSelectedSpecializations();
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t("specializations.remove.alerts.removeSpecialization.title"), message: t("specializations.remove.alerts.removeSpecialization.unknown") });
           break;
       }
     },
 
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Odstranění zaměření", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t("specializations.remove.alerts.removeSpecialization.title"), message: t("specializations.remove.alerts.removeSpecialization.unknown") });
     },
   }).finally(() => {
     loading.value = false;
@@ -145,8 +147,8 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Zaměření', to: '/panel/specializations', icon: 'material-symbols:school' },
-            { label: 'Odstranění', to: '/panel/specializations/remove', active: true }
+            { label: t('sidebar.links.specializations'), to: '/panel/specializations', icon: 'material-symbols:school' },
+            { label: t('specializations.remove.breadcrumb'), to: '/panel/specializations/remove', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -157,8 +159,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa zaměření"
-            :texts="['Přidat', 'Odebrat']"
+            :description="t('specializations.actionBar.description')"
+            :texts="[t('specializations.actionBar.add'), t('specializations.actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',
@@ -173,16 +175,16 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Vybraná zaměření: {{ selectedSpecializationIds.length }}</h3>
-              <p>Vyberte zaměření, která chcete odstranit ze systému. Po potvrzení budou vybraná zaměření trvale smazána.</p>
+              <h3>{{ t('specializations.remove.heading', { count: selectedSpecializationIds.length }) }}</h3>
+              <p>{{ t('specializations.remove.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat zaměření" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('specializations.remove.searchPlaceholder')" />
           </div>
 
           <div class="buttons">
             <button class="remove" @click="removeSpecializations">
-              Odstranit
+              {{ t('specializations.remove.removeBtn') }}
               <Loading
                 v-show="loading"
                 size="5px"
@@ -190,7 +192,7 @@ watchEffect((): void => {
               />
             </button>
             <button class="reset" @click="resetSelectedSpecializations">
-              Zrušit vše
+              {{ t('specializations.remove.cancelBtn') }}
             </button>
           </div>
 

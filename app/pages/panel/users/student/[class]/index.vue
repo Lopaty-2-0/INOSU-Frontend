@@ -17,9 +17,11 @@ import Image from "~/components/ui/Image.vue";
 const route = useRoute();
 const classId = route.params.class as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Uživatelé - Třída: " + classId,
-  meta: [{ name: "description", content: "Panel Settings User Information" }],
+  title: t('pages.users.studentClass.title', { classId }),
+  meta: [{ name: "description", content: t('pages.users.studentClass.description') }],
 });
 
 const config = useRuntimeConfig();
@@ -93,9 +95,9 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: t('users.index.title'), to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
             { label: 'student', to: '/panel/users/student' },
-            { label: 'Třída: ' + classId, to: '/panel/users/student/' + classId, active: true },
+            { label: t('users.student.class.index.title', { classId }), to: '/panel/users/student/' + classId, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -106,8 +108,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa uživatelů"
-            :texts="['Přidat', 'Upravit', 'Odebrat']"
+            :description="t('actionBar.description')"
+            :texts="[t('actionBar.add'), t('actionBar.edit'), t('actionBar.remove')]"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:edit-rounded',
@@ -123,11 +125,11 @@ watchEffect((): void => {
 
           <div class="line">
             <div class="section-head">
-              <h3>Celkem uživatelů: {{ usersCount }}</h3>
-              <p>Zde vidíte uživatele dané role a třídě. Použijte vyhledávání pro rychlé filtrování seznamu.</p>
+              <h3>{{ t('users.student.class.index.heading', { count: usersCount }) }}</h3>
+              <p>{{ t('users.student.class.index.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat uživatele" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('users.student.class.index.searchPlaceholder')" />
           </div>
 
           <div class="users">
@@ -149,10 +151,10 @@ watchEffect((): void => {
                       E-mail: <span>{{ item.data.email }}</span>
                     </p>
                     <p>
-                      Přezdívka: <span>{{ item.data.abbreviation || "Není" }}</span>
+                      {{ t('users.student.class.index.abbreviationLabel') }} <span>{{ item.data.abbreviation || t('users.student.class.index.noAbbreviation') }}</span>
                     </p>
                     <p>
-                      Vytvořen:
+                      {{ t('users.student.class.index.createdLabel') }}
                       <span>{{ moment(item.data.createdAt).format("DD. MM. YYYY") }}</span>
                     </p>
                   </div>

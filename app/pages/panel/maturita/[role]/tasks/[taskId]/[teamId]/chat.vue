@@ -14,14 +14,15 @@ import type { ConversationData} from "~/types/chat";
 import Chat from "~/components/layout/Chat.vue";
 import Loading from "~/components/ui/Loading.vue";
 
+const { t } = useI18n();
 const route = useRoute();
 const teamId = route.params.teamId as string;
 const role = route.params.role as string;
 const taskId = route.params.taskId as string;
 
 useHead({
-  title: "Panel | Maturitní zadání - " + taskId + " - Chat",
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.teamChat.title', { taskId }),
+  meta: [{ name: "description", content: t('pages.maturita.teamChat.description') }],
 });
 
 definePageMeta({
@@ -65,56 +66,56 @@ const createNewConversation = async (userType: "student" | "objector", userId: s
 
       switch (resCode) {
         case "86010":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID uživatele nebylo zadáno." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.noUserId') });
           break;
         case "86020":
         case "86030":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID uživatele je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.invalidUserId') });
           break;
         case "86040":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Uživatel nebyl nalezen." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.userNotFound') });
           break;
         case "86050":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nelze vytvořit konverzaci se sebou samým." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.selfConversation') });
           break;
 
         case "86060":
         case "86070":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "ID úkolu je neplatné." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.invalidTaskId') });
           break;
         case "86080":
         case "86090":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Garant je neplatný." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.invalidGuarantor') });
           break;
 
         case "86100":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Úkol nebyl nalezen." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.taskNotFound') });
           break;
         case "86110":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Konverzaci lze vytvořit pouze pro maturitní úkol." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.onlyMaturita') });
           break;
         case "86120":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nelze vytvořit konverzaci k ukončenému zadání." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.archivedTask') });
           break;
         case "86130":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé nemohou vytvořit konverzaci pro tento úkol." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.forbidden') });
           break;
         case "86140":
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Tito uživatelé již mezi sebou konverzaci mají." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.alreadyExists') });
           break;
 
         case "86151":
           await refreshConversations();
-          alertsStore.addAlert({ type: "success", title: "Vytvoření konverzace", message: "Konverzace byla úspěšně vytvořena." });
+          alertsStore.addAlert({ type: "success", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.success') });
           break;
 
         default:
-          alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nastala neznámá chyba." });
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('common.unknown') });
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({ type: "error", title: "Vytvoření konverzace", message: "Nastala neznámá chyba." });
+      alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('common.unknown') });
     },
   }).finally((): void => {
     conversationsLoading.value[userType] = false;
@@ -178,11 +179,11 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
-            { label: 'Zadání', to: `/panel/maturita/${role}/tasks` },
-            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}` },
-            { label: `Vypracování ID: ${teamId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}` },
-            { label: `Chat`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}/chat`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/tasks`, icon: 'material-symbols:folder-copy-rounded' },
+            { label: t('maturita.tasks.index.heading'), to: `/panel/maturita/${role}/tasks` },
+            { label: `${t('maturita.team.assignmentLabel')} ${taskId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}` },
+            { label: `${t('maturita.team.assignmentLabel')} ${teamId}`, to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}` },
+            { label: t('maturita.chat.heading'), to: `/panel/maturita/${role}/tasks/${taskId}/${teamId}/chat`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -193,11 +194,11 @@ watchEffect((): void => {
         <div class="content">
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Chat - {{ task.name }}</h3>
-              <p>Úkol ID: {{ task.id }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
+              <h3>{{ t('maturita.chat.heading') }} - {{ task.name }}</h3>
+              <p>{{ t('maturita.chat.taskIdLabel') }} {{ task.id }}</p>
+              <p>{{ t('maturita.chat.startLabel') }} {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('maturita.chat.endLabel') }} {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">{{ t('maturita.chat.deadlineLabel') }} {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
           </div>
 
@@ -206,7 +207,7 @@ watchEffect((): void => {
               <div class="head">
                 <div class="info">
                   <span class="dot" :style="getDotColor(conversations.studentConversation?.isArchived)"></span>
-                  <h3>Žák {{ conversations.studentConversation && (conversations.studentConversation?.isArchived ? "- Archivováno" : "- Otevřený") }}</h3>
+                  <h3>{{ t('maturita.chat.studentLabel') }} {{ conversations.studentConversation && (conversations.studentConversation?.isArchived ? t('maturita.chat.archived') : t('maturita.chat.open')) }}</h3>
                 </div>
 
                 <div class="profile">
@@ -221,7 +222,7 @@ watchEffect((): void => {
               <Chat class="chat" :conversation="conversations.studentConversation" v-if="!conversationsLoading.student && conversations.studentConversation" />
 
               <div class="chat-box" v-if="!conversations.studentConversation && !conversationsLoading.student">
-                <button @click="createNewConversation('student', task.userData.id.toString())">Založit konverzaci</button>
+                <button @click="createNewConversation('student', task.userData.id.toString())">{{ t('maturita.chat.createConversationBtn') }}</button>
               </div>
 
               <div class="chat-box" v-if="conversationsLoading.student">
@@ -233,7 +234,7 @@ watchEffect((): void => {
               <div class="head">
                 <div class="info">
                   <span class="dot" :style="getDotColor(conversations.objectorConversation?.isArchived)"></span>
-                  <h3>Oponent {{ conversations.objectorConversation && (conversations.objectorConversation?.isArchived ? "- Archivováno" : "- Otevřený") }}</h3>
+                  <h3>{{ t('maturita.chat.objectorLabel') }} {{ conversations.objectorConversation && (conversations.objectorConversation?.isArchived ? t('maturita.chat.archived') : t('maturita.chat.open')) }}</h3>
                 </div>
 
                 <div class="profile">
@@ -248,7 +249,7 @@ watchEffect((): void => {
               <Chat class="chat" :conversation="conversations.objectorConversation" v-if="!conversationsLoading.objector && conversations.objectorConversation" />
 
               <div class="chat-box" v-if="!conversations.objectorConversation && !conversationsLoading.objector">
-                <button @click="createNewConversation('objector', task.objector.id.toString())">Založit konverzaci</button>
+                <button @click="createNewConversation('objector', task.objector.id.toString())">{{ t('maturita.chat.createConversationBtn') }}</button>
               </div>
 
               <div class="chat-box" v-if="conversationsLoading.objector">

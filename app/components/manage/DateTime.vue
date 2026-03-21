@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import {type PropType, ref, watch} from "vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   label: {
@@ -36,7 +39,7 @@ defineExpose({ reset })
     <div class="items dateTime">
       <div class="section">
         <div class="content">
-          <label for="dateTime">{{ props.label ? props.label : "Datum a čas" }} <span class="update" v-show="date.updated">(aktualizováno)</span></label>
+          <label for="dateTime">{{ props.label ? props.label : t('manage.dateTime.label') }} <span class="update" v-show="date.updated">{{ t('common.updated') }}</span></label>
           <VDatePicker expanded transparent bordeless v-model="date.input" mode="dateTime" hide-time-header is24hr />
         </div>
       </div>

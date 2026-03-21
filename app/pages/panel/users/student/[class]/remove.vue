@@ -22,9 +22,11 @@ definePageMeta({
 const route = useRoute();
 const classId = route.params.class as string;
 
+const { t } = useI18n();
+
 useHead({
-  title: "Panel | Odstranění uživatelů -  Třída: " + classId,
-  meta: [{ name: "description", content: "Panel Settings User Information" }],
+  title: t('pages.users.studentClassRemove.title', { classId }),
+  meta: [{ name: "description", content: t('pages.users.studentClassRemove.description') }],
 });
 
 const config = useRuntimeConfig();
@@ -77,31 +79,31 @@ const removeUsers = async (): Promise<void> => {
 
       switch (resCode) {
         case "3010":
-          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nemáte oprávnění k této akci." });
+          alertsStore.addAlert({type: "error", title: t('users.student.class.remove.alerts.removeUsers.title'), message: t('common.noPermission') });
           break;
         case "3020":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Žádný uživatel nebyl vybrán."});
+          alertsStore.addAlert({type: "warning", title: t('users.student.class.remove.alerts.removeUsers.title'), message: t('users.student.class.remove.alerts.removeUsers.noneSelected')});
           break;
         case "3030":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nemůžete odstranit sami sebe."});
+          alertsStore.addAlert({type: "warning", title: t('users.student.class.remove.alerts.removeUsers.title'), message: t('users.student.class.remove.alerts.removeUsers.cannotRemoveSelf')});
           break;
         case "3040":
-          alertsStore.addAlert({type: "warning", title: "Odstranění uživatelů", message: "Nebyl odstraněn žádný uživatel."});
+          alertsStore.addAlert({type: "warning", title: t('users.student.class.remove.alerts.removeUsers.title'), message: t('users.student.class.remove.alerts.removeUsers.noneRemoved')});
           break;
         case "3051":
-          alertsStore.addAlert({type: "success", title: "Odstranění uživatelů", message: "Uživatelé byli úspěšně odstraněni."});
+          alertsStore.addAlert({type: "success", title: t('users.student.class.remove.alerts.removeUsers.title'), message: t('users.student.class.remove.alerts.removeUsers.success')});
           if (users.value) {
             refreshUsers();
             resetSelectedUsers();
           }
           break;
         default:
-          alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nastala neznámá chyba."});
+          alertsStore.addAlert({type: "error", title: t('users.student.class.remove.alerts.removeUsers.title'), message: t('common.unknown')});
           break;
       }
     },
     onRequestError() {
-      alertsStore.addAlert({type: "error", title: "Odstranění uživatelů", message: "Nastala neznámá chyba.",});
+      alertsStore.addAlert({type: "error", title: t('users.student.class.remove.alerts.removeUsers.title'), message: t('common.unknown')});
     },
   }).finally((): void => {
     loading.value = false;
@@ -158,10 +160,10 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Uživatelé', to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
-            { label: 'student', to: '/panel/users/student' },
-            { label: 'Třída: ' + classId, to: '/panel/users/student/' + classId },
-            { label: 'Odstranění', to: '/panel/users/student/' + classId + '/remove', active: true }
+            { label: t('users.index.title'), to: '/panel/users', icon: 'material-symbols:supervisor-account-rounded' },
+            { label: t('users.student.breadcrumb'), to: '/panel/users/student' },
+            { label: t('users.student.class.index.title', { classId }), to: '/panel/users/student/' + classId },
+            { label: t('users.student.class.remove.heading', { count: selectedUsers.length }), to: '/panel/users/student/' + classId + '/remove', active: true }
           ]"/>
         </template>
       </Navbar>
@@ -172,9 +174,9 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa uživatelů"
+            :description="t('actionBar.description')"
             :active="2"
-            :texts="['Přidat', 'Upravit', 'Odebrat']"
+            :texts="[t('actionBar.add'), t('actionBar.edit'), t('actionBar.remove')]"
             :icons="[
               'material-symbols:add-rounded',
               'material-symbols:edit-rounded',
@@ -190,17 +192,17 @@ watchEffect((): void => {
           <div class="line">
             <div class="section-head">
               <h3>
-                Vybraní uživatelé: {{ selectedUsers.length }}
+                {{ t('users.student.class.remove.heading', { count: selectedUsers.length }) }}
               </h3>
-              <p>Vyberte uživatele, které chcete odstranit, nebo použijte vyhledávání pro zúžení výběru.</p>
+              <p>{{ t('users.student.class.remove.description') }}</p>
             </div>
 
-            <SearchInput @change="onSearchInputChange" placeholder="Hledat uživatele" />
+            <SearchInput @change="onSearchInputChange" :placeholder="t('users.student.class.remove.searchPlaceholder')" />
           </div>
 
           <div class="buttons">
             <button class="remove" @click="removeUsers">
-              Odstranit
+              {{ t('users.student.class.remove.removeBtn') }}
               <Loading
                 v-show="loading"
                 size="5px"
@@ -208,7 +210,7 @@ watchEffect((): void => {
               />
             </button>
             <button class="reset" @click="resetSelectedUsers">
-              Zrušit vše
+              {{ t('users.student.class.remove.cancelBtn') }}
             </button>
           </div>
 
@@ -235,10 +237,10 @@ watchEffect((): void => {
                       E-mail: <span>{{ item.data.email }}</span>
                     </p>
                     <p>
-                      Přezdívka: <span>{{ item.data.abbreviation || "Není" }}</span>
+                      {{ t('users.student.class.remove.abbreviationLabel') }} <span>{{ item.data.abbreviation || t('users.student.class.remove.noAbbreviation') }}</span>
                     </p>
                     <p>
-                      Vytvořen:
+                      {{ t('users.student.class.index.createdLabel') }}
                       <span>{{ moment(item.data.createdAt).format("DD. MM. YYYY") }}</span>
                     </p>
                   </div>

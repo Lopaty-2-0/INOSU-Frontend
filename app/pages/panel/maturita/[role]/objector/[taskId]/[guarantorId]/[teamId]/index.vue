@@ -15,6 +15,7 @@ import type {Version} from "~/types/team";
 import type {MaturitaTaskData} from "~/types/maturita";
 import ActionBar from "~/components/ui/ActionBar.vue";
 
+const { t } = useI18n();
 const route = useRoute();
 const teamId = route.params.teamId as string;
 const role = route.params.role as string;
@@ -22,8 +23,8 @@ const taskId = route.params.taskId as string;
 const guarantorId = route.params.guarantorId as string;
 
 useHead({
-  title: "Panel | Oponentura zadání - " + taskId,
-  meta: [{ name: "description", content: "Panel Homepage" }],
+  title: t('pages.maturita.objectorTeam.title', { taskId }),
+  meta: [{ name: "description", content: t('pages.maturita.objectorTeam.description') }],
 });
 
 definePageMeta({
@@ -46,7 +47,7 @@ const versionsNumberOfPages = computed<number>(() => {
 
 const downloadMaterials = async (): Promise<void> => {
   if (!task.value || !task.value.task) {
-    alertsStore.addAlert({ type: "error", title: "Stahování souborů", message: "Chyba při stahování materiálů úkolu." });
+    alertsStore.addAlert({ type: "error", title: t('maturita.objector.team.download.title'), message: t('maturita.objector.team.download.error') });
     return;
   }
   await navigateTo(`${config.public.originUrl}/api/file/task/${guarantorId}/${task.value.id}/${task.value.task}`, { external: true });
@@ -54,7 +55,7 @@ const downloadMaterials = async (): Promise<void> => {
 
 const downloadVersion = async (version: Version): Promise<void> => {
   if (!version || !version.elaboration) {
-    alertsStore.addAlert({ type: "warning", title: "Stahování souborů", message: "Tato verze není dostupná." });
+    alertsStore.addAlert({ type: "warning", title: t('maturita.objector.team.download.title'), message: t('maturita.objector.team.download.versionUnavailable') });
     return;
   }
 
@@ -137,7 +138,7 @@ watch([teamData, teamError], async (): Promise<void> => {
   }
 
   teamTaskPoints.value = teamData.value.data.team.points ?? null;
-  guarantorComment.value = teamData.value.data.team.review || "Zatím žádný komentář..."
+  guarantorComment.value = teamData.value.data.team.review || t('maturita.objector.team.noComment');
 }, { immediate: true });
 
 watchEffect((): void => {
@@ -151,10 +152,10 @@ watchEffect((): void => {
       <Navbar>
         <template #left>
           <Breadcrumb :items="[
-            { label: 'Maturity', to: `/panel/maturita/${role}/objector`, icon: 'material-symbols:search-rounded' },
-            { label: 'Oponentura', to: `/panel/maturita/${role}/objector` },
-            { label: `Zadání ID: ${taskId}`, to: `/panel/maturita/${role}/objector/${taskId}/${guarantorId}/${teamId}/` },
-            { label: `Vypracování ID: ${teamId}`, to: `/panel/maturita/${role}/objector/${taskId}/${guarantorId}/${teamId}`, active: true },
+            { label: t('sidebar.links.maturitas'), to: `/panel/maturita/${role}/objector`, icon: 'material-symbols:search-rounded' },
+            { label: t('maturita.objector.index.heading'), to: `/panel/maturita/${role}/objector` },
+            { label: `${t('maturita.team.assignmentLabel')} ${taskId}`, to: `/panel/maturita/${role}/objector/${taskId}/${guarantorId}/${teamId}/` },
+            { label: `${t('maturita.team.assignmentLabel')} ${teamId}`, to: `/panel/maturita/${role}/objector/${taskId}/${guarantorId}/${teamId}`, active: true },
           ]"/>
         </template>
       </Navbar>
@@ -165,8 +166,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            description="Správa maturitního zadání"
-            :texts="['Otevřít chat']"
+            :description="t('maturita.objector.team.actionBar.description')"
+            :texts="[t('maturita.objector.team.actionBar.openChat')]"
             :actions="['edit']"
             :icons="[
                 'material-symbols:chat-rounded'
@@ -179,18 +180,18 @@ watchEffect((): void => {
           <div class="page-section bottom-line">
             <div class="section-head">
               <h3>{{ task.name }}</h3>
-              <p>Úkol ID: {{ task.id }}</p>
-              <p>Začátek: {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p>Konec: {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
-              <p v-if="task.deadline">Uzávěrka: {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('maturita.objector.team.taskIdLabel') }} {{ task.id }}</p>
+              <p>{{ t('maturita.objector.team.startLabel') }} {{ moment(task.startDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p>{{ t('maturita.objector.team.endLabel') }} {{ moment(task.endDate).format("HH:mm DD.MM. YYYY") }}</p>
+              <p v-if="task.deadline">{{ t('maturita.objector.team.deadlineLabel') }} {{ moment(task.deadline).format("HH:mm DD.MM. YYYY") }}</p>
               <p v-if="task.points">
                 <br>
-                Body: {{ teamTaskData.points ?? "-" }} / {{ task.points }} = {{ teamTaskData.points !== null && task.points ? ((teamTaskData.points / task.points) * 100).toFixed(2) : "0" }}%
+                {{ t('maturita.objector.team.maxPointsLabel') }} {{ teamTaskData.points ?? "-" }} / {{ task.points }} = {{ teamTaskData.points !== null && task.points ? ((teamTaskData.points / task.points) * 100).toFixed(2) : "0" }}%
               </p>
             </div>
 
             <div class="user section-head">
-              <span>Student:</span>
+              <span>{{ t('maturita.objector.team.studentLabel') }}</span>
               <div class="profile" v-if="task.userData && task.userData.id">
                 <Image :src="config.public.originUrl + '/api/file/pfp/' + task.userData.profilePicture" alt="profile-photo" draggable="false" />
 
@@ -199,11 +200,11 @@ watchEffect((): void => {
                 </p>
               </div>
 
-              <p v-else>Neurčeno</p>
+              <p v-else>{{ t('maturita.objector.team.undetermined') }}</p>
             </div>
 
             <div class="user section-head">
-              <span>Garant:</span>
+              <span>{{ t('maturita.objector.team.guarantorLabel') }}</span>
               <div class="profile" v-if="task.guarantor && task.guarantor.id">
                 <Image :src="config.public.originUrl + '/api/file/pfp/' + task.guarantor.profilePicture" alt="profile-photo" draggable="false" />
 
@@ -212,20 +213,20 @@ watchEffect((): void => {
                 </p>
               </div>
 
-              <p v-else>Neurčeno</p>
+              <p v-else>{{ t('maturita.objector.team.undetermined') }}</p>
             </div>
           </div>
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Materiály</h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('maturita.objector.team.materialsHeading') }}</h3>
+              <p>{{ t('maturita.objector.team.materialsDescription') }}</p>
             </div>
 
             <div class="download-input">
               <div class="line">
                 <div class="input">
-                  {{ task.task || "Žádné zadání" }}
+                  {{ task.task || t('maturita.objector.team.noAssignment') }}
                 </div>
                 <div class="icon-div" @click="downloadMaterials">
                   <Icon class="icon" name="material-symbols:download"/>
@@ -236,8 +237,8 @@ watchEffect((): void => {
 
           <div class="page-section bottom-line">
             <div class="section-head">
-              <h3>Verze vypracování</h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('maturita.objector.team.versionsHeading') }}</h3>
+              <p>{{ t('maturita.objector.team.versionsDescription') }}</p>
             </div>
 
             <div class="versions" v-show="!versionsLoading && versionsCount > 0">
@@ -247,7 +248,7 @@ watchEffect((): void => {
 
                   <div class="line">
                     <div class="input">
-                      {{ version.elaboration || "Odstraněno" }}
+                      {{ version.elaboration || t('maturita.objector.team.removed') }}
                     </div>
                     <div class="icon-div" @click="downloadVersion(version)" v-if="version.elaboration">
                       <Icon class="icon" name="material-symbols:download"/>
@@ -262,7 +263,7 @@ watchEffect((): void => {
             </div>
 
             <div class="versions" v-show="!versionsLoading && versionsCount === 0">
-              <p class="error message">Žádný záznam nebyl zobrazen!</p>
+              <p class="error message">{{ t('maturita.objector.team.noVersions') }}</p>
             </div>
 
             <Pagination :number-of-pages="versionsNumberOfPages" v-model="versionsActivePage" />
@@ -270,13 +271,13 @@ watchEffect((): void => {
 
           <div class="page-section">
             <div class="section-head">
-              <h3>Komentář garanta</h3>
-              <p>Zde můžete upravit informace o týmu přiřazeném k úkolu.</p>
+              <h3>{{ t('maturita.objector.team.commentHeading') }}</h3>
+              <p>{{ t('maturita.objector.team.commentDescription') }}</p>
             </div>
 
             <div class="guarantor-comment download-input">
               <div class="input-div">
-                <span class="label">Poslední úprava: {{ teamTaskData.reviewUpdatedAt ? moment(teamTaskData.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") : "Neupraveno" }}</span>
+                <span class="label">{{ t('maturita.objector.team.lastEdited') }} {{ teamTaskData.reviewUpdatedAt ? moment(teamTaskData.reviewUpdatedAt).format("HH:mm DD.MM. YYYY") : t('maturita.objector.team.notEdited') }}</span>
 
                 <div class="line">
                   <Editor

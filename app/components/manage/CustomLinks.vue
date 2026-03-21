@@ -4,6 +4,9 @@ import { useAlertsStore } from "~/stores/alerts";
 import type { AccountLink } from "~/types/account";
 import Input from "~/components/ui/Input.vue";
 import Card from "~/components/ui/Card.vue";
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
 
 const props = defineProps({
   oldCustomLinks: {
@@ -51,8 +54,8 @@ const addCustomLink = (): any => {
   if (accountCustomLinks.value.length >= 5) {
     return useAlertsStore().addAlert({
       type: "warning",
-      title: "Vlastní odkazy",
-      message: "Nelze přidat více než 5 odkazů.",
+      title: t('settings.customization.customLinks.alerts.title'),
+      message: t('settings.customization.customLinks.alerts.maxLinks'),
     });
   }
 
@@ -98,7 +101,7 @@ defineExpose({ reset })
 
     <div>
       <div class="number-of-links">
-        <h4>Počet odkazů</h4>
+        <h4>{{ t('settings.customization.customLinks.count') }}</h4>
 
         <div>
           <p>{{ accountCustomLinks.length }} / 5</p>
@@ -124,23 +127,23 @@ defineExpose({ reset })
               <div class="line"></div>
               <div class="content">
                 <div class="input">
-                  <label :for="'text-input-' + index">Text</label>
+                  <label :for="'text-input-' + index">{{ t('settings.customization.customLinks.labels.text') }}</label>
                   <Input
                     type="text"
                     :id="'text-input-' + index"
                     name="linkText"
-                    placeholder="YouTube"
+                    :placeholder="t('settings.customization.customLinks.linkTextPlaceholder')"
                     v-model.trim="textInputValue[editLinkId!]"
                     @input="onInput"
                   />
                 </div>
                 <div class="input">
-                  <label :for="'url-input-' + index">Odkaz</label>
+                  <label :for="'url-input-' + index">{{ t('settings.customization.customLinks.labels.link') }}</label>
                   <Input
                     type="text"
                     :id="'url-input-' + index"
                     name="linkUrl"
-                    placeholder="https://www.youtube.com/"
+                    :placeholder="t('settings.customization.customLinks.linkUrlPlaceholder')"
                     v-model.trim="hrefInputValue[editLinkId!]"
                     @input="onInput"
                   />
@@ -158,7 +161,7 @@ defineExpose({ reset })
             </div>
           </div>
         </li>
-        <li v-else>Nemáte vytvořené žádné vlastní odkazy.</li>
+        <li v-else>{{ t('settings.customization.customLinks.noLinks') }}</li>
       </ul>
     </div>
   </div>
