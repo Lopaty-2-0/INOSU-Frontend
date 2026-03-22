@@ -94,6 +94,7 @@ export default defineNuxtConfig({
 
     security: {
         enabled: process.env.NODE_ENV === "production",
+        rateLimiter: false,
         hidePoweredBy: true,
         corsHandler: {
             origin: process.env.SERVER_URL,
