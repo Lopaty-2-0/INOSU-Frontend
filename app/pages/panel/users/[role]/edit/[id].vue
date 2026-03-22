@@ -4,7 +4,6 @@ import Navbar from "~/components/layout/Navbar.vue";
 import {ref, useTemplateRef, watchEffect} from "vue";
 import EditFullName from "~/components/manage/FullName.vue";
 import EditEmail from "~/components/manage/Email.vue";
-import EditPassword from "~/components/manage/Password.vue";
 import EditRole from "~/components/manage/Role.vue";
 import EditAbbreviation from "~/components/manage/Abbreviation.vue";
 import EditClass from "~/components/manage/Class.vue";
@@ -42,29 +41,26 @@ const submitLoading = ref<boolean>(false);
 const editProfilePicture = useTemplateRef<InstanceType<typeof EditProfilePicture>>("editProfilePicture");
 const editFullName = useTemplateRef<InstanceType<typeof EditFullName>>("editFullName");
 const editEmail = useTemplateRef<InstanceType<typeof EditEmail>>("editEmail");
-const editPassword = useTemplateRef<InstanceType<typeof EditPassword>>("editPassword");
 const editRole = useTemplateRef<InstanceType<typeof EditRole>>("editRole");
 const editAbbreviation = useTemplateRef<InstanceType<typeof EditAbbreviation>>("editAbbreviation");
 const editClass = useTemplateRef<InstanceType<typeof EditClass>>("editClass");
 const allRoles: string[] = ["admin", "teacher", "student"];
 
-const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string, surname: string, email: string, password: string, abbreviation: string, role: string, classes: number[]}>( {
+const oldUserData = ref<{ loaded: boolean, profilePicture: string; name: string, surname: string, email: string, abbreviation: string, role: string, classes: number[]}>( {
   loaded: false,
   profilePicture: "",
   name: "",
   surname: "",
   email: "",
-  password: "",
   abbreviation: "",
   role: "",
   classes: [],
 });
-const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, password: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[] | undefined}>({
+const newUserData = ref<{ profilePicture: File | undefined; name: string | undefined, surname: string | undefined, email: string | undefined, abbreviation: string | undefined, role: string | undefined, classes: number[] | undefined}>({
   profilePicture: undefined,
   name: undefined,
   surname: undefined,
   email: undefined,
-  password: undefined,
   abbreviation: undefined,
   role: undefined,
   classes: undefined,
@@ -77,10 +73,6 @@ const onFullNameUpdate = (fullName: { name: string | undefined, surname: string 
 
 const onEmailUpdate = (data: { email: string | undefined }): void => {
   newUserData.value.email = data.email;
-};
-
-const onPasswordUpdate = (data: { password: string | undefined }): void => {
-  newUserData.value.password = data.password;
 };
 
 const onAbbreviationUpdate = (data: { abbreviation: string | undefined }): void => {
@@ -103,7 +95,6 @@ const resetUserData = (): void => {
   if (editProfilePicture.value) editProfilePicture.value.reset();
   if (editFullName.value) editFullName.value.reset();
   if (editEmail.value) editEmail.value.reset();
-  if (editPassword.value) editPassword.value.reset();
   if (editRole.value) editRole.value.reset();
   if (editAbbreviation.value) editAbbreviation.value.reset();
   if (editClass.value) editClass.value.reset();
@@ -113,7 +104,6 @@ const resetUserData = (): void => {
     name: undefined,
     surname: undefined,
     email: undefined,
-    password: undefined,
     abbreviation: undefined,
     role: undefined,
     classes: undefined,
@@ -298,7 +288,6 @@ watch([userData, userError], async (): Promise<void> => {
   oldUserData.value.name = user.name;
   oldUserData.value.surname = user.surname;
   oldUserData.value.email = user.email;
-  oldUserData.value.password = "";
   oldUserData.value.abbreviation = user.abbreviation || "";
   oldUserData.value.role = user.role;
   oldUserData.value.classes = user.idClass;
@@ -357,15 +346,6 @@ watchEffect((): void => {
                 <p>{{ t('users.role.edit.detail.email.description') }}</p>
               </div>
             </EditEmail>
-          </div>
-
-          <div class="line page-section">
-            <EditPassword ref="editPassword" type="new" @update="onPasswordUpdate">
-              <div class="section-head">
-                <h3>{{ t('users.role.edit.detail.password.heading') }} <span class="update" v-show="newUserData.password">{{ t('common.updated') }}</span></h3>
-                <p>{{ t('users.role.edit.detail.password.description') }}</p>
-              </div>
-            </EditPassword>
           </div>
 
           <div class="line page-section">
