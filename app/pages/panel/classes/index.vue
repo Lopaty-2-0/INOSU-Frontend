@@ -15,8 +15,8 @@ import SearchInput from "~/components/ui/SearchInput.vue";
 const { t } = useI18n();
 
 useHead({
-  title: () => t("pages.classes.index.title"),
-  meta: [{ name: "description", content: () => t("pages.classes.index.description") }],
+  title: t("pages.classes.index.title"),
+  meta: [{ name: "description", content: t("pages.classes.index.description") }],
 });
 
 const amountForPaging: number = 10;

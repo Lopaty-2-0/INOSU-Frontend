@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import Loading from "~/components/ui/Loading.vue";
 import Input from "~/components/ui/Input.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useI18n } from "#imports";
 import type { LocationQueryValue } from "vue-router";
 import type {LocaleObject} from "~/types/i18n";

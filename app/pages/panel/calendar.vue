@@ -21,8 +21,8 @@ import Loading from "~/components/ui/Loading.vue";
 const { t } = useI18n();
 
 useHead({
-  title: computed(() => t('pages.calendar.title')),
-  meta: [{ name: "description", content: computed(() => t('pages.calendar.description')) }],
+  title: t('pages.calendar.title'),
+  meta: [{ name: "description", content: t('pages.calendar.description') }],
 });
 const alertsStore = useAlertsStore();
 const accountStore = useAccountStore();

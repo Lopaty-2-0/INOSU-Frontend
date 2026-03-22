@@ -524,298 +524,298 @@
   },
   "pages": {
     "login": {
-      "title": "Panel | Přihlášení",
+      "title": "Panel { '|' } Přihlášení",
       "description": "Přihlašovací stránka panelu"
     },
     "home": {
-      "title": "Panel | Domů",
+      "title": "Panel { '|' } Domů",
       "description": "Domovská stránka panelu"
     },
     "chat": {
-      "title": "Panel | Chat",
+      "title": "Panel { '|' } Chat",
       "description": "Chatovací stránka panelu"
     },
     "export": {
-      "title": "Panel | Export dat",
+      "title": "Panel { '|' } Export dat",
       "description": "Stránka exportu dat"
     },
     "error403": {
-      "title": "Panel | Přístup odepřen",
+      "title": "Panel { '|' } Přístup odepřen",
       "description": "Stránka přístupu odepřen"
     },
     "settings": {
       "info": {
-        "title": "Panel | Nastavení - Údaje",
+        "title": "Panel { '|' } Nastavení - Údaje",
         "description": "Stránka nastavení"
       },
       "security": {
-        "title": "Panel | Nastavení - Zabezpečení",
+        "title": "Panel { '|' } Nastavení - Zabezpečení",
         "description": "Stránka zabezpečení"
       },
       "customization": {
-        "title": "Panel | Nastavení - Přizpůsobení",
+        "title": "Panel { '|' } Nastavení - Přizpůsobení",
         "description": "Stránka přizpůsobení"
       }
     },
     "forgotPassword": {
-      "title": "Panel | Zapomenuté heslo",
+      "title": "Panel { '|' } Zapomenuté heslo",
       "description": "Stránka pro zapomenuté heslo"
     },
     "resetPassword": {
-      "title": "Panel | Resetování hesla",
+      "title": "Panel { '|' } Resetování hesla",
       "description": "Stránka pro resetování hesla"
     },
     "import": {
-      "title": "Panel | Import dat - Uživatelé",
+      "title": "Panel { '|' } Import dat - Uživatelé",
       "description": "Stránka importu dat",
       "classes": {
-        "title": "Panel | Import dat - Třídy",
+        "title": "Panel { '|' } Import dat - Třídy",
         "description": "Stránka pro import tříd"
       },
       "maturitas": {
-        "title": "Panel | Import dat - Maturity",
+        "title": "Panel { '|' } Import dat - Maturity",
         "description": "Stránka pro import maturit"
       },
       "maturitaTopics": {
-        "title": "Panel | Import dat - Maturitní témata",
+        "title": "Panel { '|' } Import dat - Maturitní témata",
         "description": "Stránka pro import maturitních témat"
       },
       "specializations": {
-        "title": "Panel | Import dat - Zaměření",
+        "title": "Panel { '|' } Import dat - Zaměření",
         "description": "Stránka pro import zaměření"
       }
     },
     "calendar": {
-      "title": "Panel | Kalendář",
+      "title": "Panel { '|' } Kalendář",
       "description": "Stránka kalendáře"
     },
     "classes": {
       "add": {
-        "title": "Panel | Třídy - Přidání",
+        "title": "Panel { '|' } Třídy - Přidání",
         "description": "Stránka pro přidání třídy"
       },
       "index": {
-        "title": "Panel | Třídy",
+        "title": "Panel { '|' } Třídy",
         "description": "Správa tříd v systému"
       },
       "remove": {
-        "title": "Panel | Třídy - Odstranění",
+        "title": "Panel { '|' } Třídy - Odstranění",
         "description": "Stránka pro odstranění tříd"
       }
     },
     "specializations": {
       "index": {
-        "title": "Panel | Zaměření",
+        "title": "Panel { '|' } Zaměření",
         "description": "Správa zaměření v systému"
       },
       "add": {
-        "title": "Panel | Zaměření - Přidání",
+        "title": "Panel { '|' } Zaměření - Přidání",
         "description": "Stránka pro přidání zaměření"
       },
       "remove": {
-        "title": "Panel | Zaměření - Odstranění",
+        "title": "Panel { '|' } Zaměření - Odstranění",
         "description": "Stránka pro odstranění zaměření"
       }
     },
     "users": {
       "index": {
-        "title": "Panel | Uživatelé",
+        "title": "Panel { '|' } Uživatelé",
         "description": "Přehled všech uživatelů v systému"
       },
       "studentIndex": {
-        "title": "Panel | Uživatelé - student",
+        "title": "Panel { '|' } Uživatelé - student",
         "description": "Přehled studentů filtrovaný podle třídy"
       },
       "studentClass": {
-        "title": "Panel | Uživatelé - Třída: {classId}",
+        "title": "Panel { '|' } Uživatelé - Třída: {classId}",
         "description": "Přehled uživatelů dané třídy"
       },
       "studentClassEdit": {
-        "title": "Panel | Upravení uživatelů - Třída: {classId}",
+        "title": "Panel { '|' } Upravení uživatelů - Třída: {classId}",
         "description": "Stránka pro úpravu uživatelů dané třídy"
       },
       "studentClassRemove": {
-        "title": "Panel | Odstranění uživatelů - Třída: {classId}",
+        "title": "Panel { '|' } Odstranění uživatelů - Třída: {classId}",
         "description": "Stránka pro odstranění uživatelů dané třídy"
       },
       "roleIndex": {
-        "title": "Panel | Uživatelé - {role}",
+        "title": "Panel { '|' } Uživatelé - {role}",
         "description": "Přehled uživatelů dané role"
       },
       "roleEdit": {
-        "title": "Panel | Upravení uživatelů - {role}",
+        "title": "Panel { '|' } Upravení uživatelů - {role}",
         "description": "Stránka pro výběr uživatele k úpravě"
       },
       "roleEditDetail": {
-        "title": "Panel | Upravení uživatele - {id}",
+        "title": "Panel { '|' } Upravení uživatele - {id}",
         "description": "Stránka pro úpravu uživatele"
       },
       "roleRemove": {
-        "title": "Panel | Odstranění uživatelů - {role}",
+        "title": "Panel { '|' } Odstranění uživatelů - {role}",
         "description": "Stránka pro odstranění uživatelů dané role"
       },
       "add": {
-        "title": "Panel | Uživatelé - Přidání",
+        "title": "Panel { '|' } Uživatelé - Přidání",
         "description": "Stránka pro přidání uživatele"
       }
     },
     "tasks": {
       "roleIndex": {
-        "title": "Panel | Úkoly",
+        "title": "Panel { '|' } Úkoly",
         "description": "Seznam vytvořených úkolů"
       },
       "roleAdd": {
-        "title": "Panel | Úkol - Přidání",
+        "title": "Panel { '|' } Úkol - Přidání",
         "description": "Stránka pro přidání úkolu"
       },
       "roleRemove": {
-        "title": "Panel | Úkoly - Odstranění",
+        "title": "Panel { '|' } Úkoly - Odstranění",
         "description": "Stránka pro odstranění úkolů"
       },
       "roleTask": {
-        "title": "Panel | Úkol - {taskId}",
+        "title": "Panel { '|' } Úkol - {taskId}",
         "description": "Detail úkolu"
       },
       "roleTaskEdit": {
-        "title": "Panel | Úkol - {taskId} - Upravení",
+        "title": "Panel { '|' } Úkol - {taskId} - Upravení",
         "description": "Stránka pro úpravu úkolu"
       },
       "roleTaskTeam": {
-        "title": "Panel | Úkol - {taskId} - Tým - {teamId}",
+        "title": "Panel { '|' } Úkol - {taskId} - Tým - {teamId}",
         "description": "Detail týmu přiřazeného k úkolu"
       },
       "studentIndex": {
-        "title": "Panel | Úkoly",
+        "title": "Panel { '|' } Úkoly",
         "description": "Seznam přiřazených úkolů studenta"
       },
       "studentTeam": {
-        "title": "Panel | Úkol - {taskId} - Přiřazení",
+        "title": "Panel { '|' } Úkol - {taskId} - Přiřazení",
         "description": "Detail přiřazení studenta k úkolu"
       },
       "assignClasses": {
-        "title": "Panel | Úkol - {taskId} - Přiřazení - Třídy",
+        "title": "Panel { '|' } Úkol - {taskId} - Přiřazení - Třídy",
         "description": "Stránka pro přiřazení tříd k úkolu"
       },
       "assignIndividuals": {
-        "title": "Panel | Úkol - {taskId} - Přiřazení - Jednotlivci",
+        "title": "Panel { '|' } Úkol - {taskId} - Přiřazení - Jednotlivci",
         "description": "Stránka pro přiřazení jednotlivců k úkolu"
       },
       "assignRemove": {
-        "title": "Panel | Úkol - {taskId} - Odstranění přiřazení",
+        "title": "Panel { '|' } Úkol - {taskId} - Odstranění přiřazení",
         "description": "Stránka pro odstranění přiřazení k úkolu"
       },
       "assignTeams": {
-        "title": "Panel | Úkol - {taskId} - Přiřazení - Týmy",
+        "title": "Panel { '|' } Úkol - {taskId} - Přiřazení - Týmy",
         "description": "Stránka pro správu týmů k úkolu"
       },
       "assignTeamEdit": {
-        "title": "Panel | Úkol - {taskId} - Upravení týmu",
+        "title": "Panel { '|' } Úkol - {taskId} - Upravení týmu",
         "description": "Stránka pro úpravu týmu"
       }
     },
     "maturita": {
       "gradeIndex": {
-        "title": "Panel | Maturitní ročníky",
+        "title": "Panel { '|' } Maturitní ročníky",
         "description": "Správa maturitních ročníků v systému"
       },
       "gradeAdd": {
-        "title": "Panel | Maturitní ročníky - Přidání",
+        "title": "Panel { '|' } Maturitní ročníky - Přidání",
         "description": "Stránka pro přidání maturitního ročníku"
       },
       "gradeRemove": {
-        "title": "Panel | Maturitní ročníky - Odstranění",
+        "title": "Panel { '|' } Maturitní ročníky - Odstranění",
         "description": "Stránka pro odstranění maturitních ročníků"
       },
       "gradeEdit": {
-        "title": "Panel | Maturitní ročník - {maturitaId} - Úpravení",
+        "title": "Panel { '|' } Maturitní ročník - {maturitaId} - Úpravení",
         "description": "Stránka pro úpravu maturitního ročníku"
       },
       "topicsIndex": {
-        "title": "Panel | Témata maturitních prací",
+        "title": "Panel { '|' } Témata maturitních prací",
         "description": "Správa maturitních témat v systému"
       },
       "topicsAdd": {
-        "title": "Panel | Témata maturitních prací - Přidávání",
+        "title": "Panel { '|' } Témata maturitních prací - Přidávání",
         "description": "Stránka pro přidání maturitního tématu"
       },
       "topicsRemove": {
-        "title": "Panel | Témata maturitních prací - Odstranění",
+        "title": "Panel { '|' } Témata maturitních prací - Odstranění",
         "description": "Stránka pro odstranění maturitních témat"
       },
       "tasksIndex": {
-        "title": "Panel | Maturitní zadání",
+        "title": "Panel { '|' } Maturitní zadání",
         "description": "Správa maturitních zadání"
       },
       "tasksAdd": {
-        "title": "Panel | Maturitní zadání - Přidání",
+        "title": "Panel { '|' } Maturitní zadání - Přidání",
         "description": "Stránka pro přidání maturitního zadání"
       },
       "tasksRemove": {
-        "title": "Panel | Maturitní zadání - Odstranění",
+        "title": "Panel { '|' } Maturitní zadání - Odstranění",
         "description": "Stránka pro odstranění maturitních zadání"
       },
       "tasksEdit": {
-        "title": "Panel | Maturitní zadání - Úpravení",
+        "title": "Panel { '|' } Maturitní zadání - Úpravení",
         "description": "Stránka pro úpravu maturitního zadání"
       },
       "proposalsIndex": {
-        "title": "Panel | Návrhy maturitních zadání",
+        "title": "Panel { '|' } Návrhy maturitních zadání",
         "description": "Správa návrhů maturitních zadání"
       },
       "proposalsAdd": {
-        "title": "Panel | Návrh maturitního zadání - Přidání",
+        "title": "Panel { '|' } Návrh maturitního zadání - Přidání",
         "description": "Stránka pro přidání návrhu maturitního zadání"
       },
       "proposalsRejected": {
-        "title": "Panel | Návrhy maturitních zadání - Zamítnuté",
+        "title": "Panel { '|' } Návrhy maturitních zadání - Zamítnuté",
         "description": "Stránka se zamítnutými návrhy maturitních zadání"
       },
       "proposalsRemove": {
-        "title": "Panel | Návrhy maturitních zadání - Odstranění",
+        "title": "Panel { '|' } Návrhy maturitních zadání - Odstranění",
         "description": "Stránka pro odstranění návrhů maturitních zadání"
       },
       "proposalsEdit": {
-        "title": "Panel | Maturitní zadání - Úpravení",
+        "title": "Panel { '|' } Maturitní zadání - Úpravení",
         "description": "Stránka pro úpravu návrhu maturitního zadání"
       },
       "teamIndex": {
-        "title": "Panel | Maturitní zadání - {taskId}",
+        "title": "Panel { '|' } Maturitní zadání - {taskId}",
         "description": "Správa maturitního zadání týmu"
       },
       "teamChat": {
-        "title": "Panel | Maturitní zadání - {taskId} - Chat",
+        "title": "Panel { '|' } Maturitní zadání - {taskId} - Chat",
         "description": "Chat k maturitnímu zadání"
       },
       "objectorIndex": {
-        "title": "Panel | Oponentura",
+        "title": "Panel { '|' } Oponentura",
         "description": "Seznam maturitních zadání k oponentuře"
       },
       "objectorTeam": {
-        "title": "Panel | Oponentura zadání - {taskId}",
+        "title": "Panel { '|' } Oponentura zadání - {taskId}",
         "description": "Správa oponentury maturitního zadání"
       },
       "objectorChat": {
-        "title": "Panel | Oponentura zadání - {taskId} - Chat",
+        "title": "Panel { '|' } Oponentura zadání - {taskId} - Chat",
         "description": "Chat k oponentuře maturitního zadání"
       },
       "tablesIndex": {
-        "title": "Panel | Tabulka maturitních zadání",
+        "title": "Panel { '|' } Tabulka maturitních zadání",
         "description": "Tabulka přehledu maturitních zadání"
       },
       "tablesEvaluators": {
-        "title": "Panel | Tabulka maturitních hodnotitelů",
+        "title": "Panel { '|' } Tabulka maturitních hodnotitelů",
         "description": "Tabulka hodnotitelů maturitních prací"
       },
       "proposalsRole": {
-        "title": "Panel | Návrhy maturitních zadání",
+        "title": "Panel { '|' } Návrhy maturitních zadání",
         "description": "Správa návrhů maturitních zadání"
       },
       "studentIndex": {
-        "title": "Panel | Maturitní zadání",
+        "title": "Panel { '|' } Maturitní zadání",
         "description": "Maturitní zadání studenta"
       },
       "studentChat": {
-        "title": "Panel | Maturitní zadání - Chat",
+        "title": "Panel { '|' } Maturitní zadání - Chat",
         "description": "Chat k maturitnímu zadání studenta"
       }
     }
