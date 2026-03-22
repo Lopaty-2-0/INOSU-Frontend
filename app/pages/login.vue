@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Loading from "~/components/ui/Loading.vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { AccountData } from "~/types/account";
 import Checkbox from "~/components/ui/Checkbox.vue";
 import Input from "~/components/ui/Input.vue";

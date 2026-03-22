@@ -14,8 +14,8 @@ import Pagination from "~/components/ui/Pagination.vue";
 const { t } = useI18n();
 
 useHead({
-  title: () => t("pages.specializations.index.title"),
-  meta: [{ name: "description", content: () => t("pages.specializations.index.description") }],
+  title: t("pages.specializations.index.title"),
+  meta: [{ name: "description", content: t("pages.specializations.index.description") }],
 });
 
 const allSpecializations = ref<SpecializationData[] | undefined>(undefined);
@@ -80,8 +80,8 @@ watchEffect((): void => {
         <div class="content">
           <ActionBar
             class="action-bar"
-            :description="t('specializations.add.actionBar.description')"
-            :texts="[t('specializations.add.actionBar.add'), t('specializations.add.actionBar.remove')]"
+            :description="t('specializations.actionBar.description')"
+            :texts="[t('specializations.actionBar.add'), t('specializations.actionBar.remove')]"
             :actions="['add', 'remove']"
             :icons="[
               'material-symbols:add-rounded',

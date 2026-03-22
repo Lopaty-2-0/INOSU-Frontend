@@ -2,7 +2,7 @@
 import Navbar from "~/components/layout/Navbar.vue";
 import "@bhplugin/vue3-datatable/dist/style.css";
 import ActionBar from "~/components/ui/ActionBar.vue";
-import {ref} from "vue";
+import {ref, computed} from "vue";
 import Loading from "~/components/ui/Loading.vue";
 import { useAlertsStore } from "~/stores/alerts";
 import Input from "~/components/ui/Input.vue";
@@ -12,8 +12,8 @@ import NumberInput from "~/components/ui/NumberInput.vue";
 const { t } = useI18n();
 
 useHead({
-  title: () => t("pages.specializations.add.title"),
-  meta: [{ name: "description", content: () => t("pages.specializations.add.description") }],
+  title: t("pages.specializations.add.title"),
+  meta: [{ name: "description", content: t("pages.specializations.add.description") }],
 });
 
 definePageMeta({

@@ -4,7 +4,7 @@ import EditThemeMode from "../../../components/manage/ThemeMode.vue";
 import EditCustomLinks from "../../../components/manage/CustomLinks.vue";
 import EditFormFooter from "../../../components/manage/Footer.vue";
 import Navbar from "../../../components/layout/Navbar.vue";
-import {ref} from "vue";
+import {ref, computed} from "vue";
 import { useAccountStore } from "~/stores/account";
 import type {AccountLink, AccountTheme} from "~/types/account";
 import type {LocaleObject} from "~/types/i18n";

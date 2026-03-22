@@ -16,8 +16,8 @@ import Pagination from "~/components/ui/Pagination.vue";
 const { t } = useI18n();
 
 useHead({
-  title: () => t("pages.classes.remove.title"),
-  meta: [{ name: "description", content: () => t("pages.classes.remove.description") }],
+  title: t("pages.classes.remove.title"),
+  meta: [{ name: "description", content: t("pages.classes.remove.description") }],
 });
 
 definePageMeta({

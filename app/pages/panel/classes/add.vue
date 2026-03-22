@@ -16,16 +16,16 @@ import SearchInput from "~/components/ui/SearchInput.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import { useI18n } from "#imports";
 
-useHead({
-  title: () => t("pages.classes.add.title"),
-  meta: [{ name: "description", content: () => t("pages.classes.add.description") }],
-});
-
 definePageMeta({
   roles: ["admin"],
 });
 
 const { t } = useI18n();
+
+useHead({
+  title: t("pages.classes.add.title"),
+  meta: [{ name: "description", content: t("pages.classes.add.description") }],
+});
 const alertsStore = useAlertsStore();
 const amountOfSpecializationsForPaging: number = 10;
 const currentSpecializationsPage = ref<number>(1);

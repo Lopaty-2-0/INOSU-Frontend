@@ -524,298 +524,298 @@
   },
   "pages": {
     "login": {
-      "title": "Panel | Login",
+      "title": "Panel { '|' } Login",
       "description": "Panel login page"
     },
     "home": {
-      "title": "Panel | Home",
+      "title": "Panel { '|' } Home",
       "description": "Panel homepage"
     },
     "chat": {
-      "title": "Panel | Chat",
+      "title": "Panel { '|' } Chat",
       "description": "Panel chat page"
     },
     "export": {
-      "title": "Panel | Data export",
+      "title": "Panel { '|' } Data export",
       "description": "Data export page"
     },
     "error403": {
-      "title": "Panel | Access denied",
+      "title": "Panel { '|' } Access denied",
       "description": "Access denied page"
     },
     "settings": {
       "info": {
-        "title": "Panel | Settings - Info",
+        "title": "Panel { '|' } Settings - Info",
         "description": "Settings page"
       },
       "security": {
-        "title": "Panel | Settings - Security",
+        "title": "Panel { '|' } Settings - Security",
         "description": "Security settings page"
       },
       "customization": {
-        "title": "Panel | Settings - Customization",
+        "title": "Panel { '|' } Settings - Customization",
         "description": "Customization settings page"
       }
     },
     "forgotPassword": {
-      "title": "Panel | Forgot password",
+      "title": "Panel { '|' } Forgot password",
       "description": "Forgot password page"
     },
     "resetPassword": {
-      "title": "Panel | Password reset",
+      "title": "Panel { '|' } Password reset",
       "description": "Password reset page"
     },
     "import": {
-      "title": "Panel | Data import - Users",
+      "title": "Panel { '|' } Data import - Users",
       "description": "Data import page",
       "classes": {
-        "title": "Panel | Import data - Classes",
+        "title": "Panel { '|' } Import data - Classes",
         "description": "Page for importing classes"
       },
       "maturitas": {
-        "title": "Panel | Import data - Maturitas",
+        "title": "Panel { '|' } Import data - Maturitas",
         "description": "Page for importing maturitas"
       },
       "maturitaTopics": {
-        "title": "Panel | Import data - Maturita topics",
+        "title": "Panel { '|' } Import data - Maturita topics",
         "description": "Page for importing maturita topics"
       },
       "specializations": {
-        "title": "Panel | Import data - Specializations",
+        "title": "Panel { '|' } Import data - Specializations",
         "description": "Page for importing specializations"
       }
     },
     "calendar": {
-      "title": "Panel | Calendar",
+      "title": "Panel { '|' } Calendar",
       "description": "Calendar page"
     },
     "classes": {
       "add": {
-        "title": "Panel | Classes - Add",
+        "title": "Panel { '|' } Classes - Add",
         "description": "Page for adding a class"
       },
       "index": {
-        "title": "Panel | Classes",
+        "title": "Panel { '|' } Classes",
         "description": "Class management in the system"
       },
       "remove": {
-        "title": "Panel | Classes - Remove",
+        "title": "Panel { '|' } Classes - Remove",
         "description": "Page for removing classes"
       }
     },
     "specializations": {
       "index": {
-        "title": "Panel | Specializations",
+        "title": "Panel { '|' } Specializations",
         "description": "Specialization management in the system"
       },
       "add": {
-        "title": "Panel | Specializations - Add",
+        "title": "Panel { '|' } Specializations - Add",
         "description": "Page for adding a specialization"
       },
       "remove": {
-        "title": "Panel | Specializations - Remove",
+        "title": "Panel { '|' } Specializations - Remove",
         "description": "Page for removing specializations"
       }
     },
     "users": {
       "index": {
-        "title": "Panel | Users",
+        "title": "Panel { '|' } Users",
         "description": "Overview of all users in the system"
       },
       "studentIndex": {
-        "title": "Panel | Users - student",
+        "title": "Panel { '|' } Users - student",
         "description": "Overview of students filtered by class"
       },
       "studentClass": {
-        "title": "Panel | Users - Class: {classId}",
+        "title": "Panel { '|' } Users - Class: {classId}",
         "description": "Overview of users in the given class"
       },
       "studentClassEdit": {
-        "title": "Panel | Edit users - Class: {classId}",
+        "title": "Panel { '|' } Edit users - Class: {classId}",
         "description": "Page for editing users in the given class"
       },
       "studentClassRemove": {
-        "title": "Panel | Remove users - Class: {classId}",
+        "title": "Panel { '|' } Remove users - Class: {classId}",
         "description": "Page for removing users in the given class"
       },
       "roleIndex": {
-        "title": "Panel | Users - {role}",
+        "title": "Panel { '|' } Users - {role}",
         "description": "Overview of users with the given role"
       },
       "roleEdit": {
-        "title": "Panel | Edit users - {role}",
+        "title": "Panel { '|' } Edit users - {role}",
         "description": "Page for selecting a user to edit"
       },
       "roleEditDetail": {
-        "title": "Panel | Edit user - {id}",
+        "title": "Panel { '|' } Edit user - {id}",
         "description": "Page for editing a user"
       },
       "roleRemove": {
-        "title": "Panel | Remove users - {role}",
+        "title": "Panel { '|' } Remove users - {role}",
         "description": "Page for removing users with the given role"
       },
       "add": {
-        "title": "Panel | Users - Add",
+        "title": "Panel { '|' } Users - Add",
         "description": "Page for adding a user"
       }
     },
     "tasks": {
       "roleIndex": {
-        "title": "Panel | Tasks",
+        "title": "Panel { '|' } Tasks",
         "description": "List of created tasks"
       },
       "roleAdd": {
-        "title": "Panel | Task - Add",
+        "title": "Panel { '|' } Task - Add",
         "description": "Page for adding a task"
       },
       "roleRemove": {
-        "title": "Panel | Tasks - Remove",
+        "title": "Panel { '|' } Tasks - Remove",
         "description": "Page for removing tasks"
       },
       "roleTask": {
-        "title": "Panel | Task - {taskId}",
+        "title": "Panel { '|' } Task - {taskId}",
         "description": "Task detail"
       },
       "roleTaskEdit": {
-        "title": "Panel | Task - {taskId} - Edit",
+        "title": "Panel { '|' } Task - {taskId} - Edit",
         "description": "Page for editing a task"
       },
       "roleTaskTeam": {
-        "title": "Panel | Task - {taskId} - Team - {teamId}",
+        "title": "Panel { '|' } Task - {taskId} - Team - {teamId}",
         "description": "Detail of a team assigned to a task"
       },
       "studentIndex": {
-        "title": "Panel | Tasks",
+        "title": "Panel { '|' } Tasks",
         "description": "List of assigned tasks for the student"
       },
       "studentTeam": {
-        "title": "Panel | Task - {taskId} - Assignment",
+        "title": "Panel { '|' } Task - {taskId} - Assignment",
         "description": "Detail of student assignment to a task"
       },
       "assignClasses": {
-        "title": "Panel | Task - {taskId} - Assignment - Classes",
+        "title": "Panel { '|' } Task - {taskId} - Assignment - Classes",
         "description": "Page for assigning classes to a task"
       },
       "assignIndividuals": {
-        "title": "Panel | Task - {taskId} - Assignment - Individuals",
+        "title": "Panel { '|' } Task - {taskId} - Assignment - Individuals",
         "description": "Page for assigning individuals to a task"
       },
       "assignRemove": {
-        "title": "Panel | Task - {taskId} - Remove assignments",
+        "title": "Panel { '|' } Task - {taskId} - Remove assignments",
         "description": "Page for removing task assignments"
       },
       "assignTeams": {
-        "title": "Panel | Task - {taskId} - Assignment - Teams",
+        "title": "Panel { '|' } Task - {taskId} - Assignment - Teams",
         "description": "Page for managing task teams"
       },
       "assignTeamEdit": {
-        "title": "Panel | Task - {taskId} - Edit team",
+        "title": "Panel { '|' } Task - {taskId} - Edit team",
         "description": "Page for editing a team"
       }
     },
     "maturita": {
       "gradeIndex": {
-        "title": "Panel | Maturita Years",
+        "title": "Panel { '|' } Maturita Years",
         "description": "Management of maturita years in the system"
       },
       "gradeAdd": {
-        "title": "Panel | Maturita Years - Add",
+        "title": "Panel { '|' } Maturita Years - Add",
         "description": "Page for adding a maturita year"
       },
       "gradeRemove": {
-        "title": "Panel | Maturita Years - Remove",
+        "title": "Panel { '|' } Maturita Years - Remove",
         "description": "Page for removing maturita years"
       },
       "gradeEdit": {
-        "title": "Panel | Maturita Year - {maturitaId} - Edit",
+        "title": "Panel { '|' } Maturita Year - {maturitaId} - Edit",
         "description": "Page for editing a maturita year"
       },
       "topicsIndex": {
-        "title": "Panel | Maturita Topics",
+        "title": "Panel { '|' } Maturita Topics",
         "description": "Management of maturita topics in the system"
       },
       "topicsAdd": {
-        "title": "Panel | Maturita Topics - Add",
+        "title": "Panel { '|' } Maturita Topics - Add",
         "description": "Page for adding a maturita topic"
       },
       "topicsRemove": {
-        "title": "Panel | Maturita Topics - Remove",
+        "title": "Panel { '|' } Maturita Topics - Remove",
         "description": "Page for removing maturita topics"
       },
       "tasksIndex": {
-        "title": "Panel | Maturita Assignments",
+        "title": "Panel { '|' } Maturita Assignments",
         "description": "Management of maturita assignments"
       },
       "tasksAdd": {
-        "title": "Panel | Maturita Assignments - Add",
+        "title": "Panel { '|' } Maturita Assignments - Add",
         "description": "Page for adding a maturita assignment"
       },
       "tasksRemove": {
-        "title": "Panel | Maturita Assignments - Remove",
+        "title": "Panel { '|' } Maturita Assignments - Remove",
         "description": "Page for removing maturita assignments"
       },
       "tasksEdit": {
-        "title": "Panel | Maturita Assignments - Edit",
+        "title": "Panel { '|' } Maturita Assignments - Edit",
         "description": "Page for editing a maturita assignment"
       },
       "proposalsIndex": {
-        "title": "Panel | Maturita Assignment Proposals",
+        "title": "Panel { '|' } Maturita Assignment Proposals",
         "description": "Management of maturita assignment proposals"
       },
       "proposalsAdd": {
-        "title": "Panel | Maturita Assignment Proposal - Add",
+        "title": "Panel { '|' } Maturita Assignment Proposal - Add",
         "description": "Page for adding a maturita assignment proposal"
       },
       "proposalsRejected": {
-        "title": "Panel | Maturita Assignment Proposals - Rejected",
+        "title": "Panel { '|' } Maturita Assignment Proposals - Rejected",
         "description": "Page with rejected maturita assignment proposals"
       },
       "proposalsRemove": {
-        "title": "Panel | Maturita Assignment Proposals - Remove",
+        "title": "Panel { '|' } Maturita Assignment Proposals - Remove",
         "description": "Page for removing maturita assignment proposals"
       },
       "proposalsEdit": {
-        "title": "Panel | Maturita Assignments - Edit",
+        "title": "Panel { '|' } Maturita Assignments - Edit",
         "description": "Page for editing a maturita assignment proposal"
       },
       "teamIndex": {
-        "title": "Panel | Maturita Assignment - {taskId}",
+        "title": "Panel { '|' } Maturita Assignment - {taskId}",
         "description": "Management of maturita team assignment"
       },
       "teamChat": {
-        "title": "Panel | Maturita Assignment - {taskId} - Chat",
+        "title": "Panel { '|' } Maturita Assignment - {taskId} - Chat",
         "description": "Chat for maturita assignment"
       },
       "objectorIndex": {
-        "title": "Panel | Objector",
+        "title": "Panel { '|' } Objector",
         "description": "List of maturita assignments for objector review"
       },
       "objectorTeam": {
-        "title": "Panel | Objector Assignment - {taskId}",
+        "title": "Panel { '|' } Objector Assignment - {taskId}",
         "description": "Management of objector maturita assignment"
       },
       "objectorChat": {
-        "title": "Panel | Objector Assignment - {taskId} - Chat",
+        "title": "Panel { '|' } Objector Assignment - {taskId} - Chat",
         "description": "Chat for objector maturita assignment"
       },
       "tablesIndex": {
-        "title": "Panel | Maturita Assignments Table",
+        "title": "Panel { '|' } Maturita Assignments Table",
         "description": "Overview table of maturita assignments"
       },
       "tablesEvaluators": {
-        "title": "Panel | Maturita Evaluators Table",
+        "title": "Panel { '|' } Maturita Evaluators Table",
         "description": "Table of maturita evaluators"
       },
       "proposalsRole": {
-        "title": "Panel | Maturita Assignment Proposals",
+        "title": "Panel { '|' } Maturita Assignment Proposals",
         "description": "Management of maturita assignment proposals"
       },
       "studentIndex": {
-        "title": "Panel | Maturita Assignment",
+        "title": "Panel { '|' } Maturita Assignment",
         "description": "Student maturita assignment"
       },
       "studentChat": {
-        "title": "Panel | Maturita Assignment - Chat",
+        "title": "Panel { '|' } Maturita Assignment - Chat",
         "description": "Chat for student maturita assignment"
       }
     }
