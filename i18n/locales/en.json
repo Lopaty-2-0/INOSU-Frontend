@@ -933,7 +933,7 @@
     }
   },
   "actionBar": {
-    "description": "Action bar",
+    "description": "Manage users",
     "add": "Add",
     "edit": "Edit",
     "remove": "Remove"
@@ -2273,15 +2273,15 @@
     },
     "tables": {
       "index": {
-        "heading": "Maturita assignments table",
-        "description": "Table of maturita grades.",
+        "heading": "Assignments",
+        "description": "Table of maturita assignments for the current year.",
         "noMaturita": "No maturita year is currently available.",
         "actionBar": {
           "description": "Manage maturita assignments table"
         }
       },
       "evaluators": {
-        "heading": "Maturita evaluators table",
+        "heading": "Evaluators",
         "description": "Table of maturita evaluators.",
         "noMaturita": "No maturita year is currently available.",
         "actionBar": {

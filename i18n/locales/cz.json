@@ -933,7 +933,7 @@
     }
   },
   "actionBar": {
-    "description": "Akční bar",
+    "description": "Správa uživatelů",
     "add": "Přidat",
     "edit": "Upravit",
     "remove": "Odstranit"
@@ -2273,15 +2273,15 @@
     },
     "tables": {
       "index": {
-        "heading": "Tabulka maturitních zadání",
-        "description": "Tabulka maturitních hodnocení.",
+        "heading": "Zadání",
+        "description": "Tabulka maturitních zadání pro aktuální ročník.",
         "noMaturita": "Aktuálně není dostupný žádný maturitní ročník.",
         "actionBar": {
           "description": "Správa tabulek maturitních zadání"
         }
       },
       "evaluators": {
-        "heading": "Tabulka maturitních hodnotitelů",
+        "heading": "Hodnotitelé",
         "description": "Tabulka hodnotitelů maturitních prací.",
         "noMaturita": "Aktuálně není dostupný žádný maturitní ročník.",
         "actionBar": {
