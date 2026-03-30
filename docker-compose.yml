@@ -21,4 +21,5 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-    command: pnpm run preview
+    command: node .output/server/index.mjs
+    restart: unless-stopped
