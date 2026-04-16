@@ -820,13 +820,6 @@
       }
     }
   },
-  "errors": {
-    "403": {
-      "title": "Přístup odepřen",
-      "description": "Nemáte dostatečná oprávnění pro zobrazení této stránky.",
-      "back": "Vrátit zpět"
-    }
-  },
   "common": {
     "updated": "(aktualizováno)",
     "unknown": "Nastala neznámá chyba.",
@@ -910,26 +903,6 @@
     },
     "dateTime": {
       "label": "Datum a čas"
-    }
-  },
-  "tables": {
-    "columns": {
-      "id": "ID",
-      "name": "Název",
-      "start": "Začátek",
-      "end": "Konec",
-      "deadline": "Uzávěrka",
-      "maxPoints": "Max bodů",
-      "assignment": "Zadání",
-      "actions": "Akce",
-      "fullName": "Jméno a příjmení",
-      "email": "E-mail",
-      "abbreviation": "Zkratka",
-      "createdAt": "Vytvořen",
-      "class": "Třída",
-      "grade": "Ročník",
-      "group": "Skupina",
-      "specialization": "Zaměření (zkratka)"
     }
   },
   "actionBar": {
@@ -2497,7 +2470,24 @@
       "student": "Student",
       "guarantor": "Garant",
       "objector": "Oponent",
-      "proposer": "Navrhovatel"
+      "proposer": "Navrhovatel",
+      "start": "Začátek",
+      "end": "Konec",
+      "assignment": "Zadání",
+      "specialization": "Zaměření (zkratka)"
+    }
+  },
+  "errors": {
+    "E10100": "Příliš mnoho požadavků. Zkuste to znovu později.",
+    "429": {
+      "title": "Příliš mnoho požadavků",
+      "description": "Z důvodu nadměrného počtu požadavků z vaší strany je přístup dočasně omezen. Zkuste to znovu později.",
+      "tryAgain": "Zkusit znovu"
+    },
+    "403": {
+      "title": "Přístup odepřen",
+      "description": "Nemáte dostatečná oprávnění pro zobrazení této stránky.",
+      "back": "Vrátit zpět"
     }
   }
 }

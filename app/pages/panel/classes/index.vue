@@ -48,6 +48,10 @@ const { data: classesData, pending: classesTablePending, error: classesError } =
 
 watch([classesData, classesError], (): void => {
   if (classesError.value) {
+    if (classesError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allClasses.value = [];
     classesCount.value = 0;
     return;

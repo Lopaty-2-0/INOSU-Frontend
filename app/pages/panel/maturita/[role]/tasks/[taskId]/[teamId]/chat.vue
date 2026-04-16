@@ -109,6 +109,10 @@ const createNewConversation = async (userType: "student" | "objector", userId: s
           alertsStore.addAlert({ type: "success", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.success') });
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('common.unknown') });
           break;
@@ -145,6 +149,10 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
 
 watch([conversationsData, conversationsError], (): void => {
   if (conversationsError.value) {
+    if (conversationsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/maturita/${role}/tasks/`);
     return;
   }
@@ -159,6 +167,10 @@ watch([conversationsData, conversationsError], (): void => {
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/maturita/${role}tasks/`);
     return;
   }

@@ -86,6 +86,7 @@ export default defineNuxtConfig({
         defaultLocale: "cz",
         strategy: "no_prefix",
         langDir: "locales",
+        detectBrowserLanguage: false,
         locales: [
             { code: "cz", name: "Čeština", file: "cz.json" },
             { code: "en", name: "English", file: "en.json" },

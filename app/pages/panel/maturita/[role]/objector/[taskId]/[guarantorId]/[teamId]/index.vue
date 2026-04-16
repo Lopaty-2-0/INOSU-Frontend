@@ -101,6 +101,10 @@ const { data: versionsData, error: versionsError, pending: versionsLoading } = u
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/maturita/${role}/objector`);
     return;
   }
@@ -114,6 +118,10 @@ watch(versionsData, async (newValue: any): Promise<void> => {
   if (!newValue) return;
 
   if (versionsError.value) {
+    if (versionsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     versions.value = undefined;
     return;
   }
@@ -126,6 +134,10 @@ watch(versionsData, async (newValue: any): Promise<void> => {
 
 watch([teamData, teamError], async (): Promise<void> => {
   if (teamError.value) {
+    if (teamError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/maturita/${role}/objector`);
     return;
   }

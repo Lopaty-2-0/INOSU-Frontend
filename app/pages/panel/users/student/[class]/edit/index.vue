@@ -77,6 +77,10 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = undefined;
     return;
   }

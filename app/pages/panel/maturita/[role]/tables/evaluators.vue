@@ -50,6 +50,10 @@ const { data: maturitaData, error: maturitaError } = useFetch("/api/maturita/get
 
 watch([tableData, tableError], (): void => {
   if (tableError.value) {
+    if (tableError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allRows.value = [];
     rowsCount.value = 0;
     return;
@@ -63,6 +67,10 @@ watch([tableData, tableError], (): void => {
 
 watch([maturitaData, maturitaError], (): void => {
   if (maturitaError.value) {
+    if (maturitaError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     currentMaturita.value = undefined;
     maturitaNotExists.value = true;
     return;

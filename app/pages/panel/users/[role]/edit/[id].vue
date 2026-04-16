@@ -225,6 +225,9 @@ const updateUser = async (): Promise<void> => {
                       await refreshUser();
                       resetUserData();
                       break;
+                    case "E10100":
+                      alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.savePfp.title'), message: t('errors.E10100') });
+                      break;
                     default:
                       alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.savePfp.title'), message: t('users.role.edit.detail.alerts.savePfp.savingError') });
                       break;
@@ -252,6 +255,10 @@ const updateUser = async (): Promise<void> => {
           await refreshUser();
           resetUserData();
           break;
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('users.role.edit.detail.alerts.updateUser.title'), message: t('common.unknown') });
           break;
@@ -277,6 +284,10 @@ const { data: userData, error: userError, refresh: refreshUser } = useFetch("/ap
 
 watch([userData, userError], async (): Promise<void> => {
   if (userError.value) {
+    if (userError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     router.push(`/panel/users/${role}`);
     return;
   }

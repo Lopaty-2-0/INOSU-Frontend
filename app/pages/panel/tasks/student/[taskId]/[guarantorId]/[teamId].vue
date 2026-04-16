@@ -151,6 +151,10 @@ const removeVersion = async (version: Version): Promise<void> => {
           refreshVersions();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.unknown') });
           break;
@@ -277,6 +281,9 @@ const uploadNewVersion = async (): Promise<void> => {
                       resetInputs();
                       await refreshVersions();
                       break;
+                    case "E10100":
+                      alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('errors.E10100') });
+                      break;
                     default:
                       alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.serverError') });
                       break;
@@ -289,6 +296,10 @@ const uploadNewVersion = async (): Promise<void> => {
             });
           }
           break;
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.unknown') });
           break;
@@ -342,6 +353,10 @@ const { data: versionsData, error: versionsError, refresh: refreshVersions, pend
 
 watchEffect((): void => {
   if (teamError.value) {
+    if (teamError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/tasks/student/${taskId}`);
     return;
   }
@@ -351,6 +366,10 @@ watchEffect((): void => {
 
 watchEffect(async (): Promise<void> => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/tasks/student/${taskId}`);
     return;
   }
@@ -364,6 +383,10 @@ watch(versionsData, async (newValue: any): Promise<void> => {
   if (!newValue) return;
 
   if (versionsError.value) {
+    if (versionsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     versions.value = undefined;
     return;
   }

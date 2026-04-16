@@ -163,6 +163,10 @@ const updateTeamName = async (): Promise<void> => {
           teamRefresh();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.unknown') });
           break;
@@ -232,6 +236,10 @@ const assignToTeam = async (): Promise<void> => {
           teamRefresh();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.addToTeam.title'), message: t('tasks.assign.alerts.addToTeam.unknown') });
           break;
@@ -292,6 +300,10 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = undefined;
     return;
   }
@@ -304,6 +316,10 @@ watch([usersData, usersError], (): void => {
 
 watch([teamData, teamError], (): void => {
   if (teamError.value) {
+    if (teamError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     teamTaskData.value = undefined;
     return;
   }

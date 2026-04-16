@@ -9,6 +9,7 @@ import type {ConversationData, ConversationMessageData} from "~/types/chat";
 import {useAccountStore} from "~/stores/account";
 import {storeToRefs} from "pinia";
 import { useI18n } from "#imports";
+import {useLoadingStore} from "~/stores/loading";
 
 const { t } = useI18n();
 
@@ -155,6 +156,10 @@ const removeMessage = async (message: ConversationMessageData): Promise<void> =>
           alertsStore.addAlert({ type: "success", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.success') });
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeMessage.title'), message: t('chat.alerts.removeMessage.unknown') });
           break;
@@ -247,6 +252,10 @@ const addMessage = async (): Promise<void> => {
           alertsStore.addAlert({ type: "success", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.success') });
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('chat.alerts.sendMessage.title'), message: t('chat.alerts.sendMessage.unknown') });
           break;
@@ -287,6 +296,10 @@ const { data: messagesData, error: messagesError, pending: messagesPending, refr
 
 watch([messagesData, messagesError], (): void => {
   if (messagesError.value) {
+    if (messagesError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     messages.value = [];
     return;
   }

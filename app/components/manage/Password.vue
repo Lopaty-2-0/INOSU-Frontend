@@ -85,7 +85,7 @@ defineExpose({ reset });
               name="oldPassword"
               placeholder="******"
               v-model.trim="passwords.old.input"
-              @input="onInput"
+              @update:modelValue="onInput"
             />
             <div
               class="icon-div"
@@ -123,7 +123,7 @@ defineExpose({ reset });
             placeholder="******"
             ref="newPassword"
             v-model.trim="passwords.new.input"
-            @input="onInput"
+            @update:modelValue="onInput"
           />
           <p v-if="passwords.new.error" class="input-error">
             {{ passwords.new.error }}

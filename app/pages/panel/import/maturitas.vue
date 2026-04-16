@@ -158,6 +158,10 @@ const importFile = async (): Promise<void> => {
 
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('import.maturitas.alerts.uploadMaturitas.title'), message: t('import.maturitas.alerts.uploadMaturitas.unknown') });
           break;

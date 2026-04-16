@@ -152,6 +152,10 @@ const importFile = async (): Promise<void> => {
 
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('import.classes.alerts.uploadClasses.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('import.classes.alerts.uploadClasses.title'), message: t('import.classes.alerts.uploadClasses.unknown') });
           break;

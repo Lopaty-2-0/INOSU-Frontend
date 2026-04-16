@@ -56,6 +56,12 @@ const submitForm = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
+        case "E10100":
+          messages.value.form = {
+            type: "error",
+            message: t('errors.E10100'),
+          };
+          break;
         case "12010":
           messages.value.form = {
             type: "error",

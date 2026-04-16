@@ -110,6 +110,10 @@ const createTeam = async (): Promise<void> => {
           alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.createTeam.title'), message: t('tasks.assign.alerts.createTeam.teamNameExists') });
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.createTeam.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.createTeam.title'), message: t('tasks.assign.alerts.createTeam.unknown') });
           break;
@@ -157,6 +161,10 @@ const { data: teamsData, error: teamsError, pending: teamsPending, refresh: team
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/tasks/${role}`);
     return;
   }
@@ -168,6 +176,10 @@ watch([taskData, taskError], (): void => {
 
 watch([teamsData, teamsError], (): void => {
   if (teamsError.value) {
+    if (teamsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     teams.value = [];
     teamsCount.value = 0;
     return;

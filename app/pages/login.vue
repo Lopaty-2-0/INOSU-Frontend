@@ -59,6 +59,9 @@ const submitLoginForm = async (): Promise<void> => {
       const resCode: string = response._data.resCode.toString();
 
       switch (resCode) {
+        case "E10100":
+          errors.value.req = t("errors.E10100");
+          break;
         case "6010":
           errors.value.req = t("login.form.errors.missing");
           break;

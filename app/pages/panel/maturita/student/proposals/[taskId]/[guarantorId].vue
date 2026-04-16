@@ -202,6 +202,9 @@ const updateTask = async (): Promise<void> => {
                       await refreshTask();
                       resetUserData();
                       break;
+                    case "E10100":
+                      alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('errors.E10100') });
+                      break;
                     default:
                       alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('maturita.proposals.edit.alerts.editProposal.savingError') });
                       break;
@@ -218,6 +221,10 @@ const updateTask = async (): Promise<void> => {
               });
             });
           }
+          break;
+
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('maturita.proposals.edit.alerts.editProposal.title'), message: t('errors.E10100') });
           break;
 
         default:
@@ -258,6 +265,10 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
 
 watch([taskError, taskData], async (): Promise<void> => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/maturita/student/proposals`);
     return;
   }
@@ -275,6 +286,10 @@ watch([taskError, taskData], async (): Promise<void> => {
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = undefined;
     return;
   }

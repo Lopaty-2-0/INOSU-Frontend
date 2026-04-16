@@ -83,6 +83,9 @@ const removeUsers = async (): Promise<void> => {
             resetSelectedUsers();
           }
           break;
+        case "E10100":
+          alertsStore.addAlert({type: "error", title: t('users.role.remove.alerts.removeUsers.title'), message: t('errors.E10100')});
+          break;
         default:
           alertsStore.addAlert({type: "error", title: t('users.role.remove.alerts.removeUsers.title'), message: t('common.unknown')});
           break;
@@ -125,6 +128,10 @@ const { data: usersData, error: usersError, pending: usersPending, refresh: refr
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = undefined;
     return;
   }

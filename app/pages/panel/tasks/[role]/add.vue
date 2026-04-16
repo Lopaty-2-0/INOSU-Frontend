@@ -153,6 +153,9 @@ const addTask = async (): Promise<void> => {
                       alertsStore.addAlert({ type: "success", title: t('tasks.role.add.alerts.addTask.title'), message: t('tasks.role.add.alerts.addTask.success') });
                       resetUserData();
                       break;
+                    case "E10100":
+                      alertsStore.addAlert({ type: "error", title: t('tasks.role.add.alerts.addTask.title'), message: t('errors.E10100') });
+                      break;
                     default:
                       alertsStore.addAlert({ type: "error", title: t('tasks.role.add.alerts.addTask.title'), message: t('tasks.role.add.alerts.addTask.serverError') });
                       break;
@@ -221,6 +224,10 @@ const addTask = async (): Promise<void> => {
 
         case "26130":
           alertsStore.addAlert({ type: "error", title: t('tasks.role.add.alerts.addTask.title'), message: t('tasks.role.add.alerts.addTask.noMaxPoints') });
+          break;
+
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.add.alerts.addTask.title'), message: t('errors.E10100') });
           break;
 
         default:

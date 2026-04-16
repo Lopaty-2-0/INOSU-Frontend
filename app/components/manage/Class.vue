@@ -6,6 +6,7 @@ import ClassesTable from "~/components/tables/Classes.vue";
 import Pagination from "~/components/ui/Pagination.vue";
 import InputMenu, {type InputMenuItem} from "~/components/ui/InputMenu.vue";
 import { useI18n } from "#imports";
+import {useLoadingStore} from "~/stores/loading";
 
 const { t } = useI18n();
 
@@ -91,6 +92,10 @@ const { data: classesData, error: classesError, pending: classesPending } = useF
 
 watch([classesData, classesError], (): void => {
   if (classesError.value) {
+    if (classesError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     classes.value = [];
     classesCount.value = 0;
     return;

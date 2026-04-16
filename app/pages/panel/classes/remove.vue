@@ -95,6 +95,10 @@ const removeClasses = async (): Promise<void> => {
           resetSelectedClasses();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t("classes.remove.alerts.removeClass.title"), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t("classes.remove.alerts.removeClass.title"), message: t("classes.remove.alerts.removeClass.unknown") });
       }
@@ -122,6 +126,10 @@ const { data: classesData, pending: classesTablePending, error: classesError, re
 
 watch([classesData, classesError], (): void => {
   if (classesError.value) {
+    if (classesError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allClasses.value = [];
     classesCount.value = 0;
     return;

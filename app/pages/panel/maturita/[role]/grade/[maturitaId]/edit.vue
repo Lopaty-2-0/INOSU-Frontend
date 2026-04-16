@@ -232,6 +232,10 @@ const updateMaturita = async (): Promise<void> => {
           resetUserData();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('maturita.grade.edit.alerts.editMaturita.title'), message: t('common.unknown') });
           break;
@@ -270,6 +274,10 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
 
 watch([maturitaData, maturitaError], async (): Promise<void> => {
   if (maturitaError.value) {
+    if (maturitaError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     await navigateTo(`/panel/maturita`);
     return;
   }
@@ -291,6 +299,10 @@ watch([maturitaData, maturitaError], async (): Promise<void> => {
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = undefined;
     return;
   }

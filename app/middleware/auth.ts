@@ -1,20 +1,26 @@
 import { useAccountStore } from "~/stores/account";
 import type {AccountData, AccountTheme, LocalAccountData} from "~/types/account";
 import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
-import {useFetch} from "nuxt/app";
 import {useLoadingStore} from "~/stores/loading";
 
 export default defineNuxtRouteMiddleware(async () => {
     if (process.server) return;
 
     try {
-        const { data }: { data: any } = await useFetch("/api/auth/verify", {
+        const data: any = await $fetch("/api/auth/verify", {
             method: "get",
             credentials: "include",
+            ignoreResponseError: true,
         });
 
-        const resCode: string = data.value.resCode.toString();
-        const isLogged: boolean = data.value.data.logged;
+        const resCode: string = data.resCode.toString();
+
+        if (resCode === "E10100") {
+            useLoadingStore().setHasRateLimit(true);
+            return;
+        }
+
+        const isLogged: boolean = data.data.logged;
 
         if (resCode !== "17011" || !isLogged) {
             location.pathname = "/login";
@@ -35,7 +41,7 @@ export default defineNuxtRouteMiddleware(async () => {
         const accountDataString: string | null = sessionStorage.getItem("accountData") as string | null;
         let accountData: LocalAccountData | null = accountDataString ? decodeData(accountDataString) as LocalAccountData : null;
 
-        if (!accountData || (data.value.data.updatedAt !== accountData.updatedAt)) {
+        if (!accountData || (data.data.updatedAt !== accountData.updatedAt)) {
             await $fetch("/api/user/logged/data", {
                 method: "get",
                 credentials: "include",
@@ -43,6 +49,11 @@ export default defineNuxtRouteMiddleware(async () => {
                 cache: "no-cache",
                 async onResponse({ response }: any): Promise<any> {
                     const resCode: string = response._data.resCode.toString();
+
+                    if (resCode === "E10100") {
+                        loadingStore.setHasRateLimit(true);
+                        return;
+                    }
 
                     if (resCode === "50011") {
                         const freshAccountData: AccountData = response._data.data.user as AccountData;
@@ -71,13 +82,13 @@ export default defineNuxtRouteMiddleware(async () => {
 
         loadingStore.setLoading("accountDataLoading", false);
 
-        if (!accountData || !data.value.data.id || !data.value.data.role) {
+        if (!accountData || !data.data.id || !data.data.role) {
             return location.pathname = "/login";
         }
 
         accountStore.setLocalAccountData(accountData || {} as LocalAccountData);
-        accountStore.setRole(data.value.data.role);
-        accountStore.setId(data.value.data.id);
+        accountStore.setRole(data.data.role);
+        accountStore.setId(data.data.id);
         accountStore.setLinks(JSON.parse(storedLinks as string) || []);
 
         return true;

@@ -204,6 +204,9 @@ const updateTask = async (): Promise<void> => {
                       await refreshTask();
                       resetUserData();
                       break;
+                    case "E10100":
+                      alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('errors.E10100') });
+                      break;
                     default:
                       alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.serverError') });
                       break;
@@ -221,6 +224,10 @@ const updateTask = async (): Promise<void> => {
           resetUserData();
 
           break;
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.role.task.edit.alerts.editTask.title'), message: t('tasks.role.task.edit.alerts.editTask.unknown') });
           break;
@@ -247,6 +254,10 @@ const { data: taskData, error: taskError, refresh: refreshTask } = useFetch("/ap
 
 watch([taskError, taskData], async (): Promise<void> => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/tasks/${role}/${taskId}`);
     return;
   }

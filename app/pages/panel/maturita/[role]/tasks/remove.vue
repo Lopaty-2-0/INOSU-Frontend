@@ -101,6 +101,10 @@ const removeTasks = async (): Promise<void> => {
           resetSelectedTasks();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.remove.alerts.removeMaturitaTask.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('maturita.tasks.remove.alerts.removeMaturitaTask.title'), message: t('maturita.tasks.remove.alerts.removeMaturitaTask.unknown') });
           break;
@@ -136,6 +140,10 @@ const { data: maturitaData, error: maturitaError, pending: maturitaPending } = u
 
 watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
+    if (tasksError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allTasks.value = [];
     tasksCount.value = 0;
     return;
@@ -149,6 +157,10 @@ watch([tasksData, tasksError], (): void => {
 
 watch([maturitaData, maturitaError], (): void => {
   if (maturitaError.value) {
+    if (maturitaError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     currentMaturita.value = undefined;
     maturitaNotExists.value = true;
     return;

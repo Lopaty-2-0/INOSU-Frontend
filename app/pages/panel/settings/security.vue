@@ -105,6 +105,9 @@ const updateUserData = async (): Promise<void> => {
           case "11051":
             alertsStore.addAlert({type: "success", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.success')});
             break;
+          case "E10100":
+            alertsStore.addAlert({type: "error", title: t('settings.security.alerts.changePassword.title'), message: t('errors.E10100')});
+            break;
           default:
             alertsStore.addAlert({type: "error", title: t('settings.security.alerts.changePassword.title'), message: t('settings.security.alerts.changePassword.unknown')});
             break;

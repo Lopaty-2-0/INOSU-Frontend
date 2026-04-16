@@ -98,6 +98,10 @@ const removeTasks = async (): Promise<void> => {
           resetSelectedTasks();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.role.remove.alerts.removeTask.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.role.remove.alerts.removeTask.title'), message: t('tasks.role.remove.alerts.removeTask.unknown') });
           break;
@@ -126,6 +130,10 @@ const { data: tasksData, error: tasksError, pending: tasksPending, refresh: task
 
 watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
+    if (tasksError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allTasks.value = [];
     tasksCount.value = 0;
     return;

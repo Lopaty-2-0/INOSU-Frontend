@@ -147,6 +147,10 @@ const removeTeams = async (): Promise<void> => {
           resetSelectedTeams();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.removeAssignment.title'), message: t('tasks.assign.alerts.removeAssignment.unknown') });
           break;
@@ -210,6 +214,10 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     task.value = undefined;
     return;
   }
@@ -221,6 +229,10 @@ watch([taskData, taskError], (): void => {
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = [];
     usersCount.value = 0;
     return;
@@ -235,6 +247,10 @@ watch([usersData, usersError], (): void => {
 
 watch([teamsData, teamsError], (): void => {
   if (teamsError.value) {
+    if (teamsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     teams.value = [];
     teamsCount.value = 0;
     return;
