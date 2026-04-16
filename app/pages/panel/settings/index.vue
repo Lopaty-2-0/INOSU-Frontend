@@ -130,6 +130,9 @@ const updateUserData = async (): Promise<void> => {
                       accountStore.updateAccountDataSessionStorage();
                       newUserData.value.profilePicture = undefined;
                       break;
+                    case "E10100":
+                      alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('errors.E10100') });
+                      break;
                     default:
                       alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.savingError') });
                       break;
@@ -150,6 +153,10 @@ const updateUserData = async (): Promise<void> => {
           alertsStore.addAlert({ type: "success", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.success') });
           oldUserData.value.reminders = data.user.reminders;
           break;
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('settings.info.alerts.updateInfo.title'), message: t('settings.info.alerts.updateInfo.unknown') });
           break;

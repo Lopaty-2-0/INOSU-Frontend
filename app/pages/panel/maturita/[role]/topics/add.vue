@@ -81,6 +81,10 @@ const addTopic = async (): Promise<void> => {
           resetUserData();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('maturita.topics.add.alerts.addTopic.title'), message: t('common.unknown') });
           break;

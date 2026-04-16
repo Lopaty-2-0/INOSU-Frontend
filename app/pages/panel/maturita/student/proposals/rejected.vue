@@ -61,6 +61,10 @@ const { data: maturitaData, error: maturitaError } = useFetch("/api/maturita/get
 
 watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
+    if (tasksError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allTasks.value = [];
     tasksCount.value = 0;
     return;
@@ -74,6 +78,10 @@ watch([tasksData, tasksError], (): void => {
 
 watch([maturitaData, maturitaError], (): void => {
   if (maturitaError.value) {
+    if (maturitaError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     currentMaturita.value = undefined;
     maturitaNotExists.value = true;
     return;

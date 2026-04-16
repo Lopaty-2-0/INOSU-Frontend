@@ -34,19 +34,19 @@ const newUserData = ref<{ themeMode: AccountTheme | undefined, locale: string, c
   customLinks: undefined,
 });
 
-const onThemeModeUpdate = (themeId: AccountTheme | undefined) => {
+const onThemeModeUpdate = (themeId: AccountTheme | undefined): void => {
   newUserData.value.themeMode = themeId;
 };
 
-const onCustomLinksUpdate = (customLinks: AccountLink[] | undefined) => {
+const onCustomLinksUpdate = (customLinks: AccountLink[] | undefined): void => {
   newUserData.value.customLinks = customLinks;
 };
 
-const onLocaleUpdate = (localeId: string) => {
+const onLocaleUpdate = (localeId: string): void => {
   newUserData.value.locale = localeId;
 };
 
-const resetUserData = () => {
+const resetUserData = (): void => {
   newUserData.value = {
     themeMode: undefined,
     locale: locale.value || "cz",
@@ -57,13 +57,15 @@ const resetUserData = () => {
   if (editCustomLinks.value) editCustomLinks.value.reset();
 };
 
-const updateUserData = () => {
+const updateUserData = (): void => {
   submitLoading.value = true;
 
   if (newUserData.value.themeMode) {
     localStorage.setItem("theme", newUserData.value.themeMode);
+
     accountStore.setTheme(newUserData.value.themeMode);
     oldUserData.value.themeMode = newUserData.value.themeMode;
+
     if (newUserData.value.themeMode !== "system") {
       document.documentElement.setAttribute("data-theme", newUserData.value.themeMode);
     } else {

@@ -60,6 +60,10 @@ const { data: maturitaData, pending: maturitaTablePending, error: maturitaError 
 
 watch([maturitaData, maturitaError], (): void => {
   if (maturitaError.value) {
+    if (maturitaError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allMaturitas.value = [];
     maturitasCount.value = 0;
     return;

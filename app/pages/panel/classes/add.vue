@@ -204,6 +204,10 @@ const addClass = async (): Promise<void> => {
           resetSelectedClasses();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('classes.add.alerts.createClass.title'), message: t('classes.add.alerts.createClass.unknown') });
       }
@@ -232,6 +236,10 @@ const {data: specializationsData, error: specializationsError} = useFetch("/api/
 
 watch([specializationsData, specializationsError], (): void => {
   if (specializationsError.value) {
+    if (specializationsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allSpecializations.value = [];
     return;
   }

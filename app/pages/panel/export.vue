@@ -87,6 +87,11 @@ const exportUsers = async (): Promise<void> => {
         return;
       }
 
+      if (resCode === "E10100") {
+        alertsStore.addAlert({type: "error", title: t('export.users.title'), message: t('errors.E10100'),});
+        return;
+      }
+
       alertsStore.addAlert({type: "error", title: t('export.users.title'), message: t('export.alerts.unknown')});
       return;
     }
@@ -115,6 +120,11 @@ const exportClasses = async (): Promise<void> => {
 
       if (resCode === "106010") {
         alertsStore.addAlert({type: "error", title: t('export.classes.title'), message: t('export.alerts.noPermission'),});
+        return;
+      }
+
+      if (resCode === "E10100") {
+        alertsStore.addAlert({type: "error", title: t('export.classes.title'), message: t('errors.E10100'),});
         return;
       }
 
@@ -149,6 +159,11 @@ const exportSpecializations = async (): Promise<void> => {
         return;
       }
 
+      if (resCode === "E10100") {
+        alertsStore.addAlert({type: "error", title: t('export.specializations.title'), message: t('errors.E10100'),});
+        return;
+      }
+
       alertsStore.addAlert({type: "error", title: t('export.specializations.title'), message: t('export.alerts.unknown')});
       return;
     }
@@ -177,6 +192,11 @@ const exportMaturitas = async (): Promise<void> => {
 
       if (resCode === "108010") {
         alertsStore.addAlert({type: "error", title: t('export.maturitas.title'), message: t('export.alerts.noPermission'),});
+        return;
+      }
+
+      if (resCode === "E10100") {
+        alertsStore.addAlert({type: "error", title: t('export.maturitas.title'), message: t('errors.E10100'),});
         return;
       }
 
@@ -211,6 +231,11 @@ const exportMaturitaTopics = async (): Promise<void> => {
         return;
       }
 
+      if (resCode === "E10100") {
+        alertsStore.addAlert({type: "error", title: t('export.maturitaTopics.title'), message: t('errors.E10100'),});
+        return;
+      }
+
       alertsStore.addAlert({type: "error", title: t('export.maturitaTopics.title'), message: t('export.alerts.unknown')});
       return;
     }
@@ -239,6 +264,11 @@ const exportMaturitaTable = async (): Promise<void> => {
 
       if (resCode === "109010") {
         alertsStore.addAlert({type: "error", title: t('export.maturitaTable.title'), message: t('export.alerts.noPermission'),});
+        return;
+      }
+
+      if (resCode === "E10100") {
+        alertsStore.addAlert({type: "error", title: t('export.maturitaTable.title'), message: t('errors.E10100'),});
         return;
       }
 

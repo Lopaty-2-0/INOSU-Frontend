@@ -109,6 +109,12 @@ const submitForm = async (): Promise<void> => {
           formData.value.password = "";
           formData.value.passwordAgain = "";
           break;
+        case "E10100":
+          messages.value.form = {
+            message: t('errors.E10100'),
+            type: "error",
+          };
+          break;
         default:
           messages.value.form = {
             message: t('resetPassword.responses.unknown'),

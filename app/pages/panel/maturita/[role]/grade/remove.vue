@@ -96,6 +96,10 @@ const removeMaturitas = async (): Promise<void> => {
           resetSelectedMaturitas();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('maturita.grade.remove.alerts.removeMaturita.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('maturita.grade.remove.alerts.removeMaturita.title'), message: t('common.unknown') });
           break;
@@ -124,6 +128,10 @@ const { data: maturitaData, pending: maturitaTablePending, error: maturitaError,
 
 watch([maturitaData, maturitaError], (): void => {
   if (maturitaError.value) {
+    if (maturitaError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allMaturitas.value = [];
     maturitasCount.value = 0;
     return;

@@ -50,6 +50,10 @@ const { data: topicData, pending: topicTablePending, error: topicError } = useFe
 
 watch([topicData, topicError], (): void => {
   if (topicError.value) {
+    if (topicError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allTopics.value = [];
     topicsCount.value = 0;
     return;

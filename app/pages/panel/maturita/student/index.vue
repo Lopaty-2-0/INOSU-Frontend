@@ -173,6 +173,10 @@ const removeVersion = async (version: Version): Promise<void> => {
           refreshVersions();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.removeVersion.title'), message: t('tasks.student.team.alerts.removeVersion.unknown') });
           break;
@@ -302,6 +306,9 @@ const uploadNewVersion = async (): Promise<void> => {
                       resetInputs();
                       await refreshVersions();
                       break;
+                    case "E10100":
+                      alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('errors.E10100') });
+                      break;
                     default:
                       alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.serverError') });
                       break;
@@ -314,6 +321,10 @@ const uploadNewVersion = async (): Promise<void> => {
             });
           }
           break;
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.student.team.alerts.addVersion.title'), message: t('tasks.student.team.alerts.addVersion.unknown') });
           break;
@@ -367,6 +378,10 @@ watch(teamQuery, async (query): Promise<void> => {
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     const resCode: number = taskError.value.data.resCode;
 
     if ([78010, 78020].includes(resCode)) {
@@ -386,6 +401,10 @@ watch([taskData, taskError], (): void => {
 
 watch([versionsData, versionsError], async (): Promise<void> => {
   if (versionsError.value) {
+    if (versionsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     versions.value = undefined;
     return;
   }
@@ -398,6 +417,10 @@ watch([versionsData, versionsError], async (): Promise<void> => {
 
 watch([teamData, teamError], async (): Promise<void> => {
   if (teamError.value) {
+    if (teamError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel`);
     return;
   }

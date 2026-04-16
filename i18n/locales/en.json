@@ -820,13 +820,6 @@
       }
     }
   },
-  "errors": {
-    "403": {
-      "title": "Access denied",
-      "description": "You do not have sufficient permissions to view this page.",
-      "back": "Go back"
-    }
-  },
   "common": {
     "updated": "(updated)",
     "unknown": "An unknown error occurred.",
@@ -910,26 +903,6 @@
     },
     "dateTime": {
       "label": "Date and time"
-    }
-  },
-  "tables": {
-    "columns": {
-      "id": "ID",
-      "name": "Name",
-      "start": "Start",
-      "end": "End",
-      "deadline": "Deadline",
-      "maxPoints": "Max points",
-      "assignment": "Assignment",
-      "actions": "Actions",
-      "fullName": "Full name",
-      "email": "E-mail",
-      "abbreviation": "Abbreviation",
-      "createdAt": "Created",
-      "class": "Class",
-      "grade": "Grade",
-      "group": "Group",
-      "specialization": "Specialization (abbr.)"
     }
   },
   "actionBar": {
@@ -2497,7 +2470,24 @@
       "student": "Student",
       "guarantor": "Guarantor",
       "objector": "Opponent",
-      "proposer": "Proposer"
+      "proposer": "Proposer",
+      "start": "Start",
+      "end": "End",
+      "assignment": "Assignment",
+      "specialization": "Specialization (abbr.)"
+    }
+  },
+  "errors": {
+    "E10100": "To many requests. Please try again later.",
+    "429": {
+      "title": "Too many requests",
+      "description": "You have made too many requests in a short period of time. Please try again later.",
+      "tryAgain": "Try again later"
+    },
+    "403": {
+      "title": "Access denied",
+      "description": "You do not have sufficient permissions to view this page.",
+      "back": "Go back"
     }
   }
 }

@@ -108,6 +108,10 @@ const removeConversation = async (conversation: ConversationData): Promise<void>
           alertsStore.addAlert({ type: "success", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.success') });
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('chat.alerts.removeConversation.title'), message: t('chat.alerts.removeConversation.unknown') });
           break;
@@ -183,6 +187,10 @@ const createNewConversation = async (userId: string[]): Promise<void> => {
           alertsStore.addAlert({ type: "success", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.success') });
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('chat.alerts.createConversation.title'), message: t('chat.alerts.createConversation.unknown') });
           break;
@@ -224,6 +232,10 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch("
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = [];
     usersCount.value = 0;
     return;
@@ -237,6 +249,10 @@ watch([usersData, usersError], (): void => {
 
 watch([conversationsData, conversationsError], (): void => {
   if (conversationsError.value) {
+    if (conversationsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     conversations.value = [];
     conversationsCount.value = 0;
     return;

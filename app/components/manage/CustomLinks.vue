@@ -134,7 +134,7 @@ defineExpose({ reset })
                     name="linkText"
                     :placeholder="t('settings.customization.customLinks.linkTextPlaceholder')"
                     v-model.trim="textInputValue[editLinkId!]"
-                    @input="onInput"
+                    @update:modelValue="onInput"
                   />
                 </div>
                 <div class="input">
@@ -145,7 +145,7 @@ defineExpose({ reset })
                     name="linkUrl"
                     :placeholder="t('settings.customization.customLinks.linkUrlPlaceholder')"
                     v-model.trim="hrefInputValue[editLinkId!]"
-                    @input="onInput"
+                    @update:modelValue="onInput"
                   />
                 </div>
               </div>

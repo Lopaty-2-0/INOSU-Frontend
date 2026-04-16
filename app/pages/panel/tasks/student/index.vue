@@ -68,6 +68,10 @@ const { data: tasksData, error: tasksError, pending: tasksPending } = useFetch("
 
 watch([tasksData, tasksError], (): void => {
   if (tasksError.value) {
+    if (tasksError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allTasks.value = [];
     tasksCount.value = 0;
     return;

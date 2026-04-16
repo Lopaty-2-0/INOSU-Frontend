@@ -505,7 +505,7 @@ if (!["admin", "teacher"].includes(role.value)) {
         content: "";
         display: block;
         position: relative;
-        height: 0.1px;
+        height: 1px;
         width: 85%;
         background: rgba(var(--border-color), 0.5);
         margin-top: 20px;

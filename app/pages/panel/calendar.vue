@@ -17,6 +17,7 @@ import type {CalendarData, CalendarDotsData, CalendarEventType} from "~/types/ca
 import moment from "moment";
 import type {VDatePicker} from "~/../.nuxt/components";
 import Loading from "~/components/ui/Loading.vue";
+import {useLoadingStore} from "~/stores/loading";
 
 const { t } = useI18n();
 
@@ -364,6 +365,10 @@ const addNewEvent = async (): Promise<void> => {
           await refreshDots();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('calendar.alerts.createEvent.title'), message: t('calendar.alerts.createEvent.unknown') });
           break;
@@ -453,6 +458,10 @@ const { data: dotsData, error: dotsError, refresh: refreshDots } = useFetch("/ap
 
 watch([dotsData, dotsError], (): void => {
   if (dotsError.value) {
+    if (dotsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     return;
   }
 
@@ -472,6 +481,10 @@ watch([dotsData, dotsError], (): void => {
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = [];
     usersCount.value = 0;
     return;

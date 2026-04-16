@@ -97,7 +97,7 @@ useHead({
 
       a {
         padding: 10px 15px;
-        border-radius: var(--normal-border-radius);
+        border-radius: var(--small-border-radius);
         transition: 0.2s;
         font-size: 16px;
         cursor: pointer;

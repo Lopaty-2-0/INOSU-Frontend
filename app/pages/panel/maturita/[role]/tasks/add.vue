@@ -271,6 +271,9 @@ const addMaturitaTask = async (): Promise<void> => {
                       alertsStore.addAlert({ type: "success", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.success') });
                       resetUserData();
                       break;
+                    case "E10100":
+                      alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('errors.E10100') });
+                      break;
                     default:
                       alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('maturita.tasks.add.alerts.addMaturitaTask.savingError') });
                       break;
@@ -287,6 +290,10 @@ const addMaturitaTask = async (): Promise<void> => {
               });
             });
           }
+          break;
+
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('maturita.tasks.add.alerts.addMaturitaTask.title'), message: t('errors.E10100') });
           break;
 
         default:
@@ -330,6 +337,10 @@ const { data: topicsData, error: topicsError, pending: topicsPending } = useFetc
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = undefined;
     return;
   }
@@ -342,6 +353,10 @@ watch([usersData, usersError], (): void => {
 
 watch([topicsData, topicsError], (): void => {
   if (topicsError.value) {
+    if (topicsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     topics.value = undefined;
     return;
   }

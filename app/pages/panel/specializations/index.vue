@@ -47,6 +47,10 @@ const { data: specializationData, pending: specializationTablePending, error: sp
 
 watch([specializationData, specializationError], (): void => {
   if (specializationError.value) {
+    if (specializationError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allSpecializations.value = [];
     specializationsCount.value = 0;
     return;

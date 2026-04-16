@@ -114,6 +114,10 @@ const assignToTask = async (): Promise<void> => {
           resetSelection();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.assignToTask.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.assignToTask.title'), message: t('tasks.assign.alerts.assignToTask.unknown') });
           break;
@@ -171,6 +175,10 @@ const { data: usersData, error: usersError, pending: usersPending } = useFetch(r
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     task.value = undefined;
     return;
   }
@@ -182,6 +190,10 @@ watch([taskData, taskError], (): void => {
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = undefined;
     return;
   }

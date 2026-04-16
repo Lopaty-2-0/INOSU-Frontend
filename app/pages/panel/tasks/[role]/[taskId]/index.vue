@@ -119,6 +119,10 @@ const { data: taskData, error: taskError } = useFetch("/api/task/get/id", {
 
 watch([usersData, usersError], (): void => {
   if (usersError.value) {
+    if (usersError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     users.value = [];
     usersCount.value = 0;
     return;
@@ -133,6 +137,10 @@ watch([usersData, usersError], (): void => {
 
 watch([teamsData, teamsError], (): void => {
   if (teamsError.value) {
+    if (teamsError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     teams.value = [];
     teamsCount.value = 0;
     return;
@@ -146,6 +154,10 @@ watch([teamsData, teamsError], (): void => {
 
 watch([taskData, taskError], (): void => {
   if (taskError.value) {
+    if (taskError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     navigateTo(`/panel/tasks/${role}`);
     return;
   }

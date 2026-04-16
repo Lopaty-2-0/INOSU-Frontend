@@ -172,6 +172,9 @@ const createNewUser = async (): Promise<void> => {
           alertsStore.addAlert({ type: "success", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.success') });
           resetUserData();
           break;
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('errors.E10100') });
+          break;
         default:
           alertsStore.addAlert({ type: "error", title: t('users.add.alerts.addUser.title'), message: t('users.add.alerts.addUser.unknown') });
           break;

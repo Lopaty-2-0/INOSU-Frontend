@@ -96,6 +96,10 @@ const removeTopics = async (): Promise<void> => {
           resetSelectedTopics();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t('maturita.topics.remove.alerts.removeTopic.title'), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t('maturita.topics.remove.alerts.removeTopic.title'), message: t('common.unknown') });
           break;
@@ -124,6 +128,10 @@ const { data: topicData, pending: topicTablePending, error: topicError, refresh:
 
 watch([topicData, topicError], (): void => {
   if (topicError.value) {
+    if (topicError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allTopics.value = [];
     topicsCount.value = 0;
     return;

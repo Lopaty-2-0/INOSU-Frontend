@@ -91,6 +91,10 @@ const removeSpecializations = async (): Promise<void> => {
           resetSelectedSpecializations();
           break;
 
+        case "E10100":
+          alertsStore.addAlert({ type: "error", title: t("specializations.remove.alerts.removeSpecialization.title"), message: t('errors.E10100') });
+          break;
+
         default:
           alertsStore.addAlert({ type: "error", title: t("specializations.remove.alerts.removeSpecialization.title"), message: t("specializations.remove.alerts.removeSpecialization.unknown") });
           break;
@@ -125,6 +129,10 @@ const { data: specializationData, pending: specializationTablePending, error: sp
 
 watch([specializationData, specializationError], (): void => {
   if (specializationError.value) {
+    if (specializationError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allSpecializations.value = [];
     specializationsCount.value = 0;
     return;

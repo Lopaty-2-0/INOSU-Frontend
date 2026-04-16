@@ -34,6 +34,10 @@ const {data: rolesData, error: rolesError} = useFetch("/api/user/get/roles", {
 
 watch([rolesData, rolesError, usersData], (): void => {
   if (rolesError.value) {
+    if (rolesError.value?.data?.resCode?.toString() === "E10100") {
+      useLoadingStore().setHasRateLimit(true);
+      return;
+    }
     allRoles.value = [];
     return;
   }
