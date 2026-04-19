@@ -16,5 +16,5 @@ export default defineNuxtRouteMiddleware((to: RouteLocationNormalizedGeneric) =>
         return true;
     }
 
-    return true
+    return true;
 });

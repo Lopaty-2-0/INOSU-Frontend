@@ -12,8 +12,8 @@ import useSimpleDataCipher from "~/componsables/useSimpleDataCipher";
 const { setLocale, locale, locales, t } = useI18n();
 
 useHead({
-  title: t('pages.login.title'),
-  meta: [{ name: "description", content: t('pages.login.description') }],
+  title: t("pages.login.title"),
+  meta: [{ name: "description", content: t("pages.login.description") }],
 });
 
 const { encodeData } = useSimpleDataCipher();
