@@ -21,7 +21,7 @@ useHead({
 });
 
 definePageMeta({
-  roles: ["admin", "techer"],
+  roles: ["admin", "teacher"],
 });
 
 const route = useRoute();

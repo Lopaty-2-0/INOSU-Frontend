@@ -26,7 +26,7 @@ const reset = (): void => {
   name.value.input = props.oldName;
 };
 
-defineExpose({ reset })
+defineExpose({ reset });
 </script>
 
 <template>

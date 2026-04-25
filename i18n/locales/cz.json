@@ -1751,6 +1751,7 @@
           "taskNotFound": "Zadaný úkol neexistuje nebo k němu nemáte oprávnění.",
           "teamNotFound": "Zadaný tým neexistuje.",
           "invalidStatus": "Zadaný status není povolený.",
+          "maxVariants": "Byl dosažen maximální počet variant pro toto téma.",
           "pointsNotNumber": "Body musí být číslo.",
           "pointsInvalid": "Počet bodů je neplatný.",
           "pointsTooHigh": "Nelze udělit více bodů, než má úkol.",

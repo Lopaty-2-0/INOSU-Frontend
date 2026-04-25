@@ -150,7 +150,6 @@ watchEffect((): void => {
               <h3>{{ t('maturita.objector.index.heading') }}</h3>
               <p>{{ t('maturita.objector.index.description') }}</p>
               <br>
-              <p>{{ t('maturita.grade.add.nameDescription').split('.')[0] }}: {{ currentMaturita.grade }}</p>
               <p>{{ t('maturita.team.endLabel') }} {{ moment(currentMaturita.endDate).format("HH:mm DD.MM. YYYY") }}</p>
             </div>
 

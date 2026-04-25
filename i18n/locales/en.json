@@ -1751,6 +1751,7 @@
           "taskNotFound": "The specified task does not exist or you do not have permission.",
           "teamNotFound": "The specified team does not exist.",
           "invalidStatus": "The specified status is not allowed.",
+          "maxVariants": "Maximum number of variants for this topic has been reached.",
           "pointsNotNumber": "Points must be a number.",
           "pointsInvalid": "Points value is invalid.",
           "pointsTooHigh": "Cannot award more points than the task has.",

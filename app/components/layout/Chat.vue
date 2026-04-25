@@ -397,6 +397,8 @@ watch(conversation, (): void => {
   align-items: center;
   gap: 20px;
   position: relative;
+  height: 100%;
+  overflow: hidden;
 
   &.isLoading {
     opacity: var(--disabled-opacity);

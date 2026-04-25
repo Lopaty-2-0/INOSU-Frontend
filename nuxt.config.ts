@@ -114,7 +114,7 @@ export default defineNuxtConfig({
 
     image: {
         provider: "none",
-        domains: ["localhost", "100.114.228.127"],
+        domains: ["localhost", process.env.SERVER_URL],
     },
 
     routeRules: {

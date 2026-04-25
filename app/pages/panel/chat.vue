@@ -546,15 +546,21 @@ watchEffect((): void => {
 @media (max-width: 1055px) {
   #chat {
     flex-direction: column-reverse;
-    min-height: fit-content;
-    gap: 60px;
+    gap: 30px;
+    height: auto;
 
-    .content .chat {
-      max-height: 500px;
+    .conversations {
+      flex: 0 0 auto;
+
+      .users {
+        max-height: 180px;
+      }
     }
 
-    .conversations .users {
-      max-height: 400px;
+    .content {
+      .chat {
+        height: 500px;
+      }
     }
   }
 }
