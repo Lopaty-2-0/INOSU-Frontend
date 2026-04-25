@@ -139,26 +139,30 @@ const updateTeamName = async (): Promise<void> => {
           break;
 
         case "32100":
-          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsNotNumber') });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.maxVariants') });
           break;
 
         case "32110":
-          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsInvalid') });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsNotNumber') });
           break;
 
         case "32120":
-          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsTooHigh') });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsInvalid') });
           break;
 
         case "32130":
-          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.commentTooLong') });
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.pointsTooHigh') });
           break;
 
         case "32140":
+          alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.commentTooLong') });
+          break;
+
+        case "32150":
           alertsStore.addAlert({ type: "error", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.teamNameTooLong') });
           break;
 
-        case "32151":
+        case "32161":
           alertsStore.addAlert({ type: "success", title: t('tasks.assign.alerts.updateTeam.title'), message: t('tasks.assign.alerts.updateTeam.success') });
           teamRefresh();
           break;
