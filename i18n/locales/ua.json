@@ -1,0 +1,32 @@
+{
+  "login": {
+    "title": "Панель INOSU",
+    "description": "Увійдіть до системи за допомогою свого облікового запису",
+    "form": {
+      "login": {
+        "label": "E-mail / Скорочення",
+        "placeholder": "example.email{'@'}gmail.com / ІВАН",
+        "errors": {
+          "required": "Будь ласка, введіть свій e-mail або скорочення"
+        }
+      },
+      "password": {
+        "label": "Пароль",
+        "placeholder": "*****",
+        "errors": {
+          "required": "Будь ласка, введіть свій пароль"
+        }
+      },
+      "remember": {
+        "label": "Залишитися в системі"
+      },
+      "submit": "Увійти",
+      "forgot-password": "Забули пароль?",
+      "errors": {
+        "missing": "Логін або пароль не введено",
+        "invalid": "Невірний логін або пароль",
+        "unknown": "Сталася невідома помилка"
+      }
+    }
+  }
+}

@@ -23,7 +23,6 @@ const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const pageLoading = ref<boolean>(true);
 const newLocale = ref<string>(locale.value || "cz");
 
-//check user inputs
 const validateForm = (): void => {
   resetMessages();
 
@@ -32,12 +31,10 @@ const validateForm = (): void => {
   if (!email.value) messages.value.email = t('forgotPassword.validation.emailRequired');
 };
 
-//reset messages when user start typing
 const resetMessages = (): void => {
   messages.value = { email: null, form: { message: null, type: null } };
 };
 
-//check user inputs and send request to API
 const submitForm = async (): Promise<void> => {
   validateForm();
 
